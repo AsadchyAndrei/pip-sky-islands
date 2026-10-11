@@ -1964,11 +1964,12 @@ function onKids(docs,meta){
   persistLocal();if(Object.keys(CL.dirty).length)cloudSchedule(first?1500:3000);
   setSync();if(curScreen==='kids')renderKids();
 }
-function canAdopt(){return curScreen!=='play'&&curScreen!=='done'&&!ovOpen}
+function canAdopt(){return curScreen!=='play'&&curScreen!=='done'&&!ovOpen&&!(curScreen==='home'&&homeEdit)}
 /* pull in changes from other devices (only between rounds, never mid-puzzle) */
 function adoptRemote(){if(CL.mode!=='cloud'||!ROOT.current)return;const r=CL.remote[ROOT.current];if(!r||!r.p||!r.fresh)return;r.fresh=false;
   if(sameProfile(G,r.p))return;G=mergeProfiles(G,r.p);ROOT.profiles[ROOT.current]=G;persistLocal();applySettings();refreshFoxes();
-  if(curScreen==='map'&&!adoptRemote.inMap){adoptRemote.inMap=1;renderMap();adoptRemote.inMap=0}}
+  if(curScreen==='map'&&!adoptRemote.inMap){adoptRemote.inMap=1;renderMap();adoptRemote.inMap=0}
+  else if(curScreen==='home')renderHome()} // the island screen must show the adopted profile, not the old object
 function dropKid(id){delete ROOT.profiles[id];(ROOT.gone=ROOT.gone||{})[id]=1;if(ROOT.current===id){ROOT.current='';G=freshProfile();if(CL.mode!=='guest'&&curScreen!=='gate')openKids()}persistLocal()}
 function setSync(st){if(st)CL.state=st;const el=$('#syncBadge');const s=syncInfo();if(el){el.className='tbtn sync '+s.cls;el.innerHTML=`${CLOUD_ICON}<span>${s.short}</span>`;el.title=s.long}
   const n=$('#cloudNote');if(n){n.className='note '+(s.cls==='ok'?'ok':s.cls==='bad'?'bad':'');n.textContent=s.long}}
@@ -2956,7 +2957,7 @@ function renderHomeView(){$('#homeView').innerHTML=homeSVG();bindHomeDrag();
   document.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>placeBack(b.dataset.place));
   if($('#hAway'))$('#hAway').onclick=()=>putAway(sel);
   if($('#hMove'))$('#hMove').onclick=()=>{homeEdit=true;homeSel='';renderHomeView();say($('#hsay'),`Let's decorate! <b>Drag</b> anything to a new spot. Tap something to <b>put it away</b>. I can move too!`);foxClass('waving',1200)};
-  if($('#hDone'))$('#hDone').onclick=()=>{homeEdit=false;homeSel='';save();renderHomeView();say($('#hsay'),`I love how you arranged our island!`);foxMove('hop');sWin()};
+  if($('#hDone'))$('#hDone').onclick=()=>{homeEdit=false;homeSel='';save();renderHomeView();if(typeof adoptRemote==='function'&&canAdopt())adoptRemote();say($('#hsay'),`I love how you arranged our island!`);foxMove('hop');sWin()};
   if($('#hReset'))$('#hReset').onclick=e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again: all back to the start';return}G.home.pos={};G.home.hidden={};save();renderHome()};
 }
 function homeCount(){G.home=G.home||{house:0,items:{}};return Object.keys(G.home.items).length+G.home.house}
@@ -2975,8 +2976,8 @@ function renderHome(){
     const vb=it.id==='rainbow'?'80 30 480 180':it.id==='lamps'?`${x-50} ${y-80} 100 90`:`${x-60} ${y-140} 120 150`;
     const away=have&&(H.hidden||{})[it.id];
     return `<div class="item${have&&!away?' wearing':''}"><div class="prev"><svg viewBox="${vb}">${it.draw(x,y)}</svg></div><b>${it.name}</b>${away?`<button type="button" class="buy" data-place="${it.id}">Put back</button>`:have?`<button type="button" class="worn" disabled>Built!</button>`:`<button type="button" class="${G.coins>=it.price?'buy':''}" data-build="${it.id}" ${G.coins>=it.price?'':'disabled'}>${COIN_ICON} ${it.price}</button>`}</div>`}).join('');
-  document.querySelectorAll('[data-house]').forEach(b=>b.onclick=()=>{const nx=HOUSES[H.house];if(!nx||G.coins<nx.price)return;G.coins-=nx.price;H.house++;built0(`Our <b>${nx.name}</b> is ready! It's perfect!`)});
-  document.querySelectorAll('[data-build]').forEach(b=>b.onclick=()=>{const it=HOME.find(x=>x.id===b.dataset.build);if(G.coins<it.price)return;G.coins-=it.price;H.items[it.id]=1;built0(`Yay, a <b>${it.name}</b>! I love it!`)});
+  document.querySelectorAll('[data-house]').forEach(b=>b.onclick=()=>{const H=G.home,nx=HOUSES[H.house];if(!nx||G.coins<nx.price)return;G.coins-=nx.price;H.house++;built0(`Our <b>${nx.name}</b> is ready! It's perfect!`)});
+  document.querySelectorAll('[data-build]').forEach(b=>b.onclick=()=>{const it=HOME.find(x=>x.id===b.dataset.build);if(G.coins<it.price||G.home.items[it.id])return;G.coins-=it.price;G.home.items[it.id]=1;built0(`Yay, a <b>${it.name}</b>! I love it!`)});
   document.querySelectorAll('#homeShop [data-place]').forEach(b=>b.onclick=()=>{placeBack(b.dataset.place);scrollTo({top:0,behavior:'smooth'})});
   function built0(msg){save();sWin();burst(innerWidth/2,innerHeight/3,90);renderHome();say($('#hsay'),msg);foxMove('hop');scrollTo({top:0,behavior:'smooth'});
     if(homeCount()>=5)award('builder');if(homeCount()>=total)award('dream')}
