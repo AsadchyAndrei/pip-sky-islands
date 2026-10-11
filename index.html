@@ -297,6 +297,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .choices.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .choices.one{grid-template-columns:1fr;justify-items:center}
+.choices.long{grid-template-columns:1fr;gap:10px}.choices.long .choice{justify-content:flex-start;text-align:left;font-size:clamp(1em,2.6vw,1.22em);min-height:54px;padding:12px 16px 10px}
 .choice{--c:var(--coral);background:var(--card);border:3px solid var(--c);border-radius:20px;padding:14px 10px 10px;font-size:clamp(1.12em,3.2vw,1.5em);
   font-weight:800;cursor:pointer;box-shadow:0 6px 0 var(--c);transition:transform .1s,box-shadow .1s,background .2s;min-height:68px;display:flex;
   align-items:center;justify-content:center;gap:6px;font-variant-numeric:tabular-nums;line-height:1.2;text-align:center}
@@ -2086,6 +2087,98 @@ const CAHIST=[
   ['Which U.S. state has the most people?','California',['Texas','Alaska','Rhode Island'],'You live there!','<b>California</b> has more people than any other state.']
 ];
 function genHistory(t){const f=CAHIST[t%CAHIST.length];return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4]}}
+/* ================= Grammar Grove: sentences, punctuation, figurative language, roots (CA CCSS ELA L.4) ================= */
+LANDMARKS.grammar=`<path d="M80 66 V40" stroke="#8c5a2c" stroke-width="6" stroke-linecap="round"/><circle cx="80" cy="30" r="20" fill="#38b98a"/><circle cx="64" cy="38" r="12" fill="#2e9e5b"/><circle cx="96" cy="38" r="12" fill="#2e9e5b"/><text x="70" y="34" ${FONT} font-size="14" fill="#fff">A</text><text x="84" y="28" ${FONT} font-size="14" fill="#ffd56b">,</text><text x="88" y="40" ${FONT} font-size="13" fill="#fff">?</text><text x="62" y="44" ${FONT} font-size="13" fill="#ffd56b">!</text>`;
+/* each entry: [question, right answer, [3 wrong answers], hint, explanation]; long:true shows answers one per line */
+const GRAM=[
+  {name:'Complete sentences',long:true,items:[
+    ['Which is a <b>complete sentence</b>?','The fox flew over the hill.',['Over the hill.','Flying over the hill all day.','The fox over the hill.'],'A sentence needs a subject (who) and a verb (what they did).','<b>"The fox flew over the hill."</b> has a subject (the fox) and a verb (flew). The others are missing one.'],
+    ['Which is a <b>complete sentence</b>?','My sister likes to read.',['Likes to read.','My sister and her book.','Because my sister likes to read.'],'Does it have a who AND a does what? Does it sound finished?','<b>"My sister likes to read."</b> tells who and what, and it is a complete thought.'],
+    ['Which group of words is a <b>fragment</b> (not a complete sentence)?','After the bell rang.',['The bell rang.','We ran outside.','The bell rang, and we ran outside.'],'A fragment leaves you waiting for more.','<b>"After the bell rang."</b> leaves you asking "then what?" It is a fragment.'],
+    ['Which is a <b>run-on sentence</b>?','I like pizza my brother likes tacos.',['I like pizza. My brother likes tacos.','I like pizza, but my brother likes tacos.','I like pizza, and my brother likes tacos.'],'A run-on squishes two sentences together with nothing between them.','<b>"I like pizza my brother likes tacos."</b> is two sentences jammed together. It needs a period, or a comma and a joining word.'],
+    ['How can you fix this run-on? <i>"It was raining we stayed inside."</i>','It was raining, so we stayed inside.',['It was raining we, stayed inside.','It was raining so, we stayed inside.','It was. Raining we stayed inside.'],'Use a comma plus a joining word like "so", "and" or "but".','<b>"It was raining, so we stayed inside."</b> joins two sentences with a comma and "so".'],
+    ['Which is a <b>complete sentence</b>?','Pip packed snacks for the trip.',['Packed snacks for the trip.','Snacks for the trip.','When Pip packed snacks.'],'Look for who did it and what they did.','<b>"Pip packed snacks for the trip."</b> has a subject (Pip) and a verb (packed).'],
+    ['Which is a <b>fragment</b>?','The tall girl with the red backpack.',['The tall girl smiled.','She has a red backpack.','The girl with the red backpack smiled.'],'Is there an action word (verb)?','<b>"The tall girl with the red backpack."</b> has no verb, so it is a fragment.'],
+    ['Which is a <b>run-on sentence</b>?','The dog barked the cat ran away.',['The dog barked. The cat ran away.','The dog barked, and the cat ran away.','When the dog barked, the cat ran away.'],'Two complete ideas need to be separated or joined correctly.','<b>"The dog barked the cat ran away."</b> runs two sentences together.']
+  ]},
+  {name:'Capital letters',long:true,items:[
+    ['Which sentence uses <b>capital letters</b> correctly?','We visited San Francisco in July.',['we visited San Francisco in July.','We visited san francisco in July.','We visited San Francisco in july.'],'Capitalize the first word, names of places, and months.','<b>"We visited San Francisco in July."</b> The first word, the city, and the month all start with capitals.'],
+    ['Which sentence uses <b>capital letters</b> correctly?','My friend Maya lives on Elm Street.',['My friend maya lives on Elm Street.','My Friend Maya lives on Elm Street.','My friend Maya lives on elm street.'],'Names of people and streets are proper nouns.','<b>"My friend Maya lives on Elm Street."</b> Maya and Elm Street are names, so they get capitals. "friend" is not a name.'],
+    ['Which sentence uses <b>capital letters</b> correctly?','On Monday, Dr. Lee checked my teeth.',['On monday, Dr. Lee checked my teeth.','On Monday, dr. lee checked my teeth.','on Monday, Dr. Lee checked my teeth.'],'Days of the week and titles with names get capitals.','<b>"On Monday, Dr. Lee checked my teeth."</b> Monday, Dr. and Lee all need capitals.'],
+    ['Which word should <b>NOT</b> start with a capital letter in a sentence (unless it is the first word)?','summer',['Tuesday','California','Thanksgiving'],'Seasons are not names of special days or places.','Seasons like <b>summer</b> are not capitalized. Days, holidays and places are.'],
+    ['Which sentence uses <b>capital letters</b> correctly?','Our class read <i>Charlotte\'s Web</i> together.',['Our class read <i>charlotte\'s web</i> together.','Our Class read <i>Charlotte\'s Web</i> together.','our class read <i>Charlotte\'s Web</i> together.'],'Book titles get capital letters for the important words.','<b>Book titles</b> like <i>Charlotte\'s Web</i> need capitals. "class" is a common noun.'],
+    ['Which sentence uses <b>capital letters</b> correctly?','Mom and I went to the Pacific Ocean.',['Mom and i went to the Pacific Ocean.','mom and I went to the pacific ocean.','Mom and I went to the pacific Ocean.'],'"I" is always a capital. So is the name of an ocean.','<b>"Mom and I went to the Pacific Ocean."</b> "I" is always capital, and Pacific Ocean is a name.']
+  ]},
+  {name:'Commas',long:true,items:[
+    ['Which sentence uses <b>commas</b> correctly?','We need eggs, milk, and bread.',['We need eggs milk, and bread.','We need, eggs milk and bread.','We, need eggs, milk and bread.'],'Use commas to separate things in a list.','<b>"We need eggs, milk, and bread."</b> Commas separate the items in the list.'],
+    ['Which sentence uses a <b>comma</b> correctly?','I wanted to play, but it was too dark.',['I wanted, to play but it was too dark.','I wanted to play but, it was too dark.','I, wanted to play but it was too dark.'],'Put a comma before "but", "and" or "so" when it joins two sentences.','<b>"I wanted to play, but it was too dark."</b> The comma goes before "but".'],
+    ['Where does the comma go in a date?','July 4, 1776',['July, 4 1776','July 4 1776,','Ju,ly 4 1776'],'The comma goes between the day and the year.','Write <b>July 4, 1776</b>, with the comma between the day and the year.'],
+    ['Where does the comma go in a city and state?','Mountain View, California',['Mountain, View California','Mountain View California,',',Mountain View California'],'The comma goes between the city and the state.','Write <b>Mountain View, California</b>, with a comma between city and state.'],
+    ['Which sentence uses a <b>comma</b> correctly?','Yes, I finished my homework.',['Yes I, finished my homework.','Yes I finished, my homework.','Yes I finished my, homework.'],'Put a comma after "yes" or "no" at the start of a sentence.','<b>"Yes, I finished my homework."</b> A comma follows "Yes".'],
+    ['Which sentence uses a <b>comma</b> correctly?','Sam, please close the door.',['Sam please, close the door.','Sam please close, the door.','Sam please close the, door.'],'When you talk to someone by name, set the name off with a comma.','<b>"Sam, please close the door."</b> The comma comes after the name of the person you are talking to.']
+  ]},
+  {name:'Quotation marks',long:true,items:[
+    ['Which sentence uses <b>quotation marks</b> correctly?','"Let\'s go to the park," said Ana.',['"Let\'s go to the park, said Ana."','Let\'s go to the park," said Ana.','"Let\'s go" to the park, said Ana.'],'Quotation marks go around the exact words someone says.','<b>"Let\'s go to the park," said Ana.</b> Only Ana\'s spoken words are inside the marks.'],
+    ['Which sentence uses <b>quotation marks</b> correctly?','Dad asked, "Where are my keys?"',['Dad asked, "Where are my keys"?','Dad asked, Where are my "keys?"','"Dad asked, Where are my keys?"'],'The question mark belongs to the words Dad said.','<b>Dad asked, "Where are my keys?"</b> The question mark goes inside because it is part of what he said.'],
+    ['Which sentence uses <b>quotation marks</b> correctly?','"I can do it!" shouted Leo.',['"I can do it! shouted Leo."','I can do it! "shouted Leo."','"I can" do it! shouted Leo.'],'Put the marks around only the words Leo shouted.','<b>"I can do it!" shouted Leo.</b> The marks hug only the spoken words.'],
+    ['Which sentence needs quotation marks?','My teacher said, Line up quietly.',['My teacher asked us to line up.','We lined up quietly.','The line was quiet.'],'Look for someone\'s exact words.','<b>My teacher said, "Line up quietly."</b> These are the teacher\'s exact words, so they need quotation marks.'],
+    ['Which sentence uses <b>quotation marks</b> correctly?','Mia said, "This is my favorite song."',['Mia said, "This is my favorite song".','Mia said "This is my favorite song."','Mia said, This is "my favorite song."'],'A comma comes before the quote, and the period goes inside the marks.','<b>Mia said, "This is my favorite song."</b> Comma before the quote, period inside.']
+  ]},
+  {name:'Who, which, whose',long:false,items:[
+    ['Choose the word: <i>"The girl ___ won the race is my cousin."</i>','who',['which','whose','where'],'Use "who" for people.','Use <b>who</b> for a person: "The girl <b>who</b> won the race."'],
+    ['Choose the word: <i>"The book, ___ has a red cover, is mine."</i>','which',['who','whose','when'],'Use "which" for things.','Use <b>which</b> for things: "The book, <b>which</b> has a red cover."'],
+    ['Choose the word: <i>"That is the boy ___ dog barks all night."</i>','whose',['who','which','where'],'This word shows that something belongs to someone.','<b>Whose</b> shows the dog belongs to the boy.'],
+    ['Choose the word: <i>"This is the park ___ we had our picnic."</i>','where',['who','whose','when'],'This word tells about a place.','Use <b>where</b> for a place: "the park <b>where</b> we had our picnic."'],
+    ['Choose the word: <i>"I remember the day ___ we got our puppy."</i>','when',['where','who','whose'],'This word tells about a time.','Use <b>when</b> for a time: "the day <b>when</b> we got our puppy."'],
+    ['Choose the word: <i>"My aunt, ___ lives in Texas, sent me a card."</i>','who',['which','whose','where'],'Is it a person or a thing?','My aunt is a person, so use <b>who</b>.'],
+    ['Choose the word: <i>"The pizza ___ we ordered was cold."</i>','that',['who','whose','where'],'Use "that" or "which" for things.','Use <b>that</b> for a thing: "The pizza <b>that</b> we ordered."']
+  ]},
+  {name:'Verbs: -ing tenses and can/may/must',long:false,items:[
+    ['Choose the verb: <i>"Right now, Pip ___ over the ocean."</i>','is flying',['was flying','will be flying','flew'],'"Right now" means it is happening at this moment.','<b>is flying</b> tells about something happening right now.'],
+    ['Choose the verb: <i>"Yesterday at noon, we ___ lunch."</i>','were eating',['are eating','will be eating','eat'],'"Yesterday" means the past.','<b>were eating</b> tells about something that was going on in the past.'],
+    ['Choose the verb: <i>"Tomorrow at 3:00, I ___ soccer."</i>','will be playing',['was playing','were playing','played'],'"Tomorrow" means the future.','<b>will be playing</b> tells about something going on in the future.'],
+    ['Choose the verb: <i>"Last night, the baby ___ while we watched a movie."</i>','was sleeping',['is sleeping','will be sleeping','sleeps'],'"Last night" is the past.','<b>was sleeping</b> tells what was going on in the past.'],
+    ['Which word shows that you <b>have to</b> do something? <i>"You ___ wear a helmet when you ride a bike."</i>','must',['may','might','could'],'This word means it is a rule.','<b>Must</b> means you have to. It is a rule.'],
+    ['Which word asks for <b>permission</b>? <i>"___ I please have some water?"</i>','May',['Must','Will','Did'],'This polite word asks if something is allowed.','<b>May</b> asks for permission politely.'],
+    ['Which word shows someone is <b>able</b> to do something? <i>"My sister ___ swim across the pool."</i>','can',['may','must','shall'],'This word means "is able to".','<b>Can</b> means someone is able to do it.'],
+    ['Which word shows something is <b>possible, but not sure</b>? <i>"Look at the clouds. It ___ rain later."</i>','might',['must','can','did'],'Nobody is sure yet.','<b>Might</b> means it is possible, but not certain.']
+  ]},
+  {name:'Similes and metaphors',long:false,items:[
+    ['<i>"Her smile was as bright as the sun."</i> What kind of comparison is this?','A simile',['A metaphor','A question','A fact'],'Does it use "like" or "as"?','It compares using <b>"as"</b>, so it is a <b>simile</b>.'],
+    ['<i>"The classroom was a zoo."</i> What kind of comparison is this?','A metaphor',['A simile','A question','A command'],'Does it use "like" or "as"?','It says the classroom <b>was</b> a zoo without "like" or "as", so it is a <b>metaphor</b>.'],
+    ['<i>"He ran like the wind."</i> What does this mean?','He ran very fast',['He ran slowly','He was blown over','He ran in the rain'],'How fast is the wind?','"Like the wind" is a simile meaning <b>very fast</b>.'],
+    ['<i>"My little brother is a busy bee."</i> What does this mean?','He is always doing things',['He can fly','He likes honey','He is a real insect'],'Bees work all day.','This metaphor means he is <b>always busy doing things</b>.'],
+    ['Which sentence is a <b>simile</b>?','The snow was like a white blanket.',['The snow was a white blanket.','The snow was cold.','We played in the snow.'],'Look for "like" or "as".','<b>"The snow was like a white blanket."</b> uses "like", so it is a simile.'],
+    ['Which sentence is a <b>metaphor</b>?','Time is a thief.',['Time goes as fast as a thief.','Time is like a thief.','I lost track of time.'],'A metaphor says one thing IS another, without "like" or "as".','<b>"Time is a thief."</b> says time IS a thief. That is a metaphor.'],
+    ['<i>"The baby was as quiet as a mouse."</i> What does this mean?','The baby was very quiet',['The baby was very loud','The baby looked like a mouse','The baby ate cheese'],'Mice are tiny and quiet.','It means the baby was <b>very quiet</b>.']
+  ]},
+  {name:'Idioms and sayings',long:false,items:[
+    ['What does <i>"It\'s raining cats and dogs"</i> mean?','It is raining very hard',['Pets are falling from the sky','It is a little sunny','The animals are wet'],'It is an idiom: the words don\'t mean exactly what they say.','It means <b>it is raining very hard</b>.'],
+    ['What does <i>"That test was a piece of cake"</i> mean?','The test was easy',['The test was about baking','There was cake at the test','The test was sweet'],'Eating cake is easy and fun.','It means the test was <b>easy</b>.'],
+    ['What does <i>"Break a leg!"</i> mean?','Good luck!',['Please get hurt','Run fast','Be careful on the stairs'],'People say it before a play or show.','<b>"Break a leg!"</b> means <b>good luck</b>.'],
+    ['What does <i>"I\'m all ears"</i> mean?','I am listening carefully',['I have big ears','I can\'t hear you','My ears hurt'],'What do ears do?','It means <b>I am listening carefully</b>.'],
+    ['What does <i>"Hit the books"</i> mean?','Study hard',['Throw your books','Hit someone with a book','Put books on the shelf'],'Think about homework.','It means <b>study hard</b>.'],
+    ['What does <i>"Don\'t judge a book by its cover"</i> mean?','Don\'t decide about something just by how it looks',['Never read books','Covers are the best part','Only buy new books'],'It is about more than books.','It means <b>don\'t decide about someone or something just by how it looks</b>.'],
+    ['What does <i>"The early bird catches the worm"</i> mean?','People who start early often succeed',['Birds eat worms in the morning','Never wake up early','Worms are slow'],'It is a saying about being early.','It means <b>people who get started early often get what they want</b>.'],
+    ['What does <i>"Practice makes perfect"</i> mean?','If you keep practicing, you get better',['You only need to practice once','Practice is boring','Nobody is perfect'],'Think about learning to ride a bike.','It means <b>doing something again and again helps you get better</b>.'],
+    ['What does <i>"It\'s a small world"</i> usually mean?','It is surprising to meet someone you know far away',['The Earth is tiny','Our town is small','Maps are small'],'People say it when they run into a friend somewhere unexpected.','People say it when they <b>meet someone they know in a surprising place</b>.']
+  ]},
+  {name:'Greek and Latin roots',long:false,items:[
+    ['The root <b>tele</b> means "far". What is a <b>telescope</b> for?','Seeing things that are far away',['Hearing music','Writing letters','Measuring heat'],'Tele = far, scope = look.','A <b>telescope</b> helps you <b>see things far away</b>.'],
+    ['The root <b>graph</b> means "write" or "draw". Which word means "a person\'s written name"?','autograph',['telephone','microscope','thermometer'],'Auto = self, graph = write.','An <b>autograph</b> is a name you write yourself.'],
+    ['The root <b>phon</b> means "sound". Which word has to do with sound?','microphone',['photograph','geology','transport'],'Phon = sound.','A <b>microphone</b> picks up <b>sound</b>.'],
+    ['The root <b>port</b> means "carry". What does <b>portable</b> mean?','Easy to carry',['Very heavy','Made of paper','Very old'],'Port = carry, able = can be.','<b>Portable</b> means <b>able to be carried</b>.'],
+    ['The root <b>bio</b> means "life". What is <b>biology</b> the study of?','Living things',['Rocks','Stars','Numbers'],'Bio = life, ology = study of.','<b>Biology</b> is the study of <b>living things</b>.'],
+    ['The root <b>geo</b> means "earth". What is <b>geography</b> about?','The Earth and its places',['Animals only','Music','Computers'],'Geo = earth, graph = write or draw.','<b>Geography</b> describes <b>the Earth and its places</b>.'],
+    ['The root <b>therm</b> means "heat". What does a <b>thermometer</b> measure?','How hot or cold something is',['How long something is','How heavy something is','How loud something is'],'Therm = heat, meter = measure.','A <b>thermometer</b> measures <b>heat (temperature)</b>.'],
+    ['The root <b>micro</b> means "very small". What does a <b>microscope</b> help you see?','Very tiny things',['Very far things','Things in the dark','Sounds'],'Micro = small, scope = look.','A <b>microscope</b> helps you see <b>very tiny things</b>.'],
+    ['The root <b>aud</b> means "hear". Which word means "the people who listen to a show"?','audience',['visitor','author','autograph'],'Aud = hear.','The <b>audience</b> is the people who <b>hear</b> and watch a show.'],
+    ['The root <b>vis</b> means "see". Which word means "able to be seen"?','visible',['audible','portable','edible'],'Vis = see.','<b>Visible</b> means <b>able to be seen</b>.'],
+    ['The root <b>photo</b> means "light". Which word comes from it?','photograph',['telephone','biology','transport'],'Cameras use light to make pictures.','A <b>photograph</b> is a picture made with <b>light</b>.'],
+    ['The root <b>scrib</b> or <b>script</b> means "write". Who is a <b>scribe</b>?','A person who writes things down',['A person who sings','A person who builds houses','A person who cooks'],'Scrib = write.','A <b>scribe</b> is a person who <b>writes</b> things down.']
+  ]}
+];
+function genGrammar(t){const g=GRAM[t%GRAM.length],f=pick(g.items);return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:g.long,render:c=>c}}
 const ISLANDS=[
   {id:'daily',name:'Daily Challenge',topic:'8 mixed puzzles, new every day',color:'#ff9f43',lm:'daily',special:'daily',group:'ch'},
   {id:'review',name:'Fix-It Falls',topic:'Fix your old mistakes',color:'#5ec3d6',lm:'review',special:'review',group:'ch'},
@@ -2112,6 +2205,7 @@ const ISLANDS=[
   {id:'reading',name:'Bookworm Bay',topic:'Reading & understanding',color:'#e0b45a',lm:'book',gen:genReading,types:PASSAGES.length*3,round:readingRound,noDiff:true,group:'world'},
   {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:5,group:'world'},
   {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
+  {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAM.length,group:'world'},
   {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length,group:'world'}
 ];
 const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review');
@@ -2673,7 +2767,7 @@ function stopTimers(){if(S){clearInterval(S.timer);clearTimeout(S.nudge)}}
 function armNudge(){clearTimeout(S.nudge);S.nudge=setTimeout(()=>{if(!S.locked&&!$('#play').hidden){say($('#say'),pick(NUDGE));foxClass('waving',1500)}},25000)}
 function label(c,unit){const m=/^(\d+)\/(\d+)$/.exec(c);return m?frac(m[1],m[2]):c+(unit?` <small>${unit}</small>`:'')}
 function drawChoices(q,handler){
-  const box=$('#choices');box.className='choices'+(q.choices.length===3?' three':'');box.innerHTML='';
+  const box=$('#choices');box.className='choices'+(q.long?' long':(q.choices.length===3?' three':''));box.innerHTML='';
   q.choices.forEach((c,k)=>{const b=document.createElement('button');b.type='button';b.className='choice';b.id='ch'+k;b.dataset.v=c;
     if(q.clockChoices){b.classList.add('clockc');b.setAttribute('aria-label','Clock choice '+(k+1));b.innerHTML=clockSVG(...c.split(':').map(Number),140)}
     else if(q.render){b.innerHTML=q.render(c);b.setAttribute('aria-label',c)}
