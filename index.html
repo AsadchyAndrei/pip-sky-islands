@@ -468,6 +468,9 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .storytop{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;align-items:center;margin-top:10px}
 .storymap{width:100%;max-width:420px;justify-self:center}
 .storymap .piece{transition:opacity .8s}
+.storymap .fresh{transform-box:view-box;transform-origin:50% 50%;animation:pieceIn 1s cubic-bezier(.2,1.4,.4,1) .3s both}
+@keyframes pieceIn{from{opacity:0;transform:scale(1.25) rotate(-8deg)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.storymap .fresh{animation:none}}
 .chapters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}
 .chap{background:var(--card);border-radius:24px;padding:16px 18px;box-shadow:0 6px 0 var(--line);display:flex;flex-direction:column;gap:10px}
 .chap.lock{opacity:.6}
@@ -2628,7 +2631,7 @@ function done(st,line,o={}){
   setTimeout(()=>{foxMove(st>=2?'spin':st>0?'hop':'wobble');if(st===0)foxClass('sad',1500)},400);
   if(S.storyWin!=null){const ch=CHAPTERS[S.storyWin],last=S.storyWin===CHAPTERS.length-1;
     if(last){G.coins+=500;award('story');save();updateStats('#coinPill')}
-    setTimeout(()=>overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Map piece ${S.storyWin+1} of 4</div>${mapSVG(G.story.ch)}<p>${ch.outro}${last?' <b>+500 coins!</b>':''}</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Hooray!</button>`,()=>{burst(innerWidth/2,innerHeight/2,160);sWin()}),1200)}
+    setTimeout(()=>overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Map piece ${S.storyWin+1} of 4</div>${mapSVG(G.story.ch,true)}<p>${ch.outro}${last?' <b>+500 coins!</b>':''}</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Hooray!</button>`,()=>{burst(innerWidth/2,innerHeight/2,160);sWin()}),1200)}
   if(levelOf(G.xp)>S.lv0)setTimeout(()=>showLevelUp(levelOf(G.xp)),1400);
 }
 function showLevelUp(lv){overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Level up!</div><h2>Level ${lv+1}</h2><p>You're now a <b>${TITLES[lv]}</b>! Keep flying to unlock the next title.</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Awesome!</button>`,()=>{sLevel();burst(innerWidth/2,innerHeight/2,160);setTimeout(()=>foxMove('spin'),200)})}
@@ -2691,14 +2694,50 @@ function openAlbum(){
 $('#albumBtn').onclick=()=>{tone([523,784]);openAlbum()};
 
 /* ================= story ================= */
-function mapSVG(pieces){
-  const P=[[0,0],[1,0],[0,1],[1,1]];let s='';
-  P.forEach(([x,y],i)=>{const got=i<pieces;s+=`<g class="piece" opacity="${got?1:.18}"><rect x="${10+x*150}" y="${10+y*100}" width="146" height="96" rx="6" fill="${got?'#fff1c4':'#cfd9e4'}" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="${got?'0':'6 4'}"/></g>`});
-  if(pieces>0)s+=`<path d="M40 40 Q90 20 120 60" fill="none" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="6 5"/><path d="M30 70 L50 46 L70 70Z" fill="#8a99ad"/><circle cx="120" cy="64" r="6" fill="#38b98a"/>`;
-  if(pieces>1)s+=`<path d="M170 40 Q210 80 260 50" fill="none" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="6 5"/><circle cx="230" cy="70" r="16" fill="#fff" stroke="#2f9fe0" stroke-width="3"/><path d="M230 70 V60 M230 70 L238 74" stroke="#1f3557" stroke-width="2.5"/>`;
-  if(pieces>2)s+=`<path d="M40 140 Q90 170 140 150" fill="none" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="6 5"/><path d="M60 180 L80 150 L100 180Z" fill="#ffc23d"/><rect x="110" y="160" width="20" height="20" fill="#7fd0f5"/>`;
-  if(pieces>3)s+=`<path d="M170 140 Q220 130 240 160" fill="none" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="6 5"/><path d="M226 148 l28 28 m0 -28 l-28 28" stroke="#ff6b57" stroke-width="7" stroke-linecap="round"/>`;
-  return `<svg class="storymap" viewBox="0 0 316 216" role="img" aria-label="Treasure map with ${pieces} of 4 pieces found">${s}</svg>`;
+/* one treasure map torn into 4 interlocking pieces; the river, the trail and the fog run across the tears */
+let MAPN=0;
+const MAP_V=[[158,6],[163,22],[154,40],[162,58],[155,76],[161,92],[158,108],[153,124],[162,142],[155,160],[163,178],[156,196],[158,210]];
+const MAP_H=[[6,108],[22,103],[40,112],[58,104],[76,113],[96,103],[116,112],[136,104],[158,108],[178,113],[198,103],[218,112],[238,104],[258,113],[278,103],[296,111],[310,108]];
+const MAP_PIECES=[
+  [[6,6],...MAP_V.slice(0,7),...MAP_H.slice(0,9).reverse()],
+  [[310,6],[310,108],...MAP_H.slice(8).reverse(),...MAP_V.slice(0,7).reverse()],
+  [...MAP_H.slice(0,9),...MAP_V.slice(6),[6,210]],
+  [...MAP_H.slice(8),[310,210],...MAP_V.slice(6).reverse()]
+];
+const MAP_MID=[[82,58],[234,58],[82,160],[234,160]];
+function mapArt(done){
+  const ink='#8c5a2c';
+  return `<rect x="6" y="6" width="304" height="204" fill="#bfe3ef"/>
+  ${[[30,22],[200,16],[286,60],[22,140],[290,196],[120,204]].map(([x,y])=>`<path d="M${x} ${y} q4 -4 8 0 t8 0" fill="none" stroke="#7fb9cf" stroke-width="1.5"/>`).join('')}
+  <path d="M28 34 Q80 14 142 26 Q204 12 272 30 Q302 54 292 100 Q306 142 282 184 Q228 204 160 194 Q92 206 42 188 Q14 152 24 108 Q12 62 28 34Z" fill="#f2deb0" stroke="#c9a46a" stroke-width="2.5"/>
+  <path d="M150 20 Q172 58 150 90 Q130 122 168 150 Q188 174 170 202" fill="none" stroke="#8fcbe0" stroke-width="7" stroke-linecap="round"/>
+  <path d="M150 20 Q172 58 150 90 Q130 122 168 150 Q188 174 170 202" fill="none" stroke="#bfe3ef" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 6"/>
+  ${[[60,96],[200,92],[226,128],[122,74]].map(([x,y])=>`<path d="M${x} ${y} l5 -8 l5 8" fill="none" stroke="#b08a52" stroke-width="1.5"/>`).join('')}
+  <path d="M42 52 C84 92 112 22 160 40 C204 52 222 64 246 84 C246 120 140 104 104 136 C116 190 206 186 248 176" fill="none" stroke="${ink}" stroke-width="2.5" stroke-dasharray="5 4" stroke-linecap="round"/>
+  <g><path d="M33 38 a9 10 0 1 1 18 0 q0 7 -9 12 q-9 -5 -9 -12z" fill="#ff6b57" stroke="#1f3557" stroke-width="1.2"/><rect x="38" y="52" width="8" height="6" rx="1.5" fill="#a0683a" stroke="#1f3557" stroke-width="1"/><text x="42" y="70" text-anchor="middle" ${FONT} font-size="9" fill="${ink}">START</text></g>
+  <g><path d="M88 82 L110 50 L132 82Z" fill="#d9c08a" stroke="${ink}" stroke-width="1.5"/><text x="110" y="76" text-anchor="middle" ${FONT} font-size="10" fill="${ink}">× ÷</text></g>
+  <g><rect x="238" y="44" width="22" height="40" fill="#e9dcff" stroke="#1f3557" stroke-width="1.5"/><path d="M234 46 L249 30 L264 46Z" fill="#6b5bd6" stroke="#1f3557" stroke-width="1.5"/><circle cx="249" cy="58" r="8" fill="#fff" stroke="#1f3557" stroke-width="1.5"/><path d="M249 58 V52 M249 58 L254 60" stroke="#1f3557" stroke-width="1.5" stroke-linecap="round"/></g>
+  <g><path d="M40 172 L60 138 L80 172Z" fill="#ffc23d" stroke="#1f3557" stroke-width="1.5"/><rect x="86" y="150" width="22" height="22" fill="#7fd0f5" stroke="#1f3557" stroke-width="1.5"/><circle cx="128" cy="161" r="11" fill="#e2558f" stroke="#1f3557" stroke-width="1.5"/></g>
+  <path d="M28 134 q12 -7 24 0 t24 0 t24 0 t24 0 t24 0 t24 0" fill="none" stroke="#9aa6b6" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+  <path d="M40 182 q12 -6 24 0 t24 0 t24 0" fill="none" stroke="#9aa6b6" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
+  <g><path d="M262 128 a10 10 0 0 1 19 -4 a8 8 0 0 1 12 10 h-31z" fill="#6a5bc0" stroke="#1f3557" stroke-width="1.2"/><path d="M276 136 l-4 9 h5 l-3 8" fill="none" stroke="#ffc23d" stroke-width="2" stroke-linecap="round"/></g>
+  <g><path d="M240 168 l16 16 m0 -16 l-16 16" stroke="#ff3b30" stroke-width="5" stroke-linecap="round"/>${done?`<circle cx="248" cy="176" r="15" fill="#ffd56b" opacity=".45"/>`:''}<rect x="264" y="174" width="16" height="11" rx="2" fill="#a0683a" stroke="#1f3557" stroke-width="1.2"/><rect x="264" y="174" width="16" height="4" fill="#ffc23d" stroke="#1f3557" stroke-width="1"/></g>
+  <g transform="translate(38 196)"><circle r="9" fill="#fff5d6" stroke="${ink}" stroke-width="1"/><path d="M0 -8 L2 0 L0 8 L-2 0Z" fill="${ink}"/><text y="-11" text-anchor="middle" ${FONT} font-size="7" fill="${ink}">N</text></g>`;
+}
+function mapSVG(pieces,fresh){
+  const id='tm'+(++MAPN),pts=a=>a.map(p=>p.join(',')).join(' ');
+  const art=mapArt(pieces>=4);
+  let defs='',body='';
+  MAP_PIECES.forEach((poly,i)=>{
+    defs+=`<clipPath id="${id}c${i}"><polygon points="${pts(poly)}"/></clipPath>`;
+    if(i<pieces){
+      body+=`<g class="piece${fresh&&i===pieces-1?' fresh':''}"><g clip-path="url(#${id}c${i})">${art}</g><polygon points="${pts(poly)}" fill="none" stroke="#8c5a2c" stroke-width="1.5" stroke-linejoin="round"/></g>`;
+    }else{
+      const [cx,cy]=MAP_MID[i];
+      body+=`<g class="piece missing"><polygon points="${pts(poly)}" fill="#dfe6ee" stroke="#9aa6b6" stroke-width="1.5" stroke-dasharray="5 4" stroke-linejoin="round"/><text x="${cx}" y="${cy+9}" text-anchor="middle" ${FONT} font-size="28" fill="#b3bfcd">?</text></g>`;
+    }
+  });
+  return `<svg class="storymap" viewBox="0 0 316 216" role="img" aria-label="Treasure map with ${pieces} of 4 pieces found"><defs>${defs}</defs>${body}</svg>`;
 }
 function chapterReady(i){return CHAPTERS[i].islands.every(id=>(G.best[id]||0)>=2)}
 function openStory(){
