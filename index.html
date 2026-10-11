@@ -162,6 +162,13 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .hfoot{fill:#fff;opacity:.55}
 .hthing.sel .hfoot,.hthing.movable:focus .hfoot{fill:#ffc23d;opacity:.95}
 .htools{justify-content:flex-start;margin-top:10px;gap:10px}
+.hstore{margin-top:12px;background:var(--card);border-radius:20px;padding:12px 14px;box-shadow:0 5px 0 var(--line)}
+.hstore h4{margin:0 0 8px;font-family:var(--display);font-weight:400;font-size:20px}.hstore h4 small{font-family:inherit;font-size:13px;color:var(--ink-soft);font-weight:700;margin-left:6px}
+.storelist{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.storeit{flex:none;width:104px;border:3px solid var(--line);background:var(--pale-sky);border-radius:16px;padding:6px 6px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink)}
+.storeit .prev{width:76px;height:64px;display:block}.storeit .prev svg{width:100%;height:100%}
+.storeit b{font-size:13px;line-height:1.1;text-align:center}.storeit small{font-weight:800;color:var(--leaf);font-size:12px}
+.storeit:hover{border-color:var(--leaf)}
 .hspin{animation:spin 6s linear infinite}
 .hswing{animation:swingit 2.4s ease-in-out infinite}
 @keyframes swingit{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}}
@@ -740,7 +747,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
     <section id="home" hidden>
       <div class="playhead"><button class="back" data-home type="button">← Map</button>
         <div class="ihead"><div class="iname">My Island</div><div class="qnum" id="homeProg"></div></div></div>
-      <div class="homewrap"><div><div class="homeview" id="homeView"></div><div class="actrow htools" id="homeTools"></div></div><div class="bubble" id="hsay"></div></div>
+      <div class="homewrap"><div><div class="homeview" id="homeView"></div><div class="actrow htools" id="homeTools"></div><div class="hstore" id="homeStore" hidden></div></div><div class="bubble" id="hsay"></div></div>
       <h3 class="sectitle">Build <small>spend coins to make your island amazing</small></h3><div class="shop" id="homeShop"></div>
     </section>
     <section id="albumS" hidden>
@@ -1843,7 +1850,7 @@ function renderEventCard(){
    counted per device, purchases are unioned. Only an explicit Reset or Restore (resetAt) replaces data. */
 const ROOT_KEY='pip-sky-islands-v3';
 const DEF_SETTINGS={goal:'min20',read:false,big:false,dys:false,diff:'auto',voice:'',vstyle:'fox',talk:false,sv:2};
-const DEF={name:'',best:{},xp:0,hats:['none'],balloons:['classic'],pets:['none'],home:{house:0,items:{},pos:{}},events:{},baskets:['classic'],basket:'classic',chars:['fox'],charColor:{},char:'fox',hat:'none',balloon:'classic',pet:'none',badges:[],dstreak:0,lastDaily:'',visited:{},bestThunder:0,bestCombo:0,greeted:'',
+const DEF={name:'',best:{},xp:0,hats:['none'],balloons:['classic'],pets:['none'],home:{house:0,items:{},pos:{},hidden:{}},events:{},baskets:['classic'],basket:'classic',chars:['fox'],charColor:{},char:'fox',hat:'none',balloon:'classic',pet:'none',badges:[],dstreak:0,lastDaily:'',visited:{},bestThunder:0,bestCombo:0,greeted:'',
   diff:{},hardMaster:{},stats:{},days:{},wrongLog:[],review:[],fixed:0,fixedSeeds:[],stickers:{},setsDone:{},story:{ch:0,seen:{}},weeks:{},weekRewarded:'',goalDone:'',kidPin:'',cdev:{},_u:0,resetAt:0,settings:{...DEF_SETTINGS}};
 const clone=o=>o===undefined?undefined:JSON.parse(JSON.stringify(o));
 const freshRaw=()=>clone(DEF);
@@ -1861,7 +1868,7 @@ function normalizeProfile(p){
   if(!g.cdev||typeof g.cdev!=='object'||Array.isArray(g.cdev))g.cdev={};
   if(typeof legacy==='number'&&legacy>0&&!Object.keys(g.cdev).length)g.cdev.legacy={e:legacy,s:0};
   g.settings=Object.assign({...DEF_SETTINGS},g.settings||{});if((g.settings.sv||0)<2){g.settings.talk=false;g.settings.read=false;g.settings.sv=2}
-  g.story=Object.assign({ch:0,seen:{}},g.story||{});g.home=Object.assign({house:0,items:{},pos:{}},g.home||{});
+  g.story=Object.assign({ch:0,seen:{}},g.story||{});g.home=Object.assign({house:0,items:{},pos:{},hidden:{}},g.home||{});
   for(const k of ['review','wrongLog','fixedSeeds','badges'])if(!Array.isArray(g[k]))g[k]=[];
   return attachCoins(g)}
 const freshProfile=()=>normalizeProfile(null);
@@ -1885,7 +1892,7 @@ function mergeProfiles(a,b){
   const nw=aNew?a:b,ol=aNew?b:a;
   const o=deepMax(nw,ol);
   for(const k of LATEST)o[k]=k in nw?clone(nw[k]):clone(ol[k]);
-  o.home=Object.assign({},o.home,{pos:clone((nw.home&&nw.home.pos)||(ol.home&&ol.home.pos)||{})}); // island layout: newest arrangement wins
+  o.home=Object.assign({},o.home,{pos:clone((nw.home&&nw.home.pos)||(ol.home&&ol.home.pos)||{}),hidden:clone((nw.home&&nw.home.hidden)||(ol.home&&ol.home.hidden)||{})}); // island layout and storage: newest arrangement wins
   const la=a.lastDaily||'',lb=b.lastDaily||'',st=la===lb?((a.dstreak||0)>=(b.dstreak||0)?a:b):(la>lb?a:b);o.lastDaily=st.lastDaily;o.dstreak=st.dstreak;
   const fixed=new Set(o.fixedSeeds);o.fixedSeeds=o.fixedSeeds.slice(-400);
   const rv=new Map();for(const r of ol.review)rv.set(r.s,r);for(const r of nw.review)rv.set(r.s,r);
@@ -2903,18 +2910,19 @@ function clampFoot(x,y){const cx=320,cy=246,rx=262,ry=66;let dx=(x-cx)/rx,dy=(y-
 function homeSVG(){
   G.home=G.home||{house:0,items:{}};const H=G.home;
   const things=[];
-  HOME.forEach(it=>{if(it.id!=='rainbow'&&H.items[it.id])things.push({id:it.id,name:it.name,def:it.pos,draw:()=>it.draw(...it.pos)})});
-  if(H.house)things.push({id:'house',name:HOUSES[H.house-1].name,def:HOUSE_POS,draw:()=>HOUSES[H.house-1].draw(...HOUSE_POS)});
+  const hid=H.hidden||{};
+  HOME.forEach(it=>{if(it.id!=='rainbow'&&H.items[it.id]&&!hid[it.id])things.push({id:it.id,name:it.name,def:it.pos,draw:()=>it.draw(...it.pos)})});
+  if(H.house&&!hid.house)things.push({id:'house',name:HOUSES[H.house-1].name,def:HOUSE_POS,draw:()=>HOUSES[H.house-1].draw(...HOUSE_POS)});
   things.push({id:'hero',name:heroName(),def:HERO_POS,draw:()=>foxSVG().replace('<svg class="fox" viewBox="0 0 120 165" aria-hidden="true">',`<svg x="${HERO_POS[0]-39}" y="${HERO_POS[1]-107}" width="78" height="107" viewBox="0 0 120 165">`)});
   things.forEach(t=>{t.p=homePos(t.id)});
   things.sort((p,q)=>p.p[1]-q.p[1]||(p.id==='hero')-(q.id==='hero'));
   const body=things.map(t=>{const dx=t.p[0]-t.def[0],dy=t.p[1]-t.def[1];
     return `<g class="hthing${homeEdit?' movable':''}${homeSel===t.id?' sel':''}" data-mv="${t.id}" transform="translate(${dx} ${dy})"${homeEdit?` tabindex="0" role="button" aria-label="Move ${esc(t.name)}"`:''}>${homeEdit?`<ellipse class="hfoot" cx="${t.def[0]}" cy="${t.def[1]}" rx="24" ry="7"/>`:''}${t.draw()}</g>`}).join('');
-  const hint=H.house?'':`<text x="320" y="190" text-anchor="middle" ${FONT} font-size="18" fill="#2b8a62" opacity=".7">Build a home here!</text>`;
+  const hint=H.house&&!hid.house?'':`<text x="320" y="190" text-anchor="middle" ${FONT} font-size="18" fill="#2b8a62" opacity=".7">${H.house?'Your home is in storage':'Build a home here!'}</text>`;
   return `<svg viewBox="0 0 640 420" class="homeisl${homeEdit?' editing':''}" role="img" aria-label="${esc(G.name||'Pip')}'s island">
     <ellipse cx="320" cy="412" rx="170" ry="8" fill="#1f3557" opacity=".08"/>
     <path d="M38 232 C60 330 200 402 320 408 C440 402 580 330 602 232Z" fill="#a9785a"/><path d="M80 290 C150 350 230 370 320 372 C410 370 500 345 560 290" stroke="#8a5d43" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M200 360 L230 390 M420 360 L400 392" stroke="#8a5d43" stroke-width="5" stroke-linecap="round"/>
-    ${H.items.rainbow?HOME[0].draw(...HOME[0].pos):''}
+    ${H.items.rainbow&&!(H.hidden||{}).rainbow?HOME[0].draw(...HOME[0].pos):''}
     <ellipse cx="320" cy="230" rx="286" ry="78" fill="#7cc95a"/><ellipse cx="320" cy="222" rx="270" ry="64" fill="#8fd46a"/>
     ${homeEdit?'<ellipse cx="320" cy="246" rx="262" ry="66" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="10 8" opacity=".7"/>':''}
     ${hint}${body}</svg>`;
@@ -2930,15 +2938,26 @@ function bindHomeDrag(){
       try{g.setPointerCapture(e.pointerId)}catch(err){}
       g.onpointermove=ev=>{const q=pt(ev);cur=clampFoot(p0[0]+q[0]-start[0],p0[1]+q[1]-start[1]);moved=true;g.setAttribute('transform',`translate(${cur[0]-def[0]} ${cur[1]-def[1]})`)};
       g.onpointerup=g.onpointercancel=()=>{g.onpointermove=g.onpointerup=g.onpointercancel=null;g.classList.remove('dragging');if(moved){setHomePos(id,cur);save();tone([392,523],.05)}renderHomeView()}};
-    g.onkeydown=e=>{const k={ArrowLeft:[-8,0],ArrowRight:[8,0],ArrowUp:[0,-6],ArrowDown:[0,6]}[e.key];if(!k)return;e.preventDefault();const p=homePos(id);setHomePos(id,[p[0]+k[0],p[1]+k[1]]);homeSel=id;save(true);renderHomeView();const n=$(`#homeView [data-mv="${id}"]`);n&&n.focus()};
+    g.onkeydown=e=>{if((e.key==='Delete'||e.key==='Backspace')&&id!=='hero'){e.preventDefault();putAway(id);return}const k={ArrowLeft:[-8,0],ArrowRight:[8,0],ArrowUp:[0,-6],ArrowDown:[0,6]}[e.key];if(!k)return;e.preventDefault();const p=homePos(id);setHomePos(id,[p[0]+k[0],p[1]+k[1]]);homeSel=id;save(true);renderHomeView();const n=$(`#homeView [data-mv="${id}"]`);n&&n.focus()};
   });
 }
+const thingName=id=>id==='house'?(HOUSES[G.home.house-1]||{}).name||'House':id==='hero'?heroName():(HOME.find(x=>x.id===id)||{}).name||id;
+function storedIds(){const H=G.home,hid=H.hidden||{};const out=[];if(H.house&&hid.house)out.push('house');HOME.forEach(it=>{if(H.items[it.id]&&hid[it.id])out.push(it.id)});return out}
+function putAway(id){if(id==='hero')return;G.home.hidden=Object.assign({},G.home.hidden||{},{[id]:1});homeSel='';save();tone([523,392],.06);renderHome();say($('#hsay'),`I put the <b>${thingName(id)}</b> in storage. It's still yours, so you can bring it back for free!`)}
+function placeBack(id){const h=Object.assign({},G.home.hidden||{});delete h[id];G.home.hidden=h;homeSel=id;save();tone([392,523,659],.06);renderHome();say($('#hsay'),`The <b>${thingName(id)}</b> is back on our island!`);foxMove('hop')}
+function storageThumb(id){if(id==='house')return `<svg viewBox="240 40 160 180">${HOUSES[G.home.house-1].draw(320,206)}</svg>`;const it=HOME.find(x=>x.id===id),[x,y]=it.pos;
+  const vb=id==='rainbow'?'80 30 480 180':id==='lamps'?`${x-50} ${y-80} 100 90`:`${x-60} ${y-140} 120 150`;return `<svg viewBox="${vb}">${it.draw(x,y)}</svg>`}
 function renderHomeView(){$('#homeView').innerHTML=homeSVG();bindHomeDrag();
-  const t=$('#homeTools');if(t)t.innerHTML=homeEdit?`<button type="button" class="go small leaf" id="hDone">Done</button><button type="button" class="go small alt" id="hReset">Put everything back</button><span class="note">Drag things to move them. Or tap one and use the arrow keys.</span>`
-    :`<button type="button" class="go small" id="hMove"${homeCount()?'':' disabled'}>Move things</button>`;
-  if($('#hMove'))$('#hMove').onclick=()=>{homeEdit=true;homeSel='';renderHomeView();say($('#hsay'),`Let's decorate! <b>Drag</b> anything to a new spot. I can move too!`);foxClass('waving',1200)};
+  const sel=homeSel&&homeSel!=='hero'&&$(`#homeView [data-mv="${homeSel}"]`)?homeSel:'';
+  const t=$('#homeTools');if(t)t.innerHTML=homeEdit?`<button type="button" class="go small leaf" id="hDone">Done</button>${sel?`<button type="button" class="go small alt" id="hAway">Put away: ${esc(thingName(sel))}</button>`:''}<button type="button" class="go small alt" id="hReset">Reset layout</button><span class="note">Drag things to move them. Tap one to put it in storage.</span>`
+    :`<button type="button" class="go small" id="hMove"${homeCount()?'':' disabled'}>Move or put away</button>`;
+  const st=storedIds(),tray=$('#homeStore');
+  if(tray){tray.hidden=!st.length;tray.innerHTML=st.length?`<h4>In storage <small>still yours, free to bring back</small></h4><div class="storelist">${st.map(id=>`<button type="button" class="storeit" data-place="${id}" title="Put back on the island"><span class="prev">${storageThumb(id)}</span><b>${esc(thingName(id))}</b><small>Put back</small></button>`).join('')}</div>`:''}
+  document.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>placeBack(b.dataset.place));
+  if($('#hAway'))$('#hAway').onclick=()=>putAway(sel);
+  if($('#hMove'))$('#hMove').onclick=()=>{homeEdit=true;homeSel='';renderHomeView();say($('#hsay'),`Let's decorate! <b>Drag</b> anything to a new spot. Tap something to <b>put it away</b>. I can move too!`);foxClass('waving',1200)};
   if($('#hDone'))$('#hDone').onclick=()=>{homeEdit=false;homeSel='';save();renderHomeView();say($('#hsay'),`I love how you arranged our island!`);foxMove('hop');sWin()};
-  if($('#hReset'))$('#hReset').onclick=e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to put everything back';return}G.home.pos={};save();renderHomeView()};
+  if($('#hReset'))$('#hReset').onclick=e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again: all back to the start';return}G.home.pos={};G.home.hidden={};save();renderHome()};
 }
 function homeCount(){G.home=G.home||{house:0,items:{}};return Object.keys(G.home.items).length+G.home.house}
 function openHome(){
@@ -2954,9 +2973,11 @@ function renderHome(){
   const houseCard=`<div class="item"><div class="prev"><svg viewBox="${H.house?'240 40 160 180':'240 60 160 160'}">${(next||HOUSES[3]).draw(320,206)}</svg></div><b>${next?(H.house?'Upgrade: ':'')+next.name:'Sky Castle'}</b>${next?`<button type="button" class="${G.coins>=next.price?'buy':''}" data-house="1" ${G.coins>=next.price?'':'disabled'}>${COIN_ICON} ${next.price}</button>`:`<button type="button" class="worn" disabled>Built!</button>`}</div>`;
   $('#homeShop').innerHTML=houseCard+HOME.map(it=>{const [x,y]=it.pos,have=H.items[it.id];
     const vb=it.id==='rainbow'?'80 30 480 180':it.id==='lamps'?`${x-50} ${y-80} 100 90`:`${x-60} ${y-140} 120 150`;
-    return `<div class="item${have?' wearing':''}"><div class="prev"><svg viewBox="${vb}">${it.draw(x,y)}</svg></div><b>${it.name}</b>${have?`<button type="button" class="worn" disabled>Built!</button>`:`<button type="button" class="${G.coins>=it.price?'buy':''}" data-build="${it.id}" ${G.coins>=it.price?'':'disabled'}>${COIN_ICON} ${it.price}</button>`}</div>`}).join('');
+    const away=have&&(H.hidden||{})[it.id];
+    return `<div class="item${have&&!away?' wearing':''}"><div class="prev"><svg viewBox="${vb}">${it.draw(x,y)}</svg></div><b>${it.name}</b>${away?`<button type="button" class="buy" data-place="${it.id}">Put back</button>`:have?`<button type="button" class="worn" disabled>Built!</button>`:`<button type="button" class="${G.coins>=it.price?'buy':''}" data-build="${it.id}" ${G.coins>=it.price?'':'disabled'}>${COIN_ICON} ${it.price}</button>`}</div>`}).join('');
   document.querySelectorAll('[data-house]').forEach(b=>b.onclick=()=>{const nx=HOUSES[H.house];if(!nx||G.coins<nx.price)return;G.coins-=nx.price;H.house++;built0(`Our <b>${nx.name}</b> is ready! It's perfect!`)});
   document.querySelectorAll('[data-build]').forEach(b=>b.onclick=()=>{const it=HOME.find(x=>x.id===b.dataset.build);if(G.coins<it.price)return;G.coins-=it.price;H.items[it.id]=1;built0(`Yay, a <b>${it.name}</b>! I love it!`)});
+  document.querySelectorAll('#homeShop [data-place]').forEach(b=>b.onclick=()=>{placeBack(b.dataset.place);scrollTo({top:0,behavior:'smooth'})});
   function built0(msg){save();sWin();burst(innerWidth/2,innerHeight/3,90);renderHome();say($('#hsay'),msg);foxMove('hop');scrollTo({top:0,behavior:'smooth'});
     if(homeCount()>=5)award('builder');if(homeCount()>=total)award('dream')}
 }
