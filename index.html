@@ -1357,6 +1357,7 @@ function genPlace(t){
     explain:`Read from the left. <b>${fmt(ans)}</b> has the biggest digit at the first place where the numbers are different.`};
 }
 function genMult(t){
+  if(t>=4)return genMultCmp(t);
   if(t===0){const a=R(Dv(12,120,1000),Dv(99,899,4999)),b=R(3,9),ans=a*b;const s=String(a),parts=[...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0);
     return {how:['mult0',a,b],prompt:`${fmt(a)} × ${b} = ?`,...numChoices(ans,[ans+10,ans-10,a*(b-1),ans+100,a*(b+1)]),anim:multAnim(a,parts,b),
       hint:`Break ${fmt(a)} into ${parts.map(fmt).join(' + ')} and multiply each part by ${b}.`,explain:`${parts.map(p=>`${fmt(p)} × ${b} = ${fmt(p*b)}`).join('. ')}. Add them up: <b>${fmt(ans)}</b>.`};}
@@ -1614,6 +1615,7 @@ function barChart(cats,vals){
 }
 const FLOWER=`<svg viewBox="0 0 26 26"><g fill="#e2558f"><circle cx="13" cy="6" r="5"/><circle cx="20" cy="13" r="5"/><circle cx="13" cy="20" r="5"/><circle cx="6" cy="13" r="5"/></g><circle cx="13" cy="13" r="4" fill="#ffc23d"/></svg>`;
 function genGraph(t){
+  if(t===5)return genGraphFrac();
   const set=pick(GSETS),cats=set.slice(0,4),what=set[4];
   if(t<3){const vals=shuffle([1,2,3,4,5,6,7,8,9,10,11,12]).slice(0,4),vis=barChart(cats,vals);
     if(t===0){let i,j;do{i=R(0,3);j=R(0,3)}while(i===j||vals[i]<=vals[j]);const ans=vals[i]-vals[j];
@@ -1641,6 +1643,78 @@ function genGraph(t){
   return {prompt:`Which worm length is the <b>most common</b>?`,visual:vis,unit:'in',choices:shuffle(['1','2','3','4','5']).filter(x=>x!==ans).slice(0,3).concat(ans).sort(),answer:ans,
     hint:`Find the tallest stack of X's.`,explain:`The tallest stack has ${mx} X's, at <b>${ans} inches</b>.`};
 }
+
+/* ================= "times as many" (4.OA.1-2) and line plots with fractions (4.MD.4) ================= */
+function tapeSVG(rows){/* rows: [{label, n, val, color}] each box shows val */
+  const bw=Math.min(52,300/Math.max(...rows.map(r=>r.n))),W=90+bw*Math.max(...rows.map(r=>r.n));let s='';
+  rows.forEach((r,k)=>{const y=8+k*40;s+=`<text x="4" y="${y+22}" ${FONT} font-size="14" fill="#1f3557">${esc(r.label)}</text>`;
+    for(let i=0;i<r.n;i++)s+=`<g class="fadein" style="animation-delay:${(k*.4+i*.25).toFixed(2)}s"><rect x="${86+i*bw}" y="${y}" width="${bw-3}" height="28" rx="4" fill="${r.color||'#ffd56b'}" stroke="#1f3557" stroke-width="1.5"/><text x="${86+i*bw+(bw-3)/2}" y="${y+19}" text-anchor="middle" ${FONT} font-size="13" fill="#1f3557">${r.val}</text></g>`});
+  return `<svg viewBox="0 0 ${W} ${12+rows.length*40}" style="width:${W}px;max-width:100%" role="img" aria-label="Tape diagram">${s}</svg>`}
+const CMP_THINGS=[['stickers','has','does','have'],['shells','found','did','find'],['books','read','did','read'],['marbles','has','does','have'],['points','scored','did','score'],['stamps','collected','did','collect']];
+function genMultCmp(t){
+  const [a,b]=shuffle([...NAMES]).slice(0,2),[thing,verb,aux,base]=pick(CMP_THINGS),n=R(Dv(2,3,3),Dv(5,8,9));let small,g=0;do{small=R(Dv(2,4,12),Dv(9,12,40))}while(small===n&&g++<20);const big=small*n;
+  if(t===4){
+    if(coin())return {how:['mult4',n,small],prompt:`${a} ${verb} <b>${small}</b> ${thing}. ${b} ${verb} <b>${n} times as many</b>. How many ${thing} ${aux} ${b} ${base}?`,
+      ...numChoices(big,[small+n,big+small,big-small,small*(n+1)]),anim:tapeSVG([{label:a,n:1,val:small},{label:b,n,val:small,color:'#8fd3f7'}]),
+      hint:`"${n} times as many" means ${n} groups of ${small}. Multiply!`,explain:`${b} has ${n} groups of ${small}: ${n} × ${small} = <b>${big}</b>. (Not ${small} + ${n}: "times as many" means multiply.)`};
+    const eq=`${n} × ${small} = ${big}`;
+    return {how:['mult4e'],prompt:`Which equation shows: "<b>${big}</b> is <b>${n} times as many</b> as <b>${small}</b>"?`,
+      ...strChoices(eq,[`${n} + ${small} = ${n+small}`,`${big} + ${n} = ${big+n}`,`${big} − ${small} = ${big-small}`,`${small} + ${small} = ${small*2}`]),
+      hint:`"Times as many" is multiplying. Which choice multiplies?`,explain:`"${big} is ${n} times as many as ${small}" means ${n} groups of ${small}: <b>${eq}</b>.`};}
+  if(coin())return {how:['mult5',n,big],prompt:`${b} ${verb} <b>${big}</b> ${thing}. That is <b>${n} times as many</b> as ${a}. How many ${thing} ${aux} ${a} ${base}?`,
+    ...numChoices(small,[big-n,big+n,big*n,small+1]),anim:tapeSVG([{label:b,n,val:small,color:'#8fd3f7'},{label:a,n:1,val:'?'}]),
+    hint:`${b}'s ${big} is ${n} equal groups. ${a} has one group. Divide!`,explain:`${big} ÷ ${n} = <b>${small}</b>. Check: ${n} × ${small} = ${big}.`};
+  return {how:['mult5',n,big],prompt:`A big boat is <b>${big} feet</b> long. That is <b>${n} times as long</b> as a small boat. How long is the small boat?`,
+    ...numChoices(small,[big-n,big+n,big*n,small+2]),anim:tapeSVG([{label:'big',n,val:small,color:'#8fd3f7'},{label:'small',n:1,val:'?'}]),
+    hint:`The long one is ${n} equal parts. One part is the short one. Divide!`,explain:`${big} ÷ ${n} = <b>${small}</b> feet. Check: ${n} × ${small} = ${big}.`};
+}
+const UFRAC={'1/2':'½','1/4':'¼','3/4':'¾','1/8':'⅛','3/8':'⅜','5/8':'⅝','7/8':'⅞'};
+const redFrac=(n,d)=>{const g=gcd(n,d)||1;return [n/g,d/g]};
+const fracLabel=(n,d)=>{const w=Math.floor(n/d),r=n%d;if(!r)return String(w);const [a,b]=redFrac(r,d);return (w||'')+(UFRAC[a+'/'+b]||` ${a}/${b}`)};
+const fracAns=(n,d)=>{const [a,b]=redFrac(n,d);return mixedStr(a,b)};
+const LP_SETS=[['ribbon','ribbons'],['leaf','leaves'],['pencil','pencils'],['worm','worms'],['shell','shells']];
+function genGraphFrac(){
+  const den=pick(Dv([2,4],[4,8],[8])),w=R(1,Dv(2,3,4)),ticks=den+1,[one,many]=pick(LP_SETS);
+  let cnt;do{cnt=Array.from({length:ticks},()=>R(0,Dv(3,4,4)))}while(cnt.reduce((a,b)=>a+b,0)<5||cnt.filter(c=>c>0).length<3);
+  const posN=i=>w*den+i,label=i=>fracLabel(posN(i),den),gap=Math.min(56,250/(ticks-1));let s='';
+  cnt.forEach((c,i)=>{const x=24+i*gap;s+=`<line x1="${x}" y1="128" x2="${x}" y2="136" stroke="#1f3557" stroke-width="2"/><text x="${x}" y="154" text-anchor="middle" font-size="${ticks>6?11:14}" font-weight="800" fill="#1f3557">${label(i)}</text>`;
+    for(let k=0;k<c;k++)s+=`<text x="${x}" y="${118-k*21}" text-anchor="middle" ${FONT} font-size="20" fill="#e2558f">X</text>`});
+  const W=48+gap*(ticks-1);
+  const vis=`<svg viewBox="0 0 ${W} 170" class="chart" style="max-width:${Math.max(300,W)}px" role="img" aria-label="Line plot"><line x1="12" y1="132" x2="${W-12}" y2="132" stroke="#1f3557" stroke-width="2.5"/>${s}<text x="${W/2}" y="168" text-anchor="middle" font-size="12" fill="#506686" font-weight="700">${one} length (inches)</text></svg>`;
+  const used=cnt.map((c,i)=>c?i:-1).filter(i=>i>=0),lo=used[0],hi=used[used.length-1];
+  const k=DIFF===1?R(0,1):R(0,3);
+  if(k===0){const i=pick(used.slice(0,-1)),ans=cnt.slice(i+1).reduce((a,b)=>a+b,0);
+    return {how:['graph5','longer'],prompt:`Each X is one ${one}. How many ${many} are <b>longer than ${label(i)} inches</b>?`,visual:vis,...numChoices(ans,[ans+cnt[i],ans+1,Math.max(1,ans-1),ans+2]),
+      hint:`Count only the X's to the right of ${label(i)}. Don't count ${label(i)} itself!`,explain:`Longer than ${label(i)}: ${cnt.slice(i+1).join(' + ')} = <b>${ans}</b>.`};}
+  if(k===1){const tot=cnt.reduce((a,b)=>a+b,0);
+    return {how:['graph5','total'],prompt:`Each X is one ${one} that Pip measured. How many ${many} did he measure in all?`,visual:vis,...numChoices(tot,[tot+1,tot-1,ticks,tot+2]),
+      hint:`Count every X on the line plot.`,explain:`${cnt.join(' + ')} = <b>${tot}</b> ${many}.`};}
+  if(k===2){const d=hi-lo,ans=fracAns(d,den);
+    const wrong=[fracAns(d+1,den),fracAns(Math.max(1,d-1),den),fracAns(posN(hi),den),fracAns(d+den,den),fracAns(d*2,den)].filter(x=>x!==ans);
+    return {how:['graph5','diff'],prompt:`What is the difference between the <b>longest</b> and the <b>shortest</b> ${one}?`,visual:vis,unit:'in',...strChoices(ans,wrong),render:fracText,
+      hint:`Find the X farthest right and the X farthest left. Subtract their lengths.`,explain:`Longest: ${label(hi)}. Shortest: ${label(lo)}. ${label(hi)} − ${label(lo)} = <b>${fracText(ans)}</b> inch${d===den?'':'es'}.`};}
+  const i=pick(used.filter(j=>cnt[j]>=2).concat(used)),c=cnt[i],tot=c*posN(i),ans=fracAns(tot,den);
+  const wrong=[fracAns(tot+den,den),fracAns(posN(i)+c*den,den),fracAns(Math.max(1,tot-1),den),fracAns(tot+1,den),fracAns(posN(i),den)].filter(x=>x!==ans);
+  return {how:['graph5','line'],prompt:`Pip puts all the ${many} that are <b>${label(i)} inches</b> long end to end. How long is the line?`,visual:vis,unit:'in',...strChoices(ans,wrong),render:fracText,
+    hint:`How many X's are at ${label(i)}? Add ${label(i)} that many times.`,explain:`There ${c===1?'is 1':`are ${c}`} at ${label(i)}. ${c} × ${label(i)} = <b>${fracText(ans)}</b> inches.`};
+}
+Object.assign(HOW,{
+  mult4:(n,small)=>{const s2=hDiff(()=>HR(3,8),v=>v===small),n2=hDiff(()=>HR(2,4),v=>v===n);
+    return {rule:'"Times as many" means multiply. Draw one box for the smaller amount, then the same box again and again for the bigger one.',
+      ex:`Sam has ${s2} cards. Ava has ${n2} times as many.`,steps:[`Sam: 1 box of ${s2}.`,`Ava: ${n2} boxes of ${s2}.`,`${n2} × ${s2} = <b>${n2*s2}</b>. (Not ${n2} + ${s2}!)`],anim:tapeSVG([{label:'Sam',n:1,val:s2},{label:'Ava',n:n2,val:s2,color:'#8fd3f7'}]),
+      mine:[`Smaller amount: <b>${small}</b>. How many boxes? <b>${n}</b>.`,`${n} × ${small} = ${BLANK}`]}},
+  mult4e:()=>{const s2=HR(3,8),n2=HR(2,4);
+    return {rule:'"Times as many" is a multiplication sentence: (how many times) × (smaller amount) = (bigger amount).',
+      ex:`"${n2*s2} is ${n2} times as many as ${s2}"`,steps:[`"${n2} times as many as ${s2}" means ${n2} groups of ${s2}.`,`So the sentence is <b>${n2} × ${s2} = ${n2*s2}</b>.`,`It is NOT ${n2} + ${s2}: adding is "more than", not "times as many".`],anim:tapeSVG([{label:'small',n:1,val:s2},{label:'big',n:n2,val:s2,color:'#8fd3f7'}]),
+      mine:[`Look for the choice that <b>multiplies</b>.`,`Check that it uses the "times" number and the smaller amount.`]}},
+  mult5:(n,big)=>{const s2=HR(3,8),n2=hDiff(()=>HR(2,4),v=>v===n),b2=s2*n2;
+    return {rule:'If the bigger amount is "N times as many", it is N equal boxes. Divide to find one box (the smaller amount).',
+      ex:`Ava has ${b2} cards. That is ${n2} times as many as Sam.`,steps:[`Ava's ${b2} is ${n2} equal boxes.`,`One box: ${b2} ÷ ${n2} = <b>${s2}</b>.`,`Sam has ${s2}. Check: ${n2} × ${s2} = ${b2}.`],anim:tapeSVG([{label:'Ava',n:n2,val:s2,color:'#8fd3f7'},{label:'Sam',n:1,val:s2}]),
+      mine:[`The bigger amount <b>${big}</b> is <b>${n}</b> equal boxes.`,`One box: ${big} ÷ ${n} = ${BLANK}`]}},
+  graph5:(kind)=>({rule:'On a line plot each X is one thing. The number under the X is its length. Read the labels carefully: they can be fractions!',
+      ex:'Ribbons: 1¼ (XX), 1½ (X), 1¾ (XXX)',steps:[`Total: 2 + 1 + 3 = 6 ribbons.`,`Longer than 1¼: only count 1½ and 1¾ → 1 + 3 = 4.`,`Longest − shortest: 1¾ − 1¼ = 2/4 = ½ inch.`],
+      mine:kind==='longer'?[`Find the number in the question on the line.`,`Count only the X's to the <b>right</b> of it.`]:kind==='total'?[`Count every X, column by column, and add.`]:kind==='diff'?[`Find the X farthest right (longest) and farthest left (shortest).`,`Subtract: longest − shortest. Same bottom numbers? Subtract the tops.`]:[`How many X's are at that length?`,`Add that length that many times (or multiply).`]})
+});
 
 /* ================= time & calendar ================= */
 const tf=(h,m)=>`${h}:${String(m).padStart(2,'0')}`;
@@ -1949,7 +2023,7 @@ const ISLANDS=[
   {id:'boss',name:'Boss Island',topic:'Defeat the Grumble Cloud',color:'#6b6f9e',lm:'boss',special:'boss',group:'ch'},
   {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:4,group:'math'},
   {id:'addsub',name:'Carry Canyon',topic:'Adding & subtracting',color:'#4fb87a',lm:'canyon',gen:genAddSub,types:5,group:'math'},
-  {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:4,group:'math'},
+  {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:6,group:'math'},
   {id:'div',name:'Sharing Shore',topic:'Division & leftovers',color:'#3fb8b5',lm:'shore',gen:genDiv,types:4,group:'math'},
   {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:8,group:'math'},
   {id:'dec',name:'Decimal Dock',topic:'Tenths & hundredths',color:'#4fbfd0',lm:'dock',gen:genDec,types:5,group:'math'},
@@ -1959,7 +2033,7 @@ const ISLANDS=[
   {id:'money',name:'Money Market',topic:'Coins, change & prices',color:'#9bd15a',lm:'money',gen:genMoney,types:5,group:'math'},
   {id:'measure',name:'Measure Mine',topic:'Units & conversions',color:'#a8b45c',lm:'ruler',gen:genMeasure,types:5,group:'math'},
   {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:6,group:'math'},
-  {id:'graph',name:'Graph Garden',topic:'Bar graphs & line plots',color:'#7ccf6b',lm:'graph',gen:genGraph,types:5,group:'math'},
+  {id:'graph',name:'Graph Garden',topic:'Bar graphs & line plots',color:'#7ccf6b',lm:'graph',gen:genGraph,types:6,group:'math'},
   {id:'time',name:'Clock Cove',topic:'Telling time',color:'#5ec3d6',lm:'clock',gen:genTime,types:5,group:'time'},
   {id:'week',name:'Week Woods',topic:'Days & calendar',color:'#4caf6e',lm:'week',gen:genWeek,types:5,group:'time'},
   {id:'season',name:'Season Summit',topic:'Months & seasons',color:'#a6c95a',lm:'season',gen:genSeason,types:6,group:'time'},
