@@ -691,7 +691,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
       <h3 class="sectitle">Challenges <small>come back every day!</small></h3>
       <div class="islands four" id="g-ch"></div>
       <h3 class="sectitle">Math Islands</h3>
-      <div class="islands" id="g-math"></div>
+      <div class="islands five" id="g-math"></div>
       <h3 class="sectitle">Time &amp; Calendar Islands</h3>
       <div class="islands three" id="g-time"></div>
       <h3 class="sectitle">Words &amp; World Islands</h3>
@@ -1145,6 +1145,153 @@ function openHow(){
     $('#howOk').onclick=()=>{stopSpeak();$('#ocard').classList.remove('wide');closeOverlay();armNudge();say($('#say'),pick(['You can do it!','Now try it your way!','Use the trick. I believe in you!']))}});
 }
 
+/* ================= Carry Canyon: adding & subtracting big numbers (4.NBT.4) ================= */
+LANDMARKS.canyon=`<path d="M40 66 L50 30 L70 26 L74 66Z" fill="#c98a4b" stroke="#8c5a2c" stroke-width="2"/><path d="M86 66 L90 24 L110 30 L120 66Z" fill="#c98a4b" stroke="#8c5a2c" stroke-width="2"/><path d="M70 34 Q80 42 90 34" fill="none" stroke="#8c5a2c" stroke-width="3"/><circle cx="58" cy="18" r="10" fill="#ff6b57"/><text x="58" y="23" font-size="15" ${TW}>+</text><circle cx="102" cy="14" r="10" fill="#2f9fe0"/><text x="102" y="19" font-size="15" ${TW}>−</text>`;
+function colSVG(a,b,op,mode='anim'){
+  const add=op==='+',res=add?a+b:a-b,L=Math.max(String(a).length,String(b).length)+(add?1:0),cw=26,W=44+L*cw;
+  const x=i=>34+(L-1-i)*cw+cw/2,dig=n=>[...String(n)].reverse().map(Number);
+  const A=dig(a),B=dig(b),R=dig(res),T=`${FONT} text-anchor="middle"`;let s='';
+  A.forEach((d,i)=>s+=`<text x="${x(i)}" y="58" ${T} font-size="24" fill="#1f3557" class="cd${i}">${d}</text>`);
+  B.forEach((d,i)=>s+=`<text x="${x(i)}" y="88" ${T} font-size="24" fill="#1f3557">${d}</text>`);
+  s+=`<text x="${x(L-1)-cw+4}" y="88" ${T} font-size="24" fill="#ff6b57">${add?'+':'−'}</text><line x1="${x(L-1)-cw}" y1="98" x2="${x(0)+cw/2}" y2="98" stroke="#1f3557" stroke-width="3" stroke-linecap="round"/>`;
+  if(mode!=='anim')return `<svg viewBox="0 0 ${W} 108" style="width:${W}px;max-width:100%" role="img" aria-label="${fmt(a)} ${add?'plus':'minus'} ${fmt(b)}">${s}</svg>`;
+  const step=.75,dl=i=>`style="animation-delay:${(.3+i*step).toFixed(2)}s"`;
+  if(add){let c=0;for(let i=0;i<R.length;i++){const sum=(A[i]||0)+(B[i]||0)+c;
+      if(i<Math.max(A.length,B.length)&&sum>=10)s+=`<text class="fadein" ${dl(i)} x="${x(i+1)}" y="26" ${T} font-size="15" fill="#ff6b57">1</text>`;
+      s+=`<text class="fadein" ${dl(i)} x="${x(i)}" y="128" ${T} font-size="24" fill="#2b8a62">${R[i]}</text>`;c=sum>=10?1:0}}
+  else{const top=A.slice(),first={};const mark=(k,i)=>{if(!(k in first))first[k]=i};
+    for(let i=0;i<A.length;i++){
+      if(top[i]<(B[i]||0)){let j=i+1;while(top[j]===0)j++;
+        for(let k=i+1;k<=j;k++){top[k]=k===j?top[j]-1:9;mark(k,i)}
+        top[i]+=10;mark(i,i)}
+      if(i<R.length)s+=`<text class="fadein" ${dl(i)} x="${x(i)}" y="128" ${T} font-size="24" fill="#2b8a62">${R[i]}</text>`}
+    for(const k in first)s+=`<g class="fadein" ${dl(first[k])}><line x1="${x(+k)-8}" y1="50" x2="${x(+k)+8}" y2="40" stroke="#ff6b57" stroke-width="2"/><text x="${x(+k)}" y="26" ${T} font-size="${top[k]>9?13:15}" fill="#ff6b57">${top[k]}</text></g>`}
+  return `<svg viewBox="0 0 ${W} 138" style="width:${W}px;max-width:100%" role="img" aria-label="Column method">${s}</svg>`;
+}
+const noCarrySum=(a,b)=>{const A=[...String(a)].reverse(),B=[...String(b)].reverse();let out='';for(let i=0;i<Math.max(A.length,B.length);i++)out=((+(A[i]||0)+ +(B[i]||0))%10)+out;return +out};
+const swapSub=(a,b)=>{const A=[...String(a)].reverse(),B=[...String(b)].reverse();let out='';for(let i=0;i<A.length;i++)out=Math.abs(+A[i]-+(B[i]||0))+out;return +out};
+const carries=(a,b)=>{let c=0,n=0;const A=[...String(a)].reverse(),B=[...String(b)].reverse();for(let i=0;i<Math.max(A.length,B.length);i++){c=(+(A[i]||0)+ +(B[i]||0)+c)>=10?1:0;n+=c}return n};
+const borrows=(a,b)=>{const A=[...String(a)].reverse(),B=[...String(b)].reverse();let n=0,br=0;for(let i=0;i<A.length;i++){const d=+A[i]-br-+(B[i]||0);br=d<0?1:0;n+=br}return n};
+function addPair(len,needC){let a,b,g=0;do{a=R(10**(len-1),10**len-1);b=R(10**(len-2),10**len-1)}while(g++<60&&carries(a,b)<needC);return [a,b]}
+function subPair(len,needB,zeros){let a,b,g=0;do{a=R(10**(len-1)*2,10**len-1);if(zeros&&coin()){const s=[...String(a)];for(let i=1;i<s.length-1;i++)if(coin())s[i]='0';a=+s.join('')}b=R(10**(len-2),a-1)}while(g++<80&&borrows(a,b)<needB);return [a,b]}
+const ADD_STORIES=[
+  [(a,b)=>`The school library has <b>${fmt(a)}</b> books. It gets <b>${fmt(b)}</b> new books. How many books does it have now?`,'+'],
+  [(a,b)=>`Pip flew <b>${fmt(a)}</b> miles in spring and <b>${fmt(b)}</b> miles in summer. How many miles did Pip fly <b>in all</b>?`,'+'],
+  [(a,b)=>`A farm picked <b>${fmt(a)}</b> apples on Monday and <b>${fmt(b)}</b> on Tuesday. How many apples <b>altogether</b>?`,'+'],
+  [(a,b)=>`A stadium has <b>${fmt(a)}</b> seats. <b>${fmt(b)}</b> seats are filled. How many seats are <b>empty</b>?`,'-'],
+  [(a,b)=>`A mountain is <b>${fmt(a)}</b> feet tall. A hill is <b>${fmt(b)}</b> feet tall. <b>How much taller</b> is the mountain?`,'-'],
+  [(a,b)=>`A balloon festival sold <b>${fmt(a)}</b> tickets. <b>${fmt(b)}</b> were sold online. How many were <b>not</b> sold online?`,'-'],
+  [(a,b)=>`Pip has saved <b>${fmt(a)}</b> coins. He spends <b>${fmt(b)}</b> coins on a castle. How many coins are <b>left</b>?`,'-']
+];
+function genAddSub(t){
+  const len=Dv(3,4,R(5,6));
+  if(t===0){const [a,b]=addPair(len,Dv(1,2,2)),ans=a+b;
+    return {how:['addsub0',a,b],prompt:`${fmt(a)} + ${fmt(b)} = ?`,visual:colSVG(a,b,'+','problem'),...numChoices(ans,[noCarrySum(a,b),ans+10,ans-100,ans+1000,ans-10]),anim:colSVG(a,b,'+'),
+      hint:`Start with the ones. If a column adds to 10 or more, carry 1 to the next column.`,explain:`Add column by column from the right and carry when you get 10 or more. ${fmt(a)} + ${fmt(b)} = <b>${fmt(ans)}</b>.`}}
+  if(t===1){const [a,b]=subPair(len,Dv(1,2,2),DIFF>1),ans=a-b;
+    return {how:['addsub1',a,b],prompt:`${fmt(a)} − ${fmt(b)} = ?`,visual:colSVG(a,b,'-','problem'),...numChoices(ans,[swapSub(a,b),ans+10,ans+100,ans-1000,ans+1000]),anim:colSVG(a,b,'-'),
+      hint:`Start with the ones. If the top digit is smaller, borrow 1 from the next place.`,explain:`Subtract column by column from the right, borrowing when the top digit is smaller. ${fmt(a)} − ${fmt(b)} = <b>${fmt(ans)}</b>. Check: ${fmt(ans)} + ${fmt(b)} = ${fmt(a)}.`}}
+  if(t===2){const [f,op]=pick(ADD_STORIES),L5=Math.min(len,5);let a,b;if(op==='+')[a,b]=addPair(L5,1);else [a,b]=subPair(L5,1,false);const ans=op==='+'?a+b:a-b;
+    return {how:['addsub2',op],prompt:f(a,b),...numChoices(ans,[op==='+'?a-b:a+b,op==='+'?noCarrySum(a,b):swapSub(a,b),ans+100,ans-10]),anim:colSVG(a,b,op),
+      hint:op==='+'?`Putting groups together means add.`:`Finding what is left or how much more means subtract.`,explain:`${op==='+'?'Put the amounts together: add.':'Take away or compare: subtract.'} ${fmt(a)} ${op==='+'?'+':'−'} ${fmt(b)} = <b>${fmt(ans)}</b>.`}}
+  if(t===3){const [a,b]=addPair(Math.min(len,5),1),c=a+b;
+    if(coin())return {how:['addsub3','+',b,c],prompt:`What number goes in the box? <b>□ + ${fmt(b)} = ${fmt(c)}</b>`,...numChoices(a,[c+b,a+10,a-100,noCarrySum(c,b)]),anim:colSVG(c,b,'-'),
+      hint:`The box is a missing part. Take the part you know away from the total.`,explain:`□ = ${fmt(c)} − ${fmt(b)} = <b>${fmt(a)}</b>. Check: ${fmt(a)} + ${fmt(b)} = ${fmt(c)}.`};
+    return {how:['addsub3','-',c,a],prompt:`What number goes in the box? <b>${fmt(c)} − □ = ${fmt(a)}</b>`,...numChoices(b,[c+a,b+10,b-100,b+1000]),anim:colSVG(c,a,'-'),
+      hint:`The box is how much was taken away. Subtract: total minus what is left.`,explain:`□ = ${fmt(c)} − ${fmt(a)} = <b>${fmt(b)}</b>. Check: ${fmt(c)} − ${fmt(b)} = ${fmt(a)}.`}}
+  const p=Dv(100,1000,pick([1000,10000])),pname={100:'hundred',1000:'thousand',10000:'ten thousand'}[p];
+  let a,b;do{a=R(p*2,p*Dv(9,9,90));b=R(p,a-p)}while(Math.round(a/p)===Math.round(b/p)||a%p===0||b%p===0);
+  const op=coin()?'+':'-',ra=Math.round(a/p)*p,rb=Math.round(b/p)*p,ans=op==='+'?ra+rb:ra-rb;
+  return {how:['addsub4',op,a,b,p],prompt:`<b>Estimate</b> by rounding each number to the nearest ${pname}: <b>${fmt(a)} ${op==='+'?'+':'−'} ${fmt(b)}</b>`,...numChoices(ans,[ans+p,ans-p,op==='+'?a+b:a-b,ans+2*p]),
+    hint:`Round ${fmt(a)} and ${fmt(b)} to the nearest ${pname} first.`,explain:`${fmt(a)} rounds to ${fmt(ra)}. ${fmt(b)} rounds to ${fmt(rb)}. ${fmt(ra)} ${op==='+'?'+':'−'} ${fmt(rb)} = <b>${fmt(ans)}</b>.`};
+}
+Object.assign(HOW,{
+  addsub0:(a,b)=>{const L=String(a).length;const [a2,b2]=hDiff(()=>{let x,y,g=0;do{x=HR(10**(L-1),10**L-1);y=HR(10**(L-2),10**L-1)}while(g++<60&&carries(x,y)<2);return [x,y]},v=>v[0]===a);const A=[...String(a)].reverse(),B=[...String(b)].reverse();
+    return {rule:'Line up the places: ones under ones. Add from the right. A column adds to 10 or more? Write the ones digit and carry the 1 to the next column.',
+      ex:`${fmt(a2)} + ${fmt(b2)}`,steps:[`Write ${fmt(a2)} on top of ${fmt(b2)}, ones under ones.`,`Ones: ${String(a2).slice(-1)} + ${String(b2).slice(-1)} = ${+String(a2).slice(-1)+ +String(b2).slice(-1)}. ${+String(a2).slice(-1)+ +String(b2).slice(-1)>=10?'That is 10 or more, so write the ones digit and carry 1.':'Write it down.'}`,`Keep going left, adding the carried 1 too. Answer: <b>${fmt(a2+b2)}</b>.`],anim:colSVG(a2,b2,'+'),
+      mine:[`Ones column: ${A[0]} + ${B[0]} = ${BLANK}`,`Tens column: ${A[1]} + ${B[1]||0} + (carry?) = ${BLANK}`,`Keep going to the left. Don't forget the carries!`]}},
+  addsub1:(a,b)=>{const L=String(a).length;const [a2,b2]=hDiff(()=>{let x,y,g=0;do{x=HR(10**(L-1)*2,10**L-1);y=HR(10**(L-2),x-1)}while(g++<80&&borrows(x,y)<1);return [x,y]},v=>v[0]===a);const A=[...String(a)].reverse(),B=[...String(b)].reverse();
+    return {rule:'Subtract from the right. Is the top digit smaller than the bottom one? Borrow 1 from the next place: the next digit goes down by 1 and your digit gets 10 more.',
+      ex:`${fmt(a2)} − ${fmt(b2)}`,steps:[`Write ${fmt(a2)} on top, ${fmt(b2)} under it, ones under ones.`,`When the top digit is too small, borrow from the left (the red numbers show the new digits).`,`Answer: <b>${fmt(a2-b2)}</b>. Check by adding: ${fmt(a2-b2)} + ${fmt(b2)} = ${fmt(a2)}.`],anim:colSVG(a2,b2,'-'),
+      mine:[`Ones column: top ${A[0]}, bottom ${B[0]}. ${+A[0]<+B[0]?'The top is smaller, so borrow first!':'You can subtract right away.'}`,`Then go left, one column at a time.`,`Check: your answer + ${fmt(b)} should equal ${fmt(a)}.`]}},
+  addsub2:(op)=>{const add=op==='+',a2=HR(120,480),b2=HR(110,390),bb=add?b2:Math.min(b2,a2-20);
+    return {rule:'Find the clue words. In all, total, altogether, now has more → add. Left, how many more, how much taller, difference, not → subtract.',
+      ex:add?`Mia has ${a2} stickers. She gets ${b2} more. How many in all?`:`A bus has ${a2} seats. ${bb} are taken. How many are left?`,
+      steps:[add?`"Gets more" and "in all" mean the groups go <b>together</b>: add.`:`"How many are left" means some are <b>taken away</b>: subtract.`,`${a2} ${add?'+':'−'} ${bb}`,`= <b>${add?a2+bb:a2-bb}</b>`],anim:colSVG(a2,bb,op),
+      mine:[`Find the clue words in your story. Add or subtract?`,`Then line up the numbers and solve column by column.`]}},
+  addsub3:(op,x,c)=>{const p1=HR(20,60),p2=HR(20,60);
+    return {rule:'A missing number? Use the opposite operation. □ + part = total → total − part. total − □ = left → total − left.',
+      ex:`□ + ${p2} = ${p1+p2}`,steps:[`The whole is ${p1+p2}. One part is ${p2}.`,`Missing part = whole − part: ${p1+p2} − ${p2} = <b>${p1}</b>.`,`Check: ${p1} + ${p2} = ${p1+p2}.`],
+      anim:`<svg viewBox="0 0 300 70" style="width:300px;max-width:100%"><rect x="10" y="10" width="280" height="22" rx="4" fill="#ffd56b" stroke="#1f3557" stroke-width="1.5"/><text x="150" y="26" text-anchor="middle" ${FONT} font-size="14" fill="#1f3557">whole: ${p1+p2}</text><rect class="grow" x="10" y="38" width="${280*p1/(p1+p2)}" height="22" rx="4" fill="#9be0bd" stroke="#1f3557" stroke-width="1.5"/><text x="${10+140*p1/(p1+p2)}" y="54" text-anchor="middle" ${FONT} font-size="14" fill="#1f3557">□</text><rect x="${10+280*p1/(p1+p2)}" y="38" width="${280*p2/(p1+p2)}" height="22" rx="4" fill="#8fd3f7" stroke="#1f3557" stroke-width="1.5"/><text x="${10+280*p1/(p1+p2)+140*p2/(p1+p2)}" y="54" text-anchor="middle" ${FONT} font-size="14" fill="#1f3557">${p2}</text></svg>`,
+      mine:op==='+'?[`Whole: <b>${fmt(c)}</b>. Known part: <b>${fmt(x)}</b>.`,`Missing part = ${fmt(c)} − ${fmt(x)} = ${BLANK}`]:[`Whole: <b>${fmt(x)}</b>. What is left: <b>${fmt(c)}</b>.`,`Taken away = ${fmt(x)} − ${fmt(c)} = ${BLANK}`]}},
+  addsub4:(op,a,b,p)=>{const pname={100:'hundred',1000:'thousand',10000:'ten thousand'}[p],a2=HR(3,8)*100+HR(10,90),b2=HR(1,4)*100+HR(10,90),ra=Math.round(a2/100)*100,rb=Math.round(b2/100)*100;
+    return {rule:'Estimating means rounding first, then doing easy math with the round numbers.',
+      ex:`Estimate ${a2} + ${b2} (nearest hundred)`,steps:[`${a2} rounds to ${ra}. ${b2} rounds to ${rb}.`,`${ra} + ${rb} = <b>${ra+rb}</b>.`,`So the real answer is about ${ra+rb}.`],
+      mine:[`Round <b>${fmt(a)}</b> to the nearest ${pname}: ${BLANK}`,`Round <b>${fmt(b)}</b> to the nearest ${pname}: ${BLANK}`,`Then ${op==='+'?'add':'subtract'} the rounded numbers.`]}}
+});
+
+/* ================= Pie Peak, part 2: subtract, mixed numbers, decompose, fraction x whole (4.NF.3-4) ================= */
+const fracText=c=>esc(c).replace(/(\d+) (\d+)\/(\d+)/g,(m,w,n,d)=>`${w}${frac(n,d)}`).replace(/(^|[^\d>])(\d+)\/(\d+)/g,(m,p,n,d)=>p+frac(n,d));
+const mixedStr=(n,d)=>{const w=Math.floor(n/d),r=n%d;return w?(r?`${w} ${r}/${d}`:`${w}`):`${r}/${d}`};
+const mixedHTML=(w,n,d)=>`${w}${frac(n,d)}`;
+function piesRow(fill,den,o={}){const per=den,whole=Math.ceil(Math.max(fill,o.total||0)/per)||1;let s='',k=0;
+  for(let p=0;p<whole;p++){const on=[];for(let i=0;i<per;i++,k++){if(k<fill)on[i]=(o.cross&&k>=fill-o.cross)?'#c7cfd9':(o.color2&&k>=o.split?'var(--ocean)':'var(--berry)')}on.delays=on.map((_,i)=>(p*per+i)*.12);
+    s+=`<svg viewBox="0 0 160 160" style="width:${o.size||96}px">${pieSVG(80,80,70,0,per,on,'#eef2f7')}${o.cross?Array.from({length:per},(_,i)=>{const kk=p*per+i;if(kk<fill-o.cross||kk>=fill)return '';const a=(i+.5)/per*2*Math.PI-Math.PI/2;return `<path class="fadein" style="animation-delay:${.6+i*.15}s" d="M${80+40*Math.cos(a)-9} ${80+40*Math.sin(a)-9} l18 18 m0 -18 l-18 18" stroke="#1f3557" stroke-width="4" stroke-linecap="round"/>`}).join(''):''}</svg>`}
+  return s}
+function barsRow(n,a,d){let s='';const W=Math.min(46,260/d);for(let g=0;g<n;g++){s+=`<svg viewBox="0 0 ${d*W+4} 34" style="width:${d*W+4}px;max-width:100%">`;for(let i=0;i<d;i++)s+=`<rect x="${2+i*W}" y="4" width="${W-2}" height="26" rx="3" fill="${i<a?['#ffd56b','#8fd3f7','#9be0bd','#ffb3c7','#c7b6ff'][g%5]:'#eef2f7'}" stroke="#1f3557" stroke-width="1.5" class="fadein" style="animation-delay:${g*.4}s"/>`;s+=`</svg>`}return `<div style="display:flex;flex-direction:column;gap:4px;align-items:center">${s}</div>`}
+function genFrac(t){
+  if(t<4)return genFracBase(t);
+  if(t===4){const den=pick(Dv([4,5,6],[5,6,8,10],[8,10,12])),a=R(3,den),b=R(1,a-1);
+    return {how:['frac4',a,b,den],prompt:`${frac(a,den)} − ${frac(b,den)} = ?`,visual:`<svg class="vis-pie" viewBox="0 0 160 160" role="img" aria-label="${a} of ${den} parts shaded">${pieSVG(80,80,72,a,den)}</svg>`,
+      ...strChoices(`${a-b}/${den}`,[`${a+b}/${den}`,`${a-b}/${den*2}`,`${a-b+1}/${den}`,`${b}/${den}`]),anim:piesRow(a,den,{cross:b,size:130}),
+      hint:`The pieces are the same size. Take away the top numbers. The bottom stays the same.`,explain:`${a} pieces take away ${b} pieces leaves ${a-b} pieces of ${den}. ${frac(a,den)} − ${frac(b,den)} = ${frac(a-b,den)}.`}}
+  if(t===5){const den=pick(Dv([3,4],[3,4,5,6,8],[4,6,8,10,12]));let w1=R(1,Dv(3,5,8)),w2=R(1,Dv(2,4,6)),n1=R(1,den-1),n2=R(1,den-1);
+    const sub=coin();if(DIFF<3){if(sub){if(n1<n2)[n1,n2]=[n2,n1];if(w1<w2)[w1,w2]=[w2,w1];if(w1===w2&&n1===n2)n1=Math.min(den-1,n1+1)}else while(n1+n2>=den){n2=R(1,den-1);n1=R(1,den-1)}}
+    let A=w1*den+n1,B=w2*den+n2;if(sub&&A<=B){[A,B]=[B,A];[w1,w2]=[w2,w1];[n1,n2]=[n2,n1]}
+    if(sub&&A===B){w1++;A+=den}
+    const ans=sub?A-B:A+B,show=mixedStr(ans,den);
+    const wrong=[sub?`${Math.abs(w1-w2)} ${Math.abs(n1-n2)||1}/${den}`:`${w1+w2} ${(n1+n2)%den||1}/${den}`,mixedStr(ans+den,den),mixedStr(Math.max(1,ans-1),den),`${sub?w1-w2:w1+w2} ${sub?Math.abs(n1-n2)||1:n1+n2}/${den*2}`,mixedStr(ans+1,den)].filter(x=>x!==show&&!/^0 /.test(x));
+    return {how:['frac5',sub?'-':'+',den],prompt:`${mixedHTML(w1,n1,den)} ${sub?'−':'+'} ${mixedHTML(w2,n2,den)} = ?`,...strChoices(show,wrong),render:fracText,anim:piesRow(ans,den,{size:70}),
+      hint:sub?`Subtract the fractions, then the whole numbers. Not enough pieces? Trade 1 whole for ${den}/${den}.`:`Add the fractions, then the whole numbers. ${den}/${den} or more? That makes 1 more whole.`,
+      explain:`Change to ${den}ths: ${A}/${den} ${sub?'−':'+'} ${B}/${den} = ${ans}/${den}. ${ans>=den?`${ans}/${den} = <b>${fracText(show)}</b>.`:''}`}}
+  if(t===6){const den=pick(Dv([3,4,5],[4,5,6,8],[6,8,10,12]));
+    if(coin()){const n=R(2,Math.min(den-1,4)),ans=Array(n).fill(`1/${den}`).join(' + ');
+      return {how:['frac6a',n,den],prompt:`Which is the same as ${frac(n,den)}?`,visual:pieVis(n,den),...strChoices(ans,[Array(n).fill(`1/${n}`).join(' + '),`1/${den} + ${n}/${den}`,`${n}/${den} + ${n}/${den}`,Array(n+1).fill(`1/${den}`).join(' + ')]),render:fracText,
+        hint:`${frac(n,den)} is ${n} pieces. Each piece is ${frac(1,den)}.`,explain:`${frac(n,den)} means ${n} pieces of size ${frac(1,den)}: ${fracText(ans)}.`}}
+    const w=R(1,Dv(2,3,4)),r=R(1,den-1),n=w*den+r,show=`${w} ${r}/${den}`;
+    return {how:['frac6b',n,den],prompt:`Write ${frac(n,den)} as a <b>mixed number</b>.`,...strChoices(show,[`${w+1} ${r}/${den}`,`${w} ${den-r}/${den}`,`${r} ${w}/${den}`,`${w} ${r}/${n}`]),render:fracText,anim:piesRow(n,den,{size:70}),
+      hint:`Every ${den} pieces make 1 whole. How many wholes? How many pieces are left?`,explain:`${n} ÷ ${den} = ${w} R ${r}. That is ${w} wholes and ${r} pieces left: <b>${fracText(show)}</b>.`}}
+  const den=pick(Dv([2,3,4],[3,4,5,6,8],[5,6,8,10,12])),a=R(1,den-1),n=R(2,Dv(4,6,9)),tot=n*a,show=tot>den&&tot%den&&DIFF===3?mixedStr(tot,den):`${tot}/${den}`;
+  const story=coin()?null:pick([[`Pip uses ${frac(a,den)} cup of flour for one batch of cookies. How much flour for <b>${n} batches</b>?`,'cups'],[`Each lap of the park is ${frac(a,den)} mile. Mia runs <b>${n} laps</b>. How far does she run?`,'miles'],[`A plant grows ${frac(a,den)} inch each week. How much does it grow in <b>${n} weeks</b>?`,'inches']]);
+  return {how:['frac7',n,a,den],prompt:story?story[0]:`${n} × ${frac(a,den)} = ?`,...strChoices(show,[`${tot}/${den*n}`,`${n+a}/${den}`,`${a}/${den*n}`,`${tot+1}/${den}`,`${a*n}/${den+n}`]),render:fracText,anim:barsRow(n,a,den),
+    hint:`Multiplying a fraction by ${n} means adding it ${n} times. Multiply the top number. The bottom stays the same.`,explain:`${n} × ${frac(a,den)} = ${Array(n).fill(frac(a,den)).join(' + ')} = ${frac(tot,den)}${show!==`${tot}/${den}`?` = ${fracText(show)}`:''}.`};
+}
+Object.assign(HOW,{
+  frac4:(a,b,den)=>{const d2=hDiff(()=>HPICK([5,6,8]),v=>v===den),a2=HR(3,d2-1),b2=HR(1,a2-1);
+    return {rule:'Same bottom numbers? Subtract the top numbers. The bottom number stays the same, because the pieces are still the same size.',
+      ex:`${a2}/${d2} − ${b2}/${d2}`,steps:[`Start with ${a2} pieces of ${d2}.`,`Take away ${b2} piece${b2>1?'s':''} (crossed out).`,`${a2-b2} pieces are left: <b>${frac(a2-b2,d2)}</b>.`],anim:piesRow(a2,d2,{cross:b2,size:120}),
+      mine:[`Top numbers: ${a} − ${b} = ${BLANK}`,`Bottom number stays: ${den}.`]}},
+  frac5:(op,den)=>{const d2=hDiff(()=>HPICK([3,4,5]),v=>v===den),sub=op==='-',w1=HR(2,3),n1=sub?HR(2,d2-1):HR(1,d2-1),w2=1,n2=sub?HR(1,n1-1):HR(1,d2-1),A=w1*d2+n1,B=w2*d2+n2,ans=sub?A-B:A+B;
+    return {rule:op==='+'?'Add the fraction parts, then the whole numbers. If the fractions make a whole or more, trade it for 1 whole.':'Subtract the fraction parts, then the whole numbers. Not enough pieces? Trade 1 whole for pieces first.',
+      ex:`${w1} ${n1}/${d2} ${sub?'−':'+'} ${w2} ${n2}/${d2}`.replace(/(\d+) (\d+)\/(\d+)/g,(m,w,n,d)=>`${w}${frac(n,d)}`),
+      steps:sub?[`Fractions: ${frac(n1,d2)} − ${frac(n2,d2)} = ${frac(n1-n2,d2)}.`,`Wholes: ${w1} − ${w2} = ${w1-w2}.`,`Answer: <b>${fracText(mixedStr(ans,d2))}</b>.`]
+        :[`Fractions: ${frac(n1,d2)} + ${frac(n2,d2)} = ${frac(n1+n2,d2)}${n1+n2>=d2?` = 1${n1+n2-d2?frac(n1+n2-d2,d2):''}`:''}.`,`Wholes: ${w1} + ${w2}${n1+n2>=d2?' + 1 (traded)':''} = ${w1+w2+(n1+n2>=d2?1:0)}.`,`Answer: <b>${fracText(mixedStr(ans,d2))}</b>.`],
+      anim:piesRow(ans,d2,{size:64}),
+      mine:[`Do the fraction parts first (bottom number ${den}).`,`Then the whole numbers.`,op==='+'?`Did the fractions make a whole? Add 1 more whole.`:`Top fraction too small? Trade 1 whole for ${den}/${den}.`]}},
+  frac6a:(n,den)=>{const d2=hDiff(()=>HPICK([4,5,6]),v=>v===den),n2=HR(2,d2-1);
+    return {rule:'A fraction is made of unit fractions. 3/5 means three pieces of 1/5: 1/5 + 1/5 + 1/5.',
+      ex:`${n2}/${d2}`,steps:[`${frac(n2,d2)} is ${n2} pieces.`,`Each piece is ${frac(1,d2)}.`,`So ${frac(n2,d2)} = ${fracText(Array(n2).fill(`1/${d2}`).join(' + '))}.`],anim:piesRow(n2,d2,{size:110}),
+      mine:[`How many pieces is ${frac(n,den)}? ${BLANK}`,`Each piece is ${frac(1,den)}. Find the choice that adds that many pieces.`]}},
+  frac6b:(n,den)=>{const d2=hDiff(()=>HPICK([3,4,5]),v=>v===den),w=HR(1,2),r=HR(1,d2-1),n2=w*d2+r;
+    return {rule:'Every time the top number has a full set of bottom-number pieces, that makes 1 whole. Divide: top ÷ bottom = wholes, remainder = pieces left.',
+      ex:`${n2}/${d2}`,steps:[`${n2} ÷ ${d2} = ${w} R ${r}.`,`${w} whole pie${w>1?'s':''} and ${r} piece${r>1?'s':''} left.`,`${frac(n2,d2)} = <b>${fracText(`${w} ${r}/${d2}`)}</b>.`],anim:piesRow(n2,d2,{size:80}),
+      mine:[`${n} ÷ ${den} = ${BLANK} R ${BLANK}`,`Wholes come first, then the leftover pieces over ${den}.`]}},
+  frac7:(n,a,den)=>{const d2=hDiff(()=>HPICK([3,4,5]),v=>v===den),a2=HR(1,d2-1),n2=hDiff(()=>HR(2,4),v=>v===n);
+    return {rule:'Whole number × fraction = add the fraction that many times. Multiply the top number; keep the bottom number.',
+      ex:`${n2} × ${a2}/${d2}`,steps:[`${n2} groups of ${frac(a2,d2)}: ${Array(n2).fill(frac(a2,d2)).join(' + ')}.`,`Top: ${n2} × ${a2} = ${n2*a2}. Bottom stays ${d2}.`,`Answer: <b>${frac(n2*a2,d2)}</b>.`],anim:barsRow(n2,a2,d2),
+      mine:[`Top: ${n} × ${a} = ${BLANK}`,`Bottom stays ${den}.`]}}
+});
+
 function placeAnim(n,pos){
   const str=String(n),L=str.length,names=['Ones','Tens','Hundreds','Thousands','Ten thousands','Hundred thousands'];let h='',d='';
   for(let i=0;i<L;i++){h+=`<b>${names[L-1-i]}</b>`;d+=`<span class="dropin${i===pos?' hl':''}" style="animation-delay:${i*.18}s">${str[i]}</span>`}
@@ -1237,7 +1384,7 @@ function genDiv(t){
     ...numChoices(ans,[needAll?q:q+1,r,q-1,q+2]),anim:divAnim(n,d),hint:`${n} ÷ ${d} has a leftover. Think about what to do with the leftover cupcakes.`,
     explain:`${n} ÷ ${d} = ${q} R ${r}. ${needAll?`The ${r} leftover cupcakes need one more box, so <b>${ans}</b> boxes.`:`Only ${q} boxes are full. The ${r} leftovers don't fill a box. Answer: <b>${ans}</b>.`}`};
 }
-function genFrac(t){
+function genFracBase(t){
   if(t===0){const den=pick(Dv([2,3,4,6,8],[3,4,5,6,8,10,12],[6,8,10,12])),num=R(1,den-1);
     return {how:['frac0'],prompt:`What fraction of the circle is shaded pink?`,visual:pieVis(num,den),...strChoices(`${num}/${den}`,[`${den-num}/${den}`,`${num}/${den-num}`,`${den}/${num}`,`${num}/${den+1}`]),
       hint:`Bottom number: all the equal parts. Top number: the shaded parts.`,explain:`There are ${den} equal parts and ${num} are shaded. So it's ${frac(num,den)}.`};}
@@ -1801,9 +1948,10 @@ const ISLANDS=[
   {id:'flash',name:'Thunder Tower',topic:'60-second fact storm',color:'#7c8fb8',lm:'storm',flash:true,group:'ch'},
   {id:'boss',name:'Boss Island',topic:'Defeat the Grumble Cloud',color:'#6b6f9e',lm:'boss',special:'boss',group:'ch'},
   {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:4,group:'math'},
+  {id:'addsub',name:'Carry Canyon',topic:'Adding & subtracting',color:'#4fb87a',lm:'canyon',gen:genAddSub,types:5,group:'math'},
   {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:4,group:'math'},
   {id:'div',name:'Sharing Shore',topic:'Division & leftovers',color:'#3fb8b5',lm:'shore',gen:genDiv,types:4,group:'math'},
-  {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:4,group:'math'},
+  {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:8,group:'math'},
   {id:'dec',name:'Decimal Dock',topic:'Tenths & hundredths',color:'#4fbfd0',lm:'dock',gen:genDec,types:5,group:'math'},
   {id:'area',name:'Fence Farm',topic:'Area & perimeter',color:'#8fcf4f',lm:'farm',gen:genArea,types:4,group:'math'},
   {id:'angle',name:'Angle Arch',topic:'Angles & protractors',color:'#6cc3a0',lm:'angle',gen:genAngle,types:5,group:'math'},
