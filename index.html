@@ -150,6 +150,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .passage{text-align:left;background:var(--pale-sun);border-radius:18px;padding:16px 20px;line-height:1.65;font-size:1.1em;max-width:64ch;width:100%;box-shadow:inset 0 0 0 3px #ffe7a3}
 .passage h4{font-family:var(--display);font-weight:400;font-size:1.35em;margin:0 0 6px}
 .passage p{margin:0;font-weight:600}
+.plines{font-weight:600;line-height:1.5}.plines .ln{display:block;padding-left:1.2em;text-indent:-1.2em}.plines .ln.gap{height:.7em}
 .card.reading .visual{order:-1}
 .card.reading .qtop{order:0}
 .homewrap{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:18px;align-items:center}
@@ -1838,17 +1839,78 @@ function genRiddle(t){
   return {prompt:`I am a two-digit number. My <b>tens digit is ${tn}</b>. My <b>ones digit is ${d} more</b> than my tens digit. What number am I?`,...numChoices(ans,[on*10+tn,tn*10+d,ans+10,tn*10+tn]),
     hint:`Find the ones digit first: ${tn} + ${d}. Then put the tens digit in front.`,explain:`Ones digit: ${tn} + ${d} = ${on}. Tens digit ${tn}, ones digit ${on}: <b>${ans}</b>.`};
 }
-const SYN=[['happy','glad'],['big','huge'],['fast','quick'],['smart','clever'],['begin','start'],['tiny','small'],['shout','yell'],['angry','mad'],['scared','afraid'],['gift','present'],['tired','sleepy'],['easy','simple'],['brave','bold'],['finish','end'],['silly','goofy']];
-const ANT=[['hot','cold'],['early','late'],['empty','full'],['ancient','modern'],['loud','quiet'],['rough','smooth'],['arrive','leave'],['shallow','deep'],['strong','weak'],['above','below'],['remember','forget'],['wide','narrow'],['messy','neat'],['float','sink'],['ask','answer']];
+const SYN=[['happy','glad'],['big','huge'],['fast','quick'],['smart','clever'],['begin','start'],['tiny','small'],['shout','yell'],['angry','mad'],['scared','afraid'],['gift','present'],['tired','sleepy'],['easy','simple'],['brave','bold'],['finish','end'],['silly','goofy'],
+  ["jump", "leap"],
+  ["rich", "wealthy"],
+  ["shut", "close"],
+  ["rock", "stone"],
+  ["center", "middle"],
+  ["cry", "weep"],
+  ["laugh", "giggle"],
+  ["wet", "damp"],
+  ["repair", "fix"],
+  ["choose", "pick"],
+  ["story", "tale"],
+  ["correct", "right"],
+  ["yummy", "delicious"],
+  ["mistake", "error"],
+  ["sick", "ill"]];
+const ANT=[['hot','cold'],['early','late'],['empty','full'],['ancient','modern'],['loud','quiet'],['rough','smooth'],['arrive','leave'],['shallow','deep'],['strong','weak'],['above','below'],['remember','forget'],['wide','narrow'],['messy','neat'],['float','sink'],['ask','answer'],
+  ["sharp", "dull"],
+  ["heavy", "light"],
+  ["buy", "sell"],
+  ["win", "lose"],
+  ["push", "pull"],
+  ["give", "take"],
+  ["dangerous", "safe"],
+  ["true", "false"],
+  ["wild", "tame"],
+  ["cheap", "expensive"],
+  ["inside", "outside"],
+  ["before", "after"],
+  ["never", "always"],
+  ["catch", "throw"],
+  ["dark", "bright"]];
 const PREF=[['unhappy','un','happy'],['unkind','un','kind'],['unfair','un','fair'],['dislike','dis','like'],['disagree','dis','agree'],['reread','re','read'],['rebuild','re','build'],['retell','re','tell'],['replay','re','play'],['preheat','pre','heat'],['preview','pre','view'],['misspell','mis','spell'],['misread','mis','read']];
 const PMEAN={un:b=>`not ${b}`,dis:b=>`not ${b}`,re:b=>`${b} again`,pre:b=>`${b} before`,mis:b=>`${b} wrongly`};
 const SUFF=[['care','ful'],['care','less'],['fear','less'],['hope','ful'],['help','ful'],['joy','ful'],['pain','less'],['cloud','less'],['use','ful'],['use','less'],['color','ful'],['thank','ful']];
 const SPELL=[['because',['becuase','becase','beacause']],['friend',['freind','frend','friand']],['believe',['beleive','belive','beleeve']],['different',['diffrent','diferent','differant']],['Wednesday',['Wensday','Wednsday','Wendesday']],
   ['February',['Febuary','Februery','Febrary']],['beautiful',['beutiful','beautifull','butiful']],['tomorrow',['tommorow','tomorow','tommorrow']],['library',['libary','librery','liberry']],['separate',['seperate','separete','seprate']],
-  ['probably',['probly','probabley','probaly']],['surprise',['suprise','surprize','serprise']],['caught',['cought','caugt','cawght']],['enough',['enuf','enogh','enouf']],['thought',['thougt','thot','thougth']]];
+  ['probably',['probly','probabley','probaly']],['surprise',['suprise','surprize','serprise']],['caught',['cought','caugt','cawght']],['enough',['enuf','enogh','enouf']],['thought',['thougt','thot','thougth']],
+  ["answer", ["anser", "answar", "ansewr"]],
+  ["calendar", ["calender", "calandar", "calindar"]],
+  ["knowledge", ["knowlege", "nowledge", "knowladge"]],
+  ["necessary", ["neccessary", "necesary", "nessesary"]],
+  ["favorite", ["favrite", "favorit", "faverite"]],
+  ["neighbor", ["nieghbor", "neighbr", "naybor"]],
+  ["science", ["sience", "scince", "scienc"]],
+  ["question", ["qestion", "queston", "questoin"]],
+  ["restaurant", ["resturant", "restaraunt", "restarant"]],
+  ["interesting", ["intresting", "interisting", "intristing"]],
+  ["island", ["iland", "islnd", "ilend"]],
+  ["height", ["hieght", "hight", "heigth"]],
+  ["minute", ["minit", "minnute", "minet"]],
+  ["through", ["thru", "throgh", "thruogh"]],
+  ["busy", ["bizzy", "buisy", "busey"]]];
 const HOMO=[['Pip has ___ balloons.','two',['to','too']],['I want to come ___!','too',['to','two']],['We are going ___ the park.','to',['too','two']],['___ backpacks are on the bus.','Their',['There',"They're"]],
   ['Put the box over ___.','there',['their',"they're"]],["___ going to love this game!","They're",['Their','There']],["___ the best!","You're",['Your']],['Is this ___ pencil?','your',["you're"]],
-  ['The dog wagged ___ tail.','its',["it's"]],["___ raining outside.","It's",['Its']],['Can you ___ the music?','hear',['here']],['Please ___ your name on the paper.','write',['right']],['I ___ the answer!','know',['no']],['Pip ate the ___ pizza.','whole',['hole']]];
+  ['The dog wagged ___ tail.','its',["it's"]],["___ raining outside.","It's",['Its']],['Can you ___ the music?','hear',['here']],['Please ___ your name on the paper.','write',['right']],['I ___ the answer!','know',['no']],['Pip ate the ___ pizza.','whole',['hole']],
+  ["The wind ___ my hat away!", "blew", ["blue"]],
+  ["The sky is bright ___ today.", "blue", ["blew"]],
+  ["I ___ a letter to Grandma.", "sent", ["cent", "scent"]],
+  ["A penny is worth one ___.", "cent", ["sent", "scent"]],
+  ["We ___ the game!", "won", ["one"]],
+  ["I have only ___ cookie left.", "one", ["won"]],
+  ["Let's ___ for the bus here.", "wait", ["weight"]],
+  ["There are seven days in a ___.", "week", ["weak"]],
+  ["After being sick, I felt tired and ___.", "weak", ["week"]],
+  ["The ___ is shining in the sky.", "sun", ["son"]],
+  ["We ___ pizza for dinner last night.", "ate", ["eight"]],
+  ["Spiders have ___ legs.", "eight", ["ate"]],
+  ["Pip ___ the ball to his friend.", "threw", ["through"]],
+  ["We walked ___ the dark forest.", "through", ["threw"]],
+  ["May I have a ___ of cake?", "piece", ["peace"]],
+  ["I can ___ a bird in the tree.", "see", ["sea"]]];
 function genWords(t){
   if(t===0){const [w,s]=pick(SYN),others=shuffle(SYN.filter(p=>p[0]!==w).map(p=>p[1])).slice(0,3);
     return {prompt:`Which word means almost the <b>same</b> as <b>"${w}"</b>?`,...strChoices(s,others),hint:`Try each word in a sentence: "I feel ${w}." Which one fits the same way?`,explain:`"${w}" and "<b>${s}</b>" are <b>synonyms</b>. They mean almost the same thing.`};}
@@ -1956,7 +2018,53 @@ const SCIENCE=[
   ['Which animal part is mostly for <b>protection</b>?','A turtle\'s shell',['A bird\'s beak','A fish\'s fins','A frog\'s tongue'],'Which one is like armor?','A <b>turtle\'s shell</b> protects it like armor.'],
   ['A river cutting through rock for millions of years can make a...','canyon',['volcano','glacier','island'],'The Grand Canyon was made this way!','Flowing water carved out a <b>canyon</b>.'],
   ['A cold spoon in hot soup becomes...','warmer',['colder','heavier','louder'],'Heat moves from hot things to cold things.','Heat flows from the hot soup into the spoon, so it gets <b>warmer</b>.'],
-  ['A flashlight turns energy stored in a battery into...','light (and some heat)',['sound only','water','wind'],'What comes out of a flashlight?','The battery\'s stored energy becomes <b>light and a little heat</b>.']
+  ['A flashlight turns energy stored in a battery into...','light (and some heat)',['sound only','water','wind'],'What comes out of a flashlight?','The battery\'s stored energy becomes <b>light and a little heat</b>.'],
+  ["A ball rolling fast has ___ energy than the same ball rolling slowly.", "more", ["less", "the same", "no"], "Faster things carry more energy.", "The <b>faster</b> something moves, the <b>more</b> motion energy it has."],
+  ["When two toy cars crash, some of their motion energy changes into...", "sound and heat", ["water", "new toy cars", "cold air"], "What do you hear when things crash?", "A crash changes motion energy into <b>sound and a little heat</b>."],
+  ["Which of these changes electrical energy into <b>sound</b>?", "A speaker", ["A battery", "A candle", "A shovel"], "Which one plays music?", "A <b>speaker</b> turns electricity into sound."],
+  ["Which of these changes electrical energy into <b>motion</b>?", "An electric fan", ["A lamp", "A toaster", "A flashlight"], "Which one has parts that spin?", "An <b>electric fan</b> uses electricity to spin its blades."],
+  ["Solar panels change sunlight into...", "electricity", ["water", "wind", "soil"], "Many California roofs have them.", "Solar panels turn sunlight into <b>electricity</b>."],
+  ["Which energy source will <b>run out</b> some day?", "Coal", ["Wind", "Sunlight", "Moving water"], "It is dug out of the ground and burned.", "<b>Coal</b> took millions of years to form, so it will run out. Wind, sunlight and moving water are renewable."],
+  ["Fossil fuels like oil and coal formed from...", "plants and animals that lived long ago", ["melted ice", "moon rocks", "old plastic"], "Think about the word \"fossil\".", "Fossil fuels formed from <b>plants and animals that lived millions of years ago</b>."],
+  ["A wind turbine uses moving air to...", "make electricity", ["make rain", "cool the Sun", "grow plants"], "It looks like a giant pinwheel.", "The wind spins the blades, and the turbine <b>makes electricity</b>."],
+  ["A material that does <b>not</b> let electricity flow easily is called an...", "insulator", ["conductor", "battery", "magnet"], "Plastic around a wire is one.", "An <b>insulator</b>, like plastic or rubber, blocks electricity. That keeps us safe."],
+  ["A wave moves a floating ball up and down, but the water itself mostly...", "stays in about the same place", ["flies into the sky", "turns into ice", "moves to another ocean"], "Watch a duck sitting on waves.", "Waves carry energy, but the water mostly <b>moves up and down in about the same place</b>."],
+  ["The distance from the top of one wave to the top of the next is the...", "wavelength", ["amplitude", "echo", "trough"], "It is the length of one wave.", "That distance is the <b>wavelength</b>."],
+  ["How tall a wave is from its middle to its crest is called its...", "amplitude", ["wavelength", "speed", "color"], "It tells how big the wave is.", "The height of a wave is its <b>amplitude</b>."],
+  ["A sound wave with a bigger amplitude makes a sound that is...", "louder", ["quieter", "slower", "colder"], "Bigger waves carry more energy.", "A bigger amplitude means a <b>louder</b> sound."],
+  ["Morse code sends messages using...", "dots and dashes", ["colors only", "smells", "pictures of animals"], "Beep, beeeep, beep.", "Morse code uses patterns of short and long signals: <b>dots and dashes</b>."],
+  ["A computer stores pictures and words as patterns of...", "0s and 1s", ["letters A and B", "smells", "tiny paintings"], "Computers use a code with only two numbers.", "Computers store everything as patterns of <b>0s and 1s</b>."],
+  ["Which is a way to send a message using <b>light</b>?", "Flashing a flashlight on and off in a pattern", ["Ringing a bell", "Writing in sand", "Clapping your hands"], "Which one can you see in the dark?", "<b>Flashing a light in a pattern</b> sends a message with light."],
+  ["A bar code at the store stores information as a pattern of...", "black and white lines", ["sounds", "smells", "colors of the rainbow"], "A scanner reads it with a red light.", "A bar code uses a pattern of <b>black and white lines</b>."],
+  ["A pencil in a glass of water looks bent. Why?", "Light bends when it passes from water into air", ["The pencil really bends", "The water is magic", "The glass is dirty"], "The pencil is fine when you take it out.", "<b>Light bends</b> when it moves between water and air, so the pencil looks broken."],
+  ["You can see yourself in a mirror because light...", "bounces off it", ["goes through it", "gets trapped in it", "turns into sound"], "Another word is \"reflects\".", "Light <b>bounces (reflects) off</b> the smooth mirror back to your eyes."],
+  ["Light enters your eye through a small black opening called the...", "pupil", ["eardrum", "eyelash", "eyebrow"], "It gets smaller in bright light.", "Light goes in through the <b>pupil</b>."],
+  ["Your senses send messages to your brain through...", "nerves", ["bones", "hair", "fingernails"], "They are like tiny wires in your body.", "<b>Nerves</b> carry messages from your senses to your brain."],
+  ["Which body part makes sense of what you see and hear?", "The brain", ["The stomach", "The lungs", "The knees"], "It is inside your head.", "Your <b>brain</b> figures out what your senses tell it."],
+  ["You touch a hot pan and pull your hand away before you even think. This fast action is a...", "reflex", ["habit", "memory", "plan"], "It happens automatically to keep you safe.", "A <b>reflex</b> is a super-fast action your body does to protect you."],
+  ["A rattlesnake can sense the heat of animals nearby using special...", "pits on its face", ["ears on its tail", "scales on its back", "teeth"], "They are between its eyes and nose.", "Rattlesnakes have heat-sensing <b>pits on their face</b> to find warm animals in the dark."],
+  ["Why do rabbits have long ears?", "To hear danger coming", ["To fly", "To dig holes", "To swim"], "Rabbits must watch out for hawks and foxes.", "Big ears help rabbits <b>hear danger coming</b>."],
+  ["A cactus has a thick, waxy stem to...", "store water", ["catch bugs", "make noise", "stay cold"], "Cactuses live in dry deserts.", "A cactus <b>stores water</b> in its thick stem for dry times."],
+  ["A cactus has sharp spines instead of flat leaves. This helps it...", "stay safe and lose less water", ["swim", "catch the wind", "grow faster in snow"], "Spines are thin and pointy.", "Spines <b>protect the cactus</b> from animals and help it <b>lose less water</b>."],
+  ["Bats find food in the dark by making sounds and listening for echoes. This is called...", "echolocation", ["photosynthesis", "hibernation", "camouflage"], "Echo + location.", "Using echoes to find things is <b>echolocation</b>."],
+  ["What does a plant's stem do?", "Carries water up and holds the plant up", ["Makes seeds", "Catches bugs", "Makes soil"], "It is like a straw and a pole.", "The stem <b>carries water up and holds the plant up</b>."],
+  ["Why do many flowers have bright colors and sweet smells?", "To attract bees and other pollinators", ["To scare animals away", "To stay warm", "To drink water"], "Who visits flowers?", "Colors and smells <b>attract pollinators</b> like bees and butterflies."],
+  ["Your skeleton helps your body by...", "supporting and protecting it", ["digesting food", "pumping blood", "seeing colors"], "Your skull protects your brain.", "Bones <b>support your body and protect</b> soft organs inside."],
+  ["Which organ pumps blood through your body?", "The heart", ["The brain", "The lungs", "The stomach"], "Put your hand on your chest.", "Your <b>heart</b> pumps blood all day and night."],
+  ["A duck's webbed feet help it...", "swim", ["climb trees", "dig holes", "see far"], "Webbed feet work like paddles.", "Webbed feet push water like paddles, so ducks <b>swim</b> well."],
+  ["In layers of rock, which layer is usually the <b>oldest</b>?", "The bottom layer", ["The top layer", "The middle layer", "They are all the same age"], "Layers pile up one on top of another.", "New layers form on top, so the <b>bottom layer is usually the oldest</b>."],
+  ["A fish fossil found high on a mountain tells us that long ago that land was...", "under water", ["on the Moon", "covered in grass", "a city"], "Where do fish live?", "Fish live in water, so that land was once <b>under water</b>."],
+  ["When a river slows down, it drops the sand and mud it was carrying. This is called...", "deposition", ["erosion", "weathering", "evaporation"], "It \"deposits\" (puts down) the sand.", "Dropping sand and mud in a new place is <b>deposition</b>."],
+  ["Plant roots growing into cracks in a rock can...", "break the rock apart", ["melt the rock", "turn the rock into water", "glue the rock together"], "Roots grow bigger and push.", "Roots push on the cracks and slowly <b>break rocks apart</b>. That is weathering."],
+  ["Water gets into a crack in a rock and freezes. What happens?", "The ice pushes the crack wider", ["The rock gets warmer", "The crack closes up", "The rock turns to gold"], "Water gets bigger when it freezes.", "Ice takes up more space than water, so it <b>pushes the crack wider</b>."],
+  ["On a world map, most earthquakes and volcanoes are found...", "along the edges of Earth's plates", ["only at the North Pole", "in every place equally", "only in the middle of the ocean"], "California is on the edge of a plate.", "Maps show most earthquakes and volcanoes <b>along the edges of Earth's plates</b>, often in long lines."],
+  ["On a map, mountains, volcanoes and earthquakes often line up in...", "long chains", ["perfect circles", "square shapes", "random single dots"], "Look at the Ring of Fire around the Pacific Ocean.", "They often form <b>long chains</b> along plate edges, like the Ring of Fire."],
+  ["Which design helps keep people safe in an earthquake?", "Buildings that can bend and sway", ["Taller chimneys", "Glass floors", "Heavy shelves high on walls"], "Stiff things crack, bendy things don't.", "<b>Buildings that can bend and sway</b> are less likely to fall down."],
+  ["Which idea helps reduce flood damage?", "Building levees and planting on hillsides", ["Cutting down all the trees", "Paving over every yard", "Building homes in riverbeds"], "Plants and walls can hold water back.", "<b>Levees</b> hold back rivers, and <b>plant roots</b> soak up water and hold soil."],
+  ["A tsunami is a giant ocean wave usually caused by...", "an earthquake under the sea", ["a strong wind", "a full moon", "a big whale"], "Something shakes the ocean floor.", "Most tsunamis are caused by <b>earthquakes under the sea</b>."],
+  ["Burning a lot of coal and oil can pollute the...", "air", ["Sun", "Moon", "stars"], "Think of smoke from a chimney.", "Burning fossil fuels can make the <b>air</b> dirty."],
+  ["A glacier is a huge, slow-moving river of...", "ice", ["lava", "sand", "mud"], "Glaciers are found in very cold places.", "A glacier is a giant, slow river of <b>ice</b>. It can carve valleys like Yosemite Valley."],
+  ["Which tool measures how strong an earthquake is?", "A seismometer", ["A thermometer", "A ruler", "A telescope"], "Seismo means \"shake\".", "A <b>seismometer</b> measures how much the ground shakes."]
 ];
 function genScience(t){const f=SCIENCE[t%SCIENCE.length];return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4]}}
 
@@ -2009,9 +2117,18 @@ const PASSAGES=[
   {t:'Saving Water',p:['During a drought, there is not enough rain, and lakes and rivers get low.','Families in California can help save water.','They can turn off the faucet while brushing their teeth.','They can also take shorter showers and fix leaky pipes.','Every drop saved helps people, plants, and animals.'],
    q:[['What is a <b>drought</b>?','A long time without enough rain',['A big storm','A kind of lake','A flood'],'Read the first sentence.','A drought is <b>a time when there is not enough rain</b>.'],
       ['Which is one way to save water?','Turn off the faucet while brushing teeth',['Take longer showers','Leave the hose on','Water the sidewalk'],'Look at the third and fourth sentences.','One way is to <b>turn off the faucet while brushing your teeth</b>.'],
-      ['What is the <b>main idea</b>?','Families can help save water in a drought',['Lakes are fun for swimming','Showers are better than baths','Pipes are made of metal'],'What do most sentences talk about?','The passage is about how <b>families can help save water during a drought</b>.']]}
+      ['What is the <b>main idea</b>?','Families can help save water in a drought',['Lakes are fun for swimming','Showers are better than baths','Pipes are made of metal'],'What do most sentences talk about?','The passage is about how <b>families can help save water during a drought</b>.']]},
+  {"t": "My First Snow", "p": ["I had never seen snow before our trip to Lake Tahoe.", "When I stepped outside, the cold air pinched my cheeks.", "I scooped up a handful of snow, and it squeaked in my mitten.", "My little brother threw a snowball at me, and I laughed so hard I fell down.", "Now I can't wait to go back next winter."], "q": [["From which <b>point of view</b> is this story told?", "First person (the narrator says \"I\")", ["Third person (the narrator says \"he\" or \"she\")", "The snow tells the story", "The brother tells the story"], "Look for the words \"I\" and \"my\".", "The narrator uses <b>I</b>, <b>me</b> and <b>my</b>, so it is told in <b>first person</b>."], ["What does \"the cold air pinched my cheeks\" mean?", "The cold made her cheeks sting", ["Someone pinched her", "Her cheeks felt hot", "A crab bit her"], "Air can't really pinch.", "It is a way of saying <b>the cold made her cheeks sting</b>."], ["How does the narrator feel at the end?", "Excited to go back", ["Bored and sad", "Scared of snow", "Angry at her brother"], "Read the last sentence.", "\"I can't wait to go back\" shows she is <b>excited to go back</b>."]]},
+  {"t": "The Lost Kitten", "p": ["Diego heard a tiny meow coming from under the porch.", "He got a flashlight and peeked into the dark.", "Two green eyes blinked back at him.", "Diego set out a dish of water and waited quietly.", "After a while, a gray kitten crept out and rubbed against his leg."], "q": [["From which <b>point of view</b> is this story told?", "Third person (the narrator says \"he\")", ["First person (the narrator says \"I\")", "The kitten tells the story", "Diego's mom tells the story"], "Does the narrator say \"I\" or \"he\"?", "The narrator tells about Diego using <b>he</b> and <b>him</b>. That is <b>third person</b>."], ["Whose green eyes blinked at Diego?", "The kitten's", ["A dog's", "His sister's", "An owl's"], "What came out from under the porch?", "The eyes belonged to <b>the kitten</b> hiding under the porch."], ["Which word best describes Diego?", "patient", ["rude", "lazy", "noisy"], "He \"waited quietly\".", "Diego waited quietly until the kitten felt safe. He was <b>patient</b>."]]},
+  {"t": "Frogs and Toads", "p": ["Frogs and toads are both amphibians.", "Both lay eggs in water and start life as tadpoles.", "However, frogs have smooth, wet skin, while toads have dry, bumpy skin.", "Frogs have long legs for jumping, but toads have shorter legs for hopping and walking.", "Frogs usually live near water, while toads can live in drier places."], "q": [["How is this passage <b>organized</b>?", "It compares and contrasts two animals", ["It tells events in time order", "It tells a problem and its solution", "It tells a made-up story"], "Look for words like \"both\", \"however\" and \"while\".", "Words like \"both\", \"however\" and \"while\" show it <b>compares and contrasts</b> frogs and toads."], ["How are frogs and toads <b>alike</b>?", "Both start life as tadpoles", ["Both have dry, bumpy skin", "Both have very long legs", "Both live only in deserts"], "Find the word \"Both\".", "\"Both lay eggs in water and <b>start life as tadpoles</b>.\""], ["Which animal has <b>dry, bumpy</b> skin?", "A toad", ["A frog", "A tadpole", "A fish"], "Read the third sentence.", "<b>Toads</b> have dry, bumpy skin. Frogs have smooth, wet skin."]]},
+  {"t": "Why Leaves Change Color", "p": ["In the fall, days get shorter and there is less sunlight.", "Because of this, trees stop making chlorophyll, the green stuff that helps leaves make food.", "As the green fades, yellow and orange colors that were hiding in the leaf start to show.", "Some trees also make new red colors.", "Then the leaves dry up and fall to the ground."], "q": [["How is this passage <b>organized</b>?", "It explains causes and effects", ["It compares two kinds of trees", "It is a poem", "It tells a story about a girl"], "Look for the words \"Because of this\".", "\"Because of this\" shows a <b>cause and its effect</b>."], ["What <b>causes</b> trees to stop making chlorophyll?", "Shorter days with less sunlight", ["Heavy rain", "Hungry squirrels", "Snow on the branches"], "Read the first two sentences.", "<b>Shorter days with less sunlight</b> cause trees to stop making chlorophyll."], ["What is <b>chlorophyll</b>?", "The green stuff that helps leaves make food", ["A kind of tree", "A red color", "A fall holiday"], "The passage tells you right after the word.", "Chlorophyll is <b>the green stuff that helps leaves make food</b>."]]},
+  {"t": "Trash on the Beach", "p": ["Every year, lots of plastic trash washes up on California beaches.", "Birds, turtles, and seals can get tangled in it or think it is food.", "To help, many towns hold beach clean-up days.", "Volunteers pick up bottles, bags, and straws.", "California also made a law to stop stores from giving out thin plastic bags."], "q": [["How is this passage <b>organized</b>?", "It tells a problem and solutions", ["It compares two beaches", "It tells steps of a recipe", "It is a poem about the sea"], "First it tells what is wrong, then how people help.", "It tells a <b>problem</b> (plastic trash) and <b>solutions</b> (clean-ups and a law)."], ["What is the <b>problem</b>?", "Plastic trash hurts ocean animals", ["Beaches are too sunny", "There are too many volunteers", "Seals eat too many fish"], "Read the first two sentences.", "<b>Plastic trash hurts birds, turtles and seals.</b>"], ["Which is one <b>solution</b>?", "Beach clean-up days", ["Throwing bottles in the sand", "Feeding plastic to birds", "Using more straws"], "Read the third sentence.", "Towns hold <b>beach clean-up days</b> to pick up trash."]]},
+  {"t": "Tide Pool (a poem)", "lines": true, "p": ["Between the rocks, a tiny pool", "stays bright and still and clear and cool.", "A crab walks sideways, quick and shy;", "a sea star waits as waves roll by.", "", "When ocean water rushes in,", "my pool is gone, the waves all win.", "But when the tide goes out, I'll see", "my pool come back again for me."], "q": [["A <b>stanza</b> is a group of lines in a poem. How many stanzas does this poem have?", "2", ["1", "4", "8"], "Look for the empty space between groups of lines.", "The poem has <b>2</b> stanzas, with four lines each."], ["Which word <b>rhymes</b> with \"shy\"?", "by", ["crab", "pool", "quick"], "Rhyming words end with the same sound.", "\"Shy\" and \"<b>by</b>\" rhyme."], ["How is a poem different from a story?", "It is written in lines and often rhymes", ["It never has any words", "It always has chapters", "It has a table of contents"], "Look at how this poem looks on the page.", "Poems are written in <b>lines and stanzas</b>, often with <b>rhyme and rhythm</b>."]]},
+  {"t": "The Missing Lunch (a play)", "lines": true, "p": ["<b>Characters:</b> MAX, his sister RUBY, and DAD", "<b>MAX:</b> (looking in his backpack) My lunch is gone!", "<b>RUBY:</b> Did you leave it on the kitchen counter again?", "<b>DAD:</b> (holding up a paper bag) Is this what you're looking for?", "<b>MAX:</b> (laughing) Thanks, Dad! I would forget my head if it weren't attached!"], "q": [["What kind of writing is this?", "A play (drama)", ["A poem", "A letter", "A news report"], "Look for character names followed by what they say.", "It lists <b>characters</b> and their lines, so it is a <b>play</b>."], ["The words in parentheses, like \"(laughing)\", are called...", "stage directions", ["dialogue", "the title", "rhymes"], "They tell the actors what to do.", "<b>Stage directions</b> tell actors how to move or act."], ["What does Max mean by \"I would forget my head if it weren't attached\"?", "He forgets things a lot", ["His head is loose", "He has a headache", "He lost his hat"], "It is an expression, not real.", "Max is joking that <b>he forgets things a lot</b>."]]},
+  {"t": "How to Plant a Seed", "p": ["First, fill a small pot with soil.", "Next, push a seed into the soil, about as deep as your fingertip.", "Then, water the soil until it is damp, but not soggy.", "Put the pot in a sunny window.", "In about a week, a tiny green sprout should pop up!"], "q": [["How is this passage <b>organized</b>?", "Steps in order (sequence)", ["Compare and contrast", "Problem and solution", "Questions and answers"], "Look for \"First\", \"Next\" and \"Then\".", "Words like First, Next and Then show <b>steps in order</b>."], ["What should you do <b>right after</b> pushing in the seed?", "Water the soil", ["Fill the pot with soil", "Wait for a sprout", "Pick the flowers"], "Look for the word \"Then\".", "\"<b>Then</b>, water the soil.\""], ["In this passage, what does <b>damp</b> mean?", "A little wet", ["Very dry", "Frozen", "Full of rocks"], "It is wet, but not soggy.", "Damp means <b>a little wet</b>."]]},
+  {"t": "Two Views of the Gold Rush", "p": ["A miner wrote in his diary in 1849: \"My back aches and my hands are blistered, but today I found a gold nugget the size of a bean!\"", "A history book says: \"Most miners who came to California during the Gold Rush did not get rich. Many worked very hard for very little gold.\""], "q": [["Which one is a <b>firsthand account</b>?", "The miner's diary", ["The history book", "Both of them", "Neither of them"], "A firsthand account is written by someone who was there.", "The miner was really there, so his <b>diary</b> is a firsthand account. The history book is secondhand."], ["What does the history book tell us that the diary does <b>not</b>?", "Most miners did not get rich", ["The miner's hands were blistered", "The miner found a nugget", "The miner's back hurt"], "Which one talks about many miners?", "The history book tells about many miners: <b>most did not get rich</b>."], ["How did the miner probably feel when he wrote in his diary?", "Tired but excited", ["Bored", "Angry at his friends", "Afraid of the ocean"], "His back aches, but he found gold!", "He was sore, but he found gold. He felt <b>tired but excited</b>."]]}
 ];
-function passageHTML(P){return `<div class="passage"><h4>${P.t}</h4><p>${P.p.join(' ')}</p></div>`}
+function passageHTML(P){return `<div class="passage${P.lines?' lines':''}"><h4>${P.t}</h4>${P.lines?`<div class="plines">${P.p.map(l=>l?`<span class="ln">${l}</span>`:'<span class="ln gap"></span>').join('')}</div>`:`<p>${P.p.join(' ')}</p>`}</div>`}
 function genReading(t){const P=PASSAGES[Math.floor(t/3)%PASSAGES.length],Q=P.q[t%3];
   return {prompt:Q[0],visual:passageHTML(P),...strChoices(Q[1],shuffle([...Q[2]])),hint:Q[3],explain:Q[4],speak:`${P.t}. ${P.p.join(' ')} Question: ${Q[0]}`,wide:true};}
 function readingRound(isl){const ps=shuffle([...Array(PASSAGES.length).keys()]).slice(0,2);return ps.flatMap(p=>[0,1,2].map(k=>makeQ(isl,p*3+k,R(1,2e9))))}
