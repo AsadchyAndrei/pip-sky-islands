@@ -269,6 +269,18 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 @keyframes enter{from{transform:translateY(16px) scale(.97);opacity:.3}to{transform:none;opacity:1}}
 .qtop{display:flex;gap:12px;align-items:flex-start}
 .prompt{flex:1;min-width:0;font-size:clamp(1.25em,3.2vw,1.6em);font-weight:800;line-height:1.3;text-wrap:balance}
+.howbtn{flex:none;height:48px;border-radius:24px;border:3px solid #e09a14;background:var(--pale-sun);cursor:pointer;display:flex;align-items:center;gap:4px;padding:0 12px 0 8px;box-shadow:0 4px 0 #e09a14;font-weight:800;font-size:16px;color:var(--ink)}
+.howbtn svg{width:24px;height:24px}.howbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #e09a14}
+.howbox{display:flex;flex-direction:column;gap:12px;text-align:left}
+.howhead{display:flex;align-items:center;gap:12px}.ocard .howhead .pipbob{width:72px;flex:none}.howhead h3{margin:0;font-family:var(--display);font-weight:400;font-size:26px}.howhead .speak{margin-left:auto}
+.hrule{margin:0;font-weight:800;font-size:1.08em;color:var(--ink);background:var(--pale-sun);border-radius:14px;padding:10px 14px}
+.hex,.hmine{border-radius:16px;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.hex{background:var(--pale-sky)}.hmine{background:var(--pale-leaf);border:3px dashed #8fd16a}
+.hmine p,.hexq{margin:0;font-weight:700;line-height:1.45}.hexq{font-size:1.1em;color:var(--ink)}
+.htag{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+.hblank{display:inline-block;min-width:34px;text-align:center;border:2px dashed var(--ocean);border-radius:8px;padding:0 6px;color:var(--ocean);background:#fff}
+.dtable{font-family:var(--display);font-size:30px;display:flex;flex-direction:column;align-items:center;gap:2px}.dtable span{display:inline-block;width:26px;text-align:center}.dtable .same{color:#9aa6b6}.dtable .diff{background:#ffd56b;border-radius:6px}
+@media (max-width:520px){.ocard .howhead .pipbob{width:52px}.howhead h3{font-size:22px}.howbtn span{display:none}.howbtn{padding:0 10px;width:48px;justify-content:center}}
 .speak{flex:none;width:48px;height:48px;border-radius:50%;border:3px solid var(--ocean);background:var(--pale-sky);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 var(--ocean)}
 .speak svg{width:24px;height:24px}
 .speak.on{background:var(--ocean)}.speak.on svg path{fill:#fff}
@@ -704,6 +716,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
         </aside>
         <div class="card" id="card">
           <div class="qtop"><div class="prompt" id="prompt"></div>
+            <button class="howbtn" id="howBtn" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a6.5 6.5 0 0 0-3.8 11.8c.6.5 1 1.2 1 2V17h5.6v-.7c0-.8.4-1.5 1-2A6.5 6.5 0 0 0 12 2.5z" fill="#ffd56b" stroke="#1f3557" stroke-width="1.6"/><path d="M9.5 19.5h5M10.5 22h3" stroke="#1f3557" stroke-width="1.6" stroke-linecap="round"/></svg><span>How?</span></button>
             <button class="speak" id="speakBtn" type="button" aria-label="Read the question aloud" hidden><svg viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#2f9fe0"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#2f9fe0" stroke-width="2" stroke-linecap="round"/></svg></button></div>
           <div class="visual" id="visual"></div>
           <div class="choices" id="choices"></div>
@@ -1003,6 +1016,132 @@ function multAnim(side,parts,factor){
   s+=`<text x="22" y="66" text-anchor="middle" ${FONT} font-size="18" fill="#ff6b57">${factor}</text><text class="fadein" style="animation-delay:${delay}s" x="${(40+x)/2}" y="120" text-anchor="middle" ${FONT} font-size="22" fill="#1f3557">${parts.map(p=>fmt(p*factor)).join(' + ')} = ${fmt(tot*factor)}</text>`;
   return `<svg viewBox="0 0 ${Math.max(340,x+20)} 132" style="width:${Math.max(340,x+20)}px" role="img" aria-label="Area model">${s}</svg>`;
 }
+/* ================= "Show me how": the method on a different example, never the answer ================= */
+const HR=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const HPICK=a=>a[Math.floor(Math.random()*a.length)];
+const hParts=a=>{const s=String(a);return [...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0)};
+const BLANK='<span class="hblank">?</span>';
+function hDiff(f,bad){let v,g=0;do{v=f()}while(g++<40&&bad(v));return v}
+function jumpLine(step,k,total){const W=Math.min(520,60+k*56),u=(W-40)/total;let s=`<line x1="20" y1="60" x2="${W-20}" y2="60" stroke="#1f3557" stroke-width="3"/>`;
+  for(let i=0;i<=k;i++){const x=20+i*step*u;s+=`<line x1="${x}" y1="54" x2="${x}" y2="66" stroke="#1f3557" stroke-width="3"/><text x="${x}" y="86" text-anchor="middle" ${FONT} font-size="15" fill="#1f3557">${i*step}</text>`;
+    if(i<k)s+=`<path class="fadein" style="animation-delay:${i*.35}s" d="M${x} 52 Q${x+step*u/2} ${18} ${x+step*u} 52" fill="none" stroke="#ff6b57" stroke-width="3"/><text class="fadein" style="animation-delay:${i*.35}s" x="${x+step*u/2}" y="28" text-anchor="middle" ${FONT} font-size="13" fill="#ff6b57">${i+1}</text>`}
+  return `<svg viewBox="0 0 ${W} 96" style="width:${W}px" role="img" aria-label="Number line with jumps">${s}</svg>`}
+function boxesPic(n,d){const full=Math.floor(n/d),r=n%d,boxes=full+(r?1:0),bw=Math.max(14*d+10,46);let s='';
+  for(let b=0;b<boxes;b++){const x=6+b*(bw+8),inBox=b<full?d:r;s+=`<rect x="${x}" y="10" width="${bw}" height="40" rx="8" fill="${b<full?'#fff5d6':'#ffe4ee'}" stroke="${b<full?'#e09a14':'#e2558f'}" stroke-width="2" ${b<full?'':'stroke-dasharray="5 4"'}/>`;
+    for(let k=0;k<inBox;k++)s+=`<circle class="dropin" style="animation-delay:${(b*d+k)*.06}s" cx="${x+12+k*14}" cy="30" r="5.5" fill="#ff6b57"/>`;
+    s+=`<text x="${x+bw/2}" y="68" text-anchor="middle" ${FONT} font-size="12" fill="${b<full?'#a86b00':'#c9473a'}">${b<full?'full':'not full'}</text>`}
+  const W=6+boxes*(bw+8);return `<svg viewBox="0 0 ${W} 76" style="width:${Math.min(560,W)}px" role="img" aria-label="Boxes">${s}</svg>`}
+function tilesPic(a,c,z){const lab=fmt(z),w=z>=1000?46:z>=100?38:30;let s='';
+  for(let i=0;i<a;i++)for(let j=0;j<c;j++)s+=`<g class="fadein" style="animation-delay:${(i*c+j)*.12}s"><rect x="${6+j*(w+6)}" y="${6+i*30}" width="${w}" height="24" rx="5" fill="${['#ffd56b','#8fd3f7','#9be0bd','#ffb3c7'][i%4]}" stroke="#1f3557" stroke-width="1.5"/><text x="${6+j*(w+6)+w/2}" y="${23+i*30}" text-anchor="middle" ${FONT} font-size="12" fill="#1f3557">${lab}</text></g>`;
+  const W=12+c*(w+6);return `<svg viewBox="0 0 ${W} ${12+a*30}" style="width:${W}px" role="img" aria-label="${a} rows of ${c} tiles">${s}</svg>`}
+function roundLine(n,down,up){const W=420,x=v=>30+(v-down)/(up-down)*(W-60),mid=(down+up)/2;
+  return `<svg viewBox="0 0 ${W} 90" style="width:${W}px" role="img" aria-label="Number line"><line x1="30" y1="50" x2="${W-30}" y2="50" stroke="#1f3557" stroke-width="3"/>
+  ${[down,mid,up].map((v,i)=>`<line x1="${x(v)}" y1="${i===1?42:38}" x2="${x(v)}" y2="${i===1?58:62}" stroke="${i===1?'#8a99ad':'#1f3557'}" stroke-width="3"/><text x="${x(v)}" y="82" text-anchor="middle" ${FONT} font-size="${i===1?12:15}" fill="${i===1?'#8a99ad':'#1f3557'}">${i===1?'halfway':fmt(v)}</text>`).join('')}
+  <circle class="dropin" cx="${x(n)}" cy="50" r="8" fill="#ff6b57"/><text x="${x(n)}" y="28" text-anchor="middle" ${FONT} font-size="15" fill="#ff6b57">${fmt(n)}</text>
+  <path class="fadein" style="animation-delay:.6s" d="M${x(n)} 20 Q${(x(n)+x(n-down>=(up-down)/2?up:down))/2} 2 ${x(n-down>=(up-down)/2?up:down)} 34" fill="none" stroke="#38b98a" stroke-width="3" marker-end="url(#harr)"/>
+  <defs><marker id="harr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#38b98a"/></marker></defs></svg>`}
+function digitTable(nums){const L=Math.max(...nums.map(n=>String(n).length));let first=-1;
+  for(let i=0;i<L&&first<0;i++){const ds=nums.map(n=>String(n).padStart(L,' ')[i]);if(new Set(ds).size>1)first=i}
+  return `<div class="dtable">${nums.map(n=>`<div>${[...String(n).padStart(L,' ')].map((c,i)=>`<span class="${i<first?'same':i===first?'diff':''}">${c.trim()||'&nbsp;'}</span>`).join('')}</div>`).join('')}</div>`}
+const HOW={
+  mult0:(a,b)=>{const a2=hDiff(()=>HR(String(a).length>=4?1100:String(a).length===3?110:12,String(a).length>=4?3999:String(a).length===3?399:49),v=>v===a||v%10===0),b2=hDiff(()=>HR(2,5),v=>v===b),p=hParts(a2);
+    return {rule:'Break the big number into place-value parts. Multiply each part. Then add.',
+      ex:`${fmt(a2)} × ${b2}`,steps:[`Break ${fmt(a2)} into ${p.map(fmt).join(' + ')}.`,p.map(x=>`${fmt(x)} × ${b2} = ${fmt(x*b2)}`).join(', ')+'.',`Add them: ${p.map(x=>fmt(x*b2)).join(' + ')} = <b>${fmt(a2*b2)}</b>.`],anim:multAnim(a2,p,b2),
+      mine:[`Break <b>${fmt(a)}</b> into ${hParts(a).map(fmt).join(' + ')}.`,hParts(a).map(x=>`${fmt(x)} × ${b} = ${BLANK}`).join(' &nbsp; '),`Add your answers together.`]}},
+  mult1:(a,b)=>{const a2=hDiff(()=>HR(12,19),v=>v===a),b2=hDiff(()=>HR(12,19),v=>v===b||v%10===0||v===a2),t=b2-b2%10,o=b2%10;
+    return {rule:'Split one number into tens and ones. Multiply both parts. Then add.',
+      ex:`${a2} × ${b2}`,steps:[`Split ${b2} into ${t} + ${o}.`,`${a2} × ${t} = ${fmt(a2*t)} and ${a2} × ${o} = ${a2*o}.`,`Add: ${fmt(a2*t)} + ${a2*o} = <b>${fmt(a2*b2)}</b>.`],anim:multAnim(b2,[t,o],a2),
+      mine:[`Split <b>${b}</b> into ${b-b%10} + ${b%10}.`,`${a} × ${b-b%10} = ${BLANK} &nbsp; ${a} × ${b%10} = ${BLANK}`,`Add your two answers.`]}},
+  mult2:(a,b)=>{const a2=hDiff(()=>HR(12,25),v=>v===a),b2=hDiff(()=>HR(3,4),v=>v===b),p=hParts(a2);
+    return {rule:'Equal groups means multiply: (number of groups) × (how many in each group).',
+      ex:`${b2} bags with ${a2} marbles in each bag. How many marbles?`,steps:[`There are <b>${b2} groups</b> (bags) with <b>${a2} in each</b>.`,`So multiply: ${a2} × ${b2}.`,`${p.map(x=>`${x} × ${b2} = ${x*b2}`).join(', ')}. Add: <b>${a2*b2}</b> marbles.`],anim:multAnim(a2,p,b2),
+      mine:[`Find the number of <b>groups</b> and how many are in <b>each</b> group.`,`Write it as ${BLANK} × ${BLANK}, then break the big number apart like in the example.`]}},
+  mult3:(a,c,z)=>{const a2=hDiff(()=>HR(2,4),v=>v===a),c2=hDiff(()=>HR(2,4),v=>v===c),zs=String(z).length-1,name={10:'tens',100:'hundreds',1000:'thousands'}[z];
+    return {rule:'Multiply the small numbers first. Then put the zeros back on.',
+      ex:`${a2} × ${fmt(c2*z)}`,steps:[`${fmt(c2*z)} is ${c2} ${name}.`,`${a2} × ${c2} = ${a2*c2}, so it's ${a2*c2} ${name}.`,`Write ${zs} zero${zs>1?'s':''} after ${a2*c2}: <b>${fmt(a2*c2*z)}</b>.`],anim:tilesPic(a2,c2,z),
+      mine:[`First: ${a} × ${c} = ${BLANK}`,`Then write <b>${zs}</b> zero${zs>1?'s':''} at the end.`]}},
+  div0:(n,d)=>{const d2=hDiff(()=>HR(2,5),v=>v===d),q2=HR(11,Math.floor(60/d2)),n2=q2*d2,t=Math.floor(n2/(d2*10))*d2*10,rest=n2-t;
+    const parts=[];let r=n;for(const p of [1000,100,10]){const m=Math.floor(r/(d*p))*d*p;if(m>0&&r-m>=0){parts.push(m);r-=m}}if(r>0)parts.push(r);
+    return {rule:'Split the number into friendly parts that are easy to share. Share each part. Then add.',
+      ex:`${n2} ÷ ${d2}`,steps:[`Split ${n2} into ${t} + ${rest}. ${d2} shares both easily.`,`${t} ÷ ${d2} = ${t/d2} and ${rest} ÷ ${d2} = ${rest/d2}.`,`Add: ${t/d2} + ${rest/d2} = <b>${q2}</b>. Check: ${d2} × ${q2} = ${n2}.`],anim:divAnim(n2,d2),
+      mine:parts.length>1?[`Try splitting <b>${fmt(n)}</b> into ${parts.map(fmt).join(' + ')}.`,parts.map(x=>`${fmt(x)} ÷ ${d} = ${BLANK}`).join(' &nbsp; '),`Add your answers. Check by multiplying by ${d}.`]:[`Ask: ${d} × ${BLANK} = ${fmt(n)}?`]}},
+  div1:(n,d)=>{const d2=hDiff(()=>HR(3,5),v=>v===d),q2=HR(2,4),r2=HR(1,d2-1),n2=q2*d2+r2;
+    return {rule:'Count by the number of friends until the next jump would be too big. The jumps are how many each friend gets. What is left is the leftover (R).',
+      ex:`${n2} stickers shared by ${d2} friends`,steps:[`Count by ${d2}s: ${Array.from({length:q2+1},(_,i)=>(i+1)*d2).map((v,i)=>i<q2?v:`<s>${v}</s> (too many!)`).join(', ')}.`,`${q2} jumps reach ${q2*d2}. So each friend gets <b>${q2}</b>.`,`${n2} − ${q2*d2} = <b>${r2}</b> left over. Answer: ${q2} R ${r2}.`],anim:divAnim(n2,d2),
+      mine:[`Count by <b>${d}s</b>: ${d}, ${2*d}, ${3*d}, … Stop before you go past <b>${n}</b>.`,`How many jumps? That's how many each friend gets.`,`${n} minus the last number you said is the leftover (R).`]}},
+  div2:(P,b)=>{const b2=hDiff(()=>HR(3,5),v=>v===b),k=HR(4,7);
+    return {rule:'A missing factor is a division puzzle. Count by the number you know until you reach the total. Count the jumps.',
+      ex:`${BLANK} × ${b2} = ${k*b2}`,steps:[`Count by ${b2}s: ${Array.from({length:k},(_,i)=>(i+1)*b2).join(', ')}.`,`That took <b>${k}</b> jumps, so ${k} × ${b2} = ${k*b2}.`,`Same as ${k*b2} ÷ ${b2} = <b>${k}</b>.`],anim:jumpLine(b2,k,k*b2),
+      mine:[`Count by <b>${b}s</b> until you reach <b>${P}</b>.`,`Count your jumps. That number goes in the box.`]}},
+  div3:(n,d)=>{const d2=hDiff(()=>HR(3,4),v=>v===d),q2=HR(2,4),r2=HR(1,d2-1),n2=q2*d2+r2;
+    return {rule:'Divide and find the leftover. Then read the question: does it ask for FULL boxes, or boxes for ALL of them?',
+      ex:`${n2} cupcakes, boxes hold ${d2}`,steps:[`${n2} ÷ ${d2} = ${q2} R ${r2}: ${q2} full boxes and ${r2} cupcake${r2>1?'s':''} left.`,`"How many boxes are filled <b>all the way</b>?" Only the full ones: <b>${q2}</b>.`,`"How many boxes for <b>all</b> the cupcakes?" The leftovers need a box too: ${q2} + 1 = <b>${q2+1}</b>.`],anim:boxesPic(n2,d2),
+      mine:[`Find ${n} ÷ ${d}. How many full boxes? Any left over?`,`Read the question again: <b>full boxes</b>, or boxes for <b>all</b>?`]}},
+  place0:(n,pos)=>{const L=String(n).length,n2=hDiff(()=>HR(10**(L-1),10**L-1),v=>v===n),p2=hDiff(()=>HR(0,L-2),v=>v===pos||String(n2)[v]==='0'),dg=+String(n2)[p2],pl=L-1-p2;
+    return {rule:'Find which place the digit sits in. Its value is the digit × that place.',
+      ex:`The ${dg} in ${fmt(n2)}`,steps:[`Name the places from the right: ones, tens, hundreds, thousands…`,`The ${dg} is in the <b>${PLACE[pl]}</b> place.`,`So it's worth ${dg} × ${fmt(10**pl)} = <b>${fmt(dg*10**pl)}</b>.`],anim:placeAnim(n2,p2),
+      mine:[`Start at the right: ones, tens, hundreds… Which place is the yellow digit in?`,`Then multiply: digit × that place.`]}},
+  place1:(n,p)=>{const name={10:'ten',100:'hundred',1000:'thousand',10000:'ten thousand'}[p],n2=hDiff(()=>HR(p*10,p*100-1),v=>v===n||v%p===0),down=Math.floor(n2/p)*p,up=down+p,ans=n2-down>=p/2?up:down;
+    return {rule:`Find the two ${name}s your number is between. Is it past halfway? 5 or more rounds up.`,
+      ex:`Round ${fmt(n2)} to the nearest ${name}`,steps:[`${fmt(n2)} is between <b>${fmt(down)}</b> and <b>${fmt(up)}</b>.`,`Look at the digit right after the ${name}s place. It decides: 5 or more goes up, 4 or less goes down.`,`${fmt(n2)} is ${ans===up?'halfway or more':'less than halfway'}, so it rounds to <b>${fmt(ans)}</b>.`],anim:roundLine(n2,down,up),
+      mine:[`Between which two ${name}s is <b>${fmt(n)}</b>? ${BLANK} and ${BLANK}`,`Look at the digit to the right of the ${name}s place. 5 or more: round up.`]}},
+  place2:()=>{const n2=HPICK([3045,6208,40371,7059]),t=hParts(n2);
+    return {rule:'Each part gives one digit. A place with nothing in it gets a 0.',
+      ex:t.map(fmt).join(' + '),steps:[`Make a place chart and put each part in its place.`,`No part for a place? Write <b>0</b> there.`,`Read the digits: <b>${fmt(n2)}</b>.`],anim:placeAnim(n2,-1),
+      mine:[`Write one digit for each place, from the biggest place to the ones.`,`Don't forget the zeros for the empty places!`]}},
+  place3:()=>{const base=HPICK([4521,63842,7305]),s=[...String(base)],a=[...s];[a[1],a[2]]=[a[2],a[1]];const b=[...s];[b[2],b[3]]=[b[3],b[2]];const nums=[base,+a.join(''),+b.join('')].filter((v,i,arr)=>arr.indexOf(v)===i);
+    return {rule:'Line the numbers up. Compare digits from the left. The first place where they are different decides.',
+      ex:`Which is greatest: ${nums.map(fmt).join(', ')}?`,steps:[`Line them up so the places match.`,`Gray digits are the same. The <b>first</b> place that is different (yellow) decides.`,`The biggest digit there wins: <b>${fmt(Math.max(...nums))}</b>.`],anim:digitTable(nums),
+      mine:[`Line up the numbers. Go from left to right.`,`Stop at the first place where the digits are different. Biggest digit wins.`]}},
+  frac0:()=>{const den=HPICK([5,6,8]),num=HR(1,den-1);
+    return {rule:'Bottom number: how many equal parts in all. Top number: how many are shaded.',
+      ex:'What fraction is shaded?',steps:[`Count all the equal parts: <b>${den}</b>. That's the bottom number.`,`Count the shaded parts: <b>${num}</b>. That's the top number.`,`So it's ${frac(num,den)}.`],anim:`<svg viewBox="0 0 160 160" style="width:130px">${pieSVG(80,80,70,num,den)}</svg>`,
+      mine:[`Count <b>all</b> the parts of the circle. That's the bottom.`,`Count the <b>pink</b> parts. That's the top.`]}},
+  frac1:(a,b)=>{const [a2,b2]=hDiff(()=>HPICK([[1,2],[1,3],[1,4],[2,3]]),v=>v[0]===a&&v[1]===b),k=2;
+    return {rule:'Multiply the top AND the bottom by the same number. The amount stays the same.',
+      ex:`${a2}/${b2} = ?`,steps:[`Pick a number, like ${k}.`,`Top: ${a2} × ${k} = ${a2*k}. Bottom: ${b2} × ${k} = ${b2*k}.`,`So ${frac(a2,b2)} = ${frac(a2*k,b2*k)}. Same amount, smaller pieces.`],anim:fracEquivAnim(a2,b2,k),
+      mine:[`Look at each choice: did the top and the bottom get multiplied by the <b>same</b> number?`]}},
+  frac2:()=>({rule:'Give both fractions the same bottom number. Then the bigger top wins. Or compare each one to one half.',
+      ex:`${frac(1,2)} or ${frac(3,8)}?`,steps:[`Make the bottoms the same: ${frac(1,2)} = ${frac(4,8)}.`,`Now compare ${frac(4,8)} and ${frac(3,8)}: same size pieces, 4 is more than 3.`,`So ${frac(1,2)} is bigger.`],anim:`<svg viewBox="0 0 160 160" style="width:120px">${pieSVG(80,80,70,4,8)}</svg><svg viewBox="0 0 160 160" style="width:120px">${pieSVG(80,80,70,3,8,'var(--ocean)','#e0f1fc')}</svg>`,
+      mine:[`Find a bottom number both fractions can use, and change both.`,`Or ask: is each fraction more or less than one half?`]}),
+  frac3:(a,b,den)=>{const den2=hDiff(()=>HPICK([5,6,8]),v=>v===den),a2=1,b2=2;
+    return {rule:'When the bottom numbers match, add the top numbers. The bottom stays the same.',
+      ex:`${a2}/${den2} + ${b2}/${den2}`,steps:[`The pieces are the same size (${den2}ths).`,`${a2} piece + ${b2} pieces = ${a2+b2} pieces.`,`Answer: ${frac(a2+b2,den2)}. The bottom does not change!`],anim:fracAddAnim(a2,b2,den2),
+      mine:[`Add only the top numbers: ${a} + ${b} = ${BLANK}`,`Keep the bottom number: ${den}.`]}},
+  area0:(l,w)=>{const w2=hDiff(()=>HR(2,4),v=>v===w),l2=hDiff(()=>HR(w2+1,6),v=>v===l);
+    return {rule:'Area is how many squares cover the shape: length × width.',
+      ex:`A ${l2} by ${w2} rectangle`,steps:[`Each row has ${l2} squares.`,`There are ${w2} rows.`,`${l2} × ${w2} = <b>${l2*w2}</b> square units.`],anim:areaAnim(l2,w2),
+      mine:[`Length × width: ${l} × ${w} = ${BLANK} square feet.`]}},
+  area1:(l,w)=>{const w2=hDiff(()=>HR(2,4),v=>v===w),l2=hDiff(()=>HR(w2+1,7),v=>v===l);
+    return {rule:'Perimeter is the distance all the way around. Add all four sides.',
+      ex:`A ${l2} by ${w2} rectangle`,steps:[`A rectangle has 2 long sides and 2 short sides.`,`${l2} + ${w2} + ${l2} + ${w2} = <b>${2*(l2+w2)}</b>.`],anim:periAnim(l2,w2),
+      mine:[`Add all four sides: ${l} + ${w} + ${l} + ${w} = ${BLANK}`]}},
+  area2:(A,w)=>{const w2=hDiff(()=>HR(3,5),v=>v===w),l2=HR(w2+1,8);
+    return {rule:'Area = length × width. If you know the area and one side, ask: what times that side makes the area?',
+      ex:`Area ${l2*w2}, one side ${w2}`,steps:[`${BLANK} × ${w2} = ${l2*w2}`,`Count by ${w2}s: ${Array.from({length:l2},(_,i)=>(i+1)*w2).join(', ')}. That's ${l2} jumps.`,`The other side is <b>${l2}</b>. (Same as ${l2*w2} ÷ ${w2}.)`],anim:areaAnim(l2,w2),
+      mine:[`Ask: ${BLANK} × ${w} = ${A}`,`Or divide: ${A} ÷ ${w}.`]}},
+  area3:(P,w)=>{const w2=hDiff(()=>HR(2,4),v=>v===w),l2=HR(w2+2,8),P2=2*(l2+w2);
+    return {rule:'Take away the two short sides. The rest is the two long sides together, so split it in half.',
+      ex:`Fence ${P2}, short side ${w2}`,steps:[`Two short sides: ${w2} + ${w2} = ${2*w2}.`,`${P2} − ${2*w2} = ${P2-2*w2} for both long sides.`,`Split in half: ${P2-2*w2} ÷ 2 = <b>${l2}</b>.`],anim:periAnim(l2,w2),
+      mine:[`${P} − ${w} − ${w} = ${BLANK}`,`Then split that in half.`]}}
+};
+function openHow(){
+  const q=S&&S.qs[S.i];if(!q||S.locked||S.mode==='boss')return;
+  let h=null;try{h=q.how&&HOW[q.how[0]]?HOW[q.how[0]](...q.how.slice(1)):null}catch(e){h=null}
+  if(!h&&!q.hint)return;
+  S.howUsed=(S.howUsed||0)+1;clearTimeout(S.nudge);tone([523,659,784],.05);
+  const body=h?`<p class="hrule">${h.rule}</p>
+    <div class="hex"><div class="htag">Example</div><p class="hexq">${h.ex}</p><div class="steps">${h.steps.map((s,i)=>`<span class="step" style="animation-delay:${.3+i*.9}s">${s}</span>`).join('')}</div>${h.anim?`<div class="anim">${h.anim}</div>`:''}</div>
+    <div class="hmine"><div class="htag">Now your puzzle</div>${h.mine.map(m=>`<p>${m}</p>`).join('')}</div>`
+    :`<div class="hmine"><div class="htag">Here's the trick</div><p>${q.hint}</p></div>`;
+  overlay(`<div class="howbox"><div class="howhead"><div class="pipbob" data-fox></div><div><div class="eyebrow">Show me how</div><h3>Let's learn the trick!</h3></div>
+    <button class="speak" id="howSpeak" type="button" aria-label="Read aloud"><svg viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#2f9fe0"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#2f9fe0" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    ${body}<button class="go" type="button" id="howOk" style="align-self:center">Got it! Let me try</button></div>`,()=>{
+    $('#ocard').classList.add('wide');foxClass('talking',1600);
+    $('#howSpeak').onclick=()=>speak(h?[h.rule,...h.mine].join(' ').replace(/<span class="hblank">\?<\/span>/g,'blank'):q.hint,{user:true,pip:true});
+    $('#howOk').onclick=()=>{stopSpeak();$('#ocard').classList.remove('wide');closeOverlay();armNudge();say($('#say'),pick(['You can do it!','Now try it your way!','Use the trick. I believe in you!']))}});
+}
+
 function placeAnim(n,pos){
   const str=String(n),L=str.length,names=['Ones','Tens','Hundreds','Thousands','Ten thousands','Hundred thousands'];let h='',d='';
   for(let i=0;i<L;i++){h+=`<b>${names[L-1-i]}</b>`;d+=`<span class="dropin${i===pos?' hl':''}" style="animation-delay:${i*.18}s">${str[i]}</span>`}
@@ -1040,7 +1179,7 @@ function genPlace(t){
     let n,str,pos,d;do{n=R(lo,hi);str=String(n);pos=R(0,str.length-1);d=+str[pos]}while(d===0);
     const L=str.length,place=L-1-pos,ans=d*10**place;
     let vis='<div class="bignum">';for(let i=0;i<L;i++){vis+=i===pos?`<span class="hl">${str[i]}</span>`:str[i];if((L-1-i)%3===0&&i<L-1)vis+=','}vis+='</div>';
-    return {prompt:`What is the value of the yellow digit?`,visual:vis,...numChoices(ans,[d*10**(place+1),place>0?d*10**(place-1):d*1000,d*10**(place+2),d+1]),
+    return {how:['place0',n,pos],prompt:`What is the value of the yellow digit?`,visual:vis,...numChoices(ans,[d*10**(place+1),place>0?d*10**(place-1):d*1000,d*10**(place+2),d+1]),
       hint:`Name the places from the right: ones, tens, hundreds, thousands...`,anim:placeAnim(n,pos),
       explain:`The ${d} is in the <b>${PLACE[place]}</b> place. So it's worth ${d} × ${fmt(10**place)} = <b>${fmt(ans)}</b>.`};
   }
@@ -1048,7 +1187,7 @@ function genPlace(t){
     const p=pick(Dv([10,100],[10,100,1000],[1000,10000])),name={10:'ten',100:'hundred',1000:'thousand',10000:'ten thousand'}[p];
     let n;do{n=R(Dv(100,1000,10000),Dv(9999,9999,999999))}while(n%p===0||n<p);
     const down=Math.floor(n/p)*p,up=down+p,ans=n-down>=p/2?up:down;
-    return {prompt:`Round <b>${fmt(n)}</b> to the nearest ${name}.`,...numChoices(ans,[ans===up?down:up,Math.round(n/(p*10))*p*10,p>10?Math.round(n/(p/10))*(p/10):n+10]),
+    return {how:['place1',n,p],prompt:`Round <b>${fmt(n)}</b> to the nearest ${name}.`,...numChoices(ans,[ans===up?down:up,Math.round(n/(p*10))*p*10,p>10?Math.round(n/(p/10))*(p/10):n+10]),
       hint:`Look at the digit just to the right of the ${name}s place. 5 or more rounds up.`,
       explain:`${fmt(n)} is between ${fmt(down)} and ${fmt(up)}. It is ${n-down>=p/2?'halfway or more, so it rounds up':'less than halfway, so it rounds down'} to <b>${fmt(ans)}</b>.`};
   }
@@ -1056,67 +1195,67 @@ function genPlace(t){
     const L=Dv(4,5,6),d=[R(1,9),...Array.from({length:L-1},()=>R(0,9))];d[R(1,L-2)]=0;
     const n=+d.join(''),terms=d.map((x,i)=>x*10**(L-1-i)).filter(x=>x>0);
     const s=[...String(n)];const sw=[...s];const i=R(1,L-2);[sw[i],sw[i+1]]=[sw[i+1],sw[i]];
-    return {prompt:`Which number is <b>${terms.map(fmt).join(' + ')}</b>?`,...numChoices(n,[+sw.join(''),+String(n).replace(/0/g,''),+(s.slice(0,L-1).join('')),n+10**(L-1)>=10**L?n-10**(L-1):n+10**(L-1)]),
+    return {how:['place2'],prompt:`Which number is <b>${terms.map(fmt).join(' + ')}</b>?`,...numChoices(n,[+sw.join(''),+String(n).replace(/0/g,''),+(s.slice(0,L-1).join('')),n+10**(L-1)>=10**L?n-10**(L-1):n+10**(L-1)]),
       hint:`Each part tells you one digit. A place with nothing in it gets a 0.`,explain:`Put each digit in its place: ${terms.map(fmt).join(' + ')} = <b>${fmt(n)}</b>.`};
   }
   const L=Dv(4,5,6),base=String(R(10**(L-1),10**L-1));const set=new Set([+base]);let g=0;
   while(set.size<4&&g++<60){const a=[...base];const i=R(1,L-1),j=R(1,L-1);[a[i],a[j]]=[a[j],a[i]];set.add(+a.join(''))}
   while(set.size<4)set.add(+base+R(1,999));
   const nums=[...set],ans=Math.max(...nums);
-  return {prompt:`Which number is the <b>greatest</b>?`,choices:shuffle(nums.map(fmt)),answer:fmt(ans),
+  return {how:['place3'],prompt:`Which number is the <b>greatest</b>?`,choices:shuffle(nums.map(fmt)),answer:fmt(ans),
     hint:`Compare digits from left to right. The first place where they are different decides.`,
     explain:`Read from the left. <b>${fmt(ans)}</b> has the biggest digit at the first place where the numbers are different.`};
 }
 function genMult(t){
   if(t===0){const a=R(Dv(12,120,1000),Dv(99,899,4999)),b=R(3,9),ans=a*b;const s=String(a),parts=[...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0);
-    return {prompt:`${fmt(a)} × ${b} = ?`,...numChoices(ans,[ans+10,ans-10,a*(b-1),ans+100,a*(b+1)]),anim:multAnim(a,parts,b),
+    return {how:['mult0',a,b],prompt:`${fmt(a)} × ${b} = ?`,...numChoices(ans,[ans+10,ans-10,a*(b-1),ans+100,a*(b+1)]),anim:multAnim(a,parts,b),
       hint:`Break ${fmt(a)} into ${parts.map(fmt).join(' + ')} and multiply each part by ${b}.`,explain:`${parts.map(p=>`${fmt(p)} × ${b} = ${fmt(p*b)}`).join('. ')}. Add them up: <b>${fmt(ans)}</b>.`};}
   if(t===1){const a=R(Dv(11,12,40),Dv(19,49,99));let b;do{b=R(Dv(11,11,40),Dv(19,39,99))}while(b%10===0);const tens=b-b%10,ones=b%10,ans=a*b;
-    return {prompt:`${a} × ${b} = ?`,...numChoices(ans,[a*ones+a*(tens/10),ans+10,ans-a,ans+b]),anim:multAnim(b,[tens,ones],a),
+    return {how:['mult1',a,b],prompt:`${a} × ${b} = ?`,...numChoices(ans,[a*ones+a*(tens/10),ans+10,ans-a,ans+b]),anim:multAnim(b,[tens,ones],a),
       hint:`Split ${b} into ${tens} + ${ones}. Find ${a} × ${tens} and ${a} × ${ones}.`,explain:`${a} × ${tens} = ${fmt(a*tens)}. ${a} × ${ones} = ${a*ones}. ${fmt(a*tens)} + ${a*ones} = <b>${fmt(ans)}</b>.`};}
   if(t===2){const a=R(Dv(11,13,105),Dv(30,68,350)),b=R(3,9),ans=a*b;
     const story=pick([`A school bus holds ${a} students. How many students ride in ${b} full buses?`,`Each box has ${a} crayons. How many crayons are in ${b} boxes?`,`A garden has ${b} rows with ${a} tulips in each row. How many tulips in all?`,`Pip flies ${a} miles every day. How far does Pip fly in ${b} days?`]);
     const s=String(a),parts=[...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0);
-    return {prompt:story,...numChoices(ans,[a+b,ans+10,ans-b,a*(b+1)]),anim:multAnim(a,parts,b),hint:`Equal groups means multiply: ${b} groups of ${a}.`,explain:`${b} groups of ${a}: ${a} × ${b} = <b>${fmt(ans)}</b>.`};}
+    return {how:['mult2',a,b],prompt:story,...numChoices(ans,[a+b,ans+10,ans-b,a*(b+1)]),anim:multAnim(a,parts,b),hint:`Equal groups means multiply: ${b} groups of ${a}.`,explain:`${b} groups of ${a}: ${a} × ${b} = <b>${fmt(ans)}</b>.`};}
   const a=R(2,9),z=pick(Dv([10],[10,100,1000],[100,1000])),c=R(2,9),b=c*z,ans=a*b,zeros=String(z).length-1;
-  return {prompt:`${a} × ${fmt(b)} = ?`,...numChoices(ans,[ans*10,ans/10,a*c,ans+b]),hint:`Do ${a} × ${c} first, then think about the zeros.`,explain:`${a} × ${c} = ${a*c}. Then add ${zeros} zero${zeros>1?'s':''}: <b>${fmt(ans)}</b>.`};
+  return {how:['mult3',a,c,z],prompt:`${a} × ${fmt(b)} = ?`,...numChoices(ans,[ans*10,ans/10,a*c,ans+b]),hint:`Do ${a} × ${c} first, then think about the zeros.`,explain:`${a} × ${c} = ${a*c}. Then add ${zeros} zero${zeros>1?'s':''}: <b>${fmt(ans)}</b>.`};
 }
 function genDiv(t){
   if(t===0){const d=R(Dv(2,3,4),Dv(6,9,9)),q=R(Dv(4,12,100),Dv(12,99,450)),n=q*d;
-    return {prompt:`${fmt(n)} ÷ ${d} = ?`,...numChoices(q,[q+1,q-1,q+10,q-10]),anim:divAnim(n,d),hint:`Ask yourself: ${d} times what number equals ${fmt(n)}?`,explain:`${d} × ${fmt(q)} = ${fmt(n)}. So ${fmt(n)} ÷ ${d} = <b>${fmt(q)}</b>.`};}
+    return {how:['div0',n,d],prompt:`${fmt(n)} ÷ ${d} = ?`,...numChoices(q,[q+1,q-1,q+10,q-10]),anim:divAnim(n,d),hint:`Ask yourself: ${d} times what number equals ${fmt(n)}?`,explain:`${d} × ${fmt(q)} = ${fmt(n)}. So ${fmt(n)} ÷ ${d} = <b>${fmt(q)}</b>.`};}
   if(t===1){const d=R(3,Dv(5,8,9)),q=R(Dv(3,4,15),Dv(9,15,60)),r=R(1,d-1),n=q*d+r;
-    return {prompt:`${n} stickers are shared equally by ${d} friends. How many does each friend get, and how many are left over?`,
+    return {how:['div1',n,d],prompt:`${n} stickers are shared equally by ${d} friends. How many does each friend get, and how many are left over?`,
       ...strChoices(`${q} R ${r}`,[`${q+1} R ${r}`,`${q-1} R ${r+d}`,`${q} R 0`,`${q+1} R 0`]),anim:divAnim(n,d),
       hint:`Find the biggest number that times ${d} stays under ${n}. The leftover is the R.`,explain:`${d} × ${q} = ${q*d}. ${n} − ${q*d} = ${r} left over. Answer: <b>${q} R ${r}</b>.`};}
   if(t===2){const a=R(Dv(2,3,6),Dv(9,12,15)),b=R(Dv(2,3,6),Dv(9,12,15));
-    return {prompt:`What number goes in the box? <b>□ × ${b} = ${a*b}</b>`,...numChoices(a,[a+1,a-1,b,a+2]),hint:`Divide: ${a*b} ÷ ${b}.`,explain:`${a*b} ÷ ${b} = ${a}. And ${a} × ${b} = ${a*b}. The box is <b>${a}</b>.`};}
+    return {how:['div2',a*b,b],prompt:`What number goes in the box? <b>□ × ${b} = ${a*b}</b>`,...numChoices(a,[a+1,a-1,b,a+2]),hint:`Divide: ${a*b} ÷ ${b}.`,explain:`${a*b} ÷ ${b} = ${a}. And ${a} × ${b} = ${a*b}. The box is <b>${a}</b>.`};}
   const d=R(4,9),q=R(5,Dv(8,12,25)),r=R(1,d-1),n=q*d+r,needAll=coin(),ans=needAll?q+1:q;
-  return {prompt:`Pip packs ${n} cupcakes into boxes that hold ${d} each. ${needAll?'How many boxes does Pip need for <b>all</b> the cupcakes?':'How many boxes can Pip fill <b>all the way</b>?'}`,
+  return {how:['div3',n,d],prompt:`Pip packs ${n} cupcakes into boxes that hold ${d} each. ${needAll?'How many boxes does Pip need for <b>all</b> the cupcakes?':'How many boxes can Pip fill <b>all the way</b>?'}`,
     ...numChoices(ans,[needAll?q:q+1,r,q-1,q+2]),anim:divAnim(n,d),hint:`${n} ÷ ${d} has a leftover. Think about what to do with the leftover cupcakes.`,
     explain:`${n} ÷ ${d} = ${q} R ${r}. ${needAll?`The ${r} leftover cupcakes need one more box, so <b>${ans}</b> boxes.`:`Only ${q} boxes are full. The ${r} leftovers don't fill a box. Answer: <b>${ans}</b>.`}`};
 }
 function genFrac(t){
   if(t===0){const den=pick(Dv([2,3,4,6,8],[3,4,5,6,8,10,12],[6,8,10,12])),num=R(1,den-1);
-    return {prompt:`What fraction of the circle is shaded pink?`,visual:pieVis(num,den),...strChoices(`${num}/${den}`,[`${den-num}/${den}`,`${num}/${den-num}`,`${den}/${num}`,`${num}/${den+1}`]),
+    return {how:['frac0'],prompt:`What fraction of the circle is shaded pink?`,visual:pieVis(num,den),...strChoices(`${num}/${den}`,[`${den-num}/${den}`,`${num}/${den-num}`,`${den}/${num}`,`${num}/${den+1}`]),
       hint:`Bottom number: all the equal parts. Top number: the shaded parts.`,explain:`There are ${den} equal parts and ${num} are shaded. So it's ${frac(num,den)}.`};}
   if(t===1){const [a,b]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[2,5],[1,5],[3,5]]),k=R(2,Dv(2,4,6));
-    return {prompt:`Which fraction is equal to ${frac(a,b)}?`,visual:pieVis(a,b),...strChoices(`${a*k}/${b*k}`,[`${a+k}/${b+k}`,`${a}/${b*k}`,`${a*k}/${b}`,`${a*k+1}/${b*k}`]),anim:fracEquivAnim(a,b,k),
+    return {how:['frac1',a,b],prompt:`Which fraction is equal to ${frac(a,b)}?`,visual:pieVis(a,b),...strChoices(`${a*k}/${b*k}`,[`${a+k}/${b+k}`,`${a}/${b*k}`,`${a*k}/${b}`,`${a*k+1}/${b*k}`]),anim:fracEquivAnim(a,b,k),
       hint:`Multiply the top AND the bottom by the same number.`,explain:`Multiply the top and bottom by ${k}. ${a} × ${k} = ${a*k} and ${b} × ${k} = ${b*k}. So ${frac(a,b)} = ${frac(a*k,b*k)}.`};}
   if(t===2){let a,b,c,d;do{b=pick([2,3,4,5,6,8,10,12]);a=R(1,b-1);d=pick([2,3,4,5,6,8,10,12]);c=R(1,d-1)}while(b===d||a*d===c*b);
     const L=b*d/gcd(b,d),big=a*d>c*b?`${a}/${b}`:`${c}/${d}`;
-    return {prompt:`Which fraction is <b>bigger</b>?`,visual:`<div class="cmp"><svg viewBox="0 0 160 160">${pieSVG(80,80,72,a,b)}</svg>${frac(a,b)}</div><div class="cmp"><svg viewBox="0 0 160 160">${pieSVG(80,80,72,c,d,'var(--ocean)','#e0f1fc')}</svg>${frac(c,d)}</div>`,
+    return {how:['frac2'],prompt:`Which fraction is <b>bigger</b>?`,visual:`<div class="cmp"><svg viewBox="0 0 160 160">${pieSVG(80,80,72,a,b)}</svg>${frac(a,b)}</div><div class="cmp"><svg viewBox="0 0 160 160">${pieSVG(80,80,72,c,d,'var(--ocean)','#e0f1fc')}</svg>${frac(c,d)}</div>`,
       choices:shuffle([`${a}/${b}`,`${c}/${d}`,'They are equal']),answer:big,hint:`Give them the same bottom number, or compare each one to one half.`,
       explain:`Use ${L} as the bottom number. ${frac(a,b)} = ${frac(a*L/b,L)} and ${frac(c,d)} = ${frac(c*L/d,L)}. So ${frac(...big.split('/'))} is bigger.`};}
   const den=pick(Dv([4,5,6],[5,6,8,10,12],[8,10,12])),a=R(1,den-2),b=R(1,den-1-a);
-  return {prompt:`${frac(a,den)} + ${frac(b,den)} = ?`,...strChoices(`${a+b}/${den}`,[`${a+b}/${den*2}`,`${a+b+1}/${den}`,`${Math.abs(a-b)||1}/${den}`,`${a*b}/${den}`]),anim:fracAddAnim(a,b,den),
+  return {how:['frac3',a,b,den],prompt:`${frac(a,den)} + ${frac(b,den)} = ?`,...strChoices(`${a+b}/${den}`,[`${a+b}/${den*2}`,`${a+b+1}/${den}`,`${Math.abs(a-b)||1}/${den}`,`${a*b}/${den}`]),anim:fracAddAnim(a,b,den),
     hint:`The bottom numbers match, so only the top numbers change.`,explain:`Same size pieces: ${a} + ${b} = ${a+b} pieces of ${den}. Answer: ${frac(a+b,den)}.`};
 }
 function genArea(t){
   const w=R(Dv(2,3,8),Dv(6,9,15)),l=R(w+1,Dv(10,15,25)),A=l*w,P=2*(l+w);
-  if(t===0)return {prompt:`Pip is planting a carrot patch. What is its <b>area</b>?`,visual:rectVis(l,w,`${l} ft`,`${w} ft`),unit:'sq ft',...numChoices(A,[P,l+w,A+l,A-w]),anim:areaAnim(l,w),hint:`Area means how many 1-foot squares cover the patch: length × width.`,explain:`Count the squares, or multiply: ${l} × ${w} = <b>${A} square feet</b>.`};
-  if(t===1)return {prompt:`How much fence does Pip need to go all the way <b>around</b> the patch?`,visual:rectVis(l,w,`${l} ft`,`${w} ft`),unit:'ft',...numChoices(P,[A,l+w,2*l+w,P+2]),anim:periAnim(l,w),hint:`Perimeter means the distance around. Add all four sides.`,explain:`${l} + ${w} + ${l} + ${w} = <b>${P} feet</b>.`};
-  if(t===2)return {prompt:`The patch has an area of <b>${A} square feet</b>. One side is ${w} feet. How long is the other side?`,visual:rectVis(l,w,`? ft`,`${w} ft`),unit:'ft',...numChoices(l,[A-w,l+1,l-1,A/w+2]),hint:`Area = length × width. What times ${w} equals ${A}?`,explain:`${A} ÷ ${w} = <b>${l} feet</b>, because ${l} × ${w} = ${A}.`};
-  return {prompt:`The fence around the patch is <b>${P} feet</b> long. The short side is ${w} feet. How long is the long side?`,visual:rectVis(l,w,`? ft`,`${w} ft`),unit:'ft',...numChoices(l,[P-w,P/2,l+2,P-2*w]),anim:periAnim(l,w),hint:`Two short sides use ${2*w} feet. The rest is split between the two long sides.`,explain:`${P} − ${w} − ${w} = ${P-2*w}. Split in half: ${P-2*w} ÷ 2 = <b>${l} feet</b>.`};
+  if(t===0)return {how:['area0',l,w],prompt:`Pip is planting a carrot patch. What is its <b>area</b>?`,visual:rectVis(l,w,`${l} ft`,`${w} ft`),unit:'sq ft',...numChoices(A,[P,l+w,A+l,A-w]),anim:areaAnim(l,w),hint:`Area means how many 1-foot squares cover the patch: length × width.`,explain:`Count the squares, or multiply: ${l} × ${w} = <b>${A} square feet</b>.`};
+  if(t===1)return {how:['area1',l,w],prompt:`How much fence does Pip need to go all the way <b>around</b> the patch?`,visual:rectVis(l,w,`${l} ft`,`${w} ft`),unit:'ft',...numChoices(P,[A,l+w,2*l+w,P+2]),anim:periAnim(l,w),hint:`Perimeter means the distance around. Add all four sides.`,explain:`${l} + ${w} + ${l} + ${w} = <b>${P} feet</b>.`};
+  if(t===2)return {how:['area2',A,w],prompt:`The patch has an area of <b>${A} square feet</b>. One side is ${w} feet. How long is the other side?`,visual:rectVis(l,w,`? ft`,`${w} ft`),unit:'ft',...numChoices(l,[A-w,l+1,l-1,A/w+2]),hint:`Area = length × width. What times ${w} equals ${A}?`,explain:`${A} ÷ ${w} = <b>${l} feet</b>, because ${l} × ${w} = ${A}.`};
+  return {how:['area3',P,w],prompt:`The fence around the patch is <b>${P} feet</b> long. The short side is ${w} feet. How long is the long side?`,visual:rectVis(l,w,`? ft`,`${w} ft`),unit:'ft',...numChoices(l,[P-w,P/2,l+2,P-2*w]),anim:periAnim(l,w),hint:`Two short sides use ${2*w} feet. The rest is split between the two long sides.`,explain:`${P} − ${w} − ${w} = ${P-2*w}. Split in half: ${P-2*w} ÷ 2 = <b>${l} feet</b>.`};
 }
 function genFlash(){const a=R(2,Dv(9,12,15)),b=R(2,Dv(9,12,12));if(rand()<.7)return {prompt:`${a} × ${b}`,...numChoices(a*b,[a*b+a,a*b-b,a*b+b,(a+1)*(b+1)])};return {prompt:`${a*b} ÷ ${b}`,...numChoices(a,[a+1,a-1,b===a?a+2:b,a+2])}}
 
@@ -2254,6 +2393,7 @@ function showQ(){
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;
   $('#hint').hidden=$('#feedback').hidden=$('#next').hidden=true;
   $('#speakBtn').hidden=!canSpeak;
+  $('#howBtn').hidden=S.mode==='boss'||!(q.how||q.hint);
   armNudge();
   if(q.kind==='setclock')return setupClock(q);
   if(q.kind==='order')return setupOrder(q);
@@ -2263,6 +2403,7 @@ function showQ(){
   if(q.numeric&&!q.kind&&/^[\d,]+$/.test(q.answer)&&Math.random()<[0,.15,.3,.5][S.mode==='island'?S.d:2]){q.kind='keypad';return setupKeypad(q)}
   drawChoices(q,choose);
 }
+$('#howBtn').onclick=openHow;
 $('#speakBtn').onclick=()=>{const q=S&&S.qs[S.i];if(q)speak(q.speak||q.prompt,{user:true,pip:true})};
 function checkBtn(label,fn){const b=document.createElement('button');b.type='button';b.className='go';b.id='check';b.textContent=label;b.onclick=e=>{if(!S.locked)fn(e.currentTarget)};return b}
 function setupKeypad(q){
@@ -2381,6 +2522,7 @@ function reviewResult(q,first){
   else{r.box=0;r.due=addDays(1)}
 }
 function finishQ(){
+  $('#howBtn').hidden=true;
   const n=$('#next');
   if(S.mode==='boss')n.textContent=S.hp<=0?'Victory!':S.hearts<=0?'See results':'Next attack';
   else n.textContent=S.bonus?'Bonus game!':S.i===S.qs.length-1?'See my results':'Next puzzle';
@@ -2413,7 +2555,7 @@ function finishBoss(win){
 /* thunder tower */
 function startFlash(isl){
   stopTimers();S=freshState(isl,'flash');S.end=performance.now()+60000;S.d=diffFor({gen:1,id:'flash'});
-  $('#iname').textContent=isl.name;$('#timer').hidden=false;$('#dots').hidden=true;$('#bossbar').hidden=true;$('#visual').hidden=true;$('#combo').hidden=true;$('#speakBtn').hidden=true;
+  $('#iname').textContent=isl.name;$('#timer').hidden=false;$('#dots').hidden=true;$('#bossbar').hidden=true;$('#visual').hidden=true;$('#combo').hidden=true;$('#speakBtn').hidden=true;$('#howBtn').hidden=true;
   $('#hint').hidden=$('#feedback').hidden=$('#next').hidden=true;setAlt(0);show('play');refreshFoxes();
   say($('#say'),`Fact storm! Answer as many as you can in 60 seconds. Your record is ${G.bestThunder}. Go go go!`);nextFlash();
   S.timer=setInterval(()=>{const left=Math.max(0,S.end-performance.now());$('#timerfill').style.width=(left/600)+'%';
