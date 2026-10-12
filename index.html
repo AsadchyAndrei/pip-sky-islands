@@ -1143,6 +1143,18 @@ html,body,button,a,input,select,textarea,label,.choice,.isle,.item,.tile,.coinbt
 .choice.right::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"),none;background-color:var(--leaf-dd)}
 .choice.wrong::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7L7 17' stroke='white' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E"),none;background-color:var(--coral-d)}
 .tile.sel::after{content:"";top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--ocean-d) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+/* ===== flight plan: one layout everywhere: number + text on top, the step's buttons in an even row under the text ===== */
+#pickCard .tdsteps li{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;column-gap:12px;row-gap:10px;flex-wrap:nowrap}
+#pickCard .tdsteps li>.tdchk{grid-column:1;grid-row:1}
+#pickCard .tdsteps li>.tdtx{grid-column:2;grid-row:1;min-width:0;flex:none}
+#pickCard .tdsteps li>.go,#pickCard .tdsteps li>.pkbtns{grid-column:2;grid-row:2;width:100%;max-width:440px;margin:0}
+#pickCard .tdsteps .pkbtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;flex-direction:initial}
+#pickCard .tdsteps .pkbtns .go,#pickCard .tdsteps li>.go{width:100%;justify-content:center;text-align:center;white-space:nowrap;align-self:stretch;padding-inline:10px}
+#pickCard .tdsteps li.cur .go{font-size:22px;padding-block:10px 6px}
+#pickCard .tdsteps li:not(.cur) .go{font-size:17px}
+html body.big #pickCard .tdsteps li.cur .go{font-size:24px}html body.big #pickCard .tdsteps li:not(.cur) .go{font-size:18px}
+#pickCard .tdtx b{line-height:1.2}
+@media (max-width:760px){#pickCard .tdsteps li>.go,#pickCard .tdsteps li>.pkbtns{grid-column:1/-1;max-width:none}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
