@@ -5,7 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#86d8f8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="description" content="Math, time, reading and world puzzles for 4th graders, with Pip the balloon fox.">
+<meta name="description" content="A free learning game for 4th graders: math, reading, grammar, science and California history, with Pip the balloon fox. No ads, nothing to buy.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pipskyislands.com/">
+<meta property="og:site_name" content="Pip's Sky Islands">
+<meta property="og:title" content="Pip's Sky Islands: a learning game for 4th grade">
+<meta property="og:description" content="A free learning game for 4th graders: math, reading, grammar, science and California history, with Pip the balloon fox. No ads, nothing to buy.">
+<meta property="og:image" content="https://pipskyislands.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pip the fox flying a hot air balloon over floating islands">
+<meta name="twitter:card" content="summary_large_image">
 <title>Pip's Sky Islands</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -281,7 +291,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .htag{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
 .hblank{display:inline-block;min-width:34px;text-align:center;border:2px dashed var(--ocean);border-radius:8px;padding:0 6px;color:var(--ocean);background:#fff}
 .dtable{font-family:var(--display);font-size:30px;display:flex;flex-direction:column;align-items:center;gap:2px}.dtable span{display:inline-block;width:26px;text-align:center}.dtable .same{color:#9aa6b6}.dtable .diff{background:#ffd56b;border-radius:6px}
-@media (max-width:520px){.ocard .howhead .pipbob{width:52px}.howhead h3{font-size:22px}.howbtn span{display:none}.howbtn{padding:0 10px;width:48px;justify-content:center}}
+@media (max-width:520px){.ocard .howhead .pipbob{width:52px}.howhead h3{font-size:22px}.howbtn{padding:0 10px 0 8px}}
 .speak{flex:none;width:48px;height:48px;border-radius:50%;border:3px solid var(--ocean);background:var(--pale-sky);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 var(--ocean)}
 .speak svg{width:24px;height:24px}
 .speak.on{background:var(--ocean)}.speak.on svg path{fill:#fff}
@@ -594,6 +604,8 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
 .kid.add .plus{width:70px;height:70px;border-radius:50%;background:var(--ocean);color:#fff;font-family:var(--display);font-size:50px;line-height:76px}
 .kimport{margin-top:18px;background:var(--pale-leaf);border-radius:20px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .kimport p{margin:0;font-weight:700;flex:1 1 240px}
+.kabout{margin-top:18px;background:var(--card);border-radius:22px;padding:14px 18px;box-shadow:0 5px 0 var(--line);font-weight:600;line-height:1.45}
+.kabout b{font-family:var(--display);font-weight:400;font-size:22px}.kabout p{margin:6px 0}.kabout ul{margin:4px 0 0;padding-left:20px}
 .kidfoot{margin-top:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;font-weight:700;color:var(--ink-soft);text-align:center}
 .bklist{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none;max-height:340px;overflow-y:auto}
 .bklist li{display:flex;align-items:center;gap:10px;background:var(--pale-sky);border-radius:14px;padding:8px 10px 6px 12px;font-weight:700}
@@ -632,6 +644,53 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
   .islands.three .stars .st{width:16px;height:16px}
   .keys{grid-template-columns:repeat(3,58px)}
 }
+.pcoins{display:none}
+@media (max-width:760px){
+  body[data-screen=play] .top{display:none}
+  body[data-screen=play] .wrap{padding-block-start:8px}
+  body[data-screen=play] .playhead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"back name coins" "dots dots combo";gap:6px 10px;margin-block:4px 10px}
+  body[data-screen=play] .back{grid-area:back;padding:6px 12px 4px}
+  body[data-screen=play] .ihead{grid-area:name}
+  body[data-screen=play] .iname{font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body[data-screen=play] .qnum{display:none}
+  body[data-screen=play] .dots{grid-area:dots;flex-wrap:nowrap;gap:5px}
+  body[data-screen=play] .dot{width:14px;height:14px;border-width:2px}
+  body[data-screen=play] .combo{grid-area:combo;font-size:15px;padding:3px 10px 1px;justify-self:end}
+  body[data-screen=play] .pcoins{grid-area:coins;display:flex;align-items:center;gap:4px;background:var(--card);border-radius:999px;padding:4px 10px 2px;font-family:var(--display);font-size:17px;box-shadow:0 3px 0 var(--line);font-variant-numeric:tabular-nums}
+  body[data-screen=play] .pcoins svg{width:18px;height:18px}
+  body[data-screen=play] .pipside{gap:8px;margin-bottom:-6px}
+  body[data-screen=play] .pipfly{width:58px}
+  body[data-screen=play] .pipside .bubble{font-size:14.5px;padding:8px 12px 6px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  body[data-screen=play] .stage{gap:12px}
+  body[data-screen=play] .card{gap:14px;padding:16px 14px 16px}
+  body[data-screen=play] .bossfig{width:72px}
+  body[data-screen=play] .qtop .howbtn,body[data-screen=play] .qtop .speak{height:40px;font-size:14px}
+  body[data-screen=play] .qtop .speak{width:40px}
+  body[data-screen=play] .qtop .howbtn svg,body[data-screen=play] .qtop .speak svg{width:20px;height:20px}
+  body[data-screen=play] .visual svg{max-height:min(300px,36vh);width:auto;max-width:100%}
+}
+.hbob{animation:hbob 3.2s ease-in-out infinite}@keyframes hbob{50%{transform:translateY(-6px)}}
+.projects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.pcard2{background:var(--card);border-radius:22px;padding:12px;box-shadow:0 5px 0 var(--line);display:flex;flex-direction:column;gap:8px;min-width:0}
+.pcard2 .prev{background:linear-gradient(180deg,#c9efff,#eaf9ff);border-radius:16px;height:150px;display:flex;align-items:center;justify-content:center}
+.pcard2 .prev svg{height:140px;width:auto;max-width:100%}
+.pcard2.done{outline:3px solid var(--leaf)}
+.pinfo b{font-size:17px}.pinfo small{display:block;color:var(--ink-soft);font-weight:700;margin-top:4px}
+.psteps{display:flex;gap:5px;margin-top:6px}.pst{flex:1;height:9px;border-radius:999px;background:var(--pale-sky)}.pst.on{background:var(--leaf)}
+.prow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.prow [data-proj]{display:flex;align-items:center;gap:4px;border:0;border-radius:12px;padding:7px 12px 5px;font-weight:800;background:var(--pale-sky);color:var(--ink-soft);cursor:not-allowed}
+.prow [data-proj].buy{background:var(--leaf);color:#fff;cursor:pointer;box-shadow:0 4px 0 #239068}
+.prow [data-proj] svg{width:18px;height:18px}
+.pgoal{border:2px solid var(--sun);background:var(--card);border-radius:12px;padding:5px 10px 3px;font-weight:800;cursor:pointer;color:var(--ink)}.pgoal.on{background:var(--pale-sun)}
+.goalcard{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:22px;padding:10px 14px;box-shadow:0 5px 0 var(--line);margin-block:14px}
+.goalcard .gprev{width:84px;height:84px;flex:none;background:linear-gradient(180deg,#c9efff,#eaf9ff);border-radius:14px;display:flex;align-items:center;justify-content:center}.goalcard .gprev svg{width:78px;height:78px}
+.goalcard .gtxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.goalcard .gtxt span,.goalcard .gtxt small{color:var(--ink-soft);font-weight:700;font-size:14px}
+@media (max-width:760px){.projects{grid-template-columns:1fr}.pcard2{flex-direction:row;align-items:center}.pcard2 .prev{width:112px;height:124px;flex:none}.pcard2 .prev svg{height:114px}.pinfo{flex:1;min-width:0}.goalcard{flex-wrap:wrap}.goalcard .go{width:100%}}
+.pickcard{border:3px solid var(--coral)}
+.pickcard .pkisl{width:92px;flex:none}.pickcard .pkisl svg{width:100%;height:auto}
+.x2{font-family:var(--display);font-size:18px;color:#fff;background:var(--coral);border-radius:12px;padding:4px 10px 2px;flex:none}
+.mbar{display:block;height:6px;border-radius:999px;background:var(--pale-sky);overflow:hidden;margin:4px auto 0;width:70%}.mbar i{display:block;height:100%;background:var(--sun)}.mbar.ok i{background:var(--leaf)}
+.bookt{grid-column:1/-1;margin:8px 0 0}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -682,6 +741,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
         <div class="pipbob" data-fox></div>
         <div class="bubble" id="mapsay"><span id="maptext"></span><br><button class="mini" id="mapact" type="button" hidden></button></div>
       </div>
+      <div class="goalcard pickcard" id="pickCard" hidden></div>
       <div class="evcard" id="eventCard" hidden></div>
       <div class="nav">
         <button class="navbtn story" id="storyBtn" type="button"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M6 10 L18 6 L34 12 L46 8 V42 L34 46 L18 40 L6 44Z" fill="#fff1c4" stroke="#1f3557" stroke-width="2.5" stroke-linejoin="round"/><path d="M18 6 V40 M34 12 V46" stroke="#1f3557" stroke-width="2" stroke-dasharray="3 3"/><path d="M24 22 l6 6 m0 -6 l-6 6" stroke="#ff6b57" stroke-width="3.5" stroke-linecap="round"/></svg><span><b>Story Mode</b><small id="storySub">Find Pip's lost treasure map</small></span></button>
@@ -689,6 +749,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
         <button class="navbtn home" id="homeBtn" type="button"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="36" rx="22" ry="8" fill="#8fd46a"/><path d="M8 36 Q26 54 44 36" fill="#a9785a"/><rect x="18" y="20" width="16" height="14" fill="#fff5d6" stroke="#1f3557" stroke-width="2"/><path d="M15 21 L26 11 L37 21Z" fill="#ff6b57" stroke="#1f3557" stroke-width="2" stroke-linejoin="round"/><rect x="23" y="26" width="6" height="8" fill="#a0683a"/></svg><span><b>My Island</b><small>Build your own home</small></span></button>
         <button class="navbtn closet" id="closetBtn" type="button"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M26 10 a5 5 0 1 1 5 5 v4 L46 34 a3 3 0 0 1 -2 5 H8 a3 3 0 0 1 -2 -5 L21 19" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 30 L24 22 L34 30" fill="#ffc23d"/></svg><span><b>Pip's Closet</b><small>Hats, balloons &amp; trophies</small></span></button>
       </div>
+      <div class="goalcard" id="goalCard" hidden></div>
       <div class="week" id="weekCard"></div>
       <h3 class="sectitle">Challenges <small>come back every day!</small></h3>
       <div class="islands four" id="g-ch"></div>
@@ -707,6 +768,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
         <div class="ihead"><div class="iname" id="iname"></div><div class="qnum" id="qnum"></div></div>
         <div class="combo" id="combo" hidden></div>
         <div class="dots" id="dots"></div>
+        <div class="pcoins" id="pcoins"></div>
       </div>
       <div class="bossbar" id="bossbar" hidden>
         <div class="bossfig" id="bossfig"></div>
@@ -766,11 +828,12 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
       <div class="playhead"><button class="back" data-home type="button">← Map</button>
         <div class="ihead"><div class="iname">My Island</div><div class="qnum" id="homeProg"></div></div></div>
       <div class="homewrap"><div><div class="homeview" id="homeView"></div><div class="actrow htools" id="homeTools"></div><div class="hstore" id="homeStore" hidden></div></div><div class="bubble" id="hsay"></div></div>
+      <h3 class="sectitle">Grand Projects <small>big builds, one step at a time</small></h3><div class="projects" id="homeProj"></div>
       <h3 class="sectitle">Build <small>spend coins to make your island amazing</small></h3><div class="shop" id="homeShop"></div>
     </section>
     <section id="albumS" hidden>
       <div class="playhead"><button class="back" data-home type="button">← Map</button>
-        <div class="ihead"><div class="iname">Sticker Album</div><div class="qnum">Finish islands to win stickers. Complete a set for +100 coins! Doubles turn into 10 coins.</div></div></div>
+        <div class="ihead"><div class="iname">Sticker Album</div><div class="qnum">Finish islands to win stickers. Complete a set for +40 coins! Doubles turn into 4 coins.</div></div></div>
       <div id="albumBody"></div>
     </section>
 
@@ -1002,7 +1065,11 @@ const BOSSES={
   grumble:{name:'Grumble Cloud',c1:'#6b6f9e',c2:'#7a7fb0'},
   twister:{name:'Tick-Tock Twister',c1:'#3f8fb5',c2:'#5aa9cf'},
   phantom:{name:'Fog Phantom',c1:'#8a90a8',c2:'#a7adc3'},
-  king:{name:'Storm King',c1:'#4b3f8f',c2:'#6a5bc0',crown:true}
+  king:{name:'Storm King',c1:'#4b3f8f',c2:'#6a5bc0',crown:true},
+  hail:{name:'Hailstone Hopper',c1:'#4f86a6',c2:'#76aecb'},
+  dust:{name:'Dust Devil',c1:'#a07c4e',c2:'#c49c6a'},
+  gloom:{name:'Night Gloom',c1:'#2e3360',c2:'#4a5190'},
+  queen:{name:'Thunder Queen',c1:'#7a3f8f',c2:'#9d5cb6',crown:true}
 };
 function bossSVG(k='grumble'){const b=BOSSES[k];return `<svg class="boss" viewBox="0 0 130 104" aria-hidden="true">
   ${b.crown?`<path d="M44 22 L44 8 L54 16 L66 2 L78 16 L88 8 L88 22Z" fill="#ffc23d" stroke="#e09a14" stroke-width="2"/>`:''}
@@ -2131,7 +2198,7 @@ const PASSAGES=[
 function passageHTML(P){return `<div class="passage${P.lines?' lines':''}"><h4>${P.t}</h4>${P.lines?`<div class="plines">${P.p.map(l=>l?`<span class="ln">${l}</span>`:'<span class="ln gap"></span>').join('')}</div>`:`<p>${P.p.join(' ')}</p>`}</div>`}
 function genReading(t){const P=PASSAGES[Math.floor(t/3)%PASSAGES.length],Q=P.q[t%3];
   return {prompt:Q[0],visual:passageHTML(P),...strChoices(Q[1],shuffle([...Q[2]])),hint:Q[3],explain:Q[4],speak:`${P.t}. ${P.p.join(' ')} Question: ${Q[0]}`,wide:true};}
-function readingRound(isl){const ps=shuffle([...Array(PASSAGES.length).keys()]).slice(0,2);return ps.flatMap(p=>[0,1,2].map(k=>makeQ(isl,p*3+k,R(1,2e9))))}
+function readingRound(isl){const ps=dealTypes('reading_p',PASSAGES.length,2);return ps.flatMap(p=>[0,1,2].map(k=>makeQ(isl,p*3+k,R(1,2e9))))}
 
 /* ================= islands ================= */
 /* ================= Gold Rush Gulch: California history (CA HSS grade 4) ================= */
@@ -2295,7 +2362,8 @@ const GRAM=[
     ['The root <b>scrib</b> or <b>script</b> means "write". Who is a <b>scribe</b>?','A person who writes things down',['A person who sings','A person who builds houses','A person who cooks'],'Scrib = write.','A <b>scribe</b> is a person who <b>writes</b> things down.']
   ]}
 ];
-function genGrammar(t){const g=GRAM[t%GRAM.length],f=pick(g.items);return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:g.long,render:c=>c}}
+const GRAMF=GRAM.flatMap(g=>g.items.map(f=>({f,long:g.long,cat:g.name})));
+function genGrammar(t){const x=GRAMF[t%GRAMF.length],f=x.f;return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:x.long,render:c=>c}}
 const ISLANDS=[
   {id:'daily',name:'Daily Challenge',topic:'8 mixed puzzles, new every day',color:'#ff9f43',lm:'daily',special:'daily',group:'ch'},
   {id:'review',name:'Fix-It Falls',topic:'Fix your old mistakes',color:'#5ec3d6',lm:'review',special:'review',group:'ch'},
@@ -2322,7 +2390,7 @@ const ISLANDS=[
   {id:'reading',name:'Bookworm Bay',topic:'Reading & understanding',color:'#e0b45a',lm:'book',gen:genReading,types:PASSAGES.length*3,round:readingRound,noDiff:true,group:'world'},
   {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:5,group:'world'},
   {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
-  {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAM.length,group:'world'},
+  {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length,group:'world'},
   {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length,group:'world'}
 ];
 const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review');
@@ -2348,7 +2416,20 @@ const CHAPTERS=[
     outro:'Three pieces! Only one left. I can almost see the big X!'},
   {name:'Wonder Winds',islands:['riddle','words','geo','science'],boss:'king',
     intro:['The Storm King has the very last piece. He\'s the biggest storm in the whole sky!','Riddles, words, maps and science will light our way. This is the final adventure!'],
-    outro:'THE TREASURE MAP IS COMPLETE! X marks the spot... and the treasure is a mountain of coins and a golden sticker. The best treasure of all? A friend like YOU!'}
+    outro:'THE TREASURE MAP IS COMPLETE! X marks the spot... and the treasure is a mountain of coins and a golden sticker. The best treasure of all? A friend like YOU!'},
+  /* ---- Book 2: The Starlight Compass. Chapters need the green bar (8 of 10 right lately), and a new one opens every 2 days ---- */
+  {name:'The Compass Needle',book:2,islands:['addsub','mult','div'],boss:'hail',
+    intro:['Look what was hiding under the treasure: an old <b>Starlight Compass</b>! Legends say it points to the most wonderful place in the sky.','But it\'s broken into four parts, and the Hailstone Hopper just bounced away with the needle!','This time, stars are not enough. Get the <b>green bar</b> on each island (8 of 10 right lately). Then the Hopper can\'t hide!'],
+    outro:'We got the needle! It wiggles... and points east. Something sparkly is over there!'},
+  {name:'Fraction Fjord',book:2,islands:['frac','dec','measure'],boss:'dust',
+    intro:['The Dust Devil spins pieces of everything into a big mess: pizza slices, decimal points, rulers!','Fractions and decimals are friends. Show the Dust Devil you know how parts make a whole!'],
+    outro:'The east part of the compass is ours! Now it glows... toward a giant floating library?'},
+  {name:'Library in the Clouds',book:2,islands:['reading','grammar','words'],boss:'gloom',
+    intro:['The Night Gloom turned off all the lights in the Cloud Library. Nobody can read in the dark!','Read carefully, fix the sentences and find the right words. Every right answer is a little light!'],
+    outro:'The library shines again! The south part clicks into the compass. One part to go!'},
+  {name:'The Golden State',book:2,islands:['history','geo','science'],boss:'queen',
+    intro:['The Thunder Queen rules the sky above California. She has the last part of the compass.','Remember the missions, the Gold Rush, maps and science. Our home state will help us win!'],
+    outro:'THE STARLIGHT COMPASS IS WHOLE! It points to... right here. The most wonderful place in the sky is wherever we fly together, partner!'}
 ];
 
 /* stickers */
@@ -2514,7 +2595,7 @@ function normalizeProfile(p){
   if(!g.cdev||typeof g.cdev!=='object'||Array.isArray(g.cdev))g.cdev={};
   if(typeof legacy==='number'&&legacy>0&&!Object.keys(g.cdev).length)g.cdev.legacy={e:legacy,s:0};
   g.settings=Object.assign({...DEF_SETTINGS},g.settings||{});if((g.settings.sv||0)<2){g.settings.talk=false;g.settings.read=false;g.settings.sv=2}
-  g.story=Object.assign({ch:0,seen:{}},g.story||{});g.home=Object.assign({house:0,items:{},pos:{},hidden:{}},g.home||{});
+  g.story=Object.assign({ch:0,seen:{}},g.story||{});if(g.placed==null&&(g.xp||0)>0)g.placed=1;g.home=Object.assign({house:0,items:{},pos:{},hidden:{}},g.home||{});
   for(const k of ['review','wrongLog','fixedSeeds','badges'])if(!Array.isArray(g[k]))g[k]=[];
   return attachCoins(g)}
 const freshProfile=()=>normalizeProfile(null);
@@ -2529,7 +2610,7 @@ function deepMax(a,b){
   if(typeof a==='boolean'&&typeof b==='boolean')return a||b;
   return clone(a)}
 /* fields where the most recent choice wins (what Pip wears, settings, difficulty...) */
-const LATEST=['name','char','hat','balloon','pet','basket','charColor','settings','diff','wrongLog','kidPin','greetedName'];
+const LATEST=['name','char','hat','balloon','pet','basket','charColor','settings','diff','wrongLog','kidPin','greetedName','saveGoal','roll','deck'];
 function mergeProfiles(a,b){
   if(!a&&!b)return freshProfile();if(!a)return normalizeProfile(b);if(!b)return normalizeProfile(a);
   a=normalizeProfile(a);b=normalizeProfile(b);
@@ -2542,7 +2623,7 @@ function mergeProfiles(a,b){
   const la=a.lastDaily||'',lb=b.lastDaily||'',st=la===lb?((a.dstreak||0)>=(b.dstreak||0)?a:b):(la>lb?a:b);o.lastDaily=st.lastDaily;o.dstreak=st.dstreak;
   const fixed=new Set(o.fixedSeeds);o.fixedSeeds=o.fixedSeeds.slice(-400);
   const rv=new Map();for(const r of ol.review)rv.set(r.s,r);for(const r of nw.review)rv.set(r.s,r);
-  o.review=[...rv.values()].filter(r=>!fixed.has(r.s)).slice(-60).map(clone);
+  o.review=[...rv.values()].filter(r=>!fixed.has(r.s)).slice(-200).map(clone);
   return normalizeProfile(o)}
 const sameProfile=(a,b)=>stable(normalizeProfile(a))===stable(normalizeProfile(b));
 
@@ -2650,6 +2731,8 @@ function reviewDue(){const k=dayKey();return G.review.filter(r=>r.due<=k)}
 const LV=[0,15,40,75,120,180,250,340,450,600,800,1050,1350,1700,2100];
 const TITLES=['Cloud Cadet','Breeze Rider','Sky Scout','Kite Captain','Rainbow Racer','Storm Chaser','Star Pilot','Comet Commander','Galaxy Guide','Sky Legend','Wizard of the Winds','Grand Sky Master','Sky Champion','Cosmic Captain','Legend of the Skies'];
 function levelOf(xp){let l=0;while(l+1<LV.length&&xp>=LV[l+1])l++;return l}
+/* coin rewards (rebalanced Oct 2026: about 2.5x lower, so the shop and big projects last) */
+const REW={ans:4,ans2:2,star:4,best:8,daily:20,goal:12,week:40,badge:10,dup:4,set:40,story:200};
 const BADGES=[
   ['first','First Flight','Finish your first island.','#38b98a'],['perfect','Perfect Flight','Get every puzzle right on the first try.','#ffc23d'],
   ['combo5','Hot Streak','Answer 5 in a row on the first try.','#ff9f43'],['combo10','Unstoppable','Answer 10 in a row on the first try.','#ff6b57'],
@@ -2659,7 +2742,7 @@ const BADGES=[
   ['daily7','Week Warrior','Finish the Daily Challenge 7 days in a row.','#ff6b57'],['shopper','Snappy Dresser','Buy something in Pip\'s Closet.','#e2558f'],
   ['thunder','Lightning Brain','Answer 20 facts in Thunder Tower.','#7c8fb8'],['level5','Sky Scholar','Reach level 5.','#38b98a'],['rich','Treasure Keeper','Have 500 coins at once.','#e09a14'],
   ['hard','Hard Mode Hero','Get 3 stars on an island in Hard mode.','#ff6b57'],['fixer','Comeback Kid','Fix 10 old mistakes at Fix-It Falls.','#5ec3d6'],
-  ['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
+  ['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
   ['week','Personal Best','Beat last week\'s score.','#2f9fe0'],['builder','Home Builder','Build 5 things on your island.','#8fd16a'],['dream','Dream Island','Build everything on your island.','#ffc23d'],['popper','Balloon Popper','Pop 15 balloons in one bonus game.','#ff6b57'],['event','Event Champion','Win the top prize in a seasonal event.','#ff9f43'],['story','Map Master','Finish the whole Story Mode.','#6b5bd6']
 ];
 
@@ -2742,7 +2825,7 @@ function updateStats(bump){
   $('#lvnum').textContent=`Lv ${lv+1}`;$('#lvname').textContent=TITLES[lv];
   $('#xpfill').style.width=(hi?Math.min(100,(G.xp-lo)/(hi-lo)*100):100)+'%';
   $('#xptext').textContent=hi?`${G.xp-lo} / ${hi-lo} XP to ${TITLES[lv+1]}`:`Max level! ${G.xp} XP`;
-  $('#coinPill').innerHTML=`${COIN_ICON}<span>${fmt(G.coins)}</span>`;
+  $('#coinPill').innerHTML=`${COIN_ICON}<span>${fmt(G.coins)}</span>`;const pc=$('#pcoins');if(pc)pc.innerHTML=`${COIN_ICON}<span>${fmt(G.coins)}</span>`;
   $('#starPill').innerHTML=`${starSVG(true)}<span>${starTotal()} / ${MAX}</span>`;
   $('#streakPill').innerHTML=`${FLAME}<span>${curStreak()}</span><small>day streak</small>`;
   const gi=goalInfo(),gp=$('#goalPill');
@@ -2752,7 +2835,7 @@ function updateStats(bump){
 }
 function award(id){
   if(G.badges.includes(id))return;const b=BADGES.find(x=>x[0]===id);if(!b)return;
-  G.badges.push(id);if(S&&S.badges)S.badges.push(id);G.coins+=25;save();updateStats('#coinPill');sBadge();toast(`New badge: ${b[1]}`,`${b[2]} +25 coins`,b[3]);
+  G.badges.push(id);if(S&&S.badges)S.badges.push(id);G.coins+=REW.badge;save();updateStats('#coinPill');sBadge();toast(`New badge: ${b[1]}`,`${b[2]} +${REW.badge} coins`,b[3]);
 }
 function gain(c,x,el){
   G.coins+=c;G.xp+=x;if(S){S.coins+=c;S.xp+=x}
@@ -2762,16 +2845,16 @@ function gain(c,x,el){
   if(lv>=4)award('level5');if(G.coins>=500)award('rich');save();
 }
 function track(q,first,correct){
-  if(!q||!q.meta)return;const id=q.meta.i;const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
+  if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss')rollAdd(id,correct);const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
   const t=today();t.q++;if(first&&correct){t.c++;thisWeek().c++}
   if(!(first&&correct)){
     G.wrongLog.unshift({p:htmlToSpeech(q.prompt).slice(0,140),a:String(q.answer!=null?q.answer:q.kind==='order'?q.items.join(', '):q.kind==='multi'?q.correct.map(k=>SHAPES[k].name).join(', '):q.kind==='money'?fmtM(q.target):q.kind==='angle'?q.target+'°':q.target&&q.target.h?tf(q.target.h,q.target.m):''),i:id,d:dayKey()});G.wrongLog=G.wrongLog.slice(0,30);
-    if(S&&S.mode!=='review'&&id!=='ev'&&!G.review.some(r=>r.s===q.meta.s)){G.review.push({...q.meta,box:0,due:addDays(1)});if(G.review.length>60)G.review.shift()}
+    if(S&&S.mode!=='review'&&id!=='ev'&&!G.review.some(r=>r.s===q.meta.s)){G.review.push({...q.meta,box:0,due:addDays(1)});if(G.review.length>200)G.review.shift()}
   }
   checkWeek();
 }
 function checkWeek(){const lw=G.weeks[lastWeekKey()],tw=thisWeek(),wk=weekKey();
-  if(lw&&lw.c>0&&tw.c>lw.c&&G.weekRewarded!==wk){G.weekRewarded=wk;G.coins+=100;award('week');toast('You beat last week!',`${tw.c} correct answers vs ${lw.c} last week. +100 coins!`,'#2f9fe0');updateStats('#coinPill')}}
+  if(lw&&lw.c>0&&tw.c>lw.c&&G.weekRewarded!==wk){G.weekRewarded=wk;G.coins+=REW.week;award('week');toast('You beat last week!',`${tw.c} correct answers vs ${lw.c} last week. +${REW.week} coins!`,'#2f9fe0');updateStats('#coinPill')}}
 
 /* time & goal tracking */
 let tickN=0;
@@ -2783,31 +2866,69 @@ setInterval(()=>{
   const gi=goalInfo();if(gi&&gi.cur>=gi.max&&G.goalDone!==dayKey())goalReached();
 },1000);
 function goalReached(){
-  G.goalDone=dayKey();G.coins+=30;award('goal');save();updateStats('#goalPill');sWin();burst(innerWidth/2,innerHeight/3,120);
-  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Daily goal reached!</div><h2>Awesome work${nm()}!</h2><p>You did your learning for today: <b>+30 coins</b>! This is a great time for a break. Stretch, drink some water, or go play outside. You can keep playing too if you want!</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Okay!</button>`,()=>setTimeout(()=>foxMove('spin'),200));
+  G.goalDone=dayKey();G.coins+=REW.goal;award('goal');save();updateStats('#goalPill');sWin();burst(innerWidth/2,innerHeight/3,120);
+  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Daily goal reached!</div><h2>Awesome work${nm()}!</h2><p>You did your learning for today: <b>+${REW.goal} coins</b>! From now on, puzzles give fewer coins today. This is a great time for a break. Stretch, drink some water, or go play outside. You can keep playing too if you want!</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Okay!</button>`,()=>setTimeout(()=>foxMove('spin'),200));
 }
 
+/* ---------- quick check for new players: sets Easy or Normal on the core math islands ---------- */
+const PLACE_ISL=['place','addsub','mult','div','frac','area'];
+function startPlacement(){const base=byId('daily'),isl=Object.assign({},base,{id:'placement',name:'Quick Check',special:'placement'});
+  const qs=PLACE_ISL.flatMap(id=>[0,1].map(k=>{const i=byId(id);const q=makeQ(i,k%i.types,R(1,2e9),2);q.from=i.name;return q}));
+  beginRound(isl,'place',shuffle(qs));say($('#say'),`Quick check! 12 puzzles, no pressure. Just do your best${nm()}, so I know where to start.`)}
+function finishPlacement(){const pr=S.pr||{},easy=[],ok=[];
+  PLACE_ISL.forEach(id=>{const r=pr[id]||0;if(r===0){G.diff[id]=1;easy.push(byId(id).name)}else{G.diff[id]=2;ok.push(byId(id).name)}});G.placed=1;save();
+  return `${easy.length?`I set <b>${easy.join(', ')}</b> to Easy mode so you can warm up. `:''}${ok.length?`You're ready for Normal mode on ${ok.length===PLACE_ISL.length?'all the math islands':ok.join(', ')}. `:''}Next, try <b>Story Mode</b>!`}
+/* ---------- rolling accuracy: the last 20 first tries on each island ---------- */
+function rollAcc(id){const r=(G.roll||{})[id]||'';return {n:r.length,acc:r.length?r.split('').filter(x=>x==='1').length/r.length:0}}
+function rollAdd(id,ok){if(!id)return;G.roll=Object.assign({},G.roll||{});G.roll[id]=(((G.roll[id]||'')+(ok?'1':'0')).slice(-20))}
+const MASTER_N=12,MASTER_ACC=.8;
+const mastered=id=>{const m=rollAcc(id);return m.n>=MASTER_N&&m.acc>=MASTER_ACC};
+/* ---------- Pip's Pick: the trickiest topic pays double today ---------- */
+function pipPick(){
+  const pool=ISLANDS.filter(i=>i.gen&&['math','time','world'].includes(i.group)&&!i.special&&!i.flash&&STAR_ISLANDS.includes(i));
+  const accOf=i=>{const st=G.stats[i.id];return st&&st.a>=6?st.c/st.a:null};
+  let weak=pool.filter(i=>accOf(i)!==null&&accOf(i)<.8).sort((a,b)=>accOf(a)-accOf(b)).slice(0,3);
+  if(!weak.length)weak=pool.filter(i=>i.group==='math').sort((a,b)=>(G.best[a.id]||0)-(G.best[b.id]||0)||((G.stats[a.id]||{}).a||0)-((G.stats[b.id]||{}).a||0)).slice(0,3);
+  if(!weak.length)return null;const d=Math.floor(Date.parse(dayKey())/864e5);return weak[d%weak.length]}
+function renderPickCard(){const el=$('#pickCard');if(!el)return;const P=pipPick();if(!P){el.hidden=true;return}el.hidden=false;const st=G.stats[P.id],pc=st&&st.a>=6?Math.round(st.c/st.a*100):null;
+  el.innerHTML=`<div class="pkisl">${islandSVG(P.color,LANDMARKS[P.lm])}</div><div class="gtxt"><b>Pip's Pick for today: ${esc(P.name)}</b><span>${pc!==null?`Your trickiest topic right now (${pc}% right). Practice makes it easier!`:`${esc(P.topic)}: let's get stronger here!`}</span></div><span class="x2">×2 coins</span><button type="button" class="go small" id="pickGo">Play</button>`;
+  $('#pickGo').onclick=()=>start(P)}
+/* ---------- after the daily goal, coins taper off, so long sessions are not over-rewarded ---------- */
+function taper(c){const gi=goalInfo();if(!gi||G.goalDone!==dayKey()||c<=0)return c;const f=gi.cur>=gi.max*2?.25:.5;
+  if(G.taperNote!==dayKey()){G.taperNote=dayKey();setTimeout(()=>toast('Pip is getting sleepy','You reached today\'s goal, so puzzles give fewer coins now. A break is a great idea!','#7c8fb8'),400)}
+  return Math.max(1,Math.round(c*f))}
+/* ---------- optional daily time limit (set by a grown-up) ---------- */
+function limitLeft(){const L=+(G.settings.limit||0);if(!L)return Infinity;const t=today(),ex=G.limitExtra&&G.limitExtra.d===dayKey()?G.limitExtra.m:0;return L+ex-Math.floor(t.sec/60)}
+function limitGate(go){if(limitLeft()>0)return false;
+  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Time to rest</div><h2>Pip is asleep</h2><p>You played <b>${Math.floor(today().sec/60)} minutes</b> today. That's today's limit. Your brain grows while you rest, so come back tomorrow!</p><p class="note">You can still visit your island, closet and album.</p><div class="btnrow"><button class="go" type="button" id="limOk">OK, see you tomorrow!</button><button class="go alt small" type="button" id="limMore">Grown-up: 15 more minutes</button></div>`,()=>{
+    $('#limOk').onclick=closeOverlay;
+    $('#limMore').onclick=()=>{const grant=()=>{const d=dayKey(),m=G.limitExtra&&G.limitExtra.d===d?G.limitExtra.m:0;G.limitExtra={d,m:m+15};save();closeOverlay();toast('15 more minutes','A grown-up said yes!','#38b98a');go&&go()};
+      if(!ROOT.pin){grant();return}closeOverlay();askPinThen(grant)}});
+  return true}
 /* ================= screens ================= */
 let S=null,tipTimer=0,tips=[],tipI=0;
 const SCREENS=['gate','kids','map','play','done','closet','albumS','story','parent','home'];
 let curScreen='';
-function show(id){curScreen=id;document.body.classList.toggle('nogame',id==='gate'||id==='kids');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
+function show(id){curScreen=id;document.body.classList.toggle('nogame',id==='gate'||id==='kids');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);document.body.dataset.screen=id;scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
 function card(isl,i){
   const b=G.best[isl.id]||0;let status='',cls='',rib='';
-  if(isl.special==='daily'){status=dailyDone()?`<span class="status ok">Done today! Back tomorrow</span>`:`<span class="status go">+50 bonus coins</span>`;if(!dailyDone())rib='<span class="ribbon">NEW!</span>'}
+  if(isl.special==='daily'){status=dailyDone()?`<span class="status ok">Done today! Back tomorrow</span>`:`<span class="status go">+${REW.daily} bonus coins</span>`;if(!dailyDone())rib='<span class="ribbon">NEW!</span>'}
   else if(isl.special==='review'){const due=reviewDue().length,all=G.review.length;
     status=due?`<span class="status go">${due} puzzle${due>1?'s':''} to fix</span>`:all?`<span class="status lock">${all} coming back later</span>`:`<span class="status ok">No mistakes to fix!</span>`;if(due)rib=`<span class="ribbon blue">${due}</span>`}
   else if(isl.special==='boss'&&starTotal()<BOSS_NEED){cls=' locked';status=`<span class="status lock">Locked: ${starTotal()}/${BOSS_NEED} stars</span>`}
   else{status=`<span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}${G.hardMaster[isl.id]?CROWN_MINI:''}</span>`;
-    if(isl.gen&&!isl.noDiff)status+=`<span class="diff d${diffFor(isl)}">${DIFF_NAME[diffFor(isl)]}</span>`}
+    if(isl.gen&&!isl.noDiff)status+=`<span class="diff d${diffFor(isl)}">${DIFF_NAME[diffFor(isl)]}</span>`;
+    const mm=rollAcc(isl.id);if(isl.gen&&mm.n>=4)status+=`<span class="mbar${mastered(isl.id)?' ok':''}" title="Last ${mm.n} puzzles: ${Math.round(mm.acc*100)}% right"><i style="width:${Math.round(mm.acc*100)}%"></i></span>`}
   if(isl.gen&&!G.visited[isl.id])rib='<span class="ribbon blue">Explore!</span>';
+  else if(isl.gen){const pk=pipPick();if(pk&&pk.id===isl.id)rib='<span class="ribbon">×2 coins</span>'}
   return `<button class="isle${cls}" type="button" data-id="${isl.id}" style="--d:${-(i%7)*0.6}s" aria-label="${isl.name}: ${isl.topic}">${rib}
     ${islandSVG(isl.color,LANDMARKS[isl.lm])}<span class="plaque"><b>${isl.name}</b><small>${isl.topic}</small>${status}</span></button>`;
 }
 function weekCard(){const tw=thisWeek(),lw=G.weeks[lastWeekKey()];
   const target=lw&&lw.c>0?lw.c:0;
-  $('#weekCard').innerHTML=target?`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers. Last week: <b>${target}</b>. ${tw.c>target?'You beat it! Amazing!':`Beat it for <b>+100 coins</b>!`}</span><div class="bar warm"><i style="width:${Math.min(100,tw.c/(target+1)*100)}%"></i></div>`
-    :`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers on the first try. Next week, try to beat this number for <b>+100 coins</b>!</span>`;
+  renderPickCard();renderGoalCard();
+  $('#weekCard').innerHTML=target?`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers. Last week: <b>${target}</b>. ${tw.c>target?'You beat it! Amazing!':`Beat it for <b>+${REW.week} coins</b>!`}</span><div class="bar warm"><i style="width:${Math.min(100,tw.c/(target+1)*100)}%"></i></div>`
+    :`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers on the first try. Next week, try to beat this number for <b>+${REW.week} coins</b>!</span>`;
 }
 function buildTips(){
   const t=[],st=starTotal(),lv=levelOf(G.xp),n=G.name?`${esc(G.name)}, `:'';
@@ -2815,7 +2936,7 @@ function buildTips(){
   if(CUR_EV){const st=evState(CUR_EV),nx=EV_MILES.find(m=>st.pts<m[0]);t.push({text:`The <b>${CUR_EV.name}</b> is on until ${evEnd(CUR_EV)}!${nx?` Only <b>${nx[0]-st.pts} more points</b> to the next prize!`:' You won every prize. WOW!'}`,label:`Play ${CUR_EV.island}`,act:()=>start(eventIsland())})}
   if(!G.home||homeCount()<HOME.length+HOUSES.length)t.push({text:homeCount()?`Let's keep building <b>our island</b>! What should we add next?`:`Did you know we can build <b>our own island</b>? Let's start with a cozy tent!`,label:'Go to My Island',act:openHome});
   const due=reviewDue().length;if(due)t.push({text:`${n}<b>${due} old mistake${due>1?'s are':' is'}</b> waiting at Fix-It Falls. Fixing them makes your brain super strong!`,label:'Go to Fix-It Falls',act:()=>start(byId('review'))});
-  const ch=CHAPTERS[G.story.ch];if(ch)t.push({text:`Story time! We still need to find <b>map piece ${G.story.ch+1}</b>: "${ch.name}". Will you help me?`,label:'Open Story Mode',act:openStory});
+  const ch=CHAPTERS[G.story.ch];if(ch&&!chapterWaiting(G.story.ch))t.push({text:ch.book===2?`Story time! The Starlight Compass needs part <b>${G.story.ch-3}</b>: "${ch.name}". Will you help me?`:`Story time! We still need to find <b>map piece ${G.story.ch+1}</b>: "${ch.name}". Will you help me?`,label:'Open Story Mode',act:openStory});
   const unv=STAR_ISLANDS.filter(i=>i.gen&&!G.visited[i.id]);
   if(unv.length){const i=pick(unv);t.push({text:`Psst... I've never been to <b>${i.name}</b>! Want to explore it with me?`,label:`Fly to ${i.name}`,act:()=>start(i)})}
   const almost=STAR_ISLANDS.filter(i=>i.gen&&G.best[i.id]>0&&G.best[i.id]<3);
@@ -2836,7 +2957,7 @@ function renderMap(){
   adoptRemote();stopTimers();updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();
   const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
   for(const [g,sel] of Object.entries(groups))$(sel).innerHTML=ISLANDS.map((isl,i)=>isl.group===g?card(isl,i):'').join('');
-  $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'Treasure found! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}`;
+  $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'Compass fixed! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
   $('#albumSub').textContent=`${Object.keys(G.stickers).length} of ${STK.length} stickers`;
   document.querySelectorAll('.isle').forEach(b=>b.onclick=()=>{const isl=byId(b.dataset.id);
     if(isl.special==='boss'&&starTotal()<BOSS_NEED){say($('#maptext'),`Boss Island is locked! Collect <b>${BOSS_NEED-starTotal()} more stars</b> first. You can do it!`);$('#mapact').hidden=true;foxMove('wobble');sNo();scrollTo({top:0,behavior:'smooth'});return}
@@ -2844,8 +2965,8 @@ function renderMap(){
   show('map');
   tips=buildTips();tipI=0;
   if(G.greeted!==dayKey()){G.greeted=dayKey();save(true);
-    say($('#maptext'),G.xp===0?`Hi${nm()}! I'm <b>Pip</b>, a balloon-flying ${heroName()}! Solve puzzles on the islands to earn <b>stars, coins and stickers</b>. Want to start with Story Mode?`:`Welcome back${nm()}! I missed you! ${!dailyDone()?'A brand new <b>Daily Challenge</b> is waiting!':''}`);
-    const b=$('#mapact');if(G.xp===0){b.hidden=false;b.textContent='Start Story Mode';b.onclick=openStory}else{b.hidden=dailyDone();b.textContent='Play the Daily Challenge';b.onclick=()=>start(byId('daily'))}}
+    say($('#maptext'),G.xp===0?`Hi${nm()}! I'm <b>Pip</b>, a balloon-flying ${heroName()}! Solve puzzles on the islands to earn <b>stars, coins and stickers</b>. ${G.placed?'Want to start with Story Mode?':'First, a <b>quick 2-minute check</b> so I can pick puzzles that fit you just right!'}`:`Welcome back${nm()}! I missed you! ${!dailyDone()?'A brand new <b>Daily Challenge</b> is waiting!':''}`);
+    const b=$('#mapact');if(G.xp===0){b.hidden=false;if(G.placed){b.textContent='Start Story Mode';b.onclick=openStory}else{b.textContent='Quick check';b.onclick=startPlacement}}else{b.hidden=dailyDone();b.textContent='Play the Daily Challenge';b.onclick=()=>start(byId('daily'))}}
   else showTip();
   setTimeout(()=>foxClass('waving',2000),300);
   clearInterval(tipTimer);tipTimer=setInterval(()=>{if(!$('#map').hidden&&$('#overlay').hidden){showTip();if(rand()<.5)foxClass('waving',1800);else foxMove('hop')}},10000);
@@ -2858,17 +2979,25 @@ const TRY=['Hmm, not quite. Peek at the hint!','Close! Give it one more try.','T
 const NUDGE=['Take your time! Read the question one more time.','Stuck? Cross out the answers that can\'t be right.','You can do it! Think it through step by step.','Hmm, what do you notice first?','Tap the speaker to hear the question!'];
 const COMBO_MSG={3:'3 in a row! Combo bonus coins!',5:'5 in a row! You\'re on fire!',7:'7 in a row! Unstoppable!',10:'10 in a row!! LEGENDARY!',15:'15 in a row! Are you a robot?!'};
 function setAlt(n){$('#pipfly').style.transform=`translateY(${-Math.min(n,8)*9}px)`}
+/* deal question types like a deck of cards: no repeats until every type of an island was shown */
+function dealTypes(key,total,k){G.deck=Object.assign({},G.deck||{});let d=(G.deck[key]||[]).filter(x=>x<total);const out=[];
+  while(out.length<k){if(!d.length){d=shuffle([...Array(total).keys()]).filter(x=>!out.includes(x));if(!d.length)d=shuffle([...Array(total).keys()])}out.push(d.shift())}
+  G.deck[key]=d;return out}
 function start(isl,opts={}){
+  if(limitGate(()=>start(isl,opts)))return;
   if(isl.special==='boss')return startBoss(isl,opts);
-  if(isl.special==='daily'){const keep=rand;rand=seeded(+dayKey().replace(/-/g,''));const qs=Array.from({length:8},()=>mixedQ());rand=keep;return beginRound(isl,'daily',qs)}
+  if(isl.special==='daily'){const keep=rand;rand=seeded(+dayKey().replace(/-/g,''));const qs=Array.from({length:8},()=>mixedQ());rand=keep;
+    /* 3 old mistakes that are due come back inside the daily challenge, so spaced practice happens every day */
+    if(!dailyDone())shuffle(reviewDue().slice()).slice(0,3).forEach((r,i)=>{const isl2=byId(r.i);if(!isl2)return;const q=makeQ(isl2,r.t,r.s,r.d);q.from=isl2.name;q.rv=1;qs[2+i*2]=q});
+    return beginRound(isl,'daily',qs)}
   if(isl.special==='review'){const due=reviewDue();
     if(!due.length){const all=G.review.length;say($('#maptext'),all?`Nothing to fix today! <b>${all} puzzle${all>1?'s':''}</b> will come back on another day, so your brain can practice remembering.`:`No mistakes to fix. Wow! When you miss a puzzle, it comes here so you can try it again later.`);$('#mapact').hidden=true;show('map');scrollTo({top:0,behavior:'smooth'});foxMove('hop');return}
     const qs=shuffle(due.slice()).slice(0,8).map(r=>{const isl2=byId(r.i);const q=makeQ(isl2,r.t,r.s,r.d);q.from=isl2.name;return q});
     return beginRound(isl,'review',qs)}
   if(isl.flash)return startFlash(isl);
   if(isl.round)return beginRound(isl,'island',isl.round(isl));
-  const order=shuffle([...Array(isl.types).keys()]),d=diffFor(isl);
-  beginRound(isl,'island',Array.from({length:6},(_,i)=>makeQ(isl,order[i%isl.types],R(1,2e9),d)));
+  const order=isl.types>6?dealTypes(isl.id,isl.types,6):shuffle([...Array(isl.types).keys()]),d=diffFor(isl);
+  beginRound(isl,'island',Array.from({length:6},(_,i)=>makeQ(isl,order[i%order.length],R(1,2e9),d)));
 }
 function freshState(isl,mode){return {isl,mode,qs:[],i:0,score:0,tries:0,streak:0,bestStreak:0,coins:0,xp:0,locked:false,badges:[],lvNow:levelOf(G.xp),lv0:levelOf(G.xp)}}
 function beginRound(isl,mode,qs){
@@ -2895,7 +3024,7 @@ function showQ(){
   const q=S.qs[S.i];S.tries=0;S.locked=false;
   const c=$('#card');c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
-  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}`;document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i))}
+  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}`;if(q.rv&&S.mode==='daily')say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i))}
   $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;
   $('#hint').hidden=$('#feedback').hidden=$('#next').hidden=true;
@@ -2907,7 +3036,7 @@ function showQ(){
   if(q.kind==='angle')return setupAngle(q);
   if(q.kind==='multi')return setupMulti(q);
   if(q.kind==='money')return setupMoney(q);
-  if(q.numeric&&!q.kind&&/^[\d,]+$/.test(q.answer)&&Math.random()<[0,.15,.3,.5][S.mode==='island'?S.d:2]){q.kind='keypad';return setupKeypad(q)}
+  if(q.numeric&&!q.kind&&/^[\d,]+$/.test(q.answer)&&Math.random()<[0,.15,.3,.65][S.mode==='island'?S.d:2]){q.kind='keypad';return setupKeypad(q)}
   drawChoices(q,choose);
 }
 $('#howBtn').onclick=openHow;
@@ -2999,9 +3128,10 @@ function judge(ok,btn){
     S.locked=true;if(btn)btn.classList.add('right');
     const first=S.tries===0;if(first)track(q,true,true);
     if(first){S.score++;S.streak++;dot&&dot.classList.add('gold')}else{S.streak=0;dot&&dot.classList.add('ok')}
+    if(first&&S.mode==='place'){S.pr=S.pr||{};S.pr[q.meta.i]=(S.pr[q.meta.i]||0)+1}
     S.bestStreak=Math.max(S.bestStreak,S.streak);if(S.bestStreak>G.bestCombo)G.bestCombo=S.bestStreak;
-    let c=first?10:5;if(first&&S.streak>=3)c+=Math.min(S.streak,8)*2;if(S.mode==='island'&&S.d===3)c=Math.round(c*1.5);
-    if(S.mode==='review')reviewResult(q,first);
+    let c=first?REW.ans:REW.ans2;if(first&&S.streak>=3)c+=Math.min(S.streak,8)-1;if(S.mode==='island'){const pk=pipPick();if(pk&&pk.id===S.isl.id)c*=2}c=taper(c);if(S.mode==='island'&&S.d===3)c=Math.round(c*1.5);
+    if(S.mode==='review'||q.rv)reviewResult(q,first);
     sYes();burstAt(btn||$('#card'));foxMove(S.streak>=5&&S.streak%5===0?'spin':'hop');setAlt(S.score);
     gain(c,first?2:1,btn||$('#prompt'));
     if(S.mode==='boss')bossHit();
@@ -3019,7 +3149,7 @@ function judge(ok,btn){
     if(S.mode==='boss'){S.locked=true;track(q,true,false);loseHeart();reveal(q);say($('#say'),S.hearts>0?`Ouch! The ${BOSSES[S.boss].name} zapped a heart! Shake it off!`:`Oh no, no hearts left! It got away this time...`);
       const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ();return}
     if(S.tries===1){track(q,true,false);say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge()}
-    else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review')reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
+    else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review'||q.rv)reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
       $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ()}
   }
 }
@@ -3055,7 +3185,7 @@ function loseHeart(){S.hearts--;$('#hearts').innerHTML=[0,1,2].map(k=>HEART(k<S.
 function finishBoss(win){
   const name=BOSSES[S.boss].name;
   if(win&&S.chapter==null)award('boss');
-  let extra='';if(win&&S.chapter!=null&&G.story.ch===S.chapter){G.story.ch++;extra=' You won a map piece!';S.storyWin=S.chapter}
+  let extra='';if(win&&S.chapter!=null&&G.story.ch===S.chapter){G.story.ch++;G.story.at=Object.assign({},G.story.at||{},{[S.chapter]:dayKey()});extra=CHAPTERS[S.chapter].book===2?' You won a compass part!':' You won a map piece!';S.storyWin=S.chapter}
   done(win?S.hearts:0,win?`You beat the ${name} with ${S.hearts} heart${S.hearts>1?'s':''} left!${extra}`:`The ${name} escaped after ${S.hpMax-S.hp} hits. Practice on the islands and try again!`,{title:win?'Victory!':'So close!',sticker:win?(S.chapter!=null?'rare':1):0});
 }
 
@@ -3081,19 +3211,22 @@ function nextFlash(){
 
 /* results */
 function finishRound(){
-  const n=S.qs.length,s=S.score,st=s===n?3:s>=Math.ceil(n*.66)?2:s>=1?1:0;let extra='',stick=st>=3?.6:st===2?.4:st===1?.2:0;
+  const n=S.qs.length,s=S.score;let st=s===n?3:s>=Math.ceil(n*.66)?2:s>=1?1:0;let extra='',stick=st>=3?.6:st===2?.4:st===1?.2:0;
   if(S.mode==='daily'){
-    if(!dailyDone()){G.dstreak=G.lastDaily===yesterdayKey()?G.dstreak+1:1;G.lastDaily=dayKey();gain(50,5,$('#prompt'));extra=` Daily bonus: +50 coins! Streak: ${G.dstreak} day${G.dstreak>1?'s':''}!`;stick=1;
+    if(!dailyDone()){G.dstreak=G.lastDaily===yesterdayKey()?G.dstreak+1:1;G.lastDaily=dayKey();gain(REW.daily,5,$('#prompt'));extra=` Daily bonus: +${REW.daily} coins! Streak: ${G.dstreak} day${G.dstreak>1?'s':''}!`;stick=1;
       if(G.dstreak>=3)award('daily3');if(G.dstreak>=7)award('daily7')}
     else extra=' (You already got today\'s bonus. Come back tomorrow for a new challenge!)';
   }
+  if(S.mode==='place')extra=' '+finishPlacement();
   if(S.mode==='review'){const left=G.review.length;extra=` ${left?`${left} puzzle${left>1?'s':''} will come back on a later day.`:'Your mistake list is empty!'}`}
   if(S.mode==='island'){
     if(s===n)award('perfect');
     if(s===n&&S.d===3){G.hardMaster[S.isl.id]=1;award('hard')}
-    if(G.settings.diff==='auto'){const cur=G.diff[S.isl.id]||2;
-      if(s>=n&&cur<3){G.diff[S.isl.id]=cur+1;extra=` ${S.isl.name} is now <b>${DIFF_NAME[cur+1]}</b> mode. Bigger challenges, more coins!`}
-      else if(s<=2&&cur>1){G.diff[S.isl.id]=cur-1;extra=` Next time ${S.isl.name} will be <b>${DIFF_NAME[cur-1]}</b> to help you practice.`}}
+    const id=S.isl.id,m=rollAcc(id);
+    if(st===3&&!mastered(id)&&!(G.best[id]>=3)){st=2;extra+=m.n<MASTER_N?` Almost a 3rd star! Play <b>${MASTER_N-m.n} more</b> puzzles here and keep getting them right to earn it.`:` Almost a 3rd star! It shines when you get <b>8 of 10</b> right here (right now: ${Math.round(m.acc*100)}%).`}
+    if(G.settings.diff==='auto'&&!S.isl.noDiff){const cur=G.diff[id]||2;
+      if(cur<3&&m.n>=MASTER_N&&m.acc>=.85){G.diff[id]=cur+1;G.roll[id]='';extra+=` ${S.isl.name} is now <b>${DIFF_NAME[cur+1]}</b> mode. Bigger challenges, more coins!`}
+      else if(cur>1&&m.n>=8&&m.acc<.6){G.diff[id]=cur-1;G.roll[id]='';extra+=` Next time ${S.isl.name} will be <b>${DIFF_NAME[cur-1]}</b> so you can practice and grow.`}}
   }
   done(st,`${s} of ${n} puzzles right on the first try.${extra}`,{sticker:stick});
 }
@@ -3103,8 +3236,8 @@ function dropSticker(chance){
   else{if(Math.random()>chance)return null;const r=Math.random();rar=r<.06?'gold':r<.32?'rare':'common'}
   const evPool=CUR_EV?STK.filter(s=>s.set===CUR_EV.set&&s.rar===rar):[],useEv=evPool.length&&(S&&S.isl&&S.isl.id==='ev'?Math.random()<.85:Math.random()<.3);
   const pool=useEv?evPool:STK.filter(s=>!s.ev&&s.rar===rar),s=pool[Math.floor(Math.random()*pool.length)],dup=!!G.stickers[s.id];
-  G.stickers[s.id]=(G.stickers[s.id]||0)+1;if(dup)G.coins+=10;
-  for(const [set,name] of STICKER_SETS)if(!G.setsDone[set]&&STK.filter(x=>x.set===set).every(x=>G.stickers[x.id])){G.setsDone[set]=1;G.coins+=100;award('album');setTimeout(()=>toast(`Set complete: ${name}!`,'+100 coins!','#e2558f'),1500)}
+  G.stickers[s.id]=(G.stickers[s.id]||0)+1;if(dup)G.coins+=REW.dup;
+  for(const [set,name] of STICKER_SETS)if(!G.setsDone[set]&&STK.filter(x=>x.set===set).every(x=>G.stickers[x.id])){G.setsDone[set]=1;G.coins+=REW.set;award('album');setTimeout(()=>toast(`Set complete: ${name}!`,`+${REW.set} coins!`,'#e2558f'),1500)}
   return {s,dup};
 }
 function done(st,line,o={}){
@@ -3112,7 +3245,7 @@ function done(st,line,o={}){
   const isl=S.isl,hasStars=STAR_ISLANDS.includes(isl)&&S.chapter==null,prev=G.best[isl.id]||0,newBest=hasStars&&st>prev;
   G.visited[isl.id]=1;award('first');
   if(newBest)G.best[isl.id]=st;
-  let bonus=st*10+(newBest?20:0);gain(bonus,st,$('#dstars'));
+  let bonus=taper(st*REW.star+(newBest?REW.best:0));gain(bonus,st,$('#dstars'));
   const tot=starTotal();if(tot>=20)award('stars20');if(tot>=40)award('stars40');if(tot>=MAX)award('stars60');
   if(STAR_ISLANDS.every(i=>i.special||G.visited[i.id]))award('travel');if(isl.id==='time'&&st===3)award('clock');
   const drop=dropSticker(o.sticker);
@@ -3133,9 +3266,9 @@ function done(st,line,o={}){
   show('done');refreshFoxes();
   if(st>0){sWin();setTimeout(()=>burst(innerWidth/2,innerHeight/3,120),300)}
   setTimeout(()=>{foxMove(st>=2?'spin':st>0?'hop':'wobble');if(st===0)foxClass('sad',1500)},400);
-  if(S.storyWin!=null){const ch=CHAPTERS[S.storyWin],last=S.storyWin===CHAPTERS.length-1;
-    if(last){G.coins+=500;award('story');save();updateStats('#coinPill')}
-    setTimeout(()=>overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Map piece ${S.storyWin+1} of 4</div>${mapSVG(G.story.ch,true)}<p>${ch.outro}${last?' <b>+500 coins!</b>':''}</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Hooray!</button>`,()=>{burst(innerWidth/2,innerHeight/2,160);sWin()}),1200)}
+  if(S.storyWin!=null){const ch=CHAPTERS[S.storyWin],last=S.storyWin===3||S.storyWin===CHAPTERS.length-1,b2=ch.book===2;
+    if(last){G.coins+=REW.story;award(b2?'story2':'story');save();updateStats('#coinPill')}
+    setTimeout(()=>overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">${b2?`Compass part ${S.storyWin-3} of 4`:`Map piece ${S.storyWin+1} of 4`}</div>${b2?compassSVG2(G.story.ch-4,true):mapSVG(Math.min(G.story.ch,4),true)}<p>${ch.outro}${last?` <b>+${REW.story} coins!</b>`:''}</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Hooray!</button>`,()=>{burst(innerWidth/2,innerHeight/2,160);sWin()}),1200)}
   if(levelOf(G.xp)>S.lv0)setTimeout(()=>showLevelUp(levelOf(G.xp)),1400);
 }
 function showLevelUp(lv){overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Level up!</div><h2>Level ${lv+1}</h2><p>You're now a <b>${TITLES[lv]}</b>! Keep flying to unlock the next title.</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Awesome!</button>`,()=>{sLevel();burst(innerWidth/2,innerHeight/2,160);setTimeout(()=>foxMove('spin'),200)})}
@@ -3243,16 +3376,30 @@ function mapSVG(pieces,fresh){
   });
   return `<svg class="storymap" viewBox="0 0 316 216" role="img" aria-label="Treasure map with ${pieces} of 4 pieces found"><defs>${defs}</defs>${body}</svg>`;
 }
-function chapterReady(i){return CHAPTERS[i].islands.every(id=>(G.best[id]||0)>=2)}
+function chapterReady(i){const ch=CHAPTERS[i];return ch.book===2?ch.islands.every(id=>mastered(id)):ch.islands.every(id=>(G.best[id]||0)>=2)}
+/* Book 2 opens one chapter at a time: a new chapter can start 2 days after the one before it was won */
+function chapterOpensOn(i){if(!CHAPTERS[i]||CHAPTERS[i].book!==2||i===4)return '';const at=((G.story||{}).at||{})[i-1];if(!at)return '';const d=new Date(at+'T12:00:00');d.setDate(d.getDate()+2);return d.toISOString().slice(0,10)}
+const chapterWaiting=i=>{const o=chapterOpensOn(i);return o&&dayKey()<o?o:''};
+function compassSVG2(n,fresh){const cx=158,cy=108,R1=92,R0=26,cols=['#2f9fe0','#ffc23d','#38b98a','#e2558f'],L=['N','E','S','W'];let o='';
+  for(let k=0;k<4;k++){const a0=(-135+90*k)*Math.PI/180,a1=a0+Math.PI/2,P=(r,a)=>`${(cx+r*Math.cos(a)).toFixed(1)} ${(cy+r*Math.sin(a)).toFixed(1)}`,am=(a0+a1)/2;
+    const d=`M${P(R0,a0)} L${P(R1,a0)} A${R1} ${R1} 0 0 1 ${P(R1,a1)} L${P(R0,a1)} A${R0} ${R0} 0 0 0 ${P(R0,a0)}Z`,got=k<n;
+    o+=got?`<g class="${fresh&&k===n-1?'fresh':''}"><path d="${d}" fill="${cols[k]}" stroke="#1f3557" stroke-width="2.5" stroke-linejoin="round"/><text x="${(cx+60*Math.cos(am)).toFixed(1)}" y="${(cy+60*Math.sin(am)+9).toFixed(1)}" text-anchor="middle" ${FONT} font-size="26" fill="#fff">${L[k]}</text></g>`
+      :`<g><path d="${d}" fill="#dfe6ee" stroke="#9aa6b6" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${(cx+60*Math.cos(am)).toFixed(1)}" y="${(cy+60*Math.sin(am)+9).toFixed(1)}" text-anchor="middle" ${FONT} font-size="26" fill="#b3bfcd">?</text></g>`}
+  o+=`<circle cx="${cx}" cy="${cy}" r="${R0}" fill="${n>=4?'#ffd56b':'#fff5d6'}" stroke="#1f3557" stroke-width="2.5"/>`;
+  if(n>=1)o+=`<path d="M${cx} ${cy-20} L${cx+7} ${cy} L${cx} ${cy+20} L${cx-7} ${cy}Z" fill="#ff6b57" stroke="#1f3557" stroke-width="2"/>`;
+  if(n>=4)o+=`<circle cx="${cx}" cy="${cy}" r="${R1+8}" fill="none" stroke="#ffd56b" stroke-width="5" opacity=".8"/>`;
+  return `<svg class="storymap" viewBox="0 0 316 216" role="img" aria-label="Starlight Compass with ${n} of 4 parts found"><rect width="316" height="216" rx="18" fill="#2c3266"/>${[[30,30],[280,40],[40,180],[270,190],[150,14]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.5" fill="#fff" opacity=".8"/>`).join('')}${o}</svg>`}
 function openStory(){
   stopTimers();show('story');refreshFoxes();
-  $('#storyMap').innerHTML=mapSVG(G.story.ch);
-  const cur=CHAPTERS[G.story.ch];
-  say($('#storysay'),!cur?`We found the treasure together${nm()}! You can replay any chapter boss for fun and stickers.`:chapterReady(G.story.ch)?`All islands are ready! Time to battle the <b>${BOSSES[cur.boss].name}</b>!`:`Chapter ${G.story.ch+1}: <b>${cur.name}</b>. Earn 2 stars on each island below to call out the boss.`);
-  $('#chapters').innerHTML=CHAPTERS.map((ch,i)=>{const lock=i>G.story.ch,fin=i<G.story.ch,ready=chapterReady(i);
-    return `<div class="chap${lock?' lock':''}${fin?' done':''}"><h4>${ch.name}<small>Chapter ${i+1} · ${fin?'Piece found!':lock?'Locked':'In progress'}</small></h4>
+  const book2=G.story.ch>=4;$('#storyMap').innerHTML=book2?compassSVG2(G.story.ch-4):mapSVG(Math.min(G.story.ch,4));
+  const st=$('#story .iname');if(st)st.textContent=book2?'The Starlight Compass':"Pip's Lost Map";const sq=$('#story .qnum');if(sq)sq.textContent=book2?'Get the green bar (8 of 10 right lately) on every island in a chapter, then beat its boss.':'Earn 2 stars on every island in a chapter, then beat its boss to win a map piece.';
+  const cur=CHAPTERS[G.story.ch],wait=cur?chapterWaiting(G.story.ch):'';
+  say($('#storysay'),!cur?`We fixed the Starlight Compass together${nm()}! You can replay any chapter boss for fun and stickers.`:wait?`What an adventure! The next chapter, <b>${cur.name}</b>, opens on <b>${new Date(wait+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}</b>. Practice its islands now so you're ready!`:chapterReady(G.story.ch)?`All islands are ready! Time to battle the <b>${BOSSES[cur.boss].name}</b>!`:`Chapter ${G.story.ch+1}: <b>${cur.name}</b>. ${cur.book===2?'Get the <b>green bar</b> (8 of 10 right lately) on each island below':'Earn 2 stars on each island below'} to call out the boss.`);
+  const order=CHAPTERS.map((_,i)=>i).sort((x,y)=>book2?((x>=4?0:1)-(y>=4?0:1))||x-y:x-y);
+  $('#chapters').innerHTML=order.map(i=>{const ch=CHAPTERS[i];const lock=i>G.story.ch,fin=i<G.story.ch,w=i===G.story.ch?chapterWaiting(i):'',ready=chapterReady(i)&&!w;
+    return `${i===4?'<h3 class="sectitle bookt">Book 2: The Starlight Compass</h3>':i===0?'<h3 class="sectitle bookt">Book 1: The Lost Map</h3>':''}<div class="chap${lock?' lock':''}${fin?' done':''}"><h4>${ch.name}<small>Chapter ${i+1} · ${fin?(ch.book===2?'Compass part found!':'Piece found!'):lock?'Locked':w?'Opens '+new Date(w+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'In progress'}</small></h4>
       <p>Boss: ${BOSSES[ch.boss].name}</p>
-      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=(G.best[id]||0)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(G.best[id]||0)}</button>`}).join('')}</div>
+      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=ch.book===2?mastered(id):(G.best[id]||0)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(G.best[id]||0)}</button>`}).join('')}</div>
       <div class="actrow" style="justify-content:flex-start">${lock?'':`<button type="button" class="go small alt" data-intro="${i}">Story</button><button type="button" class="go small${ready?'':' alt'}" data-boss="${i}" ${ready?'':'disabled'}>${fin?'Replay boss':'Battle boss'}</button>`}</div></div>`}).join('');
   document.querySelectorAll('[data-isl]').forEach(b=>b.onclick=()=>start(byId(b.dataset.isl)));
   document.querySelectorAll('[data-intro]').forEach(b=>b.onclick=()=>playDialog(CHAPTERS[+b.dataset.intro].intro));
@@ -3374,6 +3521,7 @@ function renderKids(){
     <div class="kidgrid">${ids.map(id=>{const p=ROOT.profiles[id],stars=STAR_ISLANDS.reduce((s,i)=>s+(p.best[i.id]||0),0);
       return `<button type="button" class="kid${id===ROOT.current?' cur':''}" data-kid="${id}"><span class="kav">${kidAvatar(p)}</span><b>${esc(p.name||'Player')}${p.kidPin?` <i class="klock" title="Has a PIN">${LOCK}</i>`:''}</b><small>Level ${levelOf(p.xp)+1} · ${stars} ★</small></button>`}).join('')}
       <button type="button" class="kid add" id="kAdd"><span class="plus">+</span><b>Add a player</b><small>Just a first name or nickname</small></button></div>
+    ${ids.length?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for 4th graders, built on California's grade 4 standards: math, reading, grammar, science and California history. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A grown-up can sign in to save progress and see what to practice</li></ul></div>`}
     ${guest.length?`<div class="kimport"><p>This device has progress from before you signed in: <b>${guest.map(([,p])=>esc(p.name||'Player')).join(', ')}</b>. Keep it safe in your account?</p><button class="go small leaf" type="button" id="kImp">Add to my account</button></div>`:''}
     <div class="kidfoot">${acct}<a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy</a></div>`;
   refreshFoxes();
@@ -3425,11 +3573,13 @@ function pinHTML(){const t={enter:'Enter your grown-up PIN',create:'Create a 4-d
   <div class="pinbox" id="pinbox">${[0,1,2,3].map(i=>`<i class="${i<pinBuf.length?'on':''}"></i>`).join('')}</div>
   <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-pk="${n}">${n}</button>`).join('')}<button type="button" class="del" data-pk="x" aria-label="Cancel">✕</button><button type="button" data-pk="0">0</button><button type="button" class="del" data-pk="del" aria-label="Delete">⌫</button></div>
   ${pinStage==='enter'?`<p class="note">${CL.mode==='cloud'?'Forgot the PIN? Tap "Switch player" (the name button), sign out, then sign in again: Grown-ups opens without the PIN for 10 minutes so you can set a new one.':'Forgot the PIN? Use the save code to restore progress, or contact whoever set it.'}</p>`:''}`}
+let pinThen=null;
+function askPinThen(fn){pinThen=fn;pinBuf='';pinStage='enter';pinFirst='';overlay(pinHTML(),bindPin)}
 function bindPin(){document.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>pinKey(b.dataset.pk))}
 function pinKey(k){
-  if(k==='x'){closeOverlay();return}if(k==='del')pinBuf=pinBuf.slice(0,-1);else if(pinBuf.length<4)pinBuf+=k;
+  if(k==='x'){pinThen=null;closeOverlay();return}if(k==='del')pinBuf=pinBuf.slice(0,-1);else if(pinBuf.length<4)pinBuf+=k;
   if(pinBuf.length===4){
-    if(pinStage==='enter'){if(pinBuf===ROOT.pin){closeOverlay();renderParent();return}bad()}
+    if(pinStage==='enter'){if(pinBuf===ROOT.pin){closeOverlay();if(pinThen){const f=pinThen;pinThen=null;f();return}renderParent();return}bad()}
     else if(pinStage==='create'){pinFirst=pinBuf;pinBuf='';pinStage='confirm'}
     else{if(pinBuf===pinFirst){ROOT.pin=pinBuf;persistLocal();if(CL.mode==='cloud')CL.api.setUserDoc({pin:pinBuf}).catch(()=>{});CL.unlockUntil=0;closeOverlay();renderParent();return}pinStage='create';bad()}
   }
@@ -3456,12 +3606,13 @@ function renderParent(){
       <p>All time: ${allA} puzzles, ${allA?Math.round(allC/allA*100):0}% right on the first try. Best combo: ${G.bestCombo}. Mistakes fixed for good: ${G.fixed}.</p></div>
     <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small></li>`).join('')}</ul><p>Tip: tap a topic below to play it together.</p>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
       <p>Waiting at Fix-It Falls: <b>${G.review.length}</b> puzzle${G.review.length===1?'':'s'} (${reviewDue().length} due today).</p></div>
-    <div class="pcard wide"><h4>Topics</h4><div class="tscroll"><table class="topics"><thead><tr><th>Island</th><th>Puzzles</th><th>First-try accuracy</th><th>Level</th><th>Stars</th></tr></thead><tbody>
-      ${rows.map(r=>`<tr><td><button type="button" class="cisl" data-play="${r.i.id}">${r.i.name}</button></td><td>${r.s.a}</td><td>${r.p==null?'–':`<div class="acc ${r.p<60?'low':r.p<80?'mid':''}"><div class="bar"><i style="width:${r.p}%"></i></div>${r.p}%</div>`}</td><td>${DIFF_NAME[diffFor(r.i)]}</td><td>${'★'.repeat(G.best[r.i.id]||0)||'–'}</td></tr>`).join('')}
+    <div class="pcard wide"><h4>Topics</h4><div class="tscroll"><table class="topics"><thead><tr><th>Island</th><th>Puzzles</th><th>First-try accuracy</th><th>Last 20</th><th>Level</th><th>Stars</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr><td><button type="button" class="cisl" data-play="${r.i.id}">${r.i.name}</button></td><td>${r.s.a}</td><td>${r.p==null?'–':`<div class="acc ${r.p<60?'low':r.p<80?'mid':''}"><div class="bar"><i style="width:${r.p}%"></i></div>${r.p}%</div>`}</td><td>${(()=>{const m=rollAcc(r.i.id);return m.n?`${Math.round(m.acc*100)}%${m.n>=12&&m.acc>=.8?' ✓':''}`:'–'})()}</td><td>${DIFF_NAME[diffFor(r.i)]}</td><td>${'★'.repeat(G.best[r.i.id]||0)||'–'}</td></tr>`).join('')}
     </tbody></table></div></div>
     <div class="pcard wide"><h4>Recent mistakes</h4>${G.wrongLog.length?`<ul class="mist">${G.wrongLog.slice(0,10).map(w=>`<li>${esc(w.p)}<small>${(byId(w.i)||{}).name||''} · answer: ${esc(w.a)} · ${w.d}</small></li>`).join('')}</ul>`:'<p>No mistakes yet!</p>'}</div>
     <div class="pcard"><h4>Settings for ${esc(G.name||'this player')}</h4>
-      <div class="setrow"><label for="setGoal">Daily goal<small>Pip suggests a break when it's reached</small></label>${sel('setGoal',[['min10','10 minutes'],['min15','15 minutes'],['min20','20 minutes'],['min30','30 minutes'],['q30','30 puzzles'],['off','No goal']],G.settings.goal)}</div>
+      <div class="setrow"><label for="setGoal">Daily goal<small>Pip suggests a break when it's reached; after it, puzzles give fewer coins</small></label>${sel('setGoal',[['min10','10 minutes'],['min15','15 minutes'],['min20','20 minutes'],['min30','30 minutes'],['q30','30 puzzles'],['off','No goal']],G.settings.goal)}</div>
+      <div class="setrow"><label for="setLimit">Daily time limit<small>After it, new puzzles wait until tomorrow. Your PIN can add 15 minutes.</small></label>${sel('setLimit',[['0','No limit'],['30','30 minutes'],['45','45 minutes'],['60','1 hour'],['90','1.5 hours'],['120','2 hours']],String(G.settings.limit||'0'))}</div>
       <div class="setrow"><label for="setDiff">Difficulty<small>Auto adjusts each island after every round</small></label>${sel('setDiff',[['auto','Auto (recommended)'],['1','Always Easy'],['2','Always Normal'],['3','Always Hard']],G.settings.diff)}</div>
       ${canSpeak?`<div class="setrow"><label for="setVoice">Pip's voice<small>Voices come from this device. Ones marked "Natural" or "Enhanced" sound best.</small></label><select id="setVoice" style="max-width:100%"></select></div>
       <div class="setrow"><label for="setVstyle">Voice style</label>${sel('setVstyle',[['fox','Cheerful fox (higher, bouncy)'],['calm','Gentle fox (softer, slower)'],['plain','Normal voice']],G.settings.vstyle)}</div>
@@ -3498,6 +3649,7 @@ function renderParent(){
   setSync();$('#codeOut').value=encodeSave(ROOT.current);if(CL.mode==='cloud')loadBackups();
   document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>start(byId(b.dataset.play)));
   $('#setGoal').onchange=e=>{G.settings.goal=e.target.value;save();updateStats()};
+  $('#setLimit').onchange=e=>{G.settings.limit=e.target.value;save()};
   $('#setDiff').onchange=e=>{G.settings.diff=e.target.value;save()};
   const bindSw=(id,key,fx)=>{$('#'+id).onclick=e=>{G.settings[key]=!G.settings[key];e.currentTarget.setAttribute('aria-checked',G.settings[key]);save();fx&&fx()}};
   fillVoiceSelect();
@@ -3588,9 +3740,43 @@ const HOME=[
   {id:'mailbox',name:'Mailbox',price:60,pos:[384,292],z:3,draw:(x,y)=>`<rect x="${x-2.5}" y="${y-30}" width="5" height="30" fill="#8c5a2c"/><path d="M${x-12} ${y-30} V${y-44} Q${x-12} ${y-52} ${x} ${y-52} Q${x+12} ${y-52} ${x+12} ${y-44} V${y-30}Z" fill="#2f9fe0" ${STK2}/><path d="M${x+12} ${y-46} H${x+18} V${y-56}" stroke="#ff6b57" stroke-width="3" fill="none"/>`},
   {id:'pond',name:'Duck Pond',price:250,pos:[458,292],z:3,draw:(x,y)=>`<ellipse cx="${x}" cy="${y-10}" rx="40" ry="13" fill="#5fc3f0" ${STK2}/><g class="hduck"><ellipse cx="${x-12}" cy="${y-14}" rx="7" ry="4.5" fill="#ffd56b" ${STK2}/><circle cx="${x-17}" cy="${y-20}" r="3.5" fill="#ffd56b" ${STK2}/><path d="M${x-21} ${y-20} l-4 1 l4 1" fill="#ff9f43"/></g><ellipse cx="${x+14}" cy="${y-12}" rx="6" ry="4" fill="#fff" ${STK2}/><circle cx="${x+18}" cy="${y-17}" r="3" fill="#fff" ${STK2}/>`}
 ];
+/* ---------- Grand Projects: big multi-stage builds to save up for ---------- */
+const PROJECTS=[
+  {id:'treehouse',name:'Giant Treehouse',pos:[118,212],stages:[['Giant tree',1200],['Ladder and deck',1600],['Tree hut',2200],['Lights and flag',2000]],
+   draw:(x,y,n)=>{let o=`<path d="M${x-16} ${y} Q${x-9} ${y-60} ${x-12} ${y-112} H${x+12} Q${x+9} ${y-60} ${x+16} ${y}Z" fill="#8c5a2c" ${STK2}/><path d="M${x-16} ${y} l-10 4 M${x+16} ${y} l10 4" stroke="#1f3557" stroke-width="2"/>`+
+     `<circle cx="${x-36}" cy="${y-124}" r="30" fill="#2e9e5b" ${STK2}/><circle cx="${x+36}" cy="${y-124}" r="30" fill="#2e9e5b" ${STK2}/><circle cx="${x}" cy="${y-150}" r="42" fill="#38b98a" ${STK2}/>`;
+     if(n>=2)o+=`<path d="M${x-30} ${y-92} L${x-12} ${y-70} M${x+30} ${y-92} L${x+12} ${y-70}" stroke="#a0683a" stroke-width="5" stroke-linecap="round"/><rect x="${x-48}" y="${y-100}" width="96" height="9" rx="2" fill="#c98a4b" ${STK2}/>`;
+     if(n>=3)o+=`<rect x="${x-26}" y="${y-138}" width="52" height="38" fill="#ffd56b" ${STK2}/><path d="M${x-34} ${y-136} L${x} ${y-166} L${x+34} ${y-136}Z" fill="#ff6b57" ${STK2}/><circle cx="${x-11}" cy="${y-120}" r="7" fill="#7fd0f5" ${STK2}/><rect x="${x+5}" y="${y-126}" width="13" height="26" rx="6" fill="#a0683a" ${STK2}/>`;
+     if(n>=2)o+=`<path d="M${x+34} ${y} V${y-100} M${x+48} ${y} V${y-100}" stroke="#a0683a" stroke-width="4"/>`+Array.from({length:7},(_,i)=>`<path d="M${x+34} ${y-8-i*13} H${x+48}" stroke="#a0683a" stroke-width="3"/>`).join('');
+     if(n>=4)o+=`<path d="M${x} ${y-166} V${y-194}" stroke="#1f3557" stroke-width="2.5"/><path d="M${x} ${y-194} l18 6 l-18 6Z" fill="#2f9fe0" ${STK2}/>`+[[-62,-118],[-44,-150],[-20,-176],[22,-178],[46,-152],[64,-120]].map(([a,b],i)=>`<circle class="hglow" cx="${x+a}" cy="${y+b}" r="4" fill="${['#ffc23d','#e2558f','#7fd0f5'][i%3]}"/>`).join('');
+     return o}},
+  {id:'observatory',name:'Star Observatory',pos:[522,214],stages:[['Stone tower',1800],['Silver dome',2600],['Big telescope',3600]],
+   draw:(x,y,n)=>{let o=`<rect x="${x-32}" y="${y-96}" width="64" height="96" fill="#d8dee8" ${STK2}/>`+[30,60].map(d=>`<path d="M${x-32} ${y-d} H${x+32}" stroke="#aab4c3" stroke-width="2"/>`).join('')+`<path d="M${x-10} ${y} V${y-22} Q${x} ${y-34} ${x+10} ${y-22} V${y}Z" fill="#6b5bd6" ${STK2}/><circle cx="${x}" cy="${y-66}" r="7" fill="#7fd0f5" ${STK2}/>`;
+     if(n>=3)o+=`<g transform="rotate(-38 ${x} ${y-112})"><rect x="${x-7}" y="${y-166}" width="14" height="58" rx="3" fill="#2f9fe0" ${STK2}/><rect x="${x-9}" y="${y-170}" width="18" height="10" rx="2" fill="#1f3557"/></g>`;
+     if(n>=2)o+=`<path d="M${x-38} ${y-96} A38 38 0 0 1 ${x+38} ${y-96}Z" fill="#b9c3cf" ${STK2}/><path d="M${x-5} ${y-133} V${y-96} H${x+5} V${y-133}" fill="#1f3557"/>`;
+     if(n>=3)o+=[[-58,-150],[50,-166],[70,-128],[-30,-180]].map(([a,b])=>`<path class="hglow" d="M${x+a} ${y+b-7} l2.2 4.8 5 .6 -3.7 3.4 1 5 -4.5-2.5 -4.5 2.5 1-5 -3.7-3.4 5-.6z" fill="#ffc23d"/>`).join('');
+     return o}},
+  {id:'airship',name:'Sky Airship',pos:[440,34],sky:true,scale:.7,stages:[['Balloon',1500],['Cabin',2000],['Propeller and sails',2500]],
+   draw:(x,y,n)=>{let o='';
+     if(n>=3)o+=`<path d="M${x-66} ${y} L${x-92} ${y-24} L${x-84} ${y} L${x-92} ${y+24}Z" fill="#e2558f" ${STK2}/><g class="hspin" style="transform-origin:${x-98}px ${y}px"><ellipse cx="${x-98}" cy="${y-12}" rx="4" ry="12" fill="#1f3557"/><ellipse cx="${x-98}" cy="${y+12}" rx="4" ry="12" fill="#1f3557"/></g>`;
+     if(n>=2)o+=`<path d="M${x-40} ${y+20} L${x-26} ${y+40} M${x+40} ${y+20} L${x+26} ${y+40} M${x} ${y+28} V${y+40}" stroke="#1f3557" stroke-width="2"/><rect x="${x-32}" y="${y+40}" width="64" height="20" rx="6" fill="#a0683a" ${STK2}/>`+[-18,0,18].map(d=>`<circle cx="${x+d}" cy="${y+50}" r="5" fill="#7fd0f5" ${STK2}/>`).join('');
+     o+=`<ellipse cx="${x}" cy="${y}" rx="70" ry="28" fill="#ff9f43" ${STK2}/><path d="M${x-70} ${y} H${x+70} M${x-36} ${y-24} Q${x-46} ${y} ${x-36} ${y+24} M${x+36} ${y-24} Q${x+46} ${y} ${x+36} ${y+24}" stroke="#e07a18" stroke-width="3" fill="none"/><ellipse cx="${x-24}" cy="${y-12}" rx="18" ry="6" fill="#fff" opacity=".4"/>`;
+     if(n>=3)o+=`<path d="M${x+70} ${y} V${y-30}" stroke="#1f3557" stroke-width="2"/><path d="M${x+70} ${y-30} l16 5 l-16 5Z" fill="#38b98a" ${STK2}/>`;
+     return `<g class="hbob">${o}</g>`}}
+];
+function projScene(P,n){const [x,y]=P.pos,d=P.draw(x,y,n);return P.scale?`<g transform="translate(${x} ${y}) scale(${P.scale}) translate(${-x} ${-y})">${d}</g>`:d}
+const projStage=id=>((G.home&&G.home.proj)||{})[id]||0;
+const projDone=P=>projStage(P.id)>=P.stages.length;
+function projNext(P){const n=projStage(P.id);return n<P.stages.length?{n,name:P.stages[n][0],price:P.stages[n][1]}:null}
+function saveGoalProject(){const g=PROJECTS.find(P=>P.id===G.saveGoal&&!projDone(P));if(g)return g;const open=PROJECTS.filter(P=>!projDone(P));if(!open.length)return null;return open.slice().sort((a,b)=>projNext(a).price-projNext(b).price)[0]}
+function projThumb(P,n){const [x,y]=P.pos;const vb=P.sky?`${x-110} ${y-45} 200 115`:`${x-90} ${y-205} 180 215`;return `<svg viewBox="${vb}">${P.draw(x,y,Math.max(1,n))}</svg>`}
+function renderGoalCard(){const el=$('#goalCard');if(!el)return;const P=saveGoalProject();if(!P){el.hidden=true;return}el.hidden=false;const nx=projNext(P),have=Math.max(0,G.coins),pct=Math.min(100,have/nx.price*100),can=have>=nx.price;
+  el.innerHTML=`<div class="gprev">${projThumb(P,nx.n+1)}</div><div class="gtxt"><b>${can?'You can build it!':'Saving for'}: ${esc(P.name)}</b><span>Step ${nx.n+1} of ${P.stages.length}: ${esc(nx.name)}</span><div class="bar warm"><i style="width:${pct}%"></i></div><small>${fmt(Math.min(have,nx.price))} / ${fmt(nx.price)} coins</small></div><button type="button" class="go small${can?' leaf':' alt'}" id="goalGo">${can?'Build it':'See projects'}</button>`;
+  $('#goalGo').onclick=()=>{openHome();setTimeout(()=>{const t=$('#homeProj');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},150)}}
 const HOUSE_POS=[320,206],HERO_POS=[547,283];
+function defPos(id){if(id==='house')return HOUSE_POS;if(id==='hero')return HERO_POS;if(id.startsWith('p_')){const P=PROJECTS.find(x=>'p_'+x.id===id);return P?P.pos:[320,240]}const it=HOME.find(x=>x.id===id);return it?it.pos:[320,240]}
 let homeEdit=false,homeSel='';
-function homePos(id){const P=(G.home.pos||{})[id];if(P)return P;if(id==='house')return HOUSE_POS;if(id==='hero')return HERO_POS;const it=HOME.find(x=>x.id===id);return it?it.pos:[320,240]}
+function homePos(id){const P=(G.home.pos||{})[id];if(P)return P;return defPos(id)}
 /* keep a thing's foot on the grassy part of the island */
 function clampFoot(x,y){const cx=320,cy=246,rx=262,ry=66;let dx=(x-cx)/rx,dy=(y-cy)/ry;const d=Math.hypot(dx,dy);if(d>1){dx/=d;dy/=d}return [Math.round(cx+dx*rx),Math.round(cy+dy*ry)]}
 function homeSVG(){
@@ -3598,6 +3784,7 @@ function homeSVG(){
   const things=[];
   const hid=H.hidden||{};
   HOME.forEach(it=>{if(it.id!=='rainbow'&&H.items[it.id]&&!hid[it.id])things.push({id:it.id,name:it.name,def:it.pos,draw:()=>it.draw(...it.pos)})});
+  PROJECTS.forEach(P=>{const n=projStage(P.id);if(n&&!hid['p_'+P.id])things.push({id:'p_'+P.id,name:P.name,def:P.pos,draw:()=>projScene(P,n)})});
   if(H.house&&!hid.house)things.push({id:'house',name:HOUSES[H.house-1].name,def:HOUSE_POS,draw:()=>HOUSES[H.house-1].draw(...HOUSE_POS)});
   things.push({id:'hero',name:heroName(),def:HERO_POS,draw:()=>foxSVG().replace('<svg class="fox" viewBox="0 0 120 165" aria-hidden="true">',`<svg x="${HERO_POS[0]-39}" y="${HERO_POS[1]-107}" width="78" height="107" viewBox="0 0 120 165">`)});
   things.forEach(t=>{t.p=homePos(t.id)});
@@ -3613,30 +3800,32 @@ function homeSVG(){
     ${homeEdit?'<ellipse cx="320" cy="246" rx="262" ry="66" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="10 8" opacity=".7"/>':''}
     ${hint}${body}</svg>`;
 }
-function setHomePos(id,p){G.home.pos=Object.assign({},G.home.pos||{});G.home.pos[id]=clampFoot(p[0],p[1])}
+function clampSky(x,y){return [Math.round(Math.min(540,Math.max(100,x))),Math.round(Math.min(80,Math.max(30,y)))]}
+const clampFor=id=>id==='p_airship'?clampSky:clampFoot;
+function setHomePos(id,p){G.home.pos=Object.assign({},G.home.pos||{});G.home.pos[id]=clampFor(id)(p[0],p[1])}
 function bindHomeDrag(){
   const svg=$('#homeView svg');if(!svg||!homeEdit)return;
   const pt=e=>{const m=svg.getScreenCTM().inverse();const q=new DOMPoint(e.clientX,e.clientY).matrixTransform(m);return [q.x,q.y]};
   svg.querySelectorAll('[data-mv]').forEach(g=>{
     const id=g.dataset.mv;
     g.onpointerdown=e=>{e.preventDefault();homeSel=id;svg.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));g.classList.add('sel','dragging');
-      const start=pt(e),p0=homePos(id).slice(),def=(id==='house'?HOUSE_POS:id==='hero'?HERO_POS:HOME.find(x=>x.id===id).pos);let cur=p0,moved=false;
+      const start=pt(e),p0=homePos(id).slice(),def=defPos(id);let cur=p0,moved=false;
       try{g.setPointerCapture(e.pointerId)}catch(err){}
-      g.onpointermove=ev=>{const q=pt(ev);cur=clampFoot(p0[0]+q[0]-start[0],p0[1]+q[1]-start[1]);moved=true;g.setAttribute('transform',`translate(${cur[0]-def[0]} ${cur[1]-def[1]})`)};
+      g.onpointermove=ev=>{const q=pt(ev);cur=clampFor(id)(p0[0]+q[0]-start[0],p0[1]+q[1]-start[1]);moved=true;g.setAttribute('transform',`translate(${cur[0]-def[0]} ${cur[1]-def[1]})`)};
       g.onpointerup=g.onpointercancel=()=>{g.onpointermove=g.onpointerup=g.onpointercancel=null;g.classList.remove('dragging');if(moved){setHomePos(id,cur);save();tone([392,523],.05)}renderHomeView()}};
     g.onkeydown=e=>{if((e.key==='Delete'||e.key==='Backspace')&&id!=='hero'){e.preventDefault();putAway(id);return}const k={ArrowLeft:[-8,0],ArrowRight:[8,0],ArrowUp:[0,-6],ArrowDown:[0,6]}[e.key];if(!k)return;e.preventDefault();const p=homePos(id);setHomePos(id,[p[0]+k[0],p[1]+k[1]]);homeSel=id;save(true);renderHomeView();const n=$(`#homeView [data-mv="${id}"]`);n&&n.focus()};
   });
 }
-const thingName=id=>id==='house'?(HOUSES[G.home.house-1]||{}).name||'House':id==='hero'?heroName():(HOME.find(x=>x.id===id)||{}).name||id;
-function storedIds(){const H=G.home,hid=H.hidden||{};const out=[];if(H.house&&hid.house)out.push('house');HOME.forEach(it=>{if(H.items[it.id]&&hid[it.id])out.push(it.id)});return out}
+const thingName=id=>id==='house'?(HOUSES[G.home.house-1]||{}).name||'House':id==='hero'?heroName():id.startsWith('p_')?(PROJECTS.find(x=>'p_'+x.id===id)||{}).name||id:(HOME.find(x=>x.id===id)||{}).name||id;
+function storedIds(){const H=G.home,hid=H.hidden||{};const out=[];if(H.house&&hid.house)out.push('house');HOME.forEach(it=>{if(H.items[it.id]&&hid[it.id])out.push(it.id)});PROJECTS.forEach(P=>{if(projStage(P.id)&&hid['p_'+P.id])out.push('p_'+P.id)});return out}
 function putAway(id){if(id==='hero')return;G.home.hidden=Object.assign({},G.home.hidden||{},{[id]:1});homeSel='';save();tone([523,392],.06);renderHome();say($('#hsay'),`I put the <b>${thingName(id)}</b> in storage. It's still yours, so you can bring it back for free!`)}
 function placeBack(id){const h=Object.assign({},G.home.hidden||{});delete h[id];G.home.hidden=h;homeSel=id;save();tone([392,523,659],.06);renderHome();say($('#hsay'),`The <b>${thingName(id)}</b> is back on our island!`);foxMove('hop')}
-function storageThumb(id){if(id==='house')return `<svg viewBox="240 40 160 180">${HOUSES[G.home.house-1].draw(320,206)}</svg>`;const it=HOME.find(x=>x.id===id),[x,y]=it.pos;
+function storageThumb(id){if(id.startsWith('p_')){const P=PROJECTS.find(x=>'p_'+x.id===id);return projThumb(P,projStage(P.id))}if(id==='house')return `<svg viewBox="240 40 160 180">${HOUSES[G.home.house-1].draw(320,206)}</svg>`;const it=HOME.find(x=>x.id===id),[x,y]=it.pos;
   const vb=id==='rainbow'?'80 30 480 180':id==='lamps'?`${x-50} ${y-80} 100 90`:`${x-60} ${y-140} 120 150`;return `<svg viewBox="${vb}">${it.draw(x,y)}</svg>`}
 function renderHomeView(){$('#homeView').innerHTML=homeSVG();bindHomeDrag();
   const sel=homeSel&&homeSel!=='hero'&&$(`#homeView [data-mv="${homeSel}"]`)?homeSel:'';
   const t=$('#homeTools');if(t)t.innerHTML=homeEdit?`<button type="button" class="go small leaf" id="hDone">Done</button>${sel?`<button type="button" class="go small alt" id="hAway">Put away: ${esc(thingName(sel))}</button>`:''}<button type="button" class="go small alt" id="hReset">Reset layout</button><span class="note">Drag things to move them. Tap one to put it in storage.</span>`
-    :`<button type="button" class="go small" id="hMove"${homeCount()?'':' disabled'}>Move or put away</button>`;
+    :`<button type="button" class="go small" id="hMove"${movableCount()?'':' disabled'}>Move or put away</button>`;
   const st=storedIds(),tray=$('#homeStore');
   if(tray){tray.hidden=!st.length;tray.innerHTML=st.length?`<h4>In storage <small>still yours, free to bring back</small></h4><div class="storelist">${st.map(id=>`<button type="button" class="storeit" data-place="${id}" title="Put back on the island"><span class="prev">${storageThumb(id)}</span><b>${esc(thingName(id))}</b><small>Put back</small></button>`).join('')}</div>`:''}
   document.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>placeBack(b.dataset.place));
@@ -3646,6 +3835,7 @@ function renderHomeView(){$('#homeView').innerHTML=homeSVG();bindHomeDrag();
   if($('#hReset'))$('#hReset').onclick=e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again: all back to the start';return}G.home.pos={};G.home.hidden={};save();renderHome()};
 }
 function homeCount(){G.home=G.home||{house:0,items:{}};return Object.keys(G.home.items).length+G.home.house}
+const movableCount=()=>homeCount()+PROJECTS.filter(P=>projStage(P.id)).length
 function openHome(){
   stopTimers();homeEdit=false;homeSel='';show('home');renderHome();
   const n=homeCount();say($('#hsay'),n===0?`This is <b>your</b> island! Spend coins to build a home, plant trees and add fun things. Let's start with a tent!`:n<6?`Our island is looking great! What should we build next?`:`Wow, this is the best island in the whole sky!`);foxClass('waving',1500);
@@ -3661,6 +3851,11 @@ function renderHome(){
     const vb=it.id==='rainbow'?'80 30 480 180':it.id==='lamps'?`${x-50} ${y-80} 100 90`:`${x-60} ${y-140} 120 150`;
     const away=have&&(H.hidden||{})[it.id];
     return `<div class="item${have&&!away?' wearing':''}"><div class="prev"><svg viewBox="${vb}">${it.draw(x,y)}</svg></div><b>${it.name}</b>${away?`<button type="button" class="buy" data-place="${it.id}">Put back</button>`:have?`<button type="button" class="worn" disabled>Built!</button>`:`<button type="button" class="${G.coins>=it.price?'buy':''}" data-build="${it.id}" ${G.coins>=it.price?'':'disabled'}>${COIN_ICON} ${it.price}</button>`}</div>`}).join('');
+  $('#homeProj').innerHTML=PROJECTS.map(P=>{const n=projStage(P.id),nx=projNext(P),goal=saveGoalProject()===P;
+    return `<div class="pcard2${nx?'':' done'}"><div class="prev">${projThumb(P,nx?nx.n+1:n)}</div><div class="pinfo"><b>${P.name}</b><div class="psteps">${P.stages.map((st,i)=>`<span class="pst${i<n?' on':''}" title="${esc(st[0])}"></span>`).join('')}</div>${nx?`<small>Step ${nx.n+1} of ${P.stages.length}: <b>${esc(nx.name)}</b></small><div class="prow"><button type="button" class="${G.coins>=nx.price?'buy':''}" data-proj="${P.id}" ${G.coins>=nx.price?'':'disabled'}>${COIN_ICON}${fmt(nx.price)}</button><button type="button" class="pgoal${goal?' on':''}" data-pgoal="${P.id}" aria-pressed="${goal}">${goal?'★ My goal':'☆ Make it my goal'}</button></div>`:`<small><b>Finished!</b> All ${P.stages.length} steps built.</small>`}</div></div>`}).join('');
+  document.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{const P=PROJECTS.find(x=>x.id===b.dataset.proj),nx=projNext(P);if(!nx||G.coins<nx.price)return;G.coins-=nx.price;G.home.proj=Object.assign({},G.home.proj||{},{[P.id]:nx.n+1});
+    if(projDone(P))award('grand');built0(projDone(P)?`We finished the <b>${P.name}</b>! It's the best thing in the whole sky!`:`Step ${nx.n+1} done: <b>${nx.name}</b>! Only ${P.stages.length-nx.n-1} more to go!`)});
+  document.querySelectorAll('[data-pgoal]').forEach(b=>b.onclick=()=>{G.saveGoal=b.dataset.pgoal;save();renderHome();tone([523,659],.06)});
   document.querySelectorAll('[data-house]').forEach(b=>b.onclick=()=>{const H=G.home,nx=HOUSES[H.house];if(!nx||G.coins<nx.price)return;G.coins-=nx.price;H.house++;built0(`Our <b>${nx.name}</b> is ready! It's perfect!`)});
   document.querySelectorAll('[data-build]').forEach(b=>b.onclick=()=>{const it=HOME.find(x=>x.id===b.dataset.build);if(G.coins<it.price||G.home.items[it.id])return;G.coins-=it.price;G.home.items[it.id]=1;built0(`Yay, a <b>${it.name}</b>! I love it!`)});
   document.querySelectorAll('#homeShop [data-place]').forEach(b=>b.onclick=()=>{placeBack(b.dataset.place);scrollTo({top:0,behavior:'smooth'})});
