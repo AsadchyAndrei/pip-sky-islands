@@ -995,6 +995,69 @@ body[data-screen=play] .sky *,body[data-screen=play] .isle svg.isl{animation-pla
   #eventCard .actrow .go{width:100%;justify-content:center;text-align:center;padding-inline:8px;font-size:17px;white-space:nowrap}
 }
 @media (max-width:360px){#eventCard .actrow .go{font-size:15px;padding-inline:6px}#eventCard .evtop b{font-size:20px}}
+
+/* island status pills are labels, never buttons (".status.go" used to pick up the big button style) */
+.status.go{font-family:var(--body);font-size:13.5px;font-weight:800;letter-spacing:0;padding:3px 10px 1px;border-radius:999px;background:var(--pale-sun);color:#8a5a00;box-shadow:none;align-self:auto;cursor:inherit}
+/* ===== phone polish for every block (same approach as the event card) ===== */
+@media (max-width:760px){
+  /* section headers: back button and title on one line, the description underneath at full width */
+  body:not([data-screen=play]):not([data-screen=done]) .playhead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+  body:not([data-screen=play]):not([data-screen=done]) .playhead .ihead{display:contents}
+  body:not([data-screen=play]):not([data-screen=done]) .playhead .iname{flex:1 1 0;min-width:0;font-size:24px}
+  body:not([data-screen=play]):not([data-screen=done]) .playhead .qnum{flex:1 1 100%;font-size:14.5px;line-height:1.35}
+  /* plan: the other steps' buttons sit in an even row */
+  .tdsteps li:not(.cur) .pkbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .tdsteps li:not(.cur) .pkbtns .go{width:100%;white-space:nowrap;font-size:16px;padding-inline:6px}
+  .tdsteps li:not(.cur) .tdtx{flex:1 1 0;min-width:0}
+  .tdsteps li:not(.cur) .pkbtns{flex-basis:100%}
+  /* island cards: smaller art tucked behind the name plate, so twice as many fit on a screen */
+  .islands,.islands.four,.islands.five{gap:10px 12px}
+  .isle{padding:2px 2px 6px}
+  .isle svg.isl{max-width:124px;margin-bottom:-22px;position:relative;z-index:0}
+  .isle .plaque{position:relative;z-index:1;padding:8px 8px 7px}
+  .plaque b{font-size:17px}.plaque small{font-size:12.5px}
+  .stars .st{width:18px;height:18px}
+  .isle .ribbon{top:2px;right:2px;font-size:13px;padding:3px 8px 1px}
+  .mapR .sectitle{margin:20px 0 6px;font-size:21px}.mapR .sectitle small{font-size:13.5px}
+  /* wish / project card and weekly challenge: compact */
+  .goalcard{gap:10px 12px;padding:10px 12px}
+  .goalcard .gprev{width:64px;height:64px}.goalcard .gprev svg{width:58px;height:58px}
+  .goalcard .gtxt b{font-size:16px;line-height:1.2}
+  .week{padding:10px 14px;gap:6px 10px}.week b{font-size:18px}.week .wtext{font-size:14.5px;line-height:1.35}
+  #map .foot{font-size:13px;margin-top:22px}
+  /* round summary: badges as small chips, buttons full width */
+  #done .done{gap:10px;margin-top:10px}
+  #done .done .pipbob{width:110px}
+  #done .bigstars .st{width:56px;height:56px}
+  #done .earned{gap:6px}#done .badge{font-size:14px;padding:4px 10px 2px 4px}#done .badge svg{width:28px;height:28px}
+  #done .btnrow{display:grid;grid-template-columns:1fr;gap:10px;width:100%;max-width:420px}
+  #done .btnrow .go{width:100%;text-align:center}
+  /* my island: project cards and build shop line up */
+  .pcard2{padding:10px;gap:10px}
+  .pcard2 .prev{width:84px;height:96px}.pcard2 .prev svg{height:88px}
+  .prow{gap:6px}.prow [data-proj],.pgoal{min-height:40px}
+  #homeShop .item .prev{width:100%;height:92px;display:flex;align-items:center;justify-content:center}
+  #homeShop .item .prev svg{max-width:100%;max-height:100%;width:auto;height:100%}
+  .shop{gap:10px}.item{padding:8px 8px 10px}
+  /* story: chapter cards a bit tighter */
+  .chap{padding:14px 14px}.chap h4{font-size:20px}
+  .storytop{gap:12px}
+  /* grown-ups: weekly tip button on its own line; topics table becomes a list of cards */
+  .pfocus .go{display:flex;margin:10px 0 0;width:100%;justify-content:center}
+  table.topics:not(.cur){min-width:0}
+  table.topics:not(.cur) thead{display:none}
+  table.topics:not(.cur) tr{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:8px 0;border-bottom:1px solid var(--line)}
+  table.topics:not(.cur) td{border:0;padding:0;font-size:13.5px;color:var(--ink-soft)}
+  table.topics:not(.cur) td:nth-child(1){order:1;flex:1 1 calc(100% - 100px);min-width:0}
+  table.topics:not(.cur) td:nth-child(6){order:2;color:#e09a14;font-size:15px}
+  table.topics:not(.cur) td:nth-child(3){order:3;flex:1 1 100%;color:var(--ink)}
+  table.topics:not(.cur) td:nth-child(2){order:4}table.topics:not(.cur) td:nth-child(4){order:5}table.topics:not(.cur) td:nth-child(5){order:6}
+  table.topics:not(.cur) td:nth-child(2)::before{content:"Puzzles "}
+  table.topics:not(.cur) td:nth-child(4)::before{content:"· Last 20: "}
+  table.topics:not(.cur) td:nth-child(5)::before{content:"· "}
+  table.topics:not(.cur) td:nth-child(3):not(:has(.acc)){display:none}
+  table.topics:not(.cur) .cisl{min-height:36px;padding:4px 10px 2px}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -4605,10 +4668,10 @@ function projThumb(P,n){const [x,y]=P.pos;const vb=P.sky?`${x-110} ${y-45} 200 1
 function wishItem(){const w=G.wish;if(!w||!SHOP[w.k])return null;const it=SHOP[w.k].items()[w.id];if(!it||SHOP[w.k].list().includes(w.id))return null;return {...w,it}}
 function renderGoalCard(){const el=$('#goalCard');if(!el)return;const W=wishItem();
   if(W){el.hidden=false;const have=Math.max(0,G.coins),pr=W.it.price,can=have>=pr;
-    el.innerHTML=`<div class="gprev wishprev">${foxSVG({[W.k]:W.id})}</div><div class="gtxt"><b>${can?'You can get your wish!':'My wish'}: ${esc(W.it.name)}</b><span>${can?'Go to the closet and get it!':`${fmt(pr-have)} more coins to go`}</span><div class="bar warm"><i style="width:${Math.min(100,have/pr*100)}%"></i></div><small>${fmt(Math.min(have,pr))} / ${fmt(pr)} coins</small></div><button type="button" class="go small${can?' leaf':' alt'}" id="goalGo">${can?'Get it':'Closet'}</button>`;
+    el.innerHTML=`<div class="gprev wishprev">${foxSVG({[W.k]:W.id})}</div><div class="gtxt"><b>${can?`You can get your wish: ${esc(W.it.name)}!`:`My wish: ${esc(W.it.name)}`}</b><span>${can?'Go to the closet and get it!':`${fmt(pr-have)} more coins to go`}</span><div class="bar warm"><i style="width:${Math.min(100,have/pr*100)}%"></i></div><small>${fmt(Math.min(have,pr))} / ${fmt(pr)} coins</small></div><button type="button" class="go small${can?' leaf':' alt'}" id="goalGo">${can?'Get it':'Closet'}</button>`;
     $('#goalGo').onclick=openCloset;return}
   const P=saveGoalProject();if(!P){el.hidden=true;return}el.hidden=false;const nx=projNext(P),have=Math.max(0,G.coins),pct=Math.min(100,have/nx.price*100),can=have>=nx.price;
-  el.innerHTML=`<div class="gprev">${projThumb(P,nx.n+1)}</div><div class="gtxt"><b>${can?'You can build it!':'Saving for'}: ${esc(P.name)}</b><span>Step ${nx.n+1} of ${P.stages.length}: ${esc(nx.name)}</span><div class="bar warm"><i style="width:${pct}%"></i></div><small>${fmt(Math.min(have,nx.price))} / ${fmt(nx.price)} coins</small></div><button type="button" class="go small${can?' leaf':' alt'}" id="goalGo">${can?'Build it':'See projects'}</button>`;
+  el.innerHTML=`<div class="gprev">${projThumb(P,nx.n+1)}</div><div class="gtxt"><b>${can?`You can build the ${esc(P.name)}!`:`Saving for: ${esc(P.name)}`}</b><span>Step ${nx.n+1} of ${P.stages.length}: ${esc(nx.name)}</span><div class="bar warm"><i style="width:${pct}%"></i></div><small>${fmt(Math.min(have,nx.price))} / ${fmt(nx.price)} coins</small></div><button type="button" class="go small${can?' leaf':' alt'}" id="goalGo">${can?'Build it':'See projects'}</button>`;
   $('#goalGo').onclick=()=>{openHome();setTimeout(()=>{const t=$('#homeProj');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},150)}}
 const HOUSE_POS=[320,206],HERO_POS=[547,283];
 function defPos(id){if(id==='house')return HOUSE_POS;if(id==='hero')return HERO_POS;if(id.startsWith('p_')){const P=PROJECTS.find(x=>'p_'+x.id===id);return P?P.pos:[320,240]}const it=HOME.find(x=>x.id===id);return it?it.pos:[320,240]}
@@ -4662,7 +4725,7 @@ function storageThumb(id){if(id.startsWith('p_')){const P=PROJECTS.find(x=>'p_'+
 function renderHomeView(){$('#homeView').innerHTML=homeSVG();bindHomeDrag();
   const sel=homeSel&&homeSel!=='hero'&&$(`#homeView [data-mv="${homeSel}"]`)?homeSel:'';
   const t=$('#homeTools');if(t)t.innerHTML=homeEdit?`<button type="button" class="go small leaf" id="hDone">Done</button>${sel?`<button type="button" class="go small alt" id="hAway">Put away: ${esc(thingName(sel))}</button>`:''}<button type="button" class="go small alt" id="hReset">Reset layout</button><span class="note">Drag things to move them. Tap one to put it in storage.</span>`
-    :`<button type="button" class="go small" id="hMove"${movableCount()?'':' disabled'}>Move or put away</button>`;
+    :`<button type="button" class="go small" id="hMove"${movableCount()?'':' hidden'}>Move or put away</button>`;
   const st=storedIds(),tray=$('#homeStore');
   if(tray){tray.hidden=!st.length;tray.innerHTML=st.length?`<h4>In storage <small>still yours, free to bring back</small></h4><div class="storelist">${st.map(id=>`<button type="button" class="storeit" data-place="${id}" title="Put back on the island"><span class="prev">${storageThumb(id)}</span><b>${esc(thingName(id))}</b><small>Put back</small></button>`).join('')}</div>`:''}
   document.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>placeBack(b.dataset.place));
