@@ -3729,14 +3729,16 @@ function setDuck(v){duck=v;if(mGain&&mTimer&&actx){const t=actx.currentTime;mGai
 const canSpeak='speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';
 let voice=null;
 function voiceList(){if(!canSpeak)return [];try{return speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang))}catch(e){return []}}
-function voiceScore(v){let s=0;if(/^en[-_]US/i.test(v.lang))s+=20;else if(/^en[-_](GB|AU|CA|IE|NZ)/i.test(v.lang))s+=8;
+function voiceScore(v){let s=0;if(v.localService===false&&navigator.onLine===false)s-=200;if(/^en[-_]US/i.test(v.lang))s+=20;else if(/^en[-_](GB|AU|CA|IE|NZ)/i.test(v.lang))s+=8;
   if(/natural|neural|online|enhanced|premium/i.test(v.name))s+=30;
   if(/Samantha|Ava|Allison|Susan|Aria|Jenny|Ana\b|Emma|Google US English|Karen|Moira|Tessa|Serena|Zira/i.test(v.name))s+=15;
   if(/Fred|Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Pipe Organ|Trinoids|Whisper|Zarvox|Jester|Organ|Superstar|Wobble|Junior|Ralph|Kathy|Princess|Grandpa|Grandma|Rocko|Shelley|Sandy|Flo|Eddy|Reed/i.test(v.name))s-=60;
   return s}
 function sortedVoices(){return voiceList().sort((a,b)=>voiceScore(b)-voiceScore(a))}
-function pickVoice(){const vs=sortedVoices();const want=G&&G.settings.voice;voice=(want&&vs.find(v=>v.name===want))||vs[0]||null}
-if(canSpeak){pickVoice();try{speechSynthesis.onvoiceschanged=()=>{pickVoice();fillVoiceSelect()}}catch(e){}}
+function pickVoice(){const vs=sortedVoices();const want=G&&G.settings.voice;let w=want&&vs.find(v=>v.name===want);if(w&&w.localService===false&&navigator.onLine===false)w=null;voice=w||vs[0]||null}
+if(canSpeak){pickVoice();try{speechSynthesis.onvoiceschanged=()=>{pickVoice();fillVoiceSelect()}}catch(e){}
+  /* offline, voices that need the internet stay silent: switch to a voice on this device, and back when online */
+  addEventListener('offline',pickVoice);addEventListener('online',pickVoice)}
 const VSTYLE={fox:{pitch:1.45,rate:1.04},calm:{pitch:1.2,rate:.92},plain:{pitch:1,rate:.95}};
 function fillVoiceSelect(){const el=document.getElementById('setVoice');if(!el)return;const vs=sortedVoices();
   el.innerHTML=`<option value="">Best voice (automatic)</option>`+vs.map(v=>`<option value="${esc(v.name)}"${v.name===G.settings.voice?' selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}
