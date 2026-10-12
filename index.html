@@ -4016,10 +4016,11 @@ function showTip(){const tp=tips[tipI%tips.length];tipI++;say($('#maptext'),tp.t
 function checkChest(){const c=G.chest;if(!c||!c.from||c.from>=dayKey()||c.from<=(G.chestOpened||''))return;G.chestOpened=c.from;G.coins+=REW.chest;save();
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Welcome back${nm()}!</div><h2>Your surprise chest</h2><svg viewBox="0 0 120 90" style="width:150px;align-self:center" aria-hidden="true"><rect x="14" y="40" width="92" height="44" rx="6" fill="#b5773f" stroke="#8c5a2c" stroke-width="3"/><path d="M14 44 Q14 14 60 14 Q106 14 106 44Z" fill="#c98a4c" stroke="#8c5a2c" stroke-width="3"/><rect x="52" y="36" width="16" height="18" rx="3" fill="#ffc23d" stroke="#e09a14" stroke-width="2"/><g fill="#ffd56b"><circle cx="34" cy="10" r="4"/><circle cx="86" cy="8" r="3"/><circle cx="60" cy="4" r="3"/></g></svg><p>You reached your goal yesterday and took a break. That's how brains grow! <b>+${REW.chest} coins</b>.</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Yay!</button>`,()=>{updateStats('#coinPill');sWin();burst(innerWidth/2,innerHeight/3,100)})}
 let mapTab=(()=>{try{const t=localStorage.getItem('pip-tab');return t==='world'?'world':'math'}catch(e){return 'math'}})();
-let tabMinH=0;
-function setTab(t){const cur=document.querySelector('.tabp:not([hidden])');if(cur&&cur.offsetHeight)tabMinH=Math.max(tabMinH,cur.offsetHeight);mapTab=t;try{localStorage.setItem('pip-tab',t)}catch(e){}document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('.tabp').forEach(p=>{p.hidden=p.dataset.tabp!==t;p.style.minHeight=tabMinH?tabMinH+'px':''})}
+/* keep the page from getting shorter while switching tabs (no jumping), but let the 4th-grade note stay right under the islands */
+let mapMinH=0;
+function setTab(t){const mp=$('#map');if(mp&&mp.offsetHeight){mapMinH=Math.max(mapMinH,mp.offsetHeight);mp.style.minHeight=mapMinH+'px'}mapTab=t;try{localStorage.setItem('pip-tab',t)}catch(e){}document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('.tabp').forEach(p=>{p.hidden=p.dataset.tabp!==t})}
 document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.onclick=()=>{setTab(b.dataset.tab);tone([523,659],.04)});
-function renderMap(){
+function renderMap(){mapMinH=0;{const mp=$('#map');if(mp)mp.style.minHeight=''}
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
   adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
   pickExplore();const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
