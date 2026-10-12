@@ -1332,6 +1332,32 @@ html body.big .ichip{font-size:17px}
 .ownbadge{position:absolute;top:16px;left:16px;z-index:1;background:var(--pale-leaf);color:#1d7a55;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px 1px}
 html body.big .ownbadge{font-size:14px}html body.big #inShop .item .isize{font-size:15px}
 @media (max-width:760px){#inShop .item .prev{height:96px}.ownbadge{top:13px;left:13px;font-size:11px;padding:2px 7px 0}.ichips{gap:6px}.ichip{padding:7px 12px 5px;font-size:14px}}
+.ichip.lockd{opacity:.75;background:rgba(255,255,255,.4)}
+.ichip svg.ico{width:16px;height:16px;vertical-align:-.15em;margin-right:4px}
+.inrooms{margin-top:2px}
+.inpip{cursor:pointer}
+.zzz{font-weight:800;animation:glow 2.4s ease-in-out infinite}
+.incozy{margin-top:12px;background:var(--card);border-radius:20px;padding:10px 14px 12px;box-shadow:0 5px 0 var(--line)}
+.czhead{display:flex;align-items:center;gap:10px}.czhead b{font-family:var(--display);font-weight:400;font-size:20px}.czhead small{font-weight:800;color:var(--ink-soft);font-size:14px}
+.czhearts{display:flex;gap:3px}.czhearts svg{width:22px;height:22px;fill:#eef1f6;stroke:#c9d3e1;stroke-width:1.5}.czhearts svg.on{fill:#e2558f;stroke:#b8325f}
+.czlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.czlist span{display:inline-flex;align-items:center;gap:4px;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px 1px;background:#eef1f6;color:var(--ink-soft)}
+.czlist span.ok{background:var(--pale-leaf);color:#1d7a55}.czlist svg{width:13px;height:13px}
+html body.big .czlist span{font-size:15px}
+.setgrid{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.setcard{background:var(--card);border-radius:22px;padding:14px 16px 16px;box-shadow:0 5px 0 var(--line);display:flex;flex-direction:column;gap:10px;outline:3px solid transparent;outline-offset:-3px}
+.setcard.won{outline-color:var(--leaf);box-shadow:0 5px 0 var(--leaf-d)}
+.sethead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.sethead b{font-family:var(--display);font-weight:400;font-size:22px}
+.sethead .status{margin:0;display:inline-flex;align-items:center;gap:4px}
+.setitems{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.setit{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.setit .prev{width:100%;aspect-ratio:1;border-radius:12px;background:#eef1f6;display:flex;align-items:center;justify-content:center;overflow:hidden;filter:grayscale(.7);opacity:.6}
+.setit.ok .prev{background:linear-gradient(180deg,#dff3ff,#f4fbff);filter:none;opacity:1}
+.setit .prev svg{width:100%;height:100%}
+.setit small{font-weight:800;font-size:11.5px;line-height:1.15;color:var(--ink-soft)}.setit.ok small{color:#1d7a55}.setit small svg{width:11px;height:11px;vertical-align:-.1em}
+.setcard p{margin:0;font-weight:600;color:var(--ink-soft);font-size:14.5px}
+html body.big .setit small{font-size:13px}html body.big .setcard p{font-size:16.5px}
+@media (max-width:760px){.setgrid{grid-template-columns:1fr}.setcard{padding:12px 12px 14px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -1485,7 +1511,8 @@ html body.big .ownbadge{font-size:14px}html body.big #inShop .item .isize{font-s
     <section id="inside" hidden>
       <div class="playhead"><button class="back" id="inBack" type="button"><span class="ico-slot" data-ico="back"></span>My Island</button>
         <div class="ihead"><div class="iname" id="inTitle">Inside</div><div class="qnum" id="inSub"></div></div></div>
-      <div class="homewrap"><div><div class="homeview inview" id="inView"></div><div class="actrow htools" id="inTools"></div><div class="hstore" id="inStore" hidden></div></div><div class="bubble" id="insay"></div></div>
+      <div class="ichips inrooms" id="inRooms" role="toolbar" aria-label="Rooms"></div>
+      <div class="homewrap"><div><div class="homeview inview" id="inView"></div><div class="actrow htools" id="inTools"></div><div class="incozy" id="inCozy"></div><div class="hstore" id="inStore" hidden></div></div><div class="bubble" id="insay"></div></div>
       <h3 class="sectitle">Home Shop <small>furniture, lights and cozy things</small></h3>
       <div class="ichips" id="inCats" role="toolbar" aria-label="Shop sections"></div>
       <div class="shop" id="inShop"></div>
@@ -1728,16 +1755,17 @@ const heroName=()=>(CHARS[G.char]||CHARS.fox).animal;
 function foxSVG(o={}){
   const b=BALLOONS[o.balloon||G.balloon]||BALLOONS.classic,h=HATS[o.hat||G.hat]||HATS.none,gl=GLASSES[o.glass||G.glass]||GLASSES.none,dc=DECOS[o.deco||G.deco]||DECOS.none,pt=PETS[o.pet||G.pet]||PETS.none,bk=BASKETS[o.basket||G.basket]||BASKETS.classic;
   const cid=CHARS[o.char]?o.char:(CHARS[G.char]?G.char:'fox'),c=CHARS[cid],vi=o.cv!=null?o.cv:((G.charColor||{})[cid]||0),v=c.v[vi]||c.v[0],P=c.parts(v),paw=v.paw||v.m;
-  return `<svg class="fox" viewBox="0 0 120 165" aria-hidden="true">${balloonDraw(b)}${dc.layer==='b'?dc.svg:''}
-  <path d="M46 92 L40 128 M74 92 L80 128" stroke="#7a5236" stroke-width="2.2"/>${dc.layer==='r'?dc.svg:''}
+  return `<svg class="fox" viewBox="${o.bare?'14 62 92 106':'0 0 120 165'}" aria-hidden="true">${o.bare?'':balloonDraw(b)}${dc.layer==='b'?dc.svg:''}
+  ${o.bare?'':'<path d="M46 92 L40 128 M74 92 L80 128" stroke="#7a5236" stroke-width="2.2"/>'}${dc.layer==='r'?dc.svg:''}
   <g class="tail">${P.tail||''}</g><g class="earL">${P.earL||''}</g><g class="earR">${P.earR||''}</g>
+  ${o.bare?`<ellipse cx="60" cy="147" rx="17" ry="15" fill="${v.m}" stroke="rgba(31,53,87,.25)" stroke-width="1"/><ellipse cx="60" cy="150" rx="9" ry="9" fill="#fff" opacity=".8"/><ellipse cx="50" cy="161" rx="7" ry="4.5" fill="${paw}" stroke="rgba(31,53,87,.25)"/><ellipse cx="70" cy="161" rx="7" ry="4.5" fill="${paw}" stroke="rgba(31,53,87,.25)"/><ellipse cx="45" cy="146" rx="4.5" ry="7" fill="${paw}" transform="rotate(20 45 146)"/><ellipse cx="75" cy="146" rx="4.5" ry="7" fill="${paw}" transform="rotate(-20 75 146)"/>`:''}
   <ellipse cx="60" cy="119" rx="18" ry="15" fill="${v.m}" stroke="rgba(31,53,87,.25)" stroke-width="1"/>
   ${P.face||''}${c.noEyes?'':EYES(v.eye||c.eye)}${gl.svg?(c.noEyes?`<g transform="translate(60 106) scale(1.4) translate(-60 -116)">${gl.svg}</g>`:gl.svg):''}
   <ellipse class="mouth" cx="60" cy="128" rx="3.2" ry="2.6" fill="#7a2e2e"/>
   <ellipse cx="46.5" cy="121" rx="3" ry="2" fill="#ff9b8a" opacity=".6"/><ellipse cx="73.5" cy="121" rx="3" ry="2" fill="#ff9b8a" opacity=".6"/>
-  ${dc.layer==='w'?dc.svg:''}${bk.svg}
-  <ellipse cx="50" cy="128" rx="5" ry="3.5" fill="${paw}"/>
-  <g class="arm"><ellipse cx="71" cy="125" rx="4.5" ry="7" fill="${paw}" transform="rotate(20 71 125)"/></g>
+  ${dc.layer==='w'?dc.svg:''}${o.bare?'':bk.svg}
+  ${o.bare?'':`<ellipse cx="50" cy="128" rx="5" ry="3.5" fill="${paw}"/>
+  <g class="arm"><ellipse cx="71" cy="125" rx="4.5" ry="7" fill="${paw}" transform="rotate(20 71 125)"/></g>`}
   ${h.svg}${pt.svg?`<g transform="translate(22 129) scale(1.45)"><g class="pet">${pt.svg}</g></g>`:''}</svg>`;
 }
 function refreshFoxes(){document.querySelectorAll('[data-fox]').forEach(el=>el.innerHTML=foxSVG())}
@@ -3590,7 +3618,8 @@ const BADGES=[
   ['thunder','Lightning Brain','Answer 20 facts in Thunder Tower.','#7c8fb8'],['level5','Sky Scholar','Reach level 5.','#38b98a'],['rich','Treasure Keeper','Have 500 coins at once.','#e09a14'],
   ['hard','Hard Mode Hero','Get 3 stars on an island in Hard mode.','#ff6b57'],['fixer','Comeback Kid','Fix 10 old mistakes at Fix-It Falls.','#5ec3d6'],
   ['learner','Quick Learner','Finish a lesson with Pip.','#2f9fe0'],['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['story3','Bridge Builder','Bring back every color of the Rainbow Bridge.','#e2558f'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
-  ['week','Personal Best','Beat last week\'s score.','#2f9fe0'],['builder','Home Builder','Build 5 things on your island.','#8fd16a'],['dream','Dream Island','Build everything on your island.','#ffc23d'],['popper','Balloon Popper','Pop 15 balloons in one bonus game.','#ff6b57'],['event','Event Champion','Win the top prize in a seasonal event.','#ff9f43'],['story','Map Master','Finish the whole Story Mode.','#6b5bd6']
+  ['week','Personal Best','Beat last week\'s score.','#2f9fe0'],['builder','Home Builder','Build 5 things on your island.','#8fd16a'],['dream','Dream Island','Build everything on your island.','#ffc23d'],['popper','Balloon Popper','Pop 15 balloons in one bonus game.','#ff6b57'],['event','Event Champion','Win the top prize in a seasonal event.','#ff9f43'],['story','Map Master','Finish the whole Story Mode.','#6b5bd6'],
+  ['homey','Home Sweet Home','Put 5 things inside your home.','#ff9f43'],['cozy','Interior Designer','Make a room 5 out of 5 cozy.','#e2558f'],['decorset','Set Collector','Complete a decor set in your home.','#8f7cf0']
 ];
 
 /* ================= sound, music, speech ================= */
@@ -5134,8 +5163,33 @@ document.querySelectorAll('.ico-slot[data-ico]').forEach(e=>{e.outerHTML=ICON[e.
 /* the room is a doll-house cut-away: a wall with 2 rows of slots and a floor with 3 rows of cells.
    Every thing snaps to cells, so it never overlaps and is easy to move with a finger. */
 const IN_CW=70,IN_WALL=[50,236],IN_FLOOR=[236,410],IN_ROWS=3,IN_WROWS=2;
-const IN_COLS=[0,4,6,7,8];                       // room width (cells) for tent, cottage, tower, castle
-const inCols=()=>IN_COLS[Math.min(4,(G.home&&G.home.house)||0)]||0;
+/* rooms open as the home grows: the main room gets wider, and bigger homes add new rooms */
+const ROOMS=[
+  {id:'main',need:1,name:()=>((G.home&&G.home.house)||0)<=1?'Tent':'Living Room',cols:()=>[0,4,6,7,8][Math.min(4,(G.home&&G.home.house)||0)]||4,def:['cream','wood']},
+  {id:'bed',need:3,name:()=>'Bedroom',cols:()=>6,def:['candy','wood']},
+  {id:'tower',need:3,name:()=>'Tower Room',cols:()=>4,def:['stars','wood']},
+  {id:'ball',need:4,name:()=>'Ballroom',cols:()=>8,def:['cream','tiles']},
+  {id:'roof',need:4,name:()=>'Roof Garden',cols:()=>7,def:['_sky','grass'],sky:1},
+];
+const roomOpen=r=>((G.home&&G.home.house)||0)>=r.need;
+const curRoom=()=>ROOMS.find(r=>r.id===inState().cur&&roomOpen(r))||ROOMS[0];
+const inCols=()=>curRoom().cols();
+const roomOf=t=>t.rm||'main';
+function roomWF(rid=curRoom().id){const I=inState(),R=ROOMS.find(r=>r.id===rid)||ROOMS[0];const v=I.rw[rid]||{};return {w:v.w||R.def[0],f:v.f||R.def[1]}}
+const canUse=(kind,id)=>{const I=inState(),R=curRoom();return (kind==='wall'?I.walls:I.floors).includes(id)||(kind==='wall'?R.def[0]:R.def[1])===id};
+/* things that make a room cozy, and the decor sets that give a bonus */
+const SEATS={sofa:[-30,-24],armchair:[-30,0],beanbag:[-30,0],cushions:[-32,0],chair:[-34,-2],bed:'lie'};
+const COZY=[['light','a light',t=>inItem(t.id).cat==='light'],['plant','a plant',t=>t.id==='plant'||t.id==='monstera'],['rug','a rug',t=>inItem(t.id).k==='r'],['seat','a place to sit',t=>!!SEATS[t.id]],['art','wall art',t=>inItem(t.id).k==='w']];
+const DSETS=[
+  {id:'corner',name:'Cozy Corner',items:['sofa','armchair','rugRound','lamp','cushions'],bonus:100},
+  {id:'dreams',name:'Sweet Dreams',items:['bed','nightlight','toybox','beanbag','window'],bonus:100},
+  {id:'library',name:'Little Library',items:['bookcase','shelf','desk','chair','globe'],bonus:120},
+  {id:'art',name:'Art & Plants',items:['painting','portrait','plant','monstera','lavalamp'],bonus:100},
+];
+const roomThings=rid=>inState().items.filter(t=>t.p&&inItem(t.id)&&roomOf(t)===rid);
+const cozyOf=rid=>COZY.map(([k,n,f])=>[k,n,roomThings(rid).some(f)]);
+const setHave=S=>S.items.filter(id=>inState().items.some(t=>t.p&&t.id===id));
+let inPip=0;
 const inX0=()=>320-inCols()*IN_CW/2;
 const inBand=r=>{const h=(IN_FLOOR[1]-IN_FLOOR[0])/IN_ROWS;return [IN_FLOOR[0]+r*h,IN_FLOOR[0]+(r+1)*h]};
 const inScale=r=>[.84,.92,1][r]||1;
@@ -5170,7 +5224,7 @@ const INSIDE=[
   {id:'cushions',name:'Floor Cushions',cat:'cozy',k:'f',w:1,price:50,draw:()=>`<rect x="-28" y="-16" width="56" height="16" rx="8" fill="#8f7cf0" ${S2}/><rect x="-22" y="-32" width="44" height="16" rx="8" fill="#5cc4b0" ${S2}/><circle cx="0" cy="-24" r="2.5" fill="#1f3557"/><circle cx="0" cy="-8" r="2.5" fill="#1f3557"/>`},
   {id:'toybox',name:'Toy Box',cat:'cozy',k:'f',w:1,price:70,draw:()=>`<circle cx="-10" cy="-40" r="9" fill="#ff6b57" ${S2}/><path d="M6 -52 l4 10 l10 1 l-8 7 l3 10 l-9 -6 l-9 6 l3 -10 l-8 -7 l10 -1Z" fill="#ffd56b" ${S2}/><rect x="-28" y="-34" width="56" height="34" rx="4" fill="#2f9fe0" ${S2}/><path d="M-28 -24 H28" stroke="#1f3557" stroke-width="2.5"/><circle cx="0" cy="-12" r="5" fill="#ffc23d" ${S2}/>`},
 ];
-const IN_CATS=[['furn','Furniture'],['light','Lights'],['decor','Decor'],['cozy','Cozy'],['walls','Walls & Floors']];
+const IN_CATS=[['furn','Furniture'],['light','Lights'],['decor','Decor'],['cozy','Cozy'],['walls','Walls & Floors'],['sets','Sets']];
 const WALLS=[
   {id:'cream',name:'Cream Wall',price:0,base:'#fff3dc',pat:''},
   {id:'sky',name:'Sky Stripes',price:80,base:'#e4f5ff',pat:'<rect x="0" y="0" width="14" height="40" fill="#c9eaff"/>',pw:28,ph:40},
@@ -5187,13 +5241,14 @@ const FLOORS=[
 const patDef=(id,P)=>P.pat?`<pattern id="${id}" patternUnits="userSpaceOnUse" width="${P.pw}" height="${P.ph}"><rect width="${P.pw}" height="${P.ph}" fill="${P.base}"/>${P.pat}</pattern>`:'';
 const patFill=(id,P)=>P.pat?`url(#${id})`:P.base;
 let inEdit=false,inSel='',inCat='furn';
-function inState(){G.home=G.home||{house:0,items:{}};const I=G.home.inside=G.home.inside||{};I.wall=I.wall||'cream';I.floor=I.floor||'wood';I.walls=I.walls||['cream'];I.floors=I.floors||['wood'];I.items=I.items||[];I.n=I.n||0;return I}
+function inState(){G.home=G.home||{house:0,items:{}};const I=G.home.inside=G.home.inside||{};I.walls=I.walls||['cream'];I.floors=I.floors||['wood'];I.items=I.items||[];I.n=I.n||0;
+  if(!I.rw){I.rw={main:{w:I.wall||'cream',f:I.floor||'wood'}};delete I.wall;delete I.floor}I.cur=I.cur||'main';I.done=I.done||{};return I}
 const inItem=id=>INSIDE.find(x=>x.id===id);
 const inCount=id=>inState().items.filter(t=>t.id===id).length;
 /* cells a thing covers, so two things never sit on the same spot */
 function inCells(t,c=t.c,r=t.r){const it=inItem(t.id),out=[];const d=it.k==='r'?it.d:1;for(let i=0;i<it.w;i++)for(let j=0;j<d;j++)out.push((it.k)+':'+(c+i)+':'+(r+j));return out}
 function inFits(t,c,r){const it=inItem(t.id),C=inCols(),R=it.k==='w'?IN_WROWS:IN_ROWS,d=it.k==='r'?it.d:1;if(c<0||r<0||c+it.w>C||r+d>R)return false;
-  const busy=new Set();inState().items.forEach(o=>{if(o!==t&&o.p)inCells(o).forEach(k=>busy.add(k))});return inCells(t,c,r).every(k=>!busy.has(k))}
+  const busy=new Set(),rid=curRoom().id;inState().items.forEach(o=>{if(o!==t&&o.p&&roomOf(o)===rid)inCells(o).forEach(k=>busy.add(k))});return inCells(t,c,r).every(k=>!busy.has(k))}
 function inFreeSpot(t){const it=inItem(t.id),R=it.k==='w'?IN_WROWS:IN_ROWS;for(let r=0;r<R;r++)for(let c=0;c<inCols();c++)if(inFits(t,c,r))return [c,r];return null}
 /* where a thing is drawn: floor things stand on the middle of their cells; back rows are a little smaller */
 function inPos(t){const it=inItem(t.id),x=inX0()+(t.c+it.w/2)*IN_CW;if(it.k==='w')return {x,y:inWallY(t.r),s:1};const [a,b]=inBand(t.r);return {x,y:a+(b-a)*.78,s:inScale(t.r)}}
@@ -5203,19 +5258,32 @@ function rugSVG(it,x0,y0,x1,y1){const [c1,c2]=it.col,cx=(x0+x1)/2,cy=(y0+y1)/2;
   const cols=['#ff6b57','#ff9f43','#ffc23d','#38b98a','#2f9fe0','#8f7cf0'],h=y1-y0-12;return `<rect x="${x0+6}" y="${y0+6}" width="${x1-x0-12}" height="${h}" rx="14" fill="${c1}" ${S2}/>${cols.map((c,i)=>`<rect x="${x0+12}" y="${y0+12+i*(h-12)/6}" width="${x1-x0-24}" height="${(h-12)/6-2}" rx="4" fill="${c}" opacity=".75"/>`).join('')}<rect x="${x0+6}" y="${y0+6}" width="${x1-x0-12}" height="${h}" rx="14" fill="none" ${S2}/>`}
 function rugCells(t){const it=inItem(t.id),x0=inX0()+t.c*IN_CW,x1=x0+it.w*IN_CW,y0=inBand(t.r)[0],y1=inBand(t.r+it.d-1)[1];return [x0,y0,x1,y1]}
 function inThingSVG(t){const it=inItem(t.id);if(it.k==='r')return rugSVG(it,...rugCells(t));const p=inPos(t);return `<g transform="translate(${p.x} ${p.y}) scale(${(t.f?-1:1)*p.s} ${p.s})">${it.draw()}</g>`}
+/* Pip lives in the room: sits on a seat, naps on the bed, or just stands around. Tap Pip to move. */
+function pipSpots(placed){return placed.filter(t=>SEATS[t.id]).sort((a,b)=>a.u<b.u?-1:1)}
+function pipInRoom(placed,x1){
+  const spots=pipSpots(placed),t=spots.length?spots[inPip%(spots.length+1)]:null;
+  const svgAt=(x,y,w,h)=>foxSVG({bare:1}).replace(/<svg class="fox" viewBox="([^"]+)" aria-hidden="true">/,`<svg class="infox" x="${x}" y="${y}" width="${w}" height="${h}" viewBox="$1">`);
+  if(!t)return `<g class="inpip" role="button" aria-label="Pip">${svgAt(x1-80,IN_FLOOR[1]-96,72,84)}</g>`;
+  const p=inPos(t),S=SEATS[t.id],f=t.f?-1:1;
+  if(S==='lie'){const hx=p.x+f*(-26)*p.s,hy=p.y-44*p.s,w=60*p.s,h=70*p.s;
+    return `<g class="inpip" role="button" aria-label="Pip"><g transform="translate(${hx} ${hy}) rotate(${f*-80})">${svgAt(-w/2,-h*.55,w,h)}</g><g transform="translate(${p.x} ${p.y}) scale(${f*p.s} ${p.s})"><rect x="-14" y="-47" width="76" height="24" rx="8" fill="#8f7cf0" ${S2}/><path d="M-2 -40 h52" stroke="#fff" stroke-width="3" opacity=".6"/></g><text x="${hx+f*14}" y="${hy-40*p.s}" ${FONT} font-size="${18*p.s}" fill="#6b5bd6" class="zzz">z<tspan dx="2" dy="-8" font-size="${14*p.s}">z</tspan><tspan dx="2" dy="-7" font-size="${11*p.s}">z</tspan></text></g>`}
+  const w=60*p.s,h=70*p.s,cx=p.x+f*S[1]*p.s,top=p.y+S[0]*p.s;
+  return `<g class="inpip" role="button" aria-label="Pip">${svgAt(cx-w/2,top-h*.86,w,h)}</g>`}
 function insideSVG(){
-  const I=inState(),C=inCols(),x0=inX0(),x1=x0+C*IN_CW,W=WALLS.find(w=>w.id===I.wall)||WALLS[0],F=FLOORS.find(f=>f.id===I.floor)||FLOORS[0];
-  const placed=I.items.filter(t=>t.p&&inItem(t.id));
+  const I=inState(),R=curRoom(),wf=roomWF(),C=inCols(),x0=inX0(),x1=x0+C*IN_CW,W=WALLS.find(w=>w.id===wf.w)||WALLS[0],F=FLOORS.find(f=>f.id===wf.f)||FLOORS[0];
+  const placed=roomThings(R.id);
   const thing=t=>`<g class="inthing${inEdit?' movable':''}${inSel===t.u?' sel':''}" data-iu="${t.u}"${inEdit?` tabindex="0" role="button" aria-label="Move ${esc(inItem(t.id).name)}"`:''}>${inThingSVG(t)}</g>`;
   const grid=inEdit?`<g class="ingrid">${Array.from({length:IN_ROWS},(_,r)=>Array.from({length:C},(_,c)=>{const [a,b]=inBand(r);return `<rect x="${x0+c*IN_CW+3}" y="${a+3}" width="${IN_CW-6}" height="${b-a-6}" rx="8"/>`}).join('')).join('')}${Array.from({length:IN_WROWS},(_,r)=>Array.from({length:C},(_,c)=>`<rect x="${x0+c*IN_CW+3}" y="${inWallY(r)-38}" width="${IN_CW-6}" height="76" rx="8"/>`).join('')).join('')}</g>`:'';
   const floorThings=placed.filter(t=>inItem(t.id).k==='f').sort((a,b)=>a.r-b.r||a.c-b.c);
-  const pipX=x1-34,pip=inEdit?'':foxSVG().replace('<svg class="fox" viewBox="0 0 120 165" aria-hidden="true">',`<svg class="infox" x="${pipX-34}" y="${IN_FLOOR[1]-104}" width="68" height="94" viewBox="0 0 120 165">`);
+  const pip=inEdit?'':pipInRoom(placed,x1);
   const lvl=(G.home&&G.home.house)||0,roof=['#ff9f43','#ff6b57','#2f9fe0','#8f7cf0'][Math.max(0,lvl-1)];
   const vw=Math.max(x1-x0+88,540);return `<svg viewBox="${320-vw/2} 0 ${vw} 420" class="inroom${inEdit?' editing':''}" role="img" aria-label="Inside ${esc(G.name||'Pip')}'s home"><defs>${patDef('inW',W)}${patDef('inF',F)}</defs>
-    <path d="M${x0-26} ${IN_WALL[0]+2} L320 6 L${x1+26} ${IN_WALL[0]+2}Z" fill="${roof}" ${S2}/>
+    ${R.sky?`<rect x="${x0-14}" y="${IN_WALL[0]}" width="${x1-x0+28}" height="${IN_FLOOR[1]-IN_WALL[0]+4}" rx="10" fill="#b9c3cf" ${S2}/><rect x="${x0}" y="${IN_WALL[0]+8}" width="${x1-x0}" height="${IN_WALL[1]-IN_WALL[0]-8}" fill="#bfe9ff"/><g fill="#fff" opacity=".9"><circle cx="${x0+60}" cy="110" r="16"/><circle cx="${x0+82}" cy="104" r="20"/><circle cx="${x0+104}" cy="112" r="14"/><circle cx="${x1-90}" cy="160" r="13"/><circle cx="${x1-72}" cy="154" r="17"/><circle cx="${x1-54}" cy="161" r="12"/></g><circle cx="${x1-60}" cy="92" r="20" fill="#ffd56b"/>`
+    :`<path d="M${x0-26} ${IN_WALL[0]+2} L320 6 L${x1+26} ${IN_WALL[0]+2}Z" fill="${roof}" ${S2}/>
     <rect x="${x0-14}" y="${IN_WALL[0]}" width="${x1-x0+28}" height="${IN_FLOOR[1]-IN_WALL[0]+4}" rx="10" fill="#a0683a" ${S2}/>
-    <rect x="${x0}" y="${IN_WALL[0]+8}" width="${x1-x0}" height="${IN_WALL[1]-IN_WALL[0]-8}" fill="${patFill('inW',W)}"/>
+    <rect x="${x0}" y="${IN_WALL[0]+8}" width="${x1-x0}" height="${IN_WALL[1]-IN_WALL[0]-8}" fill="${patFill('inW',W)}"/>`}
     <path d="M${x0} ${IN_FLOOR[0]} H${x1} V${IN_FLOOR[1]} H${x0}Z" fill="${patFill('inF',F)}"/>
+    ${R.sky?`<path d="M${x0} ${IN_FLOOR[0]-26} H${x1} M${x0} ${IN_FLOOR[0]-10} H${x1}" stroke="#fff" stroke-width="5"/>${Array.from({length:C*2+1},(_,i)=>`<path d="M${x0+i*IN_CW/2} ${IN_FLOOR[0]-32} V${IN_FLOOR[0]}" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`).join('')}`:''}
     <path d="M${x0} ${IN_FLOOR[0]} H${x1}" stroke="#fff" stroke-width="8"/><path d="M${x0} ${IN_FLOOR[0]+4} H${x1}" stroke="#1f3557" stroke-width="2" opacity=".35"/>
     <rect x="${x0}" y="${IN_WALL[0]+8}" width="${x1-x0}" height="${IN_FLOOR[1]-IN_WALL[0]-8}" fill="none" stroke="#1f3557" stroke-width="2.5"/>
     ${placed.filter(t=>inItem(t.id).k==='w').map(thing).join('')}
@@ -5223,7 +5291,7 @@ function insideSVG(){
     ${grid}
     ${floorThings.map(thing).join('')}
     ${pip}
-    ${!placed.length&&!inEdit?`<text x="320" y="150" text-anchor="middle" ${FONT} font-size="20" fill="#1f3557" opacity=".55">An empty room! Let's decorate it.</text>`:''}
+    ${!placed.length&&!inEdit?`<text x="320" y="150" text-anchor="middle" ${FONT} font-size="20" fill="#1f3557" opacity=".55">An empty ${esc(R.name().toLowerCase())}! Let's decorate it.</text>`:''}
   </svg>`;
 }
 function openInside(){
@@ -5233,8 +5301,12 @@ function openInside(){
 }
 function renderInside(){
   updateStats();const I=inState(),lvl=G.home.house,C=inCols();
-  $('#inTitle').textContent=`Inside: ${HOUSES[lvl-1].name}`;
-  const nxt=HOUSES[lvl];$('#inSub').innerHTML=`Room size: <b>${C} × ${IN_ROWS}</b> floor squares${nxt?` · build the ${esc(nxt.name)} for a bigger room`:''}`;
+  const R=curRoom();$('#inTitle').textContent=`${HOUSES[lvl-1].name}: ${R.name()}`;
+  const nxt=HOUSES[lvl];$('#inSub').innerHTML=`Room size: <b>${C} × ${IN_ROWS}</b> floor squares${nxt?` · build the ${esc(nxt.name)} for ${lvl>=2?'more rooms':'a bigger room'}`:''}`;
+  $('#inRooms').innerHTML=ROOMS.map(r=>{const open=roomOpen(r),on=r===R;return `<button type="button" class="ichip${on?' on':''}${open?'':' lockd'}" data-room="${r.id}" aria-pressed="${on}">${open?'':ICON.lock}${esc(r.name())}</button>`}).join('');
+  $('#inRooms').querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>{const r=ROOMS.find(x=>x.id===b.dataset.room);
+    if(!roomOpen(r)){sNo();say($('#insay'),`The <b>${esc(r.name())}</b> opens when we build the <b>${esc(HOUSES[r.need-1].name)}</b>. Let's save up!`);return}
+    I.cur=r.id;inEdit=false;inSel='';inPip=0;save(true);tone([523,659,784],.05);renderInside();say($('#insay'),pickR([`Welcome to the <b>${esc(r.name())}</b>!`,`Let's make the <b>${esc(r.name())}</b> super cozy!`]))});
   renderInsideView();renderInShop();
 }
 function renderInsideView(){
@@ -5242,6 +5314,9 @@ function renderInsideView(){
   const I=inState(),sel=inSel&&I.items.find(t=>t.u===inSel&&t.p);
   $('#inTools').innerHTML=inEdit?`<button type="button" class="go small leaf" id="inDone">Done</button>${sel?`<button type="button" class="go small alt" id="inFlip">Flip</button><button type="button" class="go small alt" id="inAway">Put away: ${esc(inItem(sel.id).name)}</button>`:''}<span class="note">Drag things to a free square. Tap one to flip it or put it away.</span>`
     :`<button type="button" class="go small" id="inDeco"${I.items.some(t=>t.p)?'':' hidden'}>Decorate</button><button type="button" class="go small alt" id="inOut">Back outside</button>`;
+  const cz=cozyOf(curRoom().id),cn=cz.filter(c=>c[2]).length;
+  $('#inCozy').innerHTML=`<div class="czhead"><b>Cozy</b><span class="czhearts" aria-label="${cn} out of 5">${cz.map(c=>`<svg viewBox="0 0 24 24" class="${c[2]?'on':''}"><path d="M12 20.5 C5 15.5 2.5 12 2.5 8.6 A4.6 4.6 0 0 1 12 6.4 A4.6 4.6 0 0 1 21.5 8.6 C21.5 12 19 15.5 12 20.5Z"/></svg>`).join('')}</span><small>${cn}/5</small></div><div class="czlist">${cz.map(c=>`<span class="${c[2]?'ok':''}">${c[2]?CHECK:''}${c[1]}</span>`).join('')}</div>`;
+  inRewards();
   const st=I.items.filter(t=>!t.p&&inItem(t.id)),tray=$('#inStore');
   tray.hidden=!st.length;tray.innerHTML=st.length?`<h4>In storage <small>still yours, free to put back</small></h4><div class="storelist">${st.map(t=>`<button type="button" class="storeit" data-iplace="${t.u}" title="Put it in the room"><span class="prev">${inThumb(t.id)}</span><b>${esc(inItem(t.id).name)}</b><small>Put back</small></button>`).join('')}</div>`:'';
   fitPreviews(tray);
@@ -5251,13 +5326,20 @@ function renderInsideView(){
   if($('#inOut'))$('#inOut').onclick=()=>{tone([523,392]);openHome()};
   if($('#inFlip'))$('#inFlip').onclick=()=>{sel.f=sel.f?0:1;save();tone([523,659],.05);renderInsideView()};
   if($('#inAway'))$('#inAway').onclick=()=>{sel.p=false;inSel='';save();tone([523,392],.06);renderInsideView();say($('#insay'),`I put the <b>${esc(inItem(sel.id).name)}</b> in storage. Put it back any time, for free!`)};
+  const pg=$('#inView .inpip');if(pg)pg.onclick=e=>{e.stopPropagation();inPip++;tone([659,880],.05);renderInsideView();const sp=pipSpots(roomThings(curRoom().id)),t=sp.length?sp[inPip%(sp.length+1)]:null;
+    say($('#insay'),!t?pickR([`I'll just stand here and admire our home!`,`Where should I sit? Buy a <b>sofa</b> or a <b>bean bag</b>!`]):t.id==='bed'?pickR([`Zzz... nap time!`,`This bed is sooo comfy. Zzz...`]):pickR([`Ahh, the <b>${esc(inItem(t.id).name)}</b> is so comfy!`,`I love sitting here!`]))};
   if(!inEdit)$('#inView').querySelectorAll('[data-iu]').forEach(g=>g.onclick=()=>{const t=I.items.find(x=>x.u===g.dataset.iu);if(!t)return;tone([659,784],.05);g.classList.remove('boing');void g.getBBox();g.classList.add('boing');say($('#insay'),pickR([`I love the <b>${esc(inItem(t.id).name)}</b>!`,`The <b>${esc(inItem(t.id).name)}</b> looks great right there.`,`Ooh, the <b>${esc(inItem(t.id).name)}</b>!`]))});
 }
 const pickR=a=>a[Math.floor(Math.random()*a.length)];
+function inRewards(){const I=inState(),R=curRoom();let changed=false;
+  if(I.items.filter(t=>t.p).length>=5)award('homey');
+  if(cozyOf(R.id).every(c=>c[2])&&!I.done['cozy_'+R.id]){I.done['cozy_'+R.id]=1;G.coins+=50;changed=true;award('cozy');toast(`${R.name()} is 5/5 cozy!`,'+50 coins','#e2558f');setTimeout(()=>{burstAt($('#inCozy'),80);sWin()},200)}
+  DSETS.forEach(S=>{if(!I.done['set_'+S.id]&&setHave(S).length===S.items.length){I.done['set_'+S.id]=1;G.coins+=S.bonus;changed=true;award('decorset');toast(`Set complete: ${S.name}!`,`+${S.bonus} coins`,'#8f7cf0');setTimeout(()=>sWin(),300)}});
+  if(changed){save();updateStats('#coinPill')}}
 function inThumb(id){const it=inItem(id);if(it.k==='r'){return `<svg viewBox="0 0 ${it.w*IN_CW} ${it.d*58}">${rugSVG(it,0,0,it.w*IN_CW,it.d*58)}</svg>`}return `<svg viewBox="-80 -140 160 150">${it.draw()}</svg>`}
 function inPlaceBack(u){const t=inState().items.find(x=>x.u===u);if(!t)return;const sp=inFreeSpot(t);
   if(!sp){say($('#insay'),`There's no free spot for the <b>${esc(inItem(t.id).name)}</b>. Put something else away first${G.home.house<4?', or build a bigger home!':'.'}`);sNo();return}
-  [t.c,t.r]=sp;t.p=true;inSel=t.u;save();tone([392,523,659],.06);renderInsideView();say($('#insay'),`The <b>${esc(inItem(t.id).name)}</b> is back!`);foxMove('hop')}
+  [t.c,t.r]=sp;t.p=true;t.rm=curRoom().id;inSel=t.u;save();tone([392,523,659],.06);renderInsideView();say($('#insay'),`The <b>${esc(inItem(t.id).name)}</b> is back!`);foxMove('hop')}
 function bindInDrag(){
   const svg=$('#inView svg');if(!svg||!inEdit)return;const I=inState();
   const pt=e=>{const m=svg.getScreenCTM().inverse();const q=new DOMPoint(e.clientX,e.clientY).matrixTransform(m);return [q.x,q.y]};
@@ -5285,21 +5367,26 @@ function renderInShop(){
   $('#inCats').querySelectorAll('[data-icat]').forEach(b=>b.onclick=()=>{inCat=b.dataset.icat;tone([523,659],.04);renderInShop()});
   const buyBtn=(price,attr)=>`<button type="button" class="${G.coins>=price?'buy':''}" ${attr} ${G.coins>=price?'':'disabled'}>${COIN_ICON} ${fmt(price)}</button>`;
   let html;
+  if(inCat==='sets'){
+    html=DSETS.map(S=>{const have=setHave(S),done=I.done['set_'+S.id];return `<div class="setcard${done?' won':''}"><div class="sethead"><b>${esc(S.name)}</b><span class="status ${done?'ok':'go'}">${done?CHECK+'Bonus won!':`+${S.bonus} coins`}</span></div><div class="setitems">${S.items.map(id=>{const ok=have.includes(id);return `<div class="setit${ok?' ok':''}"><span class="prev">${inThumb(id)}</span><small>${ok?CHECK:''}${esc(inItem(id).name)}</small></div>`}).join('')}</div><p>${done?'You found the whole set!':`Put all ${S.items.length} things in your home (any room). <b>${have.length}/${S.items.length}</b> so far.`}</p></div>`}).join('');
+    $('#inShop').innerHTML=`<div class="setgrid">${html}</div>`;fitPreviews($('#inShop'));return}
   if(inCat==='walls'){
-    const sw=(P,kind)=>{const own=(kind==='wall'?I.walls:I.floors).includes(P.id),use=(kind==='wall'?I.wall:I.floor)===P.id,pid=`sw${kind}${P.id}`;
+    const wf=roomWF(),R=curRoom();
+    const sw=(P,kind)=>{const own=canUse(kind,P.id),use=(kind==='wall'?wf.w:wf.f)===P.id,pid=`sw${kind}${P.id}`;
       return `<div class="item${use?' wearing':''}"><div class="prev"><svg viewBox="0 0 120 80"><defs>${patDef(pid,P)}</defs><rect x="4" y="4" width="112" height="72" rx="10" fill="${patFill(pid,P)}" ${S2}/></svg></div><b>${esc(P.name)}</b>${use?`<button type="button" class="worn" disabled>In use</button>`:own?`<button type="button" class="buy" data-iuse="${kind}:${P.id}">Use it</button>`:buyBtn(P.price,`data-ibuy="${kind}:${P.id}"`)}</div>`};
-    html=WALLS.map(P=>sw(P,'wall')).join('')+FLOORS.map(P=>sw(P,'floor')).join('');
+    html=(R.sky?'':WALLS.map(P=>sw(P,'wall')).join(''))+FLOORS.map(P=>sw(P,'floor')).join('');
   }else html=INSIDE.filter(it=>it.cat===inCat).map(it=>{const n=inCount(it.id);
     return `<div class="item">${n?`<span class="ownbadge">You have ${n}</span>`:''}<div class="prev">${inThumb(it.id)}</div><b>${esc(it.name)}</b><small class="isize">${it.k==='w'?`wall · ${it.w} wide`:it.k==='r'?`${it.w} × ${it.d} squares`:`${it.w} square${it.w>1?'s':''}`}</small>${buyBtn(it.price,`data-ibuy="item:${it.id}"`)}</div>`}).join('');
   $('#inShop').innerHTML=html;fitPreviews($('#inShop'));
   $('#inShop').querySelectorAll('[data-ibuy]').forEach(b=>b.onclick=()=>inBuy(...b.dataset.ibuy.split(':')));
-  $('#inShop').querySelectorAll('[data-iuse]').forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.iuse.split(':');I[k]=id;save();tone([523,659,784],.06);renderInside()});
+  $('#inShop').querySelectorAll('[data-iuse]').forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.iuse.split(':');setWF(k,id);save();tone([523,659,784],.06);renderInside()});
 }
+function setWF(kind,id){const I=inState(),rid=curRoom().id;I.rw[rid]=Object.assign({},I.rw[rid]||{},{[kind==='wall'?'w':'f']:id})}
 function inBuy(kind,id){
   const I=inState();
-  if(kind==='wall'||kind==='floor'){const P=(kind==='wall'?WALLS:FLOORS).find(x=>x.id===id);if(!P||G.coins<P.price)return;G.coins-=P.price;(kind==='wall'?I.walls:I.floors).push(id);I[kind]=id;save();sWin();renderInside();say($('#insay'),`New <b>${esc(P.name)}</b>! It feels like a brand new room.`);foxMove('hop');return}
+  if(kind==='wall'||kind==='floor'){const P=(kind==='wall'?WALLS:FLOORS).find(x=>x.id===id);if(!P||G.coins<P.price)return;G.coins-=P.price;(kind==='wall'?I.walls:I.floors).push(id);setWF(kind,id);save();sWin();renderInside();say($('#insay'),`New <b>${esc(P.name)}</b>! It feels like a brand new room.`);foxMove('hop');return}
   const it=inItem(id);if(!it||G.coins<it.price)return;G.coins-=it.price;
-  const t={u:'i'+(++I.n),id,c:0,r:0,f:0,p:false};I.items.push(t);const sp=inFreeSpot(t);
+  const t={u:'i'+(++I.n),id,c:0,r:0,f:0,p:false,rm:curRoom().id};I.items.push(t);const sp=inFreeSpot(t);
   if(sp){[t.c,t.r]=sp;t.p=true;inSel=t.u}
   save();sWin();renderInside();
   const v=$('#inView');if(v)v.scrollIntoView({behavior:'smooth',block:'center'});
