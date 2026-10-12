@@ -457,6 +457,12 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .sw.on{box-shadow:0 0 0 4px var(--ocean)}
 .shop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .item{background:var(--card);border-radius:22px;padding:10px 10px 12px;box-shadow:0 5px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.item{position:relative}.item .newtag{position:absolute;top:8px;left:8px;background:var(--berry);color:#fff;font-size:11px;font-weight:800;border-radius:8px;padding:2px 7px 1px;letter-spacing:.04em}
+.item.leg{background:linear-gradient(160deg,#fff8dc,#ffe79a 55%,#ffd8e8);box-shadow:0 5px 0 #e09a14}.item.leg .legtag{font-size:11px;font-weight:800;color:#a8650a;letter-spacing:.08em;text-transform:uppercase;margin-top:-4px}
+.fox .twk{animation:twk 1.6s ease-in-out infinite}.fox .twk:nth-of-type(2n){animation-delay:.8s}@keyframes twk{50%{opacity:.3}}
+.fox .prop{transform-box:view-box;transform-origin:60px 4.5px;animation:propx .35s linear infinite}@keyframes propx{50%{transform:scaleX(.12)}}
+.fox .wingL{transform-box:view-box;transform-origin:40px 142px;animation:wflapL .8s ease-in-out infinite alternate}.fox .wingR{transform-box:view-box;transform-origin:80px 142px;animation:wflapR .8s ease-in-out infinite alternate}
+@keyframes wflapL{to{transform:rotate(14deg)}}@keyframes wflapR{to{transform:rotate(-14deg)}}
 .item.wearing{box-shadow:0 5px 0 var(--leaf);outline:3px solid var(--leaf)}
 .item .prev{width:92px}
 .item b{font-family:var(--display);font-weight:400;font-size:18px}
@@ -823,13 +829,15 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
 
     <section id="closet" hidden>
       <div class="playhead"><button class="back" data-home type="button">← Map</button>
-        <div class="ihead"><div class="iname">Pip's Closet</div><div class="qnum">Spend coins on hats and balloons. Earn coins by solving puzzles!</div></div></div>
+        <div class="ihead"><div class="iname">Pip's Closet</div><div class="qnum">Spend coins on hats, glasses, balloons and more. Earn coins by solving puzzles!</div></div></div>
       <div class="closetTop"><div class="pipbob" data-fox></div><div><div class="bubble" id="csay"></div><div class="swatches" id="swatches"></div></div></div>
       <h3 class="sectitle" id="evShopTitle" hidden></h3><div class="shop" id="shopEvent" hidden></div>
       <h3 class="sectitle">Your Hero <small>who flies the balloon? Every hero has 3 free colors!</small></h3><div class="shop" id="shopChars"></div>
       <h3 class="sectitle">Pets <small>a best friend for Pip!</small></h3><div class="shop" id="shopPets"></div>
       <h3 class="sectitle">Hats</h3><div class="shop" id="shopHats"></div>
+      <h3 class="sectitle">Glasses <small>see the world in style</small></h3><div class="shop" id="shopGlasses"></div>
       <h3 class="sectitle">Balloons</h3><div class="shop" id="shopBalloons"></div>
+      <h3 class="sectitle">Balloon Decorations <small>flags, lights, even wings!</small></h3><div class="shop" id="shopDecos"></div>
       <h3 class="sectitle">Baskets <small>Pip's ride in style</small></h3><div class="shop" id="shopBaskets"></div>
       <h3 class="sectitle">Trophy Shelf <small id="tcount"></small></h3><div class="trophies" id="trophies"></div>
     </section>
@@ -925,7 +933,9 @@ function balloonDraw(b){
   let s='';
   if(b.rainbow)['#e2558f','#ff6b57','#ffc23d','#38b98a','#2f9fe0'].forEach((c,i)=>s+=`<ellipse cx="60" cy="46" rx="${44-i*9}" ry="44" fill="${c}"/>`);
   else s=`<ellipse cx="60" cy="46" rx="44" ry="44" fill="${b.c[0]}"/><ellipse cx="60" cy="46" rx="26" ry="44" fill="${b.c[1]}"/><ellipse cx="60" cy="46" rx="9" ry="44" fill="${b.c[0]}"/>`;
-  if(b.stars)s+=[[30,34],[48,12],[78,22],[90,50],[40,64],[72,72],[60,40],[24,52]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.9" fill="#ffd56b"/>`).join('');
+  if(b.seeds)s+=[[30,30],[34,52],[86,34],[90,56],[44,74],[76,72]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="1.3" ry="2.2" fill="#1f3557" opacity=".75"/>`).join('');
+  if(b.facets)s+=`<path d="M16 46 L60 2 L104 46 L60 90Z M38 24 L82 68 M82 24 L38 68" stroke="#fff" stroke-width="1" fill="none" opacity=".7"/>`;
+  if(b.stars)s+=[[30,34],[48,12],[78,22],[90,50],[40,64],[72,72],[60,40],[24,52]].map(([x,y])=>`<circle${b.twk?' class="twk"':''} cx="${x}" cy="${y}" r="${b.starC?2.3:1.9}" fill="${b.starC||'#ffd56b'}"/>`).join('');
   return s+`<ellipse cx="42" cy="26" rx="7" ry="13" fill="#fff" opacity=".35"/><path d="M42 84 Q60 94 78 84 L74 92 Q60 100 46 92Z" fill="${b.skirt}"/>`;
 }
 const PETS={
@@ -995,18 +1005,78 @@ const BASKETS={
   royal:{name:'Royal Gold',price:500,svg:`<rect x="38" y="130" width="44" height="30" rx="6" fill="#ffc23d"/><path d="M38 140 H82 M38 150 H82" stroke="#e09a14" stroke-width="1.6"/><path d="M45 145 l3 -4 l3 4 l-3 4z" fill="#e2558f"/><path d="M57 145 l3 -4 l3 4 l-3 4z" fill="#2f9fe0"/><path d="M69 145 l3 -4 l3 4 l-3 4z" fill="#38b98a"/><rect x="35" y="127" width="50" height="7" rx="3.5" fill="#e09a14"/><circle cx="40" cy="130.5" r="1.4" fill="#fff"/><circle cx="60" cy="130.5" r="1.4" fill="#fff"/><circle cx="80" cy="130.5" r="1.4" fill="#fff"/>`},
   egg:{name:'Dragon Egg',price:600,svg:`<path d="M36 132 L42 126 L48 133 L54 126 L60 133 L66 126 L72 133 L78 126 L84 132 Q85 162 60 163 Q35 162 36 132Z" fill="#f3f0dd" stroke="#c9c2a0" stroke-width="1.4"/><circle cx="47" cy="145" r="3.2" fill="#9be0bd"/><circle cx="66" cy="150" r="4" fill="#9be0bd"/><circle cx="74" cy="140" r="2.4" fill="#c7b6ff"/><circle cx="54" cy="155" r="2.2" fill="#c7b6ff"/>`}
 };
+/* ---------- closet expansion: glasses, balloon decorations, more items, legendary tier ---------- */
+const OUTG='stroke="#1f3557" stroke-width="1.1"';
+const heartAt=(x,y,s,f,st)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M0 3 C-6 -1 -5 -6 -2.5 -6 C-1 -6 0 -5 0 -4 C0 -5 1 -6 2.5 -6 C5 -6 6 -1 0 3Z" fill="${f}" stroke="${st}" stroke-width="${.9/s}"/>`;
+const starPts=(x,y,r)=>Array.from({length:10},(_,i)=>{const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;return (x+rr*Math.cos(a)).toFixed(1)+','+(y+rr*Math.sin(a)).toFixed(1)}).join(' ');
+const starAt=(x,y,r,f,st,cls='')=>`<polygon${cls?` class="${cls}"`:''} points="${starPts(x,y,r)}" fill="${f}" stroke="${st}" stroke-width=".9" stroke-linejoin="round"/>`;
+const GLASSES={
+  none:{name:'No glasses',price:0,svg:''},
+  specs:{name:'Smart Specs',price:80,nw:1,svg:`<g fill="none" stroke="#1f3557" stroke-width="1.6"><circle cx="53" cy="116" r="5.2"/><circle cx="67" cy="116" r="5.2"/><path d="M58.2 116 Q60 114 61.8 116 M47.8 115 L43 113 M72.2 115 L77 113"/></g>`},
+  sun:{name:'Cool Shades',price:150,nw:1,svg:`<path d="M46 112 H59 Q59 121.5 52.5 121.5 Q46.5 121.5 46 112Z M61 112 H74 Q73.5 121.5 67.5 121.5 Q61 121.5 61 112Z" fill="#1f3557"/><path d="M59 113 H61 M46 112.5 L42.5 111.5 M74 112.5 L77.5 111.5" stroke="#1f3557" stroke-width="1.6"/><path d="M48.5 114.5 l3.5 -1.2 M63.5 114.5 l3.5 -1.2" stroke="#fff" stroke-width="1.3" opacity=".7" stroke-linecap="round"/>`},
+  heart:{name:'Heart Glasses',price:200,nw:1,svg:`${heartAt(53,117.5,1.45,'#ff6b8f','#c9473a')}${heartAt(67,117.5,1.45,'#ff6b8f','#c9473a')}<path d="M58.5 114.5 Q60 113 61.5 114.5 M46 114 L42.5 112.5 M74 114 L77.5 112.5" stroke="#c9473a" stroke-width="1.4" fill="none"/>`},
+  star:{name:'Star Glasses',price:250,nw:1,svg:`${starAt(53,116,7,'#ffc23d','#e09a14')}${starAt(67,116,7,'#ffc23d','#e09a14')}<path d="M59 115.5 H61 M46.5 114 L42.5 112.5 M73.5 114 L77.5 112.5" stroke="#e09a14" stroke-width="1.4"/><circle cx="53" cy="116.5" r="2.2" fill="#1f3557" opacity=".55"/><circle cx="67" cy="116.5" r="2.2" fill="#1f3557" opacity=".55"/>`},
+  goggles:{name:'Pilot Goggles',price:300,nw:1,svg:`<path d="M42 115 H78" stroke="#8c5a2c" stroke-width="3.2"/><circle cx="53" cy="116" r="5.8" fill="#7fd0f5" fill-opacity=".75" stroke="#b5773f" stroke-width="2.4"/><circle cx="67" cy="116" r="5.8" fill="#7fd0f5" fill-opacity=".75" stroke="#b5773f" stroke-width="2.4"/><path d="M50 113.5 l2.5 -1 M64 113.5 l2.5 -1" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>`},
+  monocle:{name:'Fancy Monocle',price:400,nw:1,svg:`<circle cx="67" cy="116" r="5.6" fill="#eaf6ff" fill-opacity=".45" stroke="#e09a14" stroke-width="1.8"/><path d="M71.5 119.5 Q76 126 73 134" stroke="#e09a14" stroke-width="1" fill="none" stroke-dasharray="1.6 1.2"/>`},
+  diamond:{name:'Diamond Shades',price:1200,nw:1,svg:`<path d="M45.5 111.5 H59 L57 119 L52.5 122 L47.5 119Z M61 111.5 H74.5 L72.5 119 L67.5 122 L63 119Z" fill="#7fd0f5" stroke="#ffc23d" stroke-width="1.5" stroke-linejoin="round"/><path d="M45.5 111.5 L52.5 122 L59 111.5 M61 111.5 L67.5 122 L74.5 111.5" stroke="#fff" stroke-width=".8" fill="none" opacity=".8"/><path d="M59 112.5 H61 M45.5 112 L42 111 M74.5 112 L78 111" stroke="#ffc23d" stroke-width="1.6"/>${starAt(76,108,2.6,'#fff','#ffc23d','twk')}${starAt(44,121,2,'#fff','#ffc23d','twk')}`}
+};
+const garland=(()=>{const P=t=>[(1-t)**2*22+2*(1-t)*t*60+t*t*98,(1-t)**2*40+2*(1-t)*t*64+t*t*40];const cols=['#e2558f','#ffc23d','#2f9fe0','#38b98a','#ff6b57'];let s=`<path d="M22 40 Q60 64 98 40" stroke="#fff" stroke-width="1.4" fill="none"/>`;
+  for(let i=1;i<10;i++){const [x,y]=P(i/10);s+=`<path d="M${(x-4).toFixed(1)} ${(y-.5).toFixed(1)} L${(x+4).toFixed(1)} ${(y-.5).toFixed(1)} L${x.toFixed(1)} ${(y+7).toFixed(1)}Z" fill="${cols[i%5]}" stroke="#fff" stroke-width=".7"/>`}return s})();
+const lights=(()=>{const P=t=>[(1-t)**2*18+2*(1-t)*t*60+t*t*102,(1-t)**2*52+2*(1-t)*t*84+t*t*52];const cols=['#ffd56b','#ff6b8f','#7fd0f5','#9be07a'];let s=`<path d="M18 52 Q60 84 102 52" stroke="#1f3557" stroke-width=".9" fill="none"/>`;
+  for(let i=1;i<12;i++){const [x,y]=P(i/12);s+=`<g class="twk"><circle cx="${x.toFixed(1)}" cy="${(y+2.6).toFixed(1)}" r="3.6" fill="${cols[i%4]}" opacity=".35"/><circle cx="${x.toFixed(1)}" cy="${(y+2.6).toFixed(1)}" r="2" fill="${cols[i%4]}"/></g>`}return s})();
+const pennant=(x,y,c,dir)=>`<path d="M${x} ${y} L${x+dir*9} ${y+3} L${x} ${y+6}Z" fill="${c}" stroke="#fff" stroke-width=".6"/>`;
+const bowAt=(x,y,c,d)=>`<g transform="translate(${x} ${y})"><path d="M0 0 L-6 -4 L-6 4Z M0 0 L6 -4 L6 4Z" fill="${c}" stroke="${d}" stroke-width=".8"/><path d="M0 0 L-3 7 M0 0 L3 7" stroke="${c}" stroke-width="1.6"/><circle r="1.9" fill="${d}"/></g>`;
+const DECOS={
+  none:{name:'No decoration',price:0,svg:''},
+  pennants:{name:'Party Pennants',price:100,nw:1,layer:'r',svg:`${pennant(44.5,100,'#e2558f',-1)}${pennant(43.3,108,'#ffc23d',-1)}${pennant(42,116,'#2f9fe0',-1)}${pennant(75.5,100,'#38b98a',1)}${pennant(76.7,108,'#ff6b57',1)}${pennant(78,116,'#6b5bd6',1)}`},
+  bows:{name:'Ribbon Bows',price:120,nw:1,layer:'r',svg:`${bowAt(44,104,'#ff9fb7','#e2558f')}${bowAt(76,104,'#ff9fb7','#e2558f')}`},
+  garland:{name:'Flag Garland',price:200,nw:1,layer:'b',svg:garland},
+  hearts:{name:'Heart Patches',price:220,nw:1,layer:'b',svg:`${heartAt(36,30,2.3,'#ff6b8f','#fff')}${heartAt(80,50,1.8,'#ff6b8f','#fff')}${heartAt(56,70,1.4,'#ff6b8f','#fff')}`},
+  stars:{name:'Twinkle Stars',price:280,nw:1,layer:'b',svg:`${starAt(34,30,5,'#fff','#ffc23d','twk')}${starAt(82,22,4,'#fff','#ffc23d','twk')}${starAt(88,58,5.5,'#fff','#ffc23d','twk')}${starAt(46,66,3.5,'#fff','#ffc23d','twk')}${starAt(64,40,3,'#fff','#ffc23d','twk')}`},
+  lights:{name:'Fairy Lights',price:350,nw:1,layer:'b',svg:lights},
+  propeller:{name:'Propeller',price:450,nw:1,layer:'b',svg:`<rect x="57.5" y="4" width="5" height="8" rx="1.5" fill="#8e9aab" stroke="#6f7c8f" stroke-width=".8"/><g class="prop"><path d="M60 4.5 Q44 -0.5 36 4.5 Q44 9.5 60 4.5 Q76 -0.5 84 4.5 Q76 9.5 60 4.5Z" fill="#ff6b57" stroke="#c9473a" stroke-width="1"/></g><circle cx="60" cy="4.5" r="3" fill="#ffc23d" stroke="#e09a14" stroke-width="1"/>`},
+  wings:{name:'Golden Wings',price:1500,nw:1,layer:'w',svg:`<g class="wingL"><path d="M40 140 Q24 124 6 128 Q14 132 12 136 Q22 136 18 142 Q28 141 26 148 Q34 146 40 150Z" fill="#ffd56b" stroke="#e09a14" stroke-width="1.2" stroke-linejoin="round"/><path d="M38 141 Q26 132 14 131 M37 145 Q28 140 20 140" stroke="#e09a14" stroke-width=".8" fill="none"/></g><g class="wingR"><path d="M80 140 Q96 124 114 128 Q106 132 108 136 Q98 136 102 142 Q92 141 94 148 Q86 146 80 150Z" fill="#ffd56b" stroke="#e09a14" stroke-width="1.2" stroke-linejoin="round"/><path d="M82 141 Q94 132 106 131 M83 145 Q92 140 100 140" stroke="#e09a14" stroke-width=".8" fill="none"/></g>`}
+};
+Object.assign(HATS,{
+  bow:{name:'Big Bow',price:120,nw:1,svg:`<g transform="translate(70 101) rotate(15)"><path d="M0 0 L-10 -6.5 L-10 6.5Z M0 0 L10 -6.5 L10 6.5Z" fill="#e2558f" stroke="#b83a6f" stroke-width="1"/><circle r="2.8" fill="#ff9fb7" stroke="#b83a6f" stroke-width="1"/></g>`},
+  beanie:{name:'Cozy Beanie',price:150,nw:1,svg:`<path d="M43 108 Q43 90 60 90 Q77 90 77 108Z" fill="#38b98a"/><path d="M47 97 H73 M45 102 H75" stroke="#9be0bd" stroke-width="2"/><rect x="42" y="104" width="36" height="6" rx="3" fill="#239068"/><circle cx="60" cy="88" r="4.5" fill="#fff" stroke="#c3cdd8" stroke-width="1"/>`},
+  chef:{name:'Chef Hat',price:200,nw:1,svg:`<g fill="#fff" stroke="#c3cdd8" stroke-width="1.2"><circle cx="51" cy="91" r="6.5"/><circle cx="69" cy="91" r="6.5"/><circle cx="60" cy="87" r="8"/><rect x="48" y="94" width="24" height="13" rx="2"/></g><path d="M48.6 95 H71.4" stroke="#fff" stroke-width="3"/>`},
+  cowboy:{name:'Cowboy Hat',price:300,nw:1,svg:`<path d="M47 106 Q46 92 52 90 Q56 94 60 91 Q64 94 68 90 Q74 92 73 106Z" fill="#b5773f"/><path d="M47.5 102 H72.5" stroke="#6b4422" stroke-width="3"/><path d="M33 104 Q60 114 87 104 Q86 109 60 111 Q34 109 33 104Z" fill="#a0683a"/>`},
+  unicorn:{name:'Unicorn Horn',price:400,nw:1,svg:`<path d="M55.5 101 L60 75 L64.5 101Z" fill="#ffd56b" stroke="#e09a14" stroke-width="1"/><path d="M56.5 96 L63.5 93.5 M57.5 89 L62.5 87 M58.6 82 L61.4 81" stroke="#e09a14" stroke-width="1.1"/><circle cx="51" cy="103" r="3" fill="#ff9fb7"/><circle cx="69" cy="103" r="3" fill="#c7b6ff"/><circle cx="51" cy="103" r="1" fill="#fff"/><circle cx="69" cy="103" r="1" fill="#fff"/>`},
+  viking:{name:'Viking Helmet',price:450,nw:1,svg:`<path d="M45 100 Q31 99 33 84 Q37 94 47 94Z M75 100 Q89 99 87 84 Q83 94 73 94Z" fill="#fff1d6" stroke="#c9c2a0" stroke-width="1.2"/><path d="M43 108 Q43 89 60 89 Q77 89 77 108Z" fill="#9aa6b6" stroke="#6f7c8f" stroke-width="1.4"/><path d="M60 89 V104" stroke="#c9a24a" stroke-width="3"/><rect x="42" y="103" width="36" height="5.5" rx="2.5" fill="#c9a24a"/><circle cx="48" cy="105.7" r="1" fill="#fff"/><circle cx="72" cy="105.7" r="1" fill="#fff"/>`},
+  tophat:{name:'Magic Top Hat',price:600,nw:1,svg:`<rect x="48.5" y="80" width="23" height="24" rx="1.5" fill="#1f3557"/><rect x="48.5" y="95" width="23" height="4.5" fill="#e2558f"/><ellipse cx="60" cy="104.5" rx="19" ry="3.6" fill="#1f3557"/>${starAt(68,86,2.4,'#ffd56b','#ffd56b','twk')}`},
+  galaxy:{name:'Galaxy Crown',price:1500,nw:1,svg:`<path d="M43 107 L43 89 L51 97 L60 81 L69 97 L77 89 L77 107Z" fill="#6b5bd6" stroke="#ffc23d" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="100.5" r="3.6" fill="#7fd0f5" stroke="#fff" stroke-width="1"/><circle cx="50" cy="102" r="2" fill="#ff9fb7"/><circle cx="70" cy="102" r="2" fill="#9be07a"/>${starAt(60,79,3.2,'#ffd56b','#e09a14','twk')}${starAt(43,87,2.4,'#ffd56b','#e09a14','twk')}${starAt(77,87,2.4,'#ffd56b','#e09a14','twk')}<circle cx="55" cy="93" r=".8" fill="#fff"/><circle cx="66" cy="95" r=".8" fill="#fff"/>`}
+});
+Object.assign(BALLOONS,{
+  sunset:{name:'Sunset Glow',price:250,nw:1,c:['#ff9f43','#ffd1a1'],skirt:'#d9672a'},
+  lavender:{name:'Lavender Dream',price:250,nw:1,c:['#9b87f5','#e6defc'],skirt:'#6b5bd6'},
+  melon:{name:'Watermelon',price:350,nw:1,c:['#38b98a','#ff8fa3'],skirt:'#239068',seeds:true},
+  galaxy:{name:'Galaxy',price:900,nw:1,c:['#2a1f5c','#5b3fa8'],skirt:'#1a1340',stars:true,twk:true},
+  diamond:{name:'Diamond Sky',price:2000,nw:1,c:['#9fdcfb','#f3fbff'],skirt:'#2f9fe0',stars:true,starC:'#fff',twk:true,facets:true}
+});
+Object.assign(PETS,{
+  turtle:{name:'Shelly the Turtle',price:300,nw:1,svg:`<ellipse cx="-7" cy="-1" rx="2.8" ry="1.9" fill="#9be07a" ${OUTG}/><ellipse cx="7" cy="-1" rx="2.8" ry="1.9" fill="#9be07a" ${OUTG}/><circle cx="12.5" cy="-7" r="4.3" fill="#9be07a" ${OUTG}/><circle cx="13.8" cy="-8" r="1" fill="#1f3557"/><path d="M-11.5 -2 Q-11.5 -17 0 -17 Q11.5 -17 11.5 -2Z" fill="#38b98a" ${OUTG}/><path d="M-5 -2.5 V-10 L0 -13.5 L5 -10 V-2.5 M-5 -10 L-10 -7 M5 -10 L10 -7" stroke="#239068" stroke-width="1" fill="none"/>`},
+  pandacub:{name:'Bamboo the Panda',price:450,nw:1,svg:`<ellipse cx="0" cy="-7" rx="8.5" ry="7" fill="#fff" ${OUTG}/><ellipse cx="-6" cy="-6" rx="3" ry="4.2" fill="#1f3557"/><ellipse cx="6" cy="-6" rx="3" ry="4.2" fill="#1f3557"/><circle cx="-6" cy="-25" r="2.8" fill="#1f3557"/><circle cx="6" cy="-25" r="2.8" fill="#1f3557"/><circle cx="0" cy="-19" r="7.2" fill="#fff" ${OUTG}/><ellipse cx="-3" cy="-19.5" rx="2.1" ry="2.7" fill="#1f3557" transform="rotate(-20 -3 -19.5)"/><ellipse cx="3" cy="-19.5" rx="2.1" ry="2.7" fill="#1f3557" transform="rotate(20 3 -19.5)"/><circle cx="-2.6" cy="-20" r=".8" fill="#fff"/><circle cx="2.6" cy="-20" r=".8" fill="#fff"/><ellipse cx="0" cy="-15.8" rx="1.4" ry="1" fill="#1f3557"/><path d="M9 -11 L13 -24" stroke="#38b98a" stroke-width="2.2" stroke-linecap="round"/><path d="M11 -18 l3 -1" stroke="#38b98a" stroke-width="1.4"/>`},
+  unicorn:{name:'Twinkle the Unicorn',price:900,nw:1,svg:`<path d="M-9 -9 Q-17 -10 -15 -1 Q-13 -6 -9 -6Z" fill="#c7b6ff"/><path d="M-6 -4 V0 M-2 -4 V0 M3 -4 V0 M7 -4 V0" stroke="#d6dbe6" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="0" cy="-7" rx="9.5" ry="5.5" fill="#fff" ${OUTG}/><ellipse cx="7" cy="-16" rx="5" ry="5.6" fill="#fff" ${OUTG}/><ellipse cx="10.6" cy="-13.8" rx="3" ry="2.4" fill="#ffe1ec" ${OUTG}/><path d="M3 -21 Q-2 -18 1 -10 Q3 -14.5 5 -13.5 Q4 -18 6.5 -20.5Z" fill="#ff9fb7"/><path d="M7.3 -21 L9.3 -29.5 L10.4 -20.6Z" fill="#ffc23d" stroke="#e09a14" stroke-width=".6"/><circle cx="8.6" cy="-16.6" r="1" fill="#1f3557"/>${starAt(-13,-20,2.2,'#ffd56b','#e09a14','twk')}`},
+  phoenix:{name:'Blaze the Phoenix',price:2500,nw:1,svg:`<path d="M-6 -6 Q-16 -4 -18 4 Q-13 -1 -10 0 Q-14 3 -13 8 Q-8 1 -4 -2Z" fill="#ff6b57"/><path d="M-5 -5 Q-12 -2 -13 3 Q-9 0 -6 -1Z" fill="#ffc23d"/><g class="petwing"><path d="M-4 -13 Q-15 -25 -17 -12 Q-11 -14 -5 -9Z M4 -13 Q15 -25 17 -12 Q11 -14 5 -9Z" fill="#ffc23d" stroke="#e09a14" stroke-width=".8"/></g><path d="M-2 -17 L-4.5 -25 L-0.5 -20 L1 -28 L3 -18.5Z" fill="#ff6b57"/><ellipse cx="0" cy="-10" rx="7" ry="8" fill="#ff9f43" ${OUTG}/><ellipse cx="1" cy="-7.5" rx="4" ry="5" fill="#ffd56b"/><circle cx="2.6" cy="-13" r="1.1" fill="#1f3557"/><path d="M6 -12 L10 -11 L6 -9.5Z" fill="#ffc23d" stroke="#e09a14" stroke-width=".5"/>`}
+});
+Object.assign(BASKETS,{
+  boat:{name:'Little Boat',price:350,nw:1,svg:`<path d="M31 133 H89 L80 160 H40Z" fill="#2f9fe0" stroke="#1f6fa8" stroke-width="1.5" stroke-linejoin="round"/><path d="M33 139 H87" stroke="#fff" stroke-width="3"/><circle cx="50" cy="150" r="3.4" fill="#eaf6ff" stroke="#1f6fa8" stroke-width="1.2"/><circle cx="70" cy="150" r="3.4" fill="#eaf6ff" stroke="#1f6fa8" stroke-width="1.2"/><path d="M38 157 Q42 155 46 157 Q50 159 54 157 Q58 155 62 157 Q66 159 70 157 Q74 155 78 157 Q82 159 84 157" stroke="#7fd0f5" stroke-width="1.5" fill="none"/>`},
+  cloud:{name:'Cloud Seat',price:450,nw:1,svg:`<g fill="#fff" stroke="#c9d6e6" stroke-width="1.4"><circle cx="43" cy="146" r="11"/><circle cx="58" cy="139" r="13"/><circle cx="75" cy="145" r="11"/><ellipse cx="60" cy="153" rx="27" ry="9"/></g><g fill="#fff"><circle cx="43" cy="146" r="9.7"/><circle cx="58" cy="139" r="11.7"/><circle cx="75" cy="145" r="9.7"/><ellipse cx="60" cy="153" rx="25.6" ry="7.7"/></g><path d="M50 150 Q55 153 60 150" stroke="#c9d6e6" stroke-width="1.2" fill="none"/>`},
+  rocket:{name:'Rocket Pod',price:800,nw:1,svg:`<path class="twk" d="M50 156 Q60 168 70 156Z" fill="#ff9f43"/><path d="M53 156 Q60 163 67 156Z" fill="#ffd56b"/><path d="M38 145 L31 159 L40 156Z M82 145 L89 159 L80 156Z" fill="#ff6b57" stroke="#c9473a" stroke-width="1"/><path d="M38 130 H82 V150 Q82 158 60 158 Q38 158 38 150Z" fill="#e6ebf2" stroke="#8e9aab" stroke-width="1.5"/><circle cx="60" cy="144" r="5" fill="#7fd0f5" stroke="#8e9aab" stroke-width="1.5"/><path d="M38 136 H82" stroke="#ff6b57" stroke-width="2.5"/>`}
+});
 const heroName=()=>(CHARS[G.char]||CHARS.fox).animal;
 function foxSVG(o={}){
-  const b=BALLOONS[o.balloon||G.balloon]||BALLOONS.classic,h=HATS[o.hat||G.hat]||HATS.none,pt=PETS[o.pet||G.pet]||PETS.none,bk=BASKETS[o.basket||G.basket]||BASKETS.classic;
+  const b=BALLOONS[o.balloon||G.balloon]||BALLOONS.classic,h=HATS[o.hat||G.hat]||HATS.none,gl=GLASSES[o.glass||G.glass]||GLASSES.none,dc=DECOS[o.deco||G.deco]||DECOS.none,pt=PETS[o.pet||G.pet]||PETS.none,bk=BASKETS[o.basket||G.basket]||BASKETS.classic;
   const cid=CHARS[o.char]?o.char:(CHARS[G.char]?G.char:'fox'),c=CHARS[cid],vi=o.cv!=null?o.cv:((G.charColor||{})[cid]||0),v=c.v[vi]||c.v[0],P=c.parts(v),paw=v.paw||v.m;
-  return `<svg class="fox" viewBox="0 0 120 165" aria-hidden="true">${balloonDraw(b)}
-  <path d="M46 92 L40 128 M74 92 L80 128" stroke="#7a5236" stroke-width="2.2"/>
+  return `<svg class="fox" viewBox="0 0 120 165" aria-hidden="true">${balloonDraw(b)}${dc.layer==='b'?dc.svg:''}
+  <path d="M46 92 L40 128 M74 92 L80 128" stroke="#7a5236" stroke-width="2.2"/>${dc.layer==='r'?dc.svg:''}
   <g class="tail">${P.tail||''}</g><g class="earL">${P.earL||''}</g><g class="earR">${P.earR||''}</g>
   <ellipse cx="60" cy="119" rx="18" ry="15" fill="${v.m}" stroke="rgba(31,53,87,.25)" stroke-width="1"/>
-  ${P.face||''}${c.noEyes?'':EYES(v.eye||c.eye)}
+  ${P.face||''}${c.noEyes?'':EYES(v.eye||c.eye)}${gl.svg?(c.noEyes?`<g transform="translate(60 106) scale(1.4) translate(-60 -116)">${gl.svg}</g>`:gl.svg):''}
   <ellipse class="mouth" cx="60" cy="128" rx="3.2" ry="2.6" fill="#7a2e2e"/>
   <ellipse cx="46.5" cy="121" rx="3" ry="2" fill="#ff9b8a" opacity=".6"/><ellipse cx="73.5" cy="121" rx="3" ry="2" fill="#ff9b8a" opacity=".6"/>
-  ${bk.svg}
+  ${dc.layer==='w'?dc.svg:''}${bk.svg}
   <ellipse cx="50" cy="128" rx="5" ry="3.5" fill="${paw}"/>
   <g class="arm"><ellipse cx="71" cy="125" rx="4.5" ry="7" fill="${paw}" transform="rotate(20 71 125)"/></g>
   ${h.svg}${pt.svg?`<g transform="translate(22 129) scale(1.45)"><g class="pet">${pt.svg}</g></g>`:''}</svg>`;
@@ -2587,7 +2657,7 @@ function renderEventCard(){
    counted per device, purchases are unioned. Only an explicit Reset or Restore (resetAt) replaces data. */
 const ROOT_KEY='pip-sky-islands-v3';
 const DEF_SETTINGS={goal:'min20',read:false,big:false,dys:false,diff:'auto',voice:'',vstyle:'fox',talk:false,sv:2};
-const DEF={name:'',best:{},xp:0,hats:['none'],balloons:['classic'],pets:['none'],home:{house:0,items:{},pos:{},hidden:{}},events:{},baskets:['classic'],basket:'classic',chars:['fox'],charColor:{},char:'fox',hat:'none',balloon:'classic',pet:'none',badges:[],dstreak:0,lastDaily:'',visited:{},bestThunder:0,bestCombo:0,greeted:'',
+const DEF={name:'',best:{},xp:0,hats:['none'],balloons:['classic'],pets:['none'],home:{house:0,items:{},pos:{},hidden:{}},events:{},baskets:['classic'],basket:'classic',glasses:['none'],glass:'none',decos:['none'],deco:'none',chars:['fox'],charColor:{},char:'fox',hat:'none',balloon:'classic',pet:'none',badges:[],dstreak:0,lastDaily:'',visited:{},bestThunder:0,bestCombo:0,greeted:'',
   diff:{},hardMaster:{},stats:{},days:{},wrongLog:[],review:[],fixed:0,fixedSeeds:[],stickers:{},setsDone:{},story:{ch:0,seen:{}},weeks:{},weekRewarded:'',goalDone:'',kidPin:'',cdev:{},_u:0,resetAt:0,settings:{...DEF_SETTINGS}};
 const clone=o=>o===undefined?undefined:JSON.parse(JSON.stringify(o));
 const freshRaw=()=>clone(DEF);
@@ -2620,7 +2690,7 @@ function deepMax(a,b){
   if(typeof a==='boolean'&&typeof b==='boolean')return a||b;
   return clone(a)}
 /* fields where the most recent choice wins (what Pip wears, settings, difficulty...) */
-const LATEST=['name','char','hat','balloon','pet','basket','charColor','settings','diff','wrongLog','kidPin','greetedName','saveGoal','roll','deck'];
+const LATEST=['name','char','hat','balloon','pet','basket','glass','deco','charColor','settings','diff','wrongLog','kidPin','greetedName','saveGoal','roll','deck'];
 function mergeProfiles(a,b){
   if(!a&&!b)return freshProfile();if(!a)return normalizeProfile(b);if(!b)return normalizeProfile(a);
   a=normalizeProfile(a);b=normalizeProfile(b);
@@ -2749,7 +2819,7 @@ const BADGES=[
   ['stars20','Star Collector','Collect 20 stars.','#ffc23d'],['stars40','Star Hoarder','Collect 40 stars.','#e2558f'],['stars60','Sky Royalty','Collect every star in the sky.','#6b5bd6'],
   ['travel','World Traveler','Finish every island at least once.','#2f9fe0'],['clock','Time Keeper','Get 3 stars on Clock Cove.','#5ec3d6'],
   ['boss','Storm Tamer','Defeat the Grumble Cloud on Boss Island.','#6b6f9e'],['daily3','3-Day Streak','Finish the Daily Challenge 3 days in a row.','#ff9f43'],
-  ['daily7','Week Warrior','Finish the Daily Challenge 7 days in a row.','#ff6b57'],['shopper','Snappy Dresser','Buy something in Pip\'s Closet.','#e2558f'],
+  ['daily7','Week Warrior','Finish the Daily Challenge 7 days in a row.','#ff6b57'],['shopper','Snappy Dresser','Buy something in Pip\'s Closet.','#e2558f'],['legend','Living Legend','Buy a Legendary item in Pip\'s Closet.','#ffc23d'],
   ['thunder','Lightning Brain','Answer 20 facts in Thunder Tower.','#7c8fb8'],['level5','Sky Scholar','Reach level 5.','#38b98a'],['rich','Treasure Keeper','Have 500 coins at once.','#e09a14'],
   ['hard','Hard Mode Hero','Get 3 stars on an island in Hard mode.','#ff6b57'],['fixer','Comeback Kid','Fix 10 old mistakes at Fix-It Falls.','#5ec3d6'],
   ['learner','Quick Learner','Finish a lesson with Pip.','#2f9fe0'],['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
@@ -3113,7 +3183,7 @@ function buildTips(){
   if(unv.length){const i=pick(unv);t.push({text:`Psst... I've never been to <b>${i.name}</b>! Want to explore it with me?`,label:`Fly to ${i.name}`,act:()=>start(i)})}
   const almost=STAR_ISLANDS.filter(i=>i.gen&&G.best[i.id]>0&&G.best[i.id]<3);
   if(almost.length){const i=pick(almost);t.push({text:`<b>${i.name}</b> has only ${G.best[i.id]} star${G.best[i.id]>1?'s':''}. I bet you can get all 3!`,label:'Try for 3 stars',act:()=>start(i)})}
-  const cheap=[...Object.entries(BASKETS).filter(([k])=>!G.baskets.includes(k)),...Object.entries(CHARS).filter(([k])=>!G.chars.includes(k)),...Object.entries(PETS).filter(([k])=>!G.pets.includes(k)),...Object.entries(HATS).filter(([k])=>!G.hats.includes(k)),...Object.entries(BALLOONS).filter(([k])=>!G.balloons.includes(k))].sort((a,b)=>a[1].price-b[1].price)[0];
+  const cheap=[...Object.entries(BASKETS).filter(([k])=>!G.baskets.includes(k)),...Object.entries(CHARS).filter(([k])=>!G.chars.includes(k)),...Object.entries(PETS).filter(([k])=>!G.pets.includes(k)),...Object.entries(HATS).filter(([k])=>!G.hats.includes(k)),...Object.entries(BALLOONS).filter(([k])=>!G.balloons.includes(k)),...Object.entries(GLASSES).filter(([k])=>!G.glasses.includes(k)),...Object.entries(DECOS).filter(([k])=>!G.decos.includes(k))].filter(([,v])=>!v.ev&&!v.reward).sort((a,b)=>a[1].price-b[1].price)[0];
   if(cheap){if(G.coins>=cheap[1].price)t.push({text:`You have <b>${fmt(G.coins)} coins</b>! Can I please get the <b>${cheap[1].name}</b>? Pretty please?`,label:"Open Pip's Closet",act:openCloset});
     else t.push({text:`Only <b>${cheap[1].price-G.coins} more coins</b> until you can buy me the <b>${cheap[1].name}</b>!`})}
   const owned=Object.keys(G.stickers).length;if(owned<STK.length)t.push({text:`You have <b>${owned} of ${STK.length}</b> stickers. Finish islands to find more. Some are super rare and GOLDEN!`,label:'See my album',act:openAlbum});
@@ -3460,18 +3530,20 @@ document.querySelectorAll('[data-home]').forEach(b=>b.onclick=renderMap);
 /* ================= closet ================= */
 function openCloset(){
   stopTimers();show('closet');renderCloset();
+  if(G.shopNews!=='v2'&&(G.xp||0)>0){G.shopNews='v2';save(true);say($('#csay'),`New in my closet: <b>glasses</b>, <b>balloon decorations</b>, more hats and pets, and super rare <b>Legendary</b> treasures! Look for the <b>NEW</b> tags!`);foxClass('waving',1600);return}
   say($('#csay'),G.coins<100?`My closet! Earn coins by solving puzzles, then come back and dress me up!`:`Ooh, you have <b>${fmt(G.coins)} coins</b>! What should I wear?`);foxClass('waving',1600);
 }
-const SHOP={basket:{items:()=>BASKETS,list:()=>G.baskets,key:'basket'},char:{items:()=>CHARS,list:()=>G.chars,key:'char'},hat:{items:()=>HATS,list:()=>G.hats,key:'hat'},balloon:{items:()=>BALLOONS,list:()=>G.balloons,key:'balloon'},pet:{items:()=>PETS,list:()=>G.pets,key:'pet'}};
+const SHOP={basket:{items:()=>BASKETS,list:()=>G.baskets,key:'basket'},char:{items:()=>CHARS,list:()=>G.chars,key:'char'},hat:{items:()=>HATS,list:()=>G.hats,key:'hat'},balloon:{items:()=>BALLOONS,list:()=>G.balloons,key:'balloon'},pet:{items:()=>PETS,list:()=>G.pets,key:'pet'},glass:{items:()=>GLASSES,list:()=>G.glasses,key:'glass'},deco:{items:()=>DECOS,list:()=>G.decos,key:'deco'}};
 function shopItem(kind,id,it){
-  const k=SHOP[kind],owned=k.list().includes(id),wearing=G[k.key]===id,word=kind==='basket'?'In use':kind==='char'?'Playing':kind==='pet'?(id==='none'?'Chosen':'With Pip'):'Wearing',act=kind==='pet'||kind==='char'?'Choose':kind==='basket'?'Use':'Wear';
+  const k=SHOP[kind],owned=k.list().includes(id),wearing=G[k.key]===id,word=kind==='deco'?(id==='none'?'Chosen':'On balloon'):kind==='basket'?'In use':kind==='char'?'Playing':kind==='pet'?(id==='none'?'Chosen':'With Pip'):'Wearing',act=kind==='pet'||kind==='char'?'Choose':kind==='basket'?'Use':kind==='deco'?(id==='none'?'Choose':'Add'):'Wear';
   let btn;
   if(wearing)btn=`<button type="button" class="worn" disabled>${word}</button>`;
   else if(owned)btn=`<button type="button" class="wear" data-k="${kind}" data-id="${id}">${act}</button>`;
   else if(it.reward)btn=`<button type="button" disabled>Event prize: ${EV_MILES[1][0]} pts</button>`;
   else if(G.coins>=it.price)btn=`<button type="button" class="buy" data-k="${kind}" data-id="${id}">${COIN_ICON} ${it.price}</button>`;
   else btn=`<button type="button" disabled>${COIN_ICON} ${it.price}</button>`;
-  return `<div class="item${wearing?' wearing':''}"><div class="prev">${foxSVG({[kind]:id})}</div><b>${it.name}</b>${btn}</div>`;
+  const leg=it.price>=1000;
+  return `<div class="item${wearing?' wearing':''}${leg?' leg':''}">${it.nw&&!owned?'<span class="newtag">NEW</span>':''}<div class="prev">${foxSVG({[kind]:id})}</div><b>${it.name}</b>${leg?'<span class="legtag">Legendary</span>':''}${btn}</div>`;
 }
 function renderCloset(){
   refreshFoxes();updateStats();
@@ -3485,13 +3557,15 @@ function renderCloset(){
   document.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{G.charColor=G.charColor||{};G.charColor[G.char]=+b.dataset.sw;save();renderCloset();tone([660,880]);setTimeout(()=>foxMove('spin'),50);say($('#csay'),`Ooh, ${C.v[+b.dataset.sw].n}! I love it!`)});
   $('#shopHats').innerHTML=Object.entries(HATS).filter(keep(G.hats)).map(([k,v])=>shopItem('hat',k,v)).join('');
   $('#shopBalloons').innerHTML=Object.entries(BALLOONS).map(([k,v])=>shopItem('balloon',k,v)).join('');
+  $('#shopGlasses').innerHTML=Object.entries(GLASSES).map(([k,v])=>shopItem('glass',k,v)).join('');
+  $('#shopDecos').innerHTML=Object.entries(DECOS).map(([k,v])=>shopItem('deco',k,v)).join('');
   $('#shopBaskets').innerHTML=Object.entries(BASKETS).filter(keep(G.baskets)).map(([k,v])=>shopItem('basket',k,v)).join('');
   $('#tcount').textContent=`${G.badges.length} of ${BADGES.length} badges`;
   $('#trophies').innerHTML=BADGES.map(b=>`<div class="trophy${G.badges.includes(b[0])?'':' off'}">${MEDAL(b[3])}<div><b>${b[1]}</b><small>${b[2]}</small></div></div>`).join('');
   document.querySelectorAll('.item button[data-id]').forEach(b=>b.onclick=()=>{
     const kind=b.dataset.k,id=b.dataset.id,K=SHOP[kind],it=K.items()[id],list=K.list();
     const pname=kind==='pet'&&id!=='none'?it.name.split(' the ')[0]:'';
-    if(!list.includes(id)){if(G.coins<it.price)return;G.coins-=it.price;list.push(id);award('shopper');sWin();burstAt(b,80);
+    if(!list.includes(id)){if(G.coins<it.price)return;G.coins-=it.price;list.push(id);award('shopper');if(it.price>=1000)award('legend');sWin();burstAt(b,80);
       say($('#csay'),kind==='basket'?pick([`What a ride! I love my new <b>${it.name}</b>!`,`Wheee! The <b>${it.name}</b> is so comfy!`]):kind==='char'?`Ta-da! I'm a <b>${it.animal}</b> now! Try my 3 colors above!`:kind==='pet'?pick([`Meet my new best friend, <b>${pname}</b>! Thank you SO much!`,`<b>${pname}</b> is coming on all our adventures!`,`Hi <b>${pname}</b>! Welcome to the balloon!`]):pick([`I LOVE it! Thank you so much!`,`Wow! I look amazing! Thank you!`,`Best. Gift. EVER!`]))}
     else{tone([660,880]);say($('#csay'),kind==='char'?`I'm a ${it.animal} again! Let's fly!`:kind==='pet'?(id==='none'?`Just me for now!`:`<b>${pname}</b>, hop in! Let's fly!`):pick([`Good choice!`,`Looking sharp!`,`Ta-da!`]))}
     G[K.key]=id;save();renderCloset();setTimeout(()=>foxMove(kind==='pet'?'hop':'spin'),50);
