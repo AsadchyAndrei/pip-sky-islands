@@ -3213,7 +3213,16 @@ const BADGES=[
 
 /* ================= sound, music, speech ================= */
 let actx=null,soundOn=true;
-function ctx(){actx=actx||new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();return actx}
+function ctx(){actx=actx||new(window.AudioContext||window.webkitAudioContext)();if(actx.state!=='running'&&actx.state!=='closed')actx.resume().catch(()=>{});return actx}
+/* Phones only allow sound after a real tap (touchend/click, not touch-down), and iPhones mute web sound in silent mode
+   unless the page asks for "playback" audio. On the first taps: ask for playback, wake the audio engine with a silent
+   sound, then start the music. */
+let audioUnlocked=false;
+function unlockAudio(){try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+  try{const c=ctx(),b=c.createBuffer(1,1,22050),src=c.createBufferSource();src.buffer=b;src.connect(c.destination);src.start(0)}catch(e){}
+  if(!audioUnlocked){audioUnlocked=true;try{const a=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');a.setAttribute('playsinline','');a.volume=0;const pr=a.play();pr&&pr.catch(()=>{})}catch(e){}}
+  if(actx&&actx.state!=='running')actx.resume().then(()=>musicStart()).catch(()=>{});else musicStart()}
+['touchend','click','keydown'].forEach(ev=>addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 function tone(freqs,dur=.11,type='triangle'){if(!soundOn)return;try{ctx();const t=actx.currentTime;freqs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.value=f;
   g.gain.setValueAtTime(.0001,t+i*dur);g.gain.exponentialRampToValueAtTime(.17,t+i*dur+.02);g.gain.exponentialRampToValueAtTime(.0001,t+i*dur+dur);o.connect(g).connect(actx.destination);o.start(t+i*dur);o.stop(t+i*dur+dur+.03)})}catch(e){}}
 const sYes=()=>tone([660,880,1175]),sNo=()=>tone([220,180],.14,'sine'),sWin=()=>tone([523,659,784,1047,1319],.12),sCoin=()=>tone([1320,1760],.06,'square'),sBadge=()=>tone([784,988,1175,1568],.1),sLevel=()=>tone([523,659,784,659,784,1047],.13);
@@ -3231,7 +3240,7 @@ function kick(t){const o=actx.createOscillator(),g=actx.createGain();o.type='sin
 function schedule(){while(nextT<actx.currentTime+.25){const bar=Math.floor(step/8),pos=step%8,c=bar%4,phrase=PHRASES[Math.floor(bar/4)%4];
   if(BASS[pos]!==null)note(ROOTS[c]+BASS[pos],nextT,E8*.9,.09,'triangle',.005);if(pos%2===1)STABS[c].forEach(m=>note(m,nextT,E8*.6,.022,'triangle',.005));
   if(pos===0||pos===4)kick(nextT);hat(nextT,pos%2?.035:.018);if(phrase&&phrase[c][pos]!==null)note(phrase[c][pos],nextT,E8*1.4,.05,'triangle',.005);nextT+=E8;step++}}
-function musicStart(){if(!musicOn||mTimer||document.hidden)return;try{ctx();if(!mGain){const f=actx.createBiquadFilter();f.type='lowpass';f.frequency.value=9000;mGain=actx.createGain();mGain.connect(f).connect(actx.destination)}
+function musicStart(){if(!musicOn||document.hidden)return;if(mTimer&&actx&&actx.state==='running')return;if(mTimer){clearInterval(mTimer);mTimer=0}try{ctx();if(!mGain){const f=actx.createBiquadFilter();f.type='lowpass';f.frequency.value=9000;mGain=actx.createGain();mGain.connect(f).connect(actx.destination)}
   const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(.0001,t);mGain.gain.linearRampToValueAtTime(.4*duck,t+1.2);nextT=t+.1;step=0;mTimer=setInterval(schedule,100)}catch(e){}}
 function musicStop(){if(!mTimer)return;clearInterval(mTimer);mTimer=0;try{const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(mGain.gain.value,t);mGain.gain.linearRampToValueAtTime(.0001,t+.5)}catch(e){}}
 function setDuck(v){duck=v;if(mGain&&mTimer&&actx){const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(mGain.gain.value,t);mGain.gain.linearRampToValueAtTime(.4*v+.0001,t+.3)}}
@@ -3256,7 +3265,7 @@ function htmlToSpeech(html){
   return d.textContent.replace(/×/g,' times ').replace(/÷/g,' divided by ').replace(/□/g,' blank ').replace(/−/g,' minus ').replace(/°/g,' degrees').replace(/(\d)¢/g,'$1 cents').replace(/\u00a0\?\u00a0/g,' blank ').replace(/___/g,' blank ').replace(/\s+/g,' ').trim();
 }
 function speak(html,o={}){
-  if(!canSpeak||!o.user)return;try{const txt=htmlToSpeech(html);if(!txt)return;if(!o.queue)speechSynthesis.cancel();if(!voice)pickVoice();
+  if(!canSpeak||!o.user)return;try{const txt=htmlToSpeech(html);if(!txt)return;unlockAudio();if(!o.queue&&(speechSynthesis.speaking||speechSynthesis.pending))speechSynthesis.cancel();if(!voice||!speechSynthesis.getVoices().includes(voice))pickVoice();try{speechSynthesis.resume()}catch(e){}
     const st=VSTYLE[G.settings.vstyle]||VSTYLE.fox;const u=new SpeechSynthesisUtterance(txt);u.lang=voice?voice.lang:'en-US';u.rate=st.rate;u.pitch=st.pitch;if(voice)u.voice=voice;
     if(o.pip&&!o.queue)tone([1046,1568],.045,'sine');
     u.onstart=()=>{setDuck(.3);$('#speakBtn')&&$('#speakBtn').classList.add('on')};u.onend=u.onerror=()=>{setDuck(1);$('#speakBtn')&&$('#speakBtn').classList.remove('on')};
@@ -3264,7 +3273,7 @@ function speak(html,o={}){
 }
 function stopSpeak(){if(canSpeak)try{speechSynthesis.cancel()}catch(e){}setDuck(1)}
 let lastAct=Date.now();
-addEventListener('pointerdown',()=>{lastAct=Date.now();musicStart()});addEventListener('keydown',()=>{lastAct=Date.now();musicStart()});
+addEventListener('pointerdown',()=>{lastAct=Date.now();musicStart()});addEventListener('pointerup',()=>{if(actx&&actx.state!=='running')unlockAudio()});addEventListener('keydown',()=>{lastAct=Date.now();musicStart()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){musicStop();stopSpeak();persistLocal();cloudFlush()}else{musicStart();setSync();if(canAdopt())adoptRemote()}});
 
 /* ================= effects ================= */
