@@ -503,10 +503,8 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .storymap .fresh{transform-box:view-box;transform-origin:50% 50%;animation:pieceIn 1s cubic-bezier(.2,1.4,.4,1) .3s both}
 @keyframes pieceIn{from{opacity:0;transform:scale(1.25) rotate(-8deg)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.storymap .fresh{animation:none}}
-.chapters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}
+.chapters{margin-top:6px}
 .chap{background:var(--card);border-radius:24px;padding:16px 18px;box-shadow:0 6px 0 var(--line);display:flex;flex-direction:column;gap:10px}
-.chap.lock{opacity:.6}
-.chap.done{box-shadow:0 6px 0 var(--leaf)}
 .chap h4{margin:0;font-family:var(--display);font-weight:400;font-size:22px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .chap h4 small{font-family:var(--body);font-size:13px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.6px}
 .chap p{margin:0;font-weight:700;color:var(--ink-soft);line-height:1.35}
@@ -655,7 +653,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
   .shop{grid-template-columns:repeat(2,minmax(0,1fr))}
   .album{grid-template-columns:repeat(3,minmax(0,1fr))}
   .tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .pgrid,.chapters,.storytop{grid-template-columns:1fr}
+  .pgrid,.storytop{grid-template-columns:1fr}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:440px){
@@ -1179,6 +1177,88 @@ html body.big .itabs button{font-size:23px}
   html body.big .itabs button{font-size:19px}
 }
 @media (max-width:360px){.itabs button{font-size:15px;gap:5px;padding-inline:4px}.itabs button .ico{width:22px;height:22px}}
+
+/* ===== Story Mode: one style with the map panels ===== */
+.storytop{background:rgba(255,255,255,.42);border:3px solid rgba(255,255,255,.75);border-radius:28px;padding:16px;box-shadow:0 6px 0 rgba(31,53,87,.08);grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:22px;align-items:center}
+.storymap,#storyMap{width:100%;max-width:300px;justify-self:center}
+#storyMap svg{display:block;width:100%;height:auto;border-radius:20px}
+.storyside{display:flex;flex-direction:column;gap:14px;min-width:0}
+#storysay{text-align:left;margin:0;display:block;-webkit-line-clamp:unset;overflow:visible;font-size:18px;line-height:1.4}
+.bkmeter{display:flex;gap:12px;align-items:center;font-weight:800;color:var(--ink);background:var(--card);border-radius:18px;padding:10px 14px 8px;box-shadow:0 4px 0 var(--line);font-variant-numeric:tabular-nums}
+.bkmeter span:first-child{white-space:nowrap}
+.bkmeter .bar{flex:1;height:14px}
+.bookbox{background:rgba(255,255,255,.42);border:3px solid rgba(255,255,255,.75);border-radius:28px;padding:6px 16px 18px;margin-top:20px;box-shadow:0 6px 0 rgba(31,53,87,.08)}
+.bookhd{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin:10px 2px 12px}
+.bookhd .sectitle{margin:0}
+.bookhd .status,.chhd .status{margin:0;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.status svg{width:15px;height:15px;flex:none}
+.chgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
+.chap{text-align:left;background:var(--card);border-radius:24px;padding:16px 18px 18px;box-shadow:0 6px 0 var(--line);display:flex;flex-direction:column;gap:12px}
+.chap.is-cur{box-shadow:0 6px 0 var(--ocean-d),0 0 0 3px var(--ocean) inset}
+.chap.is-fin{box-shadow:0 6px 0 var(--leaf-d)}
+.chap.is-lock{background:rgba(255,255,255,.7);box-shadow:0 6px 0 rgba(31,53,87,.12)}
+.chhd{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.chnum{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:22px;color:#fff;background:var(--ocean-d);box-shadow:0 3px 0 var(--ocean-dd);padding-top:2px}
+.chnum svg{width:22px;height:22px}
+.is-fin .chnum{background:var(--leaf-d);box-shadow:0 3px 0 var(--leaf-dd)}
+.is-lock .chnum{background:#dfe5ef;color:var(--ink-soft);box-shadow:0 3px 0 #c5cfdd}
+.chtt{min-width:0}
+.chap h4{margin:0;font-size:22px;line-height:1.1;display:block}
+.chap .chtt p{margin:3px 0 0;font-size:14.5px;line-height:1.3}
+.chlbl{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft)}
+.chlbl b{color:var(--ink)}
+.clist{gap:8px}
+.cisl{min-height:38px;padding:6px 12px 4px;border-radius:16px;color:var(--ink);gap:6px;flex-wrap:wrap;text-align:left;box-shadow:0 3px 0 rgba(31,53,87,.1)}
+.cisl.ok{color:#1d7a55}
+.cisl .tneed{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:800;opacity:1;color:#a86b00;background:var(--pale-sun);border-radius:999px;padding:1px 7px 0}
+.cisl .tneed .stmini svg{width:12px;height:12px}
+.cisl:disabled{cursor:default;box-shadow:none;background:#eef1f6;color:var(--ink-soft)}
+.cisl.ok:disabled{background:#e6f4ed;color:#3f8a69}
+.chact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;margin-top:auto;padding-top:2px}
+.chact .go{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;padding-inline:10px}
+.chact .go svg{width:18px;height:18px}
+.chact .go:disabled{opacity:1;color:var(--ink-soft);background:#eef1f6;border-color:#dfe5ef;box-shadow:0 4px 0 #dfe5ef}
+.chnote{margin:auto 0 0!important;display:flex;align-items:center;gap:8px;font-size:14.5px;background:#eef1f6;border-radius:14px;padding:9px 12px 7px}
+.chnote svg{width:18px;height:18px;flex:none}
+@media (min-width:761px){.chap:not(.is-lock) .chact .go[data-boss]:not(:disabled){background:var(--coral-d);color:#fff;border-color:var(--coral-d);box-shadow:0 4px 0 var(--coral-dd)}}
+@media (max-width:760px){
+  .storytop{grid-template-columns:120px minmax(0,1fr);gap:12px;padding:12px;border-radius:24px;align-items:start}
+  #storyMap{max-width:120px}
+  #storyMap svg{border-radius:14px}
+  #storysay{font-size:15px;line-height:1.35;padding:9px 12px 8px}
+  .storyside{gap:10px}
+  .storyside{display:contents}
+  #storysay{align-self:center}
+  .bkmeter{grid-column:1/-1;padding:8px 12px 6px;font-size:14px;gap:10px}
+  .clist{gap:6px}
+  .cisl{padding:6px 10px 4px;font-size:13.5px}
+  .is-lock .cisl{min-height:32px;padding:4px 9px 2px;font-size:13px}
+  .is-lock .chlbl{display:none}
+  .bookbox{padding:4px 10px 14px;border-radius:24px;margin-top:16px}
+  .bookhd{margin:8px 4px 10px}
+  .bookhd .sectitle{font-size:21px}
+  .chgrid{grid-template-columns:1fr;gap:14px}
+  .chap{padding:14px 14px 16px;gap:10px}
+  .chhd{grid-template-columns:auto minmax(0,1fr);gap:4px 12px}
+  .chhd .status{grid-column:2;justify-self:start}
+  .chnum{width:40px;height:40px;font-size:20px;grid-row:1/3;align-self:start}
+  .chap h4{font-size:20px}
+  .chact .go{font-size:17px}
+  .cisl{min-height:44px}
+  .chact .go[data-boss]:not(:disabled){background:var(--coral-d);color:#fff;border-color:var(--coral-d);box-shadow:0 4px 0 var(--coral-dd)}
+}
+@media (max-width:360px){.storytop{grid-template-columns:96px minmax(0,1fr)}#storyMap{max-width:96px}#storysay{font-size:14px}}
+html body.big #storysay{font-size:19px}
+html body.big .chap .chtt p,html body.big .chnote{font-size:16.5px}
+html body.big .chlbl,html body.big .bkmeter{font-size:15px}
+html body.big .cisl .tneed{font-size:14px}
+@media (max-width:760px){
+  html body.big .storytop{grid-template-columns:1fr}
+  html body.big #storyMap{max-width:170px}
+  html body.big #storysay{font-size:17px}
+  html body.big .chact{grid-template-columns:1fr}
+  html body.big .chact .go{font-size:19px}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -1337,7 +1417,7 @@ html body.big .itabs button{font-size:23px}
     <section id="story" hidden>
       <div class="playhead"><button class="back" data-home type="button"><span class="ico-slot" data-ico="back"></span>Map</button>
         <div class="ihead"><div class="iname">Pip's Lost Map</div><div class="qnum">Earn 2 stars on every island in a chapter, then beat its boss to win a map piece.</div></div></div>
-      <div class="storytop"><div id="storyMap"></div><div class="bubble" id="storysay"></div></div>
+      <div class="storytop"><div id="storyMap"></div><div class="storyside"><div class="bubble" id="storysay"></div><div class="bkmeter" id="bkmeter"></div></div></div>
       <div class="chapters" id="chapters"></div>
     </section>
 
@@ -4402,12 +4482,19 @@ function openStory(){
   const st=$('#story .iname');if(st)st.textContent=B.title;const sq=$('#story .qnum');if(sq)sq.textContent='Earn 2 stars on every island in a chapter, then beat its boss.';
   const cur=CHAPTERS[G.story.ch],wait=cur?chapterWaiting(G.story.ch):'';
   say($('#storysay'),!cur?`We finished all three books together${nm()}! The Rainbow Bridge shines. You can replay any chapter boss for fun and stickers.`:wait?`What an adventure! The next chapter, <b>${cur.name}</b>, opens on <b>${new Date(wait+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}</b>. Practice its islands now so you're ready!`:chapterReady(G.story.ch)?`All islands are ready! Time to battle the <b>${BOSSES[cur.boss].name}</b>!`:`Chapter ${G.story.ch+1}: <b>${cur.name}</b>. Earn <b>2 stars</b> on each island below to call out the boss.`);
-  const order=CHAPTERS.map((_,i)=>i).sort((x,y)=>((bookOf(x)===bk?0:1)-(bookOf(y)===bk?0:1))||x-y);
-  $('#chapters').innerHTML=order.map(i=>{const ch=CHAPTERS[i];const lock=i>G.story.ch,fin=i<G.story.ch,w=i===G.story.ch?chapterWaiting(i):'',ready=chapterReady(i)&&!w;
-    return `${i===8?'<h3 class="sectitle bookt">Book 3: The Rainbow Bridge</h3>':i===4?'<h3 class="sectitle bookt">Book 2: The Starlight Compass</h3>':i===0?'<h3 class="sectitle bookt">Book 1: The Lost Map</h3>':''}<div class="chap${lock?' lock':''}${fin?' done':''}"><h4>${ch.name}<small>Chapter ${i+1} · ${fin?BOOKS[ch.book||1].won:lock?'Locked':w?'Opens '+new Date(w+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'In progress'}</small></h4>
-      <p>Boss: ${BOSSES[ch.boss].name}</p>
-      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=starFor(id)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${starsMini(starFor(id))}${!ok&&!lock?`<small class="tneed">needs ${2-starFor(id)} more ${starsMini(1)}</small>`:''}</button>`}).join('')}</div>
-      <div class="actrow" style="justify-content:flex-start">${lock?'':`<button type="button" class="go small alt" data-intro="${i}">Story</button><button type="button" class="go small${ready?'':' alt'}" data-boss="${i}" ${ready?'':'disabled'}>${fin?'Replay boss':'Battle boss'}</button>`}</div></div>`}).join('');
+  const BN={1:'The Lost Map',2:'The Starlight Compass',3:'The Rainbow Bridge'};
+  const bkIdx=b=>CHAPTERS.map((_,i)=>i).filter(i=>bookOf(i)===b),bkDone=b=>bkIdx(b).filter(i=>i<G.story.ch).length;
+  {const n=bkIdx(bk).length,d=bkDone(bk);$('#bkmeter').innerHTML=`<span>Book ${bk} · ${d}/${n} chapters</span><span class="bar"><i style="width:${Math.round(d/n*100)}%"></i></span>`}
+  const card=i=>{const ch=CHAPTERS[i];const lock=i>G.story.ch,fin=i<G.story.ch,w=i===G.story.ch?chapterWaiting(i):'',ready=chapterReady(i)&&!w;
+    const okN=ch.islands.filter(id=>starFor(id)>=2).length;
+    const st=fin?`<span class="status ok">${CHECK}${BOOKS[ch.book||1].won}</span>`:lock?`<span class="status lock">${ICON.lock}Locked</span>`:w?`<span class="status go">Opens ${new Date(w+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</span>`:`<span class="status go">In progress</span>`;
+    return `<div class="chap${lock?' is-lock':fin?' is-fin':' is-cur'}"><div class="chhd"><span class="chnum">${fin?CHECK:i+1}</span><div class="chtt"><h4>${ch.name}</h4><p>Chapter ${i+1} · Boss: ${BOSSES[ch.boss].name}</p></div>${st}</div>
+      <div class="chlbl">Islands <b>${okN}/${ch.islands.length}</b> ready</div>
+      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=starFor(id)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}<span class="cnm">${isl.name}</span>${starsMini(starFor(id))}${!ok&&!lock?`<small class="tneed">needs ${2-starFor(id)} more ${starsMini(1)}</small>`:''}</button>`}).join('')}</div>
+      ${lock?`<p class="chnote">${ICON.lock}Finish Chapter ${i} to open it.</p>`:`<div class="chact"><button type="button" class="go small alt" data-intro="${i}">Story</button><button type="button" class="go small${ready||fin?'':' alt'}" data-boss="${i}" ${ready||fin?'':'disabled'}>${ready||fin?'':ICON.lock}${fin?'Replay boss':'Battle boss'}</button></div>`}</div>`};
+  const books=[bk,...[1,2,3].filter(b=>b!==bk)];
+  $('#chapters').innerHTML=books.map(b=>{const n=bkIdx(b).length,d=bkDone(b),open=bkIdx(b)[0]<=G.story.ch;
+    return `<div class="bookbox${b===bk?' cur':''}"><div class="bookhd"><h3 class="sectitle">Book ${b}: ${BN[b]}</h3><span class="status ${d===n?'ok':open?'go':'lock'}">${d===n?CHECK:open?'':ICON.lock}${d}/${n} chapters</span></div><div class="chgrid">${bkIdx(b).map(card).join('')}</div></div>`}).join('');
   document.querySelectorAll('[data-isl]').forEach(b=>b.onclick=()=>start(byId(b.dataset.isl)));
   document.querySelectorAll('[data-intro]').forEach(b=>b.onclick=()=>playDialog(CHAPTERS[+b.dataset.intro].intro));
   document.querySelectorAll('[data-boss]').forEach(b=>b.onclick=()=>startChapterBoss(+b.dataset.boss));
