@@ -1058,6 +1058,66 @@ body[data-screen=play] .sky *,body[data-screen=play] .isle svg.isl{animation-pla
   table.topics:not(.cur) td:nth-child(3):not(:has(.acc)){display:none}
   table.topics:not(.cur) .cisl{min-height:36px;padding:4px 10px 2px}
 }
+
+/* ===== "Bigger text": every piece of reading text grows, not only the puzzle (most labels used fixed sizes before) ===== */
+html body.big .bubble{font-size:1.06em}
+html body.big .intro .bubble{font-size:18px;line-height:1.35}
+html body.big[data-screen=play] .pipside .bubble{font-size:17px}
+html body.big .tdhead b{font-size:25px}html body.big .tdhead span,html body.big .tdmeta{font-size:16px}
+html body.big .tdtx small{font-size:16px}
+html body.big .plaque b{font-size:20px}html body.big .plaque small{font-size:15px}
+html body.big .status{font-size:15px}
+html body.big .sectitle{font-size:26px}html body.big .sectitle small{font-size:16px}
+html body.big .qnum{font-size:17px}
+html body.big .iname{font-size:28px}
+html body.big[data-screen=play] .iname{font-size:21px}
+html body.big .go{font-size:26px}html body.big .go.small{font-size:20px}
+html body.big .tbtn,html body.big .back{font-size:17px}
+html body.big .mini{font-size:20px}
+html body.big .item b{font-size:20px}html body.big .item button{font-size:17px}
+html body.big .stk b{font-size:16px}html body.big .stk small{font-size:13.5px}
+html body.big .trophy b{font-size:19px}html body.big .trophy small{font-size:16px}
+html body.big .chap h4{font-size:23px}html body.big .chap p,html body.big .cisl{font-size:17px}html body.big .cisl .tneed{font-size:14px}
+html body.big .evtop b{font-size:25px}html body.big .evbody p{font-size:18px}html body.big .evweek{font-size:16.5px}
+html body.big .evmiles span{font-size:15px}html body.big .evtag{font-size:15px}
+html body.big .week b{font-size:21px}html body.big .week .wtext{font-size:17px}
+html body.big .goalcard .gtxt b{font-size:19px}html body.big .goalcard .gtxt span,html body.big .goalcard .gtxt small{font-size:16px}
+html body.big .pinfo b{font-size:19px}html body.big .pinfo small{font-size:16px}
+html body.big #map .foot{font-size:16px}
+html body.big .done p{font-size:1.1em}html body.big #done .badge{font-size:16px}
+html body.big .pill{font-size:21px}.lvltop b{white-space:nowrap}html body.big .lvltop span{white-space:normal;overflow:visible;line-height:1.15}@media (max-width:760px){html body.big .lvltop span{font-size:18px}}html body.big .lvl small,html body.big .pill small{font-size:15px}
+html body.big .toast{font-size:16px}html body.big .toast b{font-size:19px}
+html body.big .pcard h4{font-size:23px}html body.big .pcard p,html body.big .note,html body.big .setrow small,html body.big .mist li small,html body.big .cdone{font-size:15.5px}
+html body.big .kpi small,html body.big .topics td,html body.big .topics th,html body.big .cst{font-size:16px}
+html body.big .ocard p{font-size:1.05em}html body.big .eyebrow{font-size:16px}
+html body.big .kid b{font-size:26px}html body.big .kid small{font-size:16px}
+html body.big .bnav button{font-size:14.5px}
+@media (max-width:760px){
+  /* bigger text on a phone: tip buttons sit above the question, so the question keeps the full width */
+  html body.big[data-screen=play] .qtop{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 8px}
+  html body.big[data-screen=play] .qtop .howbtn{order:0;float:none;margin:0}
+  html body.big[data-screen=play] .qtop .speak{order:1;float:none;margin:0}
+  html body.big[data-screen=play] .qtop .prompt{order:2;flex:1 1 100%}
+  /* buttons that would break into three lines get room instead */
+  html body.big .prow{flex-direction:column;align-items:stretch}
+  html body.big .prow [data-proj],html body.big .pgoal{width:100%;justify-content:center}
+  html body.big .tdsteps li:not(.cur) .pkbtns .go{font-size:17px}
+  html body.big #eventCard .actrow{grid-template-columns:1fr}
+  html body.big #eventCard .actrow .go{font-size:19px}
+  html body.big #eventCard .evmiles{grid-template-columns:1fr}
+  html body.big .islands.five>.isle,html body.big .islands.four>.isle{min-width:0}
+}
+/* both modes: small labels that used to break into three lines */
+@media (max-width:360px){.status{font-size:12.5px;padding-inline:8px}.item button{font-size:13.5px;padding-inline:8px}}
+.prow [data-proj],.status{white-space:nowrap}
+html body.big .status.go{font-size:15px;font-family:var(--body)}
+@media (max-width:760px){
+  html body.big:not([data-screen=play]):not([data-screen=done]) .playhead .qnum{font-size:17px}
+  html body.big:not([data-screen=play]):not([data-screen=done]) .playhead .iname{font-size:27px}
+  html body.big #eventCard .evbody>p{font-size:17.5px}html body.big #eventCard .evweek{font-size:16px}html body.big #eventCard .evtop b{font-size:24px}
+  html body.big .pgoal{font-size:16px;white-space:normal}
+}
+@media (max-width:360px){html body.big #done .btnrow .go{font-size:22px}html body.big .pill{font-size:19px;padding-inline:9px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -3718,7 +3778,7 @@ let EXPLORE=new Set();
 function pickExplore(){EXPLORE=new Set();for(const g of ['math','world'])ISLANDS.filter(i=>i.group===g&&i.gen&&!i.retired&&!G.visited[i.id]).slice(0,2).forEach(i=>EXPLORE.add(i.id))}
 function card(isl,i){
   const b=starFor(isl.id);let status='',cls='',rib='';
-  if(isl.special==='daily'){status=dailyDone()?`<span class="status ok">Done today! Back tomorrow</span>`:`<span class="status go">+${REW.daily} bonus coins</span>`;if(!dailyDone())rib='<span class="ribbon">NEW!</span>'}
+  if(isl.special==='daily'){status=dailyDone()?`<span class="status ok">Done today! Back tomorrow</span>`:`<span class="status go">+${REW.daily} coins</span>`;if(!dailyDone())rib='<span class="ribbon">NEW!</span>'}
   else if(isl.special==='review'){const due=reviewDue().length,all=G.review.length;
     status=due?`<span class="status go">${due} puzzle${due>1?'s':''} to fix</span>`:all?`<span class="status lock">${all} coming back later</span>`:`<span class="status ok">No mistakes to fix!</span>`;if(due)rib=`<span class="ribbon blue">${due}</span>`}
   else if(isl.special==='boss'&&starTotal()<BOSS_NEED){cls=' locked';status=`<span class="status lock">Locked: ${starTotal()}/${BOSS_NEED} stars</span>`}
@@ -4146,7 +4206,7 @@ function shopItem(kind,id,it){
   let btn;
   if(wearing)btn=`<button type="button" class="worn" disabled>${word}</button>`;
   else if(owned)btn=`<button type="button" class="wear" data-k="${kind}" data-id="${id}">${act}</button>`;
-  else if(it.reward)btn=`<button type="button" disabled>Event prize: ${EV_MILES[1][0]} pts</button>`;
+  else if(it.reward)btn=`<button type="button" disabled>Prize: ${EV_MILES[1][0]} pts</button>`;
   else if(it.mast)btn=`<button type="button" disabled class="mastb">${mastLabel(it.mast)}${it.mast.isl?` · now ${'★'.repeat(starFor(it.mast.isl))||'no stars'}`:''}</button>`;
   else if(G.coins>=it.price)btn=`<button type="button" class="buy" data-k="${kind}" data-id="${id}">${COIN_ICON} ${it.price}</button>`;
   else btn=`<button type="button" disabled>${COIN_ICON} ${it.price}</button>`;
@@ -4266,7 +4326,7 @@ function openStory(){
   $('#chapters').innerHTML=order.map(i=>{const ch=CHAPTERS[i];const lock=i>G.story.ch,fin=i<G.story.ch,w=i===G.story.ch?chapterWaiting(i):'',ready=chapterReady(i)&&!w;
     return `${i===8?'<h3 class="sectitle bookt">Book 3: The Rainbow Bridge</h3>':i===4?'<h3 class="sectitle bookt">Book 2: The Starlight Compass</h3>':i===0?'<h3 class="sectitle bookt">Book 1: The Lost Map</h3>':''}<div class="chap${lock?' lock':''}${fin?' done':''}"><h4>${ch.name}<small>Chapter ${i+1} · ${fin?BOOKS[ch.book||1].won:lock?'Locked':w?'Opens '+new Date(w+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'In progress'}</small></h4>
       <p>Boss: ${BOSSES[ch.boss].name}</p>
-      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=starFor(id)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(starFor(id))}${!ok&&!lock?`<small class="tneed">${2-starFor(id)} more star${2-starFor(id)>1?'s':''} needed</small>`:''}</button>`}).join('')}</div>
+      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=starFor(id)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(starFor(id))}${!ok&&!lock?`<small class="tneed">needs ${2-starFor(id)} more ★</small>`:''}</button>`}).join('')}</div>
       <div class="actrow" style="justify-content:flex-start">${lock?'':`<button type="button" class="go small alt" data-intro="${i}">Story</button><button type="button" class="go small${ready?'':' alt'}" data-boss="${i}" ${ready?'':'disabled'}>${fin?'Replay boss':'Battle boss'}</button>`}</div></div>`}).join('');
   document.querySelectorAll('[data-isl]').forEach(b=>b.onclick=()=>start(byId(b.dataset.isl)));
   document.querySelectorAll('[data-intro]').forEach(b=>b.onclick=()=>playDialog(CHAPTERS[+b.dataset.intro].intro));
