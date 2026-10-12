@@ -1397,6 +1397,45 @@ html body.big .pzcard small,html body.big .pztag{font-size:16px}html body.big .p
   html body.big #map .navbtn b{font-size:19px}
 }
 .mist.pzlist li{background:#f4f7fb}
+/* ===== Grown-ups: one style with the rest of the game ===== */
+#parent .ptabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+#parent .ptabs button{font-size:19px}
+#parent .ptabs button .ico{width:26px;height:26px}
+#parent .pgrid{gap:18px}
+#parent .pcard{border-radius:24px;padding:18px 20px 20px;box-shadow:0 6px 0 var(--line);gap:12px}
+#parent .pcard h4{font-size:22px;line-height:1.15}
+#parent .pcard>.note{margin-top:-6px}
+#parent .pfocus{flex-direction:row;align-items:center;gap:14px;background:var(--pale-sun);box-shadow:0 6px 0 #f1cf72}
+#parent .pfocus .pfico{flex:none;width:48px;height:48px;border-radius:16px;background:#fff;display:grid;place-items:center;box-shadow:0 3px 0 #f1cf72}
+#parent .pfocus .pfico svg{width:30px;height:30px}
+#parent .pfocus p{flex:1;color:var(--ink);font-weight:600;line-height:1.45}
+#parent .pfocus p.pfbtn{flex:none}
+#parent .pfocus .go{white-space:nowrap}
+#parent .pnotes{background:var(--card)}
+#parent .pnotes ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+#parent .pnotes li{margin:0;background:#fff8e1;border-radius:14px;padding:10px 14px 8px;font-weight:600;line-height:1.45}
+#parent .kpi{border-radius:18px;padding:12px 14px 10px}
+#parent .mist li{border-radius:14px}
+#parent .mist.pzlist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0;padding:0}
+#parent .mist.pzlist li{margin:0}
+#parent .setrow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 18px;padding:12px 0}
+#parent .setrow label{display:block;line-height:1.3}
+#parent .setrow small{margin-top:2px;line-height:1.35}
+#parent .setrow select,#parent .setrow input[type=text]{min-width:210px;min-height:44px;border-radius:14px}
+#parent .setrow>.go,#parent .setrow>.switch{justify-self:end}
+#parent .tscroll{border-radius:16px}
+@media (max-width:760px){
+  #parent .ptabs button{font-size:15px;min-height:48px;gap:6px;flex-direction:column;padding:6px 2px}
+  #parent .ptabs button .ico{width:22px;height:22px}
+  #parent .ptlong{display:none}
+  #parent .pcard{padding:16px 16px 18px}
+  #parent .pfocus{flex-direction:column;align-items:stretch}
+  #parent .pfocus .pfico{display:none}
+  #parent .pfocus .go{width:100%}
+  #parent .mist.pzlist{grid-template-columns:1fr}
+  #parent .setrow:has(select),#parent .setrow:has(input[type=text]){grid-template-columns:1fr}
+  #parent .setrow select,#parent .setrow input[type=text]{width:100%;min-width:0}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -4844,14 +4883,16 @@ const CURRIC=[['Math','Place value, adding, multiplying, dividing','4.NBT',['pla
   ['Science','Earth, life and physical science','NGSS 4',['science']],['Social studies','California history and geography','HSS 4',['history','geo']]];
 /* grown-ups: three tabs and one line that says what to do this week */
 let pTab='prog';
+const PT_ICO={prog:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="12" width="5" height="9" rx="1.5" fill="#5fc3f0" stroke="#1f3557" stroke-width="2"/><rect x="9.5" y="7" width="5" height="14" rx="1.5" fill="#38b98a" stroke="#1f3557" stroke-width="2"/><rect x="16" y="3" width="5" height="18" rx="1.5" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/></svg>`,acct:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.6A3.8 3.8 0 0 1 17.5 18Z" fill="#dff3ff" stroke="#1f3557" stroke-width="2" stroke-linejoin="round"/><path d="M12 10.5v5m-2.3-2.4L12 15.5l2.3-2.4" fill="none" stroke="#1f3557" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`};
 function parentTabs(rows,allA){const grid=document.querySelector('#parentBody .pgrid');if(!grid)return;
   const tabOf=h=>/^(Settings|Players|Install)/.test(h)?'set':/^(Account|Backups|Move progress|Delete|Danger|Reset|Erase)/.test(h)?'acct':'prog';
   grid.querySelectorAll(':scope>.pcard').forEach(c=>{const h=(c.querySelector('h4')||{}).textContent||'';c.dataset.ptab=tabOf(h)});
   const w=rows.find(r=>r.s.a>=5&&r.p!=null&&r.p<80);
-  const focus=allA<20?`Not enough puzzles yet for a weekly tip. After about 20 puzzles, Pip will point to the topic that needs practice.`:w?`<b>This week: ${esc(w.i.name)}</b> (${esc(w.i.topic)}) is at ${w.p}% right on the first try.${lessonsFor(w.i.id).length?' Its 3-minute lesson explains the trick.':''} <button type="button" class="go small" data-play="${w.i.id}">Play it together</button>`:`<b>Great week!</b> Every topic is at 80% or more right on the first try.`;
-  grid.insertAdjacentHTML('afterbegin',`<div class="pcard wide pfocus" data-ptab="prog"><p>${focus}</p></div>`);
+  const focus=allA<20?`Not enough puzzles yet for a weekly tip. After about 20 puzzles, Pip will point to the topic that needs practice.`:w?`<b>This week: ${esc(w.i.name)}</b> (${esc(w.i.topic)}) is at ${w.p}% right on the first try.${lessonsFor(w.i.id).length?' Its 3-minute lesson explains the trick.':''}</p><p class="pfbtn"><button type="button" class="go small" data-play="${w.i.id}">Play it together</button>`:`<b>Great week!</b> Every topic is at 80% or more right on the first try.`;
+  grid.insertAdjacentHTML('afterbegin',`<div class="pcard wide pfocus" data-ptab="prog"><span class="pfico">${PT_ICO.prog}</span><p>${focus}</p></div>`);
+  grid.querySelectorAll(':scope>.pcard').forEach(c=>{if(/^Install/.test((c.querySelector('h4')||{}).textContent||''))grid.appendChild(c)});
   const fb=grid.querySelector('.pfocus [data-play]');if(fb)fb.onclick=()=>start(byId(fb.dataset.play),{noOffer:true});
-  grid.insertAdjacentHTML('beforebegin',`<div class="itabs ptabs" role="tablist" aria-label="Grown-ups sections"><button type="button" role="tab" data-pt="prog">Progress</button><button type="button" role="tab" data-pt="set">Settings</button><button type="button" role="tab" data-pt="acct">Account &amp; data</button></div>`);
+  grid.insertAdjacentHTML('beforebegin',`<div class="itabs ptabs" role="tablist" aria-label="Grown-ups sections"><button type="button" role="tab" data-pt="prog">${PT_ICO.prog}<span>Progress</span></button><button type="button" role="tab" data-pt="set">${ICON.gear}<span>Settings</span></button><button type="button" role="tab" data-pt="acct">${PT_ICO.acct}<span>Account<span class="ptlong"> &amp; data</span></span></button></div>`);
   const sel=t=>{pTab=t;document.querySelectorAll('.ptabs [data-pt]').forEach(b=>b.setAttribute('aria-selected',b.dataset.pt===t));grid.querySelectorAll(':scope>.pcard').forEach(c=>c.hidden=c.dataset.ptab!==t)};
   document.querySelectorAll('.ptabs [data-pt]').forEach(b=>b.onclick=()=>sel(b.dataset.pt));sel(pTab)}
 function renderParent(){
@@ -4877,7 +4918,7 @@ function renderParent(){
       <p>Waiting at Fix-It Falls: <b>${G.review.length}</b> puzzle${G.review.length===1?'':'s'} (${reviewDue().length} due today).</p></div>
     ${(()=>{const P=(G.home&&G.home.inside&&G.home.inside.pz)||{n:0,by:{},att:{},first:{},done:{},day:''};const att=P.att||{},fst=P.first||{},by=P.by||{},today=P.day===dayKey()?P.done||{}:{};
       const next=INSIDE.filter(it=>it.prize&&it.prize>(P.n||0)).sort((a,b)=>a.prize-b.prize)[0];
-      return `<div class="pcard"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
+      return `<div class="pcard wide"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
     <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
     <div class="pcard wide curmap"><h4>4th grade program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the California 4th grade program. Stars are the same as in the game: the best round, or recent accuracy (7 of 10 right lately = 2 stars, 8 of 10 = 3).</p>
       <div class="tscroll"><table class="topics cur"><thead><tr><th>Subject</th><th>Area</th><th>Standard</th><th>Islands</th></tr></thead><tbody>
