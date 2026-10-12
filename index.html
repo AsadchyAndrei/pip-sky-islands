@@ -1118,6 +1118,10 @@ html body.big .status.go{font-size:15px;font-family:var(--body)}
   html body.big .pgoal{font-size:16px;white-space:normal}
 }
 @media (max-width:360px){html body.big #done .btnrow .go{font-size:22px}html body.big .pill{font-size:19px;padding-inline:9px}}
+/* no double-tap zoom: taps are taps (quick double taps on answers or coins used to zoom the page). Pinch zoom still works. */
+html,body,button,a,input,select,textarea,label,.choice,.isle,.item,.tile,.coinbtn,.slot,.kid,.chap,.navbtn,.bnav button,.card,.ocard{touch-action:manipulation}
+/* iPhones zoom in when a text field with small text gets focus: keep fields at 16px or more on phones */
+@media (max-width:760px){input,select,textarea,textarea.code{font-size:max(16px,1em)}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
