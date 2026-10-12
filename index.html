@@ -16,6 +16,12 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Pip the fox flying a hot air balloon over floating islands">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pip's Islands">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Pip's Sky Islands</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3622,7 +3628,9 @@ function renderKids(){
       <button type="button" class="kid add" id="kAdd"><span class="plus">+</span><b>Add a player</b><small>Just a first name or nickname</small></button></div>
     ${ids.length?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for 4th graders, built on California's grade 4 standards: math, reading, grammar, science and California history. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A grown-up can sign in to save progress and see what to practice</li></ul></div>`}
     ${guest.length?`<div class="kimport"><p>This device has progress from before you signed in: <b>${guest.map(([,p])=>esc(p.name||'Player')).join(', ')}</b>. Keep it safe in your account?</p><button class="go small leaf" type="button" id="kImp">Add to my account</button></div>`:''}
-    <div class="kidfoot">${acct}<a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy</a></div>`;
+    <div class="kidfoot">${acct}${isStandalone()?'':'<button class="linkbtn" type="button" id="kInst">Install app</button>'}<a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy</a></div>`;
+  if($('#kInst'))$('#kInst').onclick=async()=>{if(installEvt){const e=installEvt;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderKids();return}
+    overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">For grown-ups</div><h2>Install Pip as an app</h2><p>It opens full screen, like an app, and works without internet.</p>${/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p><p class="note">The installed app keeps its own copy. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<button class="go alt" type="button" style="align-self:center" onclick="closeOverlay()">Close</button>`)};
   refreshFoxes();
   el.querySelectorAll('[data-kid]').forEach(b=>b.onclick=()=>{const id=b.dataset.kid,p=ROOT.profiles[id];tone([523,784]);if(p.kidPin&&id!==ROOT.current)kidPinPrompt(p,()=>selectKid(id));else selectKid(id)});
   $('#kAdd').onclick=()=>newPlayer(id=>selectKid(id));
@@ -3705,6 +3713,7 @@ function renderParent(){
       <p>All time: ${allA} puzzles, ${allA?Math.round(allC/allA*100):0}% right on the first try. Best combo: ${G.bestCombo}. Mistakes fixed for good: ${G.fixed}.</p></div>
     <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small></li>`).join('')}</ul><p>Tip: tap a topic below to play it together.</p>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
       <p>Waiting at Fix-It Falls: <b>${G.review.length}</b> puzzle${G.review.length===1?'':'s'} (${reviewDue().length} due today).</p></div>
+    <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
     <div class="pcard wide"><h4>Topics</h4><div class="tscroll"><table class="topics"><thead><tr><th>Island</th><th>Puzzles</th><th>First-try accuracy</th><th>Last 20</th><th>Level</th><th>Stars</th></tr></thead><tbody>
       ${rows.map(r=>`<tr><td><button type="button" class="cisl" data-play="${r.i.id}">${r.i.name}</button></td><td>${r.s.a}</td><td>${r.p==null?'–':`<div class="acc ${r.p<60?'low':r.p<80?'mid':''}"><div class="bar"><i style="width:${r.p}%"></i></div>${r.p}%</div>`}</td><td>${(()=>{const m=rollAcc(r.i.id);return m.n?`${Math.round(m.acc*100)}%${m.n>=12&&m.acc>=.8?' ✓':''}`:'–'})()}</td><td>${DIFF_NAME[diffFor(r.i)]}</td><td>${'★'.repeat(G.best[r.i.id]||0)||'–'}</td></tr>`).join('')}
     </tbody></table></div></div>
@@ -3747,6 +3756,7 @@ function renderParent(){
   </div>`;
   setSync();$('#codeOut').value=encodeSave(ROOT.current);if(CL.mode==='cloud')loadBackups();
   document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>start(byId(b.dataset.play)));
+  if($('#pInstall'))$('#pInstall').onclick=async()=>{const e=installEvt;if(!e)return;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderParent()};
   $('#setGoal').onchange=e=>{G.settings.goal=e.target.value;save();updateStats()};
   $('#setLimit').onchange=e=>{G.settings.limit=e.target.value;save()};
   $('#setDiff').onchange=e=>{G.settings.diff=e.target.value;save()};
@@ -3993,6 +4003,10 @@ musicLabel();
 addEventListener('resize',()=>{if(parts.length){cv.width=innerWidth;cv.height=innerHeight}});
 
 applySettings();boot();
+/* installable app: offline cache + "Add to Home Screen" */
+let installEvt=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e});
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
 </html>
