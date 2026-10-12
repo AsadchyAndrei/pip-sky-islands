@@ -2881,7 +2881,7 @@ function goalReached(){
 }
 
 /* ================= Pip's Lessons: learn the trick first (worked example -> do it together -> try it alone) ================= */
-const teachCard=(title,html,btn='Got it!')=>({teach:true,prompt:title,visual:`<div class="lesson">${html}</div>`,choices:[btn],answer:btn,speak:(title+'. '+html).replace(/<[^>]+>/g,' ')});
+const teachCard=(title,html,btn='Got it!')=>({teach:true,prompt:title,visual:`<div class="lesson">${html}</div>`,choices:[btn],answer:btn,speak:(title+'. '+html.replace(/<svg[\s\S]*?<\/svg>/g,' ')).replace(/<[^>]+>/g,' ')});
 const guided=(prompt,ch,hint,explain)=>Object.assign({prompt,hint,explain,guided:true},ch,{numeric:false});
 const fr=(n,d)=>`${n}/${d}`;
 function jumpsSVG(d,q,r){const n=q*d+r,W=320,x=v=>20+v/n*(W-40);let s=`<line x1="${x(0)}" y1="70" x2="${x(n)}" y2="70" stroke="#1f3557" stroke-width="3"/>`;
@@ -2950,7 +2950,82 @@ const LESSONS=[
     guided(`${frac(a,d)} + ${frac(b,d)}. Add the tops: <b>${a} + ${b} = ?</b>`,numChoices(a+b,[a+b+1,a*b>0&&a*b!==a+b?a*b:a+b+2,d]),`Count the pieces.`,`${a} + ${b} = <b>${a+b}</b> pieces.`),
     Object.assign(guided(`So ${frac(a,d)} + ${frac(b,d)} = ?`,strChoices(fr(a+b,d),[fr(a+b,d+d),fr(a+b,d+1),fr(a*b||1,d)]),`The bottom number stays the same.`,`${frac(a,d)} + ${frac(b,d)} = <b>${frac(a+b,d)}</b>.`),{render:fracText}),
     Object.assign(guided(`Taking away works the same way: ${frac(c,d)} − ${frac(e,d)} = ?`,strChoices(fr(c-e,d),[fr(c+e,d),fr(c-e,d-e),fr(c,d-e)]),`Subtract the tops. Keep the bottom.`,`${c} − ${e} = ${c-e}, so the answer is <b>${frac(c-e,d)}</b>.`),{render:fracText})]},
-   practice:[3,4,3]}
+   practice:[3,4,3]},
+  {id:'area_inout',isl:'area',types:[0,1],title:'Inside or around?',
+   build(){const w=R(3,6),l=R(w+1,9),A=l*w,P=2*(l+w);return [
+    teachCard('Area is inside. Perimeter is around.',`<p><b>Area</b> = how many squares cover the <b>inside</b>. Multiply: length × width.</p><div class="lrow">${areaAnim(5,3)}</div><p class="lc lbig">5 × 3 = 15 square feet</p><p><b>Perimeter</b> = the fence <b>around</b> the outside. Add all four sides.</p><div class="lrow">${periAnim(5,3)}</div><p class="lc lbig">5 + 3 + 5 + 3 = 16 feet</p>`,'Let\'s try one together!'),
+    Object.assign(guided(`Pip wants grass to <b>cover</b> the whole patch. Is that area or perimeter?`,strChoices('Area',['Perimeter'],2),`Covering the inside means squares.`,`Covering the inside = <b>area</b>.`),{visual:rectVis(l,w,`${l} ft`,`${w} ft`)}),
+    Object.assign(guided(`Find the <b>area</b>: <b>${l} × ${w} = ?</b>`,numChoices(A,[P,l+w,A+l]),`${w} rows of ${l} squares.`,`${l} × ${w} = <b>${A} square feet</b>.`),{visual:areaAnim(l,w)}),
+    Object.assign(guided(`Now the fence <b>around</b> it. Add all four sides: <b>${l} + ${w} + ${l} + ${w} = ?</b>`,numChoices(P,[A,l+w,P+2]),`Two long sides and two short sides.`,`${l} + ${w} + ${l} + ${w} = <b>${P} feet</b>.`),{visual:periAnim(l,w)})]},
+   practice:[0,1,1]},
+  {id:'area_side',isl:'area',types:[2,3],title:'Find the missing side',
+   build(){const w=R(3,7),l=R(w+1,10),A=l*w,P=2*(l+w);return [
+    teachCard('Work backwards!',`<p><b>Area is 24</b> and one side is <b>4</b>. Think: <b>4 × ? = 24</b>. That is 24 ÷ 4 = <b>6</b>.</p><p><b>The fence is 20</b> and the short side is <b>4</b>. Both short sides use 4 + 4 = 8. That leaves 20 − 8 = 12 for the <b>two</b> long sides, so each one is 12 ÷ 2 = <b>6</b>.</p>`,'Let\'s try one together!'),
+    Object.assign(guided(`The area is <b>${A} sq ft</b> and one side is <b>${w} ft</b>. Which question finds the other side?`,strChoices(`${w} × ? = ${A}`,[`${w} + ? = ${A}`,`${A} × ${w} = ?`,`${A} + ${w} = ?`]),`Area = length × width.`,`Area = length × width, so <b>${w} × ? = ${A}</b>.`),{visual:rectVis(l,w,'? ft',`${w} ft`)}),
+    guided(`<b>${A} ÷ ${w} = ?</b>`,numChoices(l,[l+1,l-1,A-w]),`Which number times ${w} makes ${A}?`,`${A} ÷ ${w} = <b>${l}</b>. Check: ${l} × ${w} = ${A}.`),
+    Object.assign(guided(`Now a fence of <b>${P} ft</b>, short side <b>${w} ft</b>. Take away both short sides: <b>${P} − ${2*w} = ?</b>`,numChoices(P-2*w,[P-w,P-2*w+2,P/2]),`The two short sides use ${w} + ${w} = ${2*w}.`,`${P} − ${2*w} = <b>${P-2*w}</b> feet for the two long sides.`),{visual:rectVis(l,w,'? ft',`${w} ft`)}),
+    guided(`Share that between the two long sides: <b>${P-2*w} ÷ 2 = ?</b>`,numChoices(l,[P-2*w,l+2,l-1]),`Half of ${P-2*w}.`,`Each long side is <b>${l} feet</b>.`)]},
+   practice:[2,3,3]},
+  {id:'meas_convert',isl:'measure',types:[0,4],title:'Big unit to small unit',
+   build(){const c=pick(CONV.filter(x=>x.f<=60)),n=R(2,6),h=R(1,3),m=R(1,11)*5;return [
+    teachCard('One big unit = many small ones',`<p class="lbig">1 foot = 12 inches</p><p>So <b>3 feet</b> = 12 + 12 + 12 = 3 × 12 = <b>36 inches</b>.</p><p>Going from a <b>big</b> unit to a <b>small</b> unit, the number gets <b>bigger</b>. So we <b>multiply</b>.</p><p>Hours too: <b>2 hours 15 minutes</b> = 2 × 60 + 15 = <b>135 minutes</b>.</p>`,'Let\'s try one together!'),
+    guided(`1 ${c.big} = ${c.f} ${c.small}. In <b>${n} ${c.bigs}</b>, are there more or fewer than ${n} ${c.small}?`,strChoices(`More than ${n}`,[`Fewer than ${n}`],2),`Each ${c.big} holds lots of ${c.small}.`,`The ${c.small} are small, so we need <b>more</b> of them.`),
+    guided(`So multiply: <b>${n} × ${c.f} = ?</b>`,numChoices(n*c.f,[n+c.f,n*c.f+c.f,n*10]),`${n} groups of ${c.f}.`,`${n} ${c.bigs} = <b>${n*c.f} ${c.small}</b>.`),
+    guided(`Pip read for <b>${h} hour${h>1?'s':''} ${m} minutes</b>. First the hours: <b>${h} × 60 = ?</b> minutes`,numChoices(h*60,[h*100,h*60+60,h+60]),`1 hour = 60 minutes.`,`${h} × 60 = <b>${h*60}</b> minutes.`),
+    guided(`Add the extra minutes: <b>${h*60} + ${m} = ?</b>`,numChoices(h*60+m,[h*100+m,h*60,h*60+m+10]),`Just add them.`,`<b>${h*60+m} minutes</b> in all.`)]},
+   practice:[0,4,0]},
+  {id:'meas_same',isl:'measure',types:[1,2],title:'Same units first',
+   build(){const n=R(3,6),cut=R(5,n*12-5),k=R(2,4),inch=k*12+(coin()?R(1,6):-R(1,6)),big=inch>k*12;return [
+    teachCard('Change to the same unit, then compare',`<p>Which is longer: <b>2 feet</b> or <b>20 inches</b>?</p><p>Change the feet to inches: 2 × 12 = <b>24 inches</b>. 24 inches is more than 20 inches, so <b>2 feet</b> is longer!</p><p>Feet and inches mixed in one problem? Change everything to <b>inches</b> first.</p>`,'Let\'s try one together!'),
+    guided(`Which is more: <b>${k} feet</b> or <b>${inch} inches</b>? First change: <b>${k} feet = ? inches</b>`,numChoices(k*12,[k*10,k+12,k*12+12]),`1 foot = 12 inches.`,`${k} × 12 = <b>${k*12} inches</b>.`),
+    guided(`${k} feet = ${k*12} inches. So which is more?`,strChoices(big?`${inch} inches`:`${k} feet`,[big?`${k} feet`:`${inch} inches`],2),`Compare ${k*12} and ${inch}.`,`${k*12} ${big?'&lt;':'&gt;'} ${inch}, so <b>${big?inch+' inches':k+' feet'}</b> is more.`),
+    guided(`A rope is <b>${n} feet</b> long. Pip cuts off <b>${cut} inches</b>. Change the rope to inches: <b>${n} × 12 = ?</b>`,numChoices(n*12,[n*10,n+12,n*12-12]),`1 foot = 12 inches.`,`${n} feet = <b>${n*12} inches</b>.`),
+    guided(`Now take away: <b>${n*12} − ${cut} = ?</b>`,numChoices(n*12-cut,[n*12+cut,n*12-cut+12,Math.abs(n*10-cut)]),`Subtract the part he cut off.`,`<b>${n*12-cut} inches</b> are left.`)]},
+   practice:[1,2,2]},
+  {id:'money_count',isl:'money',types:[0,1],title:'Count the big coins first',
+   build(){const q=R(1,3),d=R(1,3),nk=R(0,1),p=R(1,4),tot=q*25+d*10+nk*5+p,set=[...Array(q).fill(25),...Array(d).fill(10),...Array(nk).fill(5),...Array(p).fill(1)],pay=R(6,19)*5,nq=Math.floor(pay/25),vis=`<div class="coins">${set.map(v=>coinSVG(v,60)).join('')}</div>`;return [
+    teachCard('Biggest first, then count on',`<div class="coins">${[25,25,10,5,1,1].map(v=>coinSVG(v,52)).join('')}</div><p>Quarters first: <b>25, 50</b>. Then the dime: <b>60</b>. The nickel: <b>65</b>. Pennies: <b>66, 67</b>.</p><p class="lc lbig">67¢ = $0.67</p><p>Paying? Same idea: start with the <b>biggest</b> coin that still fits.</p>`,'Let\'s try one together!'),
+    Object.assign(guided(`Start with the <b>quarters</b>. How much are they?`,numChoices(q*25,[q*25+25,q*10,q*5]),`Count by 25s: 25, 50, 75.`,`${q} quarter${q>1?'s':''} = <b>${q*25}¢</b>.`),{visual:vis}),
+    Object.assign(guided(`Count on with the dimes: ${q*25}, ${Array.from({length:d},(_,i)=>i<d-1?q*25+(i+1)*10:'?').join(', ')}`,numChoices(q*25+d*10,[q*25+d,q*25+d*10+10,q*25+d*5]),`Each dime adds 10.`,`${q*25} + ${d*10} = <b>${q*25+d*10}¢</b>.`),{visual:vis}),
+    Object.assign(guided(`Count on with ${nk?'the nickel and ':''}the pennies. How much in all?`,strChoices(fmtM(tot),[fmtM(tot+10),fmtM(tot-p),fmtM(tot+5)]),`${nk?'The nickel adds 5, then e':'E'}ach penny adds 1.`,`${set.map(v=>v+'¢').join(' + ')} = <b>${fmtM(tot)}</b>.`),{visual:vis}),
+    guided(`To pay <b>${pay}¢</b>, start with quarters. How many quarters fit?`,numChoices(nq,[nq+1,nq-1,pay%25||nq+2]),`25, 50, 75... stop before you go over ${pay}.`,`${nq} quarter${nq>1?'s':''} = ${nq*25}¢. Then ${pay-nq*25}¢ more with smaller coins.`)]},
+   practice:[1,0,1]},
+  {id:'money_change',isl:'money',types:[2,3],title:'Count up to make change',
+   build(){const p=R(2,4)*100+R(1,19)*5,D=Math.ceil(p/100)*100,up=D-p,ch=500-p,a=R(1,4)*100+R(1,19)*5,b=R(1,3)*100+R(1,19)*5;return [
+    teachCard('Count up from the price',`<p>A kite costs <b>$3.65</b>. Pip pays with <b>$5.00</b>.</p><p>Count up: $3.65 → <b>$4.00</b> is 35¢. Then $4.00 → <b>$5.00</b> is $1.00.</p><p class="lc lbig">35¢ + $1.00 = $1.35 change</p><p>Adding prices? Add the dollars, then the cents. <b>100¢ makes $1</b>.</p>`,'Let\'s try one together!'),
+    guided(`A toy costs <b>${fmtM(p)}</b>. Pip pays <b>$5.00</b>. Count up to the next whole dollar: ${fmtM(p)} → ${fmtM(D)} is how much?`,strChoices(fmtM(up),[fmtM(up+10),fmtM(100-up),fmtM(up+5)]),`How many cents to get to ${fmtM(D)}?`,`${fmtM(p)} + <b>${up}¢</b> = ${fmtM(D)}.`),
+    guided(`Now count up from ${fmtM(D)} to $5.00.`,strChoices(fmtM(500-D),[fmtM(500-D+100),fmtM(D),fmtM(500-D+50)]),`Count the whole dollars.`,`${fmtM(D)} → $5.00 is <b>${fmtM(500-D)}</b>.`),
+    guided(`Add the two parts: <b>${up}¢ + ${fmtM(500-D)}</b> = the change.`,strChoices(fmtM(ch),[fmtM(ch+100),fmtM(ch-10),fmtM(up)]),`Put the cents and the dollars together.`,`The change is <b>${fmtM(ch)}</b>. Check: ${fmtM(p)} + ${fmtM(ch)} = $5.00.`),
+    guided(`Pip buys two things: <b>${fmtM(a)}</b> and <b>${fmtM(b)}</b>. How much in all?`,strChoices(fmtM(a+b),[fmtM(a+b-100),fmtM(a+b+100),fmtM(a+b+10)]),`Dollars first, then cents. 100¢ makes $1.`,`${fmtM(a)} + ${fmtM(b)} = <b>${fmtM(a+b)}</b>.`)]},
+   practice:[2,3,2]},
+  {id:'pat_jump',isl:'pattern',types:[0,1],title:'Find the jump',
+   build(){const a=R(2,20),s=R(3,9),seq=[0,1,2,3].map(k=>a+k*s),a2=R(1,4),m=pick([2,3]),g=[0,1,2,3].map(k=>a2*m**k),sq=x=>`<div class="seq">${x.map(v=>`<span>${v}</span>`).join('')}<span class="q">?</span></div>`;return [
+    teachCard('Look at the jump between neighbors',`<div class="seq"><span>5</span><span>9</span><span>13</span><span>17</span><span class="q">?</span></div><p>9 − 5 = <b>4</b>, 13 − 9 = <b>4</b>, 17 − 13 = <b>4</b>. The same jump every time, so the rule is <b>Add 4</b>. Next: 17 + 4 = <b>21</b>.</p><p>Jumps getting bigger and bigger (2, 4, 8, 16)? Try <b>multiplying</b>: × 2.</p>`,'Let\'s try one together!'),
+    Object.assign(guided(`What is the jump? <b>${seq[1]} − ${seq[0]} = ?</b>`,numChoices(s,[s+1,s-1,seq[1]]),`Subtract the first number from the second.`,`The jump is <b>${s}</b>. Check the others: it is ${s} every time.`),{visual:sq(seq)}),
+    Object.assign(guided(`So what comes next? <b>${seq[3]} + ${s} = ?</b>`,numChoices(a+4*s,[a+4*s+1,a+4*s-1,seq[3]+2*s]),`Add the jump to the last number.`,`${seq[3]} + ${s} = <b>${a+4*s}</b>. The rule is <b>Add ${s}</b>.`),{visual:sq(seq)}),
+    Object.assign(guided(`These jumps keep growing. What is the rule?`,strChoices(`Multiply by ${m}`,[`Add ${g[1]-g[0]}`,`Multiply by ${m+1}`,`Add ${m}`]),`Is each number ${m} times the one before?`,`${g.join(' → ')}: each one is <b>${m} times</b> the one before. Next is ${g[3]*m}.`),{visual:sq(g)})]},
+   practice:[0,1,0]},
+  {id:'pat_factor',isl:'pattern',types:[2,3,4],title:'Factors, multiples and primes',
+   build(){const n=pick([12,18,20,24,30,36]),fs=[];for(let f=2;f<n;f++)if(n%f===0)fs.push(f);const f=pick(fs.filter(x=>x<=10)),nf=pick([4,5,7,8,9,10].filter(x=>n%x)),k=R(3,9),mm=k*R(3,8),p=pick([7,11,13,17,19,23]),cs=shuffle([9,15,21,25,27,33,35,39]).slice(0,3);return [
+    teachCard('Factor, multiple, prime',`<p><b>Factors</b> of 12 split it evenly: 1, 2, 3, 4, 6, 12 (because 2 × 6 = 12 and 3 × 4 = 12).</p><p><b>Multiples</b> of 4 are in the 4 times table: 4, 8, 12, 16, 20...</p><p><b>Prime</b> means only two factors: 1 and itself. 7 is prime. 9 is not, because 3 × 3 = 9.</p>`,'Let\'s try one together!'),
+    guided(`Is <b>${f}</b> a factor of ${n}? Does ${n} ÷ ${f} come out even?`,strChoices(`Yes: ${n} ÷ ${f} = ${n/f}`,[`No: there is a leftover`],2),`Try ${f} × ${n/f}.`,`${f} × ${n/f} = ${n}, so <b>${f}</b> is a factor of ${n}.`),
+    guided(`Which number is <b>NOT</b> a factor of ${n}?`,numChoices(nf,shuffle(fs).slice(0,3)),`Try dividing ${n} by each one. Which leaves a leftover?`,`${n} ÷ ${nf} has a leftover, so <b>${nf}</b> is not a factor.`),
+    guided(`Which number is a <b>multiple</b> of ${k}?`,numChoices(mm,[mm+1,mm-1,mm+2]),`Say the ${k} times table: ${k}, ${2*k}, ${3*k}...`,`${k} × ${mm/k} = <b>${mm}</b>.`),
+    guided(`Which number is <b>prime</b>?`,numChoices(p,cs),`Try to split each one: by 3? by 5?`,`<b>${p}</b> only splits as 1 × ${p}. The others split, like ${cs[0]} = ${[3,5].find(x=>cs[0]%x===0)} × ${cs[0]/[3,5].find(x=>cs[0]%x===0)}.`)]},
+   practice:[2,3,4]},
+  {id:'angle_kind',isl:'angle',types:[0,3],title:'The square corner trick',
+   build(){const d=pick([30,40,50,60,70,120,130,140,150]),t=angleType(d),whole=coin()?90:180,a=whole===90?R(2,16)*5:R(4,32)*5,sm=x=>angleSVG(x).replace('width:340px','width:150px');return [
+    teachCard('Compare with a square corner',`<div class="lrow">${sm(40)}${sm(90)}${sm(130)}</div><p>A square corner, like the corner of a book, is <b>90°</b>: a <b>right</b> angle.</p><p>Smaller than that: <b>acute</b>. Bigger: <b>obtuse</b>. A flat line: <b>straight</b>, 180°.</p><p>Two angles that fill a square corner add up to <b>90°</b>. Two that make a flat line add up to <b>180°</b>.</p>`,'Let\'s try one together!'),
+    Object.assign(guided(`Is it smaller or bigger than a square corner? What kind of angle is this?`,{choices:shuffle(['Acute','Right','Obtuse','Straight']),answer:t},`Imagine a book corner on it.`,`It is ${d<90?'smaller':'bigger'} than a square corner, so it is <b>${t.toLowerCase()}</b>.`),{visual:angleSVG(d)}),
+    guided(`Two angles make a <b>${whole===90?'right angle (90°)':'straight line (180°)'}</b>. One is <b>${a}°</b>. How do we find the other one?`,strChoices(`${whole} − ${a}`,[`${whole} + ${a}`,`${a} × 2`],3),`The two parts add up to ${whole}°.`,`Take the part we know away from the whole: <b>${whole} − ${a}</b>.`),
+    guided(`<b>${whole} − ${a} = ?</b>`,numChoices(whole-a,[a,whole-a+10,whole-a-10]),`Subtract.`,`The other angle is <b>${whole-a}°</b>.`)]},
+   practice:[0,3,0]},
+  {id:'angle_read',isl:'angle',types:[1,2],title:'Read the right numbers',
+   build(){let d;do{d=R(2,16)*10}while(d===90);return [
+    teachCard('Start at 0!',`<div class="lrow">${protractorSVG('',50)}</div><p>The black ray lies on the <b>0 on the right</b>. So we read the <b>dark numbers</b>, which start at 0 on the right.</p><p>Follow them up to the red ray: <b>50°</b>. (The small red numbers would say 130°. That scale is for angles that start on the left.)</p>`,'Let\'s try one together!'),
+    Object.assign(guided(`The black ray is on the 0 at the right. Which numbers do we read?`,strChoices('The dark numbers',['The small red numbers'],2),`Which scale starts at 0 on the right?`,`The <b>dark numbers</b> start at 0 on the right.`),{visual:protractorSVG('',d)}),
+    Object.assign(guided(`Follow the dark numbers to the red ray. How many degrees?`,numChoices(d,[180-d,d+10,d-10]),`Count from 0 on the right.`,`The angle is <b>${d}°</b>. The red scale would give ${180-d}°, the wrong one here.`),{visual:protractorSVG('',d)})]},
+   practice:[1,2,1]}
 ];
 const lessonsFor=id=>LESSONS.filter(L=>L.isl===id);
 function lessonFor(id){const ls=lessonsFor(id);if(!ls.length)return null;const miss=t=>G.review.filter(r=>r.i===id&&t.includes(r.t)).length,done=L=>((G.lessons||{})[L.id]||'');
