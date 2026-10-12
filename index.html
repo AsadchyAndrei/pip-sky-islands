@@ -75,6 +75,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .tools{display:flex;gap:8px;flex-wrap:wrap}
 .tbtn{background:var(--card);border:0;border-radius:999px;padding:8px 14px 6px;font-weight:800;font-size:15px;box-shadow:0 4px 0 var(--line);cursor:pointer}
 .tbtn[aria-pressed="false"]{opacity:.55}
+.itabs{display:flex;gap:8px;margin:18px 0 12px;flex-wrap:wrap}.itabs button{flex:1;min-width:0;border:0;border-radius:16px;padding:10px 8px 8px;font-family:var(--display);font-size:20px;background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--line);cursor:pointer}.itabs button[aria-selected=true]{background:var(--sky,#2f9fe0);color:#fff;box-shadow:0 4px 0 #1f6fa8}.tabp[hidden]{display:none}
+.today{flex:1;min-width:0}.tdhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}.tdhead b{font-family:var(--display);font-weight:400;font-size:22px}.tdhead span{font-weight:700;color:var(--ink-soft);font-size:14px}
+.tdsteps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}.tdsteps li{display:flex;align-items:center;gap:10px;background:var(--pale-sky);border-radius:16px;padding:8px 10px;flex-wrap:wrap}.tdsteps li.done{opacity:.6}
+.tdchk{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;background:#fff;font-weight:800;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}.tdsteps li.done .tdchk{background:var(--leaf);color:#fff;box-shadow:none}.tdchk svg{width:16px;height:16px}
+.tdtx{flex:1;min-width:150px;display:flex;flex-direction:column}.tdtx small{font-weight:600;color:var(--ink-soft)}.tdtx .x2{display:inline-block;background:var(--coral);color:#fff;border-radius:8px;padding:0 6px;font-weight:800}.tdsteps .pkbtns{display:flex;gap:6px}
+.tmwrap{position:relative}.tmenu{position:absolute;right:0;top:calc(100% + 8px);z-index:60;display:flex;flex-direction:column;gap:8px;background:var(--card);padding:10px;border-radius:18px;box-shadow:0 8px 24px rgba(31,53,87,.25);min-width:170px}.tmenu[hidden]{display:none}.tmenu .tbtn{text-align:left;white-space:nowrap}
 .tbtn.player{background:var(--ink);color:#fff;box-shadow:0 4px 0 #0f2038}
 .stats{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
 .pill{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:18px;padding:6px 14px 4px;font-family:var(--display);
@@ -457,7 +463,9 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .sw.on{box-shadow:0 0 0 4px var(--ocean)}
 .shop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .item{background:var(--card);border-radius:22px;padding:10px 10px 12px;box-shadow:0 5px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
-.item{position:relative}.item .wishb{position:absolute;top:4px;right:4px;background:none;box-shadow:none;border:0;padding:4px 7px;font-size:22px;line-height:1;color:#e09a14;cursor:pointer}.item .wishb.on{color:#e09a14;text-shadow:0 0 6px #ffd56b}.item .prev[data-tk]{cursor:zoom-in}.wishprev svg{width:84px}.item .newtag{position:absolute;top:8px;left:8px;background:var(--berry);color:#fff;font-size:11px;font-weight:800;border-radius:8px;padding:2px 7px 1px;letter-spacing:.04em}
+.pulsehelp{animation:pulsehelp 1.1s ease-in-out 3;outline:3px solid var(--sun);outline-offset:3px}@keyframes pulsehelp{50%{transform:scale(1.05)}}
+.evweek{font-size:14px;font-weight:700;background:rgba(255,255,255,.6);border-radius:12px;padding:6px 10px;margin:4px 0}
+.item{position:relative}.item button.mastb{font-size:12px;line-height:1.25;padding:6px 10px;white-space:normal;text-align:center}.item .wishb{position:absolute;top:4px;right:4px;background:none;box-shadow:none;border:0;padding:4px 7px;font-size:22px;line-height:1;color:#e09a14;cursor:pointer}.item .wishb.on{color:#e09a14;text-shadow:0 0 6px #ffd56b}.item .prev[data-tk]{cursor:zoom-in}.wishprev svg{width:84px}.item .newtag{position:absolute;top:8px;left:8px;background:var(--berry);color:#fff;font-size:11px;font-weight:800;border-radius:8px;padding:2px 7px 1px;letter-spacing:.04em}
 .item.leg{background:linear-gradient(160deg,#fff8dc,#ffe79a 55%,#ffd8e8);box-shadow:0 5px 0 #e09a14}.item.leg .legtag{font-size:11px;font-weight:800;color:#a8650a;letter-spacing:.08em;text-transform:uppercase;margin-top:-4px}
 .fox .twk{animation:twk 1.6s ease-in-out infinite}.fox .twk:nth-of-type(2n){animation-delay:.8s}@keyframes twk{50%{opacity:.3}}
 .fox .prop{transform-box:view-box;transform-origin:60px 4.5px;animation:propx .35s linear infinite}@keyframes propx{50%{transform:scaleX(.12)}}
@@ -736,9 +744,12 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
       <div class="tools">
         <button class="tbtn player" id="playerBtn" type="button" title="Switch player"></button>
         <span class="tbtn sync" id="syncBadge" role="status"></span>
-        <button class="tbtn" id="bigBtn" type="button" aria-pressed="false" title="Bigger text">Aa</button>
-        <button class="tbtn" id="music" type="button" aria-pressed="true">Music: on</button>
-        <button class="tbtn" id="sound" type="button" aria-pressed="true">Sounds: on</button>
+        <div class="tmwrap"><button class="tbtn" id="gearBtn" type="button" aria-expanded="false" aria-controls="tmenu">⚙ Settings</button>
+          <div class="tmenu" id="tmenu" hidden>
+            <button class="tbtn" id="bigBtn" type="button" aria-pressed="false" title="Bigger text">Aa Bigger text</button>
+            <button class="tbtn" id="music" type="button" aria-pressed="true">Music: on</button>
+            <button class="tbtn" id="sound" type="button" aria-pressed="true">Sounds: on</button>
+          </div></div>
         <button class="tbtn" id="parentBtn" type="button">Grown-ups</button>
       </div>
     </div>
@@ -771,12 +782,10 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
       <div class="week" id="weekCard"></div>
       <h3 class="sectitle">Challenges <small>come back every day!</small></h3>
       <div class="islands four" id="g-ch"></div>
-      <h3 class="sectitle">Math Islands</h3>
-      <div class="islands five" id="g-math"></div>
-      <h3 class="sectitle">Time &amp; Calendar Islands</h3>
-      <div class="islands three" id="g-time"></div>
-      <h3 class="sectitle">Words &amp; World Islands</h3>
-      <div class="islands five" id="g-world"></div>
+      <div class="itabs" role="tablist" aria-label="Island groups"><button type="button" role="tab" data-tab="math">Math</button><button type="button" role="tab" data-tab="world">Words &amp; World</button><button type="button" role="tab" data-tab="time">Time</button></div>
+      <div class="tabp" data-tabp="math"><div class="islands five" id="g-math"></div></div>
+      <div class="tabp" data-tabp="world"><div class="islands five" id="g-world"></div></div>
+      <div class="tabp" data-tabp="time"><div class="islands three" id="g-time"></div></div>
       <p class="foot">4th grade: place value, multiplying, dividing, fractions, decimals, area &amp; perimeter, angles, shapes, money, measurement, patterns, graphs, time, calendars, words, maps and science.</p>
     </section>
 
@@ -834,6 +843,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
         <div class="ihead"><div class="iname">Pip's Closet</div><div class="qnum">Spend coins on hats, glasses, balloons and more. Earn coins by solving puzzles!</div></div></div>
       <div class="closetTop"><div class="pipbob" data-fox></div><div><div class="bubble" id="csay"></div><div class="swatches" id="swatches"></div></div></div>
       <h3 class="sectitle" id="evShopTitle" hidden></h3><div class="shop" id="shopEvent" hidden></div>
+      <h3 class="sectitle">Mastery Prizes <small>can't be bought: earn them by getting really good at a topic!</small></h3><div class="shop" id="shopMastery"></div>
       <h3 class="sectitle">Your Hero <small>who flies the balloon? Every hero has 3 free colors!</small></h3><div class="shop" id="shopChars"></div>
       <h3 class="sectitle">Pets <small>a best friend for Pip!</small></h3><div class="shop" id="shopPets"></div>
       <h3 class="sectitle">Hats</h3><div class="shop" id="shopHats"></div>
@@ -1041,7 +1051,7 @@ const DECOS={
 };
 Object.assign(HATS,{
   bow:{name:'Big Bow',price:120,nw:1,svg:`<g transform="translate(70 101) rotate(15)"><path d="M0 0 L-10 -6.5 L-10 6.5Z M0 0 L10 -6.5 L10 6.5Z" fill="#e2558f" stroke="#b83a6f" stroke-width="1"/><circle r="2.8" fill="#ff9fb7" stroke="#b83a6f" stroke-width="1"/></g>`},
-  beanie:{name:'Cozy Beanie',price:150,nw:1,svg:`<path d="M43 108 Q43 90 60 90 Q77 90 77 108Z" fill="#38b98a"/><path d="M47 97 H73 M45 102 H75" stroke="#9be0bd" stroke-width="2"/><rect x="42" y="104" width="36" height="6" rx="3" fill="#239068"/><circle cx="60" cy="88" r="4.5" fill="#fff" stroke="#c3cdd8" stroke-width="1"/>`},
+  cozybeanie:{name:'Cozy Beanie',price:150,nw:1,svg:`<path d="M43 108 Q43 90 60 90 Q77 90 77 108Z" fill="#38b98a"/><path d="M47 97 H73 M45 102 H75" stroke="#9be0bd" stroke-width="2"/><rect x="42" y="104" width="36" height="6" rx="3" fill="#239068"/><circle cx="60" cy="88" r="4.5" fill="#fff" stroke="#c3cdd8" stroke-width="1"/>`},
   chef:{name:'Chef Hat',price:200,nw:1,svg:`<g fill="#fff" stroke="#c3cdd8" stroke-width="1.2"><circle cx="51" cy="91" r="6.5"/><circle cx="69" cy="91" r="6.5"/><circle cx="60" cy="87" r="8"/><rect x="48" y="94" width="24" height="13" rx="2"/></g><path d="M48.6 95 H71.4" stroke="#fff" stroke-width="3"/>`},
   cowboy:{name:'Cowboy Hat',price:300,nw:1,svg:`<path d="M47 106 Q46 92 52 90 Q56 94 60 91 Q64 94 68 90 Q74 92 73 106Z" fill="#b5773f"/><path d="M47.5 102 H72.5" stroke="#6b4422" stroke-width="3"/><path d="M33 104 Q60 114 87 104 Q86 109 60 111 Q34 109 33 104Z" fill="#a0683a"/>`},
   unicorn:{name:'Unicorn Horn',price:400,nw:1,svg:`<path d="M55.5 101 L60 75 L64.5 101Z" fill="#ffd56b" stroke="#e09a14" stroke-width="1"/><path d="M56.5 96 L63.5 93.5 M57.5 89 L62.5 87 M58.6 82 L61.4 81" stroke="#e09a14" stroke-width="1.1"/><circle cx="51" cy="103" r="3" fill="#ff9fb7"/><circle cx="69" cy="103" r="3" fill="#c7b6ff"/><circle cx="51" cy="103" r="1" fill="#fff"/><circle cx="69" cy="103" r="1" fill="#fff"/>`},
@@ -2632,8 +2642,12 @@ function genEvent(t){
 }
 let CUR_EV=activeEvent();
 function eventIsland(){const e=CUR_EV;return e?{id:'ev',name:e.island,topic:'Limited-time event',color:e.color,lm:'ev',gen:genEvent,types:6,group:'ev'}:null}
+const EV_WEEK=30;
+function evWeek(st){const k=weekKey();if(!st.wk||st.wk.k!==k)st.wk={k,pts:0,got:0};return st.wk}
 function addEventPts(n,el){
   const e=CUR_EV;if(!e)return;const st=evState(e),before=st.pts;st.pts+=n;
+  {const w=evWeek(st);w.pts+=n;if(w.pts>=EV_WEEK&&!w.got){w.got=1;G.coins+=30;const pool=STK.filter(x=>x.set===e.set&&x.rar!=='gold'),sk=pick(pool);if(sk)G.stickers[sk.id]=(G.stickers[sk.id]||0)+1;
+    toast('Weekly event quest done!',`+30 coins${sk?` and a ${sk.name} sticker`:''}! A new quest starts next week.`,e.color);updateStats('#coinPill')}}
   for(const [need,kind,amt] of EV_MILES){if(before<need&&st.pts>=need&&!st.got.includes(need)){st.got.push(need);
     if(kind==='coins'){G.coins+=amt;toast(`${e.name} prize!`,`${need} points: +${amt} coins!`,e.color)}
     else if(kind==='pet'){if(!G.pets.includes(e.pet))G.pets.push(e.pet);toast(`New pet: ${PETS[e.pet].name}!`,`You reached ${need} event points. Find it in Pip's Closet!`,e.color)}
@@ -2646,7 +2660,7 @@ function renderEventCard(){
   const st=evState(e),max=EV_MILES[EV_MILES.length-1][0];
   box.hidden=false;box.style.setProperty('--ev',e.color);
   box.innerHTML=`<div class="evart">${evArt(e,96)}</div><div class="evbody"><div class="evtop"><b>${e.name}</b><span class="evtag">Limited · until ${evEnd(e)}</span></div>
-    <p>${e.intro}</p><div class="evmeter"><div class="bar warm"><i style="width:${Math.min(100,st.pts/max*100)}%"></i></div><span>${st.pts} / ${max} pts</span></div>
+    <p>${e.intro}</p>${(()=>{const w=evWeek(st);return `<div class="evweek"><b>This week's quest:</b> ${w.got?'done! A new one starts on Monday.':`get <b>${EV_WEEK} event points</b> this week for 30 coins and a sticker (${Math.min(w.pts,EV_WEEK)}/${EV_WEEK}).`}</div>`})()}<div class="evmeter"><div class="bar warm"><i style="width:${Math.min(100,st.pts/max*100)}%"></i></div><span>${st.pts} / ${max} pts</span></div>
     <div class="evmiles">${EV_MILES.map(([n,k,a])=>`<span class="${st.pts>=n?'ok':''}">${n} pts: ${k==='coins'?`+${a} coins`:k==='pet'?PETS[e.pet].name.split(' the ')[0]+' (pet)':'gold sticker'}</span>`).join('')}</div>
     <div class="actrow" style="justify-content:flex-start"><button class="go small" type="button" id="evPlay">Play ${e.island}</button><button class="go small alt" type="button" id="evShop">Event shop</button></div></div>`;
   $('#evPlay').onclick=()=>{tone([523,784]);start(eventIsland())};$('#evShop').onclick=()=>{openCloset();setTimeout(()=>{const s=$('#evShopTitle');s&&s.scrollIntoView({behavior:'smooth'})},80)};
@@ -2669,7 +2683,7 @@ function attachCoins(g){
   if(!g.cdev||typeof g.cdev!=='object'||Array.isArray(g.cdev))g.cdev={};
   Object.defineProperty(g,'coins',{configurable:true,enumerable:false,
     get(){let t=0;for(const k in this.cdev){const c=this.cdev[k]||{};t+=(+c.e||0)-(+c.s||0)}return Math.max(0,Math.round(t))},
-    set(v){const d=Math.round(v)-this.coins;if(!d)return;const c=this.cdev[DEV]||(this.cdev[DEV]={e:0,s:0});if(d>0)c.e+=d;else c.s+=-d}});
+    set(v){const d=Math.round(v)-this.coins;if(!d)return;const c=this.cdev[DEV]||(this.cdev[DEV]={e:0,s:0});if(d>0)c.e+=d;else c.s+=-d;try{const k=dayKey(),ds=this.days||(this.days={}),t=ds[k]||(ds[k]={sec:0,q:0,c:0});if(d>0)t.e=(t.e||0)+d;else t.s=(t.s||0)-d}catch(x){}}});
   return g}
 /* keep at most 3 waiting mistakes per kind of puzzle (most practiced first), so the list stays doable */
 function trimReview(a){const by=new Map();for(const r of a){const k=r.i+'|'+r.t;if(!by.has(k))by.set(k,[]);by.get(k).push(r)}const keep=new Set();
@@ -2809,6 +2823,7 @@ const lastWeekKey=()=>{const d=new Date();d.setDate(d.getDate()-7);return weekKe
 const curStreak=()=>(G.lastDaily===dayKey()||G.lastDaily===yesterdayKey())?G.dstreak:0;
 const dailyDone=()=>G.lastDaily===dayKey();
 const today=()=>{const k=dayKey();return G.days[k]||(G.days[k]={sec:0,q:0,c:0})};
+const bump=(f,n=1)=>{const t=today();t[f]=(t[f]||0)+n};
 const thisWeek=()=>{const k=weekKey();return G.weeks[k]||(G.weeks[k]={c:0,th:0})};
 function diffFor(isl){if(!isl||!isl.gen)return 2;const m=G.settings.diff;return m==='auto'?(G.diff[isl.id]||2):+m}
 const DIFF_NAME=['','Easy','Normal','Hard'];
@@ -2933,7 +2948,7 @@ function gain(c,x,el){
   if(lv>=4)award('level5');if(G.coins>=500)award('rich');save();
 }
 function track(q,first,correct){
-  if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss'){const t0=tierOf(id);rollAdd(id,correct);const t1=tierOf(id);if(t1>t0&&byId(id)){G.tierBest=Object.assign({},G.tierBest||{});if(t1>(G.tierBest[id]||0)){G.tierBest[id]=t1;toast(`${TIERS[t1][1]} bar on ${byId(id).name}!`,`${Math.round(rollAcc(id).acc*100)}% right lately. Keep it up!`,TIERS[t1][2])}}}const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
+  if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss'){const t0=tierOf(id);rollAdd(id,correct);const t1=tierOf(id);if(t1>t0&&byId(id)){G.tierBest=Object.assign({},G.tierBest||{});if(t1>(G.tierBest[id]||0)){G.tierBest[id]=t1;toast(`${TIERS[t1][1]} bar on ${byId(id).name}!`,`${Math.round(rollAcc(id).acc*100)}% right lately. Keep it up!`,TIERS[t1][2]);grantMastery()}}}const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
   const t=today();t.q++;if(first&&correct){t.c++;thisWeek().c++}
   if(!(first&&correct)){
     G.wrongLog.unshift({p:htmlToSpeech(q.prompt).slice(0,140),a:String(q.answer!=null?q.answer:q.kind==='order'?q.items.join(', '):q.kind==='multi'?q.correct.map(k=>SHAPES[k].name).join(', '):q.kind==='money'?fmtM(q.target):q.kind==='angle'?q.target+'°':q.target&&q.target.h?tf(q.target.h,q.target.m):''),i:id,d:dayKey()});G.wrongLog=G.wrongLog.slice(0,30);
@@ -2969,6 +2984,45 @@ function jumpsSVG(d,q,r){const n=q*d+r,W=320,x=v=>20+v/n*(W-40);let s=`<line x1=
   [0,q*d,n].forEach(v=>s+=`<text x="${x(v)}" y="98" text-anchor="middle" ${FONT} font-size="15" fill="#1f3557">${v}</text>`);
   return `<svg viewBox="0 0 ${W} 108" style="width:${W}px;max-width:100%">${s}</svg>`}
 const pies=(n,d,o)=>`<span class="lpies">${piesRow(n,d,Object.assign({size:84},o||{}))}</span>`;
+/* mini passages for the main-idea lesson: [text, main idea, [3 wrong]] */
+const MAINIDEA=[
+  ['Owls hunt at night. Their big eyes see in the dark. Their soft feathers make no sound when they fly. They can even hear a mouse under the snow.','Owls are built to hunt at night',['Owls have feathers','Mice live under snow','All birds sleep at night']],
+  ['Cactus plants store water in their thick stems. Their sharp spines keep thirsty animals away. Long roots spread out to catch every drop of rain.','A cactus can live where water is hard to find',['Cactus spines are sharp','Rain falls in the desert every day','Animals are always thirsty']],
+  ['Mia sets her alarm for six. She packs her bag the night before. She lays out her clothes, too. Mia is never late for the school bus.','Mia gets ready early so she is on time',['Mia has a red bag','School buses are yellow','Mia likes her clothes']],
+  ['Recycling paper saves trees. Recycling cans saves metal and energy. Recycling plastic keeps it out of the ocean. Every bottle in the blue bin helps.','Recycling helps protect the Earth',['Cans are made of metal','The bin is blue','The ocean is very big']],
+  ['Ants work as a team. Some ants find food. Others carry it home. Some take care of the baby ants, and some guard the nest.','Ants share the work in a colony',['Ants carry food','Baby ants are small','Ants live in every country']],
+  ['The Gold Rush began in 1848. People heard about gold in California rivers. Thousands came by ship and by wagon. Towns like San Francisco grew very fast.','Finding gold brought many people to California',['Ships are faster than wagons','Rivers have water','San Francisco has many hills']]
+];
+/* context clue sentences: [sentence, word, meaning, [3 wrong], clue] */
+const CONTEXT=[
+  ['The <b>fragile</b> glass vase broke when it was only bumped a little.','fragile','easy to break',['very heavy','full of water','very old'],'broke when it was only bumped a little'],
+  ['After the long hike, Leo was <b>exhausted</b> and fell asleep right away.','exhausted','very tired',['very hungry','very angry','very happy'],'fell asleep right away'],
+  ['The puppy was <b>timid</b>, so it hid behind the couch when guests came.','timid','shy and a little scared',['loud and wild','tall and strong','fast and silly'],'hid behind the couch'],
+  ['Please <b>conserve</b> water by turning off the tap while you brush.','conserve','save, not waste',['spill','drink fast','make dirty'],'turning off the tap'],
+  ['The desert is <b>arid</b>; it hardly ever rains there.','arid','very dry',['very cold','very green','very loud'],'it hardly ever rains'],
+  ['Sam was <b>reluctant</b> to jump in the cold pool and stood at the edge for a long time.','reluctant','not wanting to do something',['excited','ready right away','angry'],'stood at the edge for a long time'],
+  ['The ancient castle was built more than a thousand years ago.'.replace('ancient','<b>ancient</b>'),'ancient','very old',['very new','very small','very bright'],'built more than a thousand years ago'],
+  ['The soup was so <b>scalding</b> that steam rose and Ava had to wait before tasting it.','scalding','very hot',['very salty','very cold','very sweet'],'steam rose and she had to wait']
+];
+/* mastery prizes: cannot be bought, only earned with the silver/gold bar */
+const MASTERY=[['hat','piechef'],['hat','timescrown'],['glass','sharespecs'],['deco','wordkite'],['balloon','mastergold']];
+Object.assign(HATS,{
+  piechef:{name:'Pie Chef Hat',price:0,mast:{isl:'frac',tier:2},svg:`<g fill="#fff" stroke="#c3cdd8" stroke-width="1.2"><circle cx="51" cy="91" r="6.5"/><circle cx="69" cy="91" r="6.5"/><circle cx="60" cy="87" r="8"/><rect x="48" y="94" width="24" height="13" rx="2"/></g><path d="M48.6 95 H71.4" stroke="#fff" stroke-width="3"/><g transform="translate(60 101)"><circle r="4.6" fill="#ffd56b" stroke="#e09a14" stroke-width="1"/><path d="M0 0 L0 -4.6 A4.6 4.6 0 0 1 4.4 -1.4Z" fill="#5cc48c"/></g>`},
+  timescrown:{name:'Times Table Crown',price:0,mast:{isl:'mult',tier:2},svg:`<path d="M44 107 L44 91 L52 98 L60 86 L68 98 L76 91 L76 107Z" fill="#ffc23d" stroke="#e09a14" stroke-width="1.6" stroke-linejoin="round"/><path d="M56 97 L64 105 M64 97 L56 105" stroke="#e2558f" stroke-width="2.6" stroke-linecap="round"/>`}
+});
+Object.assign(GLASSES,{
+  sharespecs:{name:'Sharing Specs',price:0,mast:{isl:'div',tier:2},svg:`<g fill="#bfe8ff" fill-opacity=".5" stroke="#2f9fe0" stroke-width="1.8"><rect x="46" y="111" width="13" height="10" rx="4"/><rect x="61" y="111" width="13" height="10" rx="4"/></g><path d="M59 115 H61 M46 114 L42.5 112.5 M74 114 L77.5 112.5" stroke="#2f9fe0" stroke-width="1.6"/><g fill="#2f9fe0"><circle cx="52.5" cy="113.6" r=".9"/><circle cx="52.5" cy="118.4" r=".9"/><circle cx="67.5" cy="113.6" r=".9"/><circle cx="67.5" cy="118.4" r=".9"/></g><path d="M50.3 116 H54.7 M65.3 116 H69.7" stroke="#2f9fe0" stroke-width="1.2"/>`}
+});
+Object.assign(DECOS,{
+  wordkite:{name:'Word Kite',price:0,mast:{isl:'words',tier:2},layer:'r',svg:`<path d="M78 118 Q92 112 98 100" stroke="#7a5236" stroke-width="1" fill="none"/><g transform="translate(101 92) rotate(-15)"><path d="M0 -12 L9 0 L0 12 L-9 0Z" fill="#ff9fb7" stroke="#b83a6f" stroke-width="1.2"/><path d="M0 -12 V12 M-9 0 H9" stroke="#b83a6f" stroke-width=".8"/><text x="-4.4" y="-2" font-size="6" font-weight="800" fill="#1f3557">A</text><text x="1.2" y="7" font-size="6" font-weight="800" fill="#1f3557">b</text></g><path d="M101 104 q-3 4 0 7 q3 3 0 6" stroke="#ffc23d" stroke-width="1.5" fill="none"/>`}
+});
+Object.assign(BALLOONS,{
+  mastergold:{name:"Master's Gold",price:0,mast:{gold:3},c:['#ffc23d','#fff1b8'],skirt:'#e09a14',stars:true,starC:'#fff',twk:true}
+});
+const mastDone=m=>m.gold?STAR_ISLANDS.filter(i=>tierBest(i.id)>=3).length>=m.gold:tierBest(m.isl)>=m.tier;
+const mastLabel=m=>m.gold?`Gold bar on ${m.gold} islands`:`${TIERS[m.tier][1]} bar on ${byId(m.isl).name}`;
+function grantMastery(quiet){for(const [k,id] of MASTERY){const it=SHOP[k].items()[id],L=SHOP[k].list();if(it&&!L.includes(id)&&mastDone(it.mast)){L.push(id);if(!quiet)toast(`Mastery prize: ${it.name}!`,`You earned it: ${it.mast.gold?`the gold bar on ${it.mast.gold} islands`:`the ${TIERS[it.mast.tier][1].toLowerCase()} bar on ${byId(it.mast.isl).name}`}. Find it in Pip's Closet!`,'#e09a14')}}}
+
 const LESSONS=[
   {id:'mult_break',isl:'mult',types:[0,2],title:'Break it apart!',
    build(){const a=R(2,4)*10+R(1,9),b=R(3,6),T=a-a%10,O=a%10;return [
@@ -3103,7 +3157,32 @@ const LESSONS=[
     teachCard('Start at 0!',`<div class="lrow">${protractorSVG('',50)}</div><p>The black ray lies on the <b>0 on the right</b>. So we read the <b>dark numbers</b>, which start at 0 on the right.</p><p>Follow them up to the red ray: <b>50°</b>. (The small red numbers would say 130°. That scale is for angles that start on the left.)</p>`,'Let\'s try one together!'),
     Object.assign(guided(`The black ray is on the 0 at the right. Which numbers do we read?`,strChoices('The dark numbers',['The small red numbers'],2),`Which scale starts at 0 on the right?`,`The <b>dark numbers</b> start at 0 on the right.`),{visual:protractorSVG('',d)}),
     Object.assign(guided(`Follow the dark numbers to the red ray. How many degrees?`,numChoices(d,[180-d,d+10,d-10]),`Count from 0 on the right.`,`The angle is <b>${d}°</b>. The red scale would give ${180-d}°, the wrong one here.`),{visual:protractorSVG('',d)})]},
-   practice:[1,2,1]}
+   practice:[1,2,1]},
+  {id:'frac_times',isl:'frac',types:[7],title:'Fraction times a whole number',
+   build(){const den=pick([3,4,5,6]),a=R(1,den-1),n=R(3,5),tot=n*a;return [
+    teachCard('Groups of the same fraction',`<p><b>3 × ${frac(2,5)}</b> means <b>3 groups</b> of ${frac(2,5)}:</p><div class="lrow">${barsRow(3,2,5)}</div><p class="lc lbig">${frac(2,5)} + ${frac(2,5)} + ${frac(2,5)} = ${frac(6,5)}</p><p>Shortcut: multiply the <b>top</b> number. The bottom stays the same, because the pieces are still fifths: 3 × 2 = 6, so <b>${frac(6,5)}</b>.</p>`,'Let\'s try one together!'),
+    guided(`<b>${n} × ${frac(a,den)}</b> is the same as adding ${frac(a,den)} how many times?`,numChoices(n,[n+1,a,den]),`The whole number tells how many groups.`,`${n} groups, so we add ${frac(a,den)} <b>${n} times</b>.`),
+    guided(`Multiply the top number: <b>${n} × ${a} = ?</b>`,numChoices(tot,[n+a,tot+n,a*den]),`${n} groups of ${a} pieces.`,`${n} × ${a} = <b>${tot}</b> pieces.`),
+    Object.assign(guided(`So <b>${n} × ${frac(a,den)} = ?</b>`,strChoices(fr(tot,den),[fr(tot,den*n),fr(n+a,den),fr(a,den*n)]),`The bottom number stays ${den}.`,`${n} × ${frac(a,den)} = <b>${frac(tot,den)}</b>.`),{render:fracText})]},
+   practice:[7,7,7]},
+  {id:'frac_mixed',isl:'frac',types:[5,6],title:'Wholes and pieces',
+   build(){const den=pick([3,4,5,6]),w=R(1,3),r=R(1,den-1),n=w*den+r,n1=R(1,den-2),n2=R(1,den-1-n1),w1=R(1,3),w2=R(1,2);return [
+    teachCard('Every full set of pieces makes 1 whole',`<p><b>${frac(11,4)}</b> is 11 quarters. Every 4 quarters make 1 whole.</p><div class="lrow">${pies(11,4)}</div><p class="lc lbig">${frac(11,4)} = ${mixedHTML(2,3,4)}</p><p>11 ÷ 4 = 2 R3: <b>2 wholes</b> and <b>3 pieces</b> left.</p><p>Adding mixed numbers? Add the wholes, then add the pieces: ${mixedHTML(1,1,4)} + ${mixedHTML(2,2,4)} = <b>${mixedHTML(3,3,4)}</b>.</p>`,'Let\'s try one together!'),
+    guided(`${frac(n,den)}: how many <b>wholes</b>? Think ${n} ÷ ${den}.`,numChoices(w,[w+1,r,n]),`How many groups of ${den} fit in ${n}?`,`${den} × ${w} = ${w*den}, so there are <b>${w} whole${w>1?'s':''}</b>.`),
+    guided(`How many pieces are <b>left over</b>? ${n} − ${w*den} = ?`,numChoices(r,[r+1,den,w+r]),`Take the wholes away.`,`<b>${r}</b> piece${r>1?'s':''} left over.`),
+    Object.assign(guided(`So ${frac(n,den)} = ?`,strChoices(`${w} ${r}/${den}`,[`${w+1} ${r}/${den}`,`${r} ${w}/${den}`,`${w} ${den-r}/${den}`]),`Wholes first, then the pieces left.`,`${frac(n,den)} = <b>${mixedHTML(w,r,den)}</b>.`),{render:fracText}),
+    Object.assign(guided(`${mixedHTML(w1,n1,den)} + ${mixedHTML(w2,n2,den)} = ? Add the wholes, then the pieces.`,strChoices(`${w1+w2} ${n1+n2}/${den}`,[`${w1+w2} ${n1+n2}/${den*2}`,`${w1+w2+1} ${n1+n2}/${den}`,`${w1*w2} ${n1+n2}/${den}`]),`Wholes: ${w1} + ${w2}. Pieces: ${n1} + ${n2}.`,`${w1} + ${w2} = ${w1+w2} wholes, ${n1} + ${n2} = ${n1+n2} pieces: <b>${mixedHTML(w1+w2,n1+n2,den)}</b>.`),{render:fracText})]},
+   practice:[6,5,6]},
+  {id:'read_main',isl:'reading',types:[],title:'Find the main idea',
+   build(){const P=shuffle(MAINIDEA.slice()).slice(0,4);return [
+    teachCard('What are MOST of the sentences about?',`<div class="passage"><p>Bees visit flowers all day. They drink sweet nectar. Pollen sticks to their legs and moves to the next flower. That helps new seeds grow.</p></div><p>The <b>main idea</b> is what <b>most</b> sentences are about: <b>bees help flowers make seeds</b>.</p><p>"Bees have legs" is only a small <b>detail</b>. "All about insects" is <b>too big</b>.</p>`,'Let\'s try some!'),
+    ...P.map(x=>Object.assign(guided(`<div class="passage"><p>${x[0]}</p></div>What is the <b>main idea</b>?`,strChoices(x[1],x[2]),`What do almost all the sentences talk about?`,`Most sentences tell about this: <b>${x[1]}</b>.`),{long:true,render:c=>c}))]},
+   practice:[]},
+  {id:'word_context',isl:'words',types:[],title:'Clues around a word',
+   build(){const P=shuffle(CONTEXT.slice()).slice(0,4);return [
+    teachCard('The other words give clues',`<p class="lbig">"The <b>enormous</b> whale was longer than a school bus."</p><p>Don't know <b>enormous</b>? Look around it: <i>longer than a school bus</i>. So enormous means <b>very big</b>.</p><p>Clues can be an example, an opposite ("not tiny"), or an explanation after a comma.</p>`,'Let\'s try some!'),
+    ...P.map(x=>Object.assign(guided(`<i>"${x[0]}"</i><br>What does <b>${x[1]}</b> mean?`,strChoices(x[2],x[3]),`Find the words near <b>${x[1]}</b> that explain it.`,`The clue is <i>${x[4]}</i>. So <b>${x[1]}</b> means <b>${x[2]}</b>.`),{long:true,render:c=>c}))]},
+   practice:[]}
 ];
 const lessonsFor=id=>LESSONS.filter(L=>L.isl===id);
 function lessonFor(id){const ls=lessonsFor(id);if(!ls.length)return null;const miss=t=>G.review.filter(r=>r.i===id&&t.includes(r.t)).length,done=L=>((G.lessons||{})[L.id]||'');
@@ -3112,7 +3191,7 @@ function lessonIsland(L){const base=byId(L.isl);return Object.assign({},base,{id
 function startLesson(L){const isl=byId(L.isl);const qs=[...L.build(),...L.practice.map(t=>{const q=makeQ(isl,t%isl.types,R(1,2e9),1);q.numeric=false;return q})];
   beginRound(lessonIsland(L),'lesson',qs);say($('#say'),`Lesson time${nm()}! First I'll show you the trick, then we try it together.`)}
 function finishLesson(){const L=S.isl.lesson,isl=byId(L.isl),n=S.qs.filter(q=>!q.teach).length,s=S.score,st=s===n?3:s>=Math.ceil(n*.66)?2:s>=1?1:0;
-  const first=!(G.lessons||{})[L.id];G.lessons=Object.assign({},G.lessons||{},{[L.id]:dayKey()});if(first)award('learner');
+  bump('l');const first=!(G.lessons||{})[L.id];G.lessons=Object.assign({},G.lessons||{},{[L.id]:dayKey()});if(first)award('learner');
   done(st,`You learned <b>${L.title}</b>! ${s} of ${n} right on the first try. Now use the trick on <b>${isl.name}</b>.`,{title:'Lesson complete!',sticker:first?.6:0});
   const nb=$('#nextIsl');nb.hidden=false;nb.textContent=`Practice on ${isl.name}`;nb.onclick=()=>start(isl)}
 /* offer a lesson when an island is hard right now */
@@ -3148,7 +3227,17 @@ function pipPick(){
   /* after 3 rounds on today's pick, Pip moves the x2 to the next weak topic, so no single topic gets all the practice */
   for(let k=0;k<weak.length;k++){const c=weak[(d+k)%weak.length];if(!pd||!(pd.done||[]).includes(c.id))return c}
   return weak[d%weak.length]}
-function renderPickCard(){const el=$('#pickCard');if(!el)return;const P=pipPick();if(!P){el.hidden=true;return}el.hidden=false;const st=G.stats[P.id],pc=st&&st.a>=6?Math.round(st.c/st.a*100):null;
+function renderPickCard(){const el=$('#pickCard');if(!el)return;const P=pipPick();el.hidden=false;
+  const gi=goalInfo(),pd=G.pickDay&&G.pickDay.d===dayKey()?G.pickDay:null,pickPlayed=!!(pd&&Object.values(pd.n||{}).some(v=>v>0));
+  const steps=[{done:dailyDone(),title:'Daily Challenge',sub:`8 surprise puzzles · +${REW.daily} coins`,btn:'<button type="button" class="go small" id="tdDaily">Play</button>'},
+    P?{done:pickPlayed,title:`Pip's Pick: ${esc(P.name)}`,sub:(()=>{const st=G.stats[P.id],pc=st&&st.a>=6?Math.round(st.c/st.a*100):null;return `${pc!==null?`Trickiest topic right now (${pc}% right)`:esc(P.topic)} · <span class="x2">×2 coins</span>`})(),btn:`<span class="pkbtns">${lessonsFor(P.id).length?'<button type="button" class="go small alt" id="pickLearn">Learn the trick</button>':''}<button type="button" class="go small" id="pickGo">Play</button></span>`}:null,
+    {done:!!gi&&G.goalDone===dayKey(),title:'Free flight',sub:gi?`Any island you like · today's goal ${gi.label}`:'Any island you like',btn:''}].filter(Boolean);
+  const nd=steps.filter(x=>x.done).length;
+  el.innerHTML=`<div class="today"><div class="tdhead"><b>Today's flight plan</b><span>${nd===steps.length?'All done! Rest, or play for fun.':`${nd} of ${steps.length} done`}</span></div><ol class="tdsteps">${steps.map((x,i)=>`<li class="${x.done?'done':''}"><span class="tdchk">${x.done?CHECK:i+1}</span><div class="tdtx"><b>${x.title}</b><small>${x.sub}</small></div>${x.done?'':x.btn}</li>`).join('')}</ol></div>`;
+  if($('#tdDaily'))$('#tdDaily').onclick=()=>start(byId('daily'));
+  if(!P)return;
+  if($('#pickGo'))$('#pickGo').onclick=()=>start(P,{noOffer:true});if($('#pickLearn'))$('#pickLearn').onclick=()=>start(lessonIsland(lessonFor(P.id)));
+  return;const st=G.stats[P.id],pc=st&&st.a>=6?Math.round(st.c/st.a*100):null;
   el.innerHTML=`<div class="pkisl">${islandSVG(P.color,LANDMARKS[P.lm])}</div><div class="gtxt"><b>Pip's Pick for today: ${esc(P.name)}</b><span>${pc!==null?`Your trickiest topic right now (${pc}% right). Practice makes it easier!`:`${esc(P.topic)}: let's get stronger here!`}</span></div><span class="x2">×2 coins</span><div class="pkbtns">${lessonsFor(P.id).length?'<button type="button" class="go small alt" id="pickLearn">Learn the trick</button>':''}<button type="button" class="go small" id="pickGo">Play</button></div>`;
   $('#pickGo').onclick=()=>start(P,{noOffer:true});if($('#pickLearn'))$('#pickLearn').onclick=()=>start(lessonIsland(lessonFor(P.id)))}
 /* ---------- after the daily goal, coins taper off, so long sessions are not over-rewarded ---------- */
@@ -3199,7 +3288,7 @@ function buildTips(){
   if(unv.length){const i=pick(unv);t.push({text:`Psst... I've never been to <b>${i.name}</b>! Want to explore it with me?`,label:`Fly to ${i.name}`,act:()=>start(i)})}
   const almost=STAR_ISLANDS.filter(i=>i.gen&&G.best[i.id]>0&&G.best[i.id]<3);
   if(almost.length){const i=pick(almost);t.push({text:`<b>${i.name}</b> has only ${G.best[i.id]} star${G.best[i.id]>1?'s':''}. I bet you can get all 3!`,label:'Try for 3 stars',act:()=>start(i)})}
-  const cheap=[...Object.entries(BASKETS).filter(([k])=>!G.baskets.includes(k)),...Object.entries(CHARS).filter(([k])=>!G.chars.includes(k)),...Object.entries(PETS).filter(([k])=>!G.pets.includes(k)),...Object.entries(HATS).filter(([k])=>!G.hats.includes(k)),...Object.entries(BALLOONS).filter(([k])=>!G.balloons.includes(k)),...Object.entries(GLASSES).filter(([k])=>!G.glasses.includes(k)),...Object.entries(DECOS).filter(([k])=>!G.decos.includes(k))].filter(([,v])=>!v.ev&&!v.reward).sort((a,b)=>a[1].price-b[1].price)[0];
+  const cheap=[...Object.entries(BASKETS).filter(([k])=>!G.baskets.includes(k)),...Object.entries(CHARS).filter(([k])=>!G.chars.includes(k)),...Object.entries(PETS).filter(([k])=>!G.pets.includes(k)),...Object.entries(HATS).filter(([k])=>!G.hats.includes(k)),...Object.entries(BALLOONS).filter(([k])=>!G.balloons.includes(k)),...Object.entries(GLASSES).filter(([k])=>!G.glasses.includes(k)),...Object.entries(DECOS).filter(([k])=>!G.decos.includes(k))].filter(([,v])=>!v.ev&&!v.reward&&!v.mast).sort((a,b)=>a[1].price-b[1].price)[0];
   if(cheap){if(G.coins>=cheap[1].price)t.push({text:`You have <b>${fmt(G.coins)} coins</b>! Can I please get the <b>${cheap[1].name}</b>? Pretty please?`,label:"Open Pip's Closet",act:openCloset});
     else t.push({text:`Only <b>${cheap[1].price-G.coins} more coins</b> until you can buy me the <b>${cheap[1].name}</b>!`})}
   const owned=Object.keys(G.stickers).length;if(owned<STK.length)t.push({text:`You have <b>${owned} of ${STK.length}</b> stickers. Finish islands to find more. Some are super rare and GOLDEN!`,label:'See my album',act:openAlbum});
@@ -3212,9 +3301,12 @@ function buildTips(){
 function showTip(){const tp=tips[tipI%tips.length];tipI++;say($('#maptext'),tp.text,true);const b=$('#mapact');if(tp.act){b.hidden=false;b.textContent=tp.label;b.onclick=()=>{tone([523,784]);tp.act()}}else b.hidden=true}
 function checkChest(){const c=G.chest;if(!c||!c.from||c.from>=dayKey()||c.from<=(G.chestOpened||''))return;G.chestOpened=c.from;G.coins+=REW.chest;save();
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Welcome back${nm()}!</div><h2>Your surprise chest</h2><svg viewBox="0 0 120 90" style="width:150px;align-self:center" aria-hidden="true"><rect x="14" y="40" width="92" height="44" rx="6" fill="#b5773f" stroke="#8c5a2c" stroke-width="3"/><path d="M14 44 Q14 14 60 14 Q106 14 106 44Z" fill="#c98a4c" stroke="#8c5a2c" stroke-width="3"/><rect x="52" y="36" width="16" height="18" rx="3" fill="#ffc23d" stroke="#e09a14" stroke-width="2"/><g fill="#ffd56b"><circle cx="34" cy="10" r="4"/><circle cx="86" cy="8" r="3"/><circle cx="60" cy="4" r="3"/></g></svg><p>You reached your goal yesterday and took a break. That's how brains grow! <b>+${REW.chest} coins</b>.</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Yay!</button>`,()=>{updateStats('#coinPill');sWin();burst(innerWidth/2,innerHeight/3,100)})}
+let mapTab=(()=>{try{return localStorage.getItem('pip-tab')||'math'}catch(e){return 'math'}})();
+function setTab(t){mapTab=t;try{localStorage.setItem('pip-tab',t)}catch(e){}document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('.tabp').forEach(p=>p.hidden=p.dataset.tabp!==t)}
+document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.onclick=()=>{setTab(b.dataset.tab);tone([523,659],.04)});
 function renderMap(){
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
-  adoptRemote();stopTimers();updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();checkChest();
+  adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
   const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
   for(const [g,sel] of Object.entries(groups))$(sel).innerHTML=ISLANDS.map((isl,i)=>isl.group===g?card(isl,i):'').join('');
   $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'Compass fixed! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
@@ -3306,7 +3398,7 @@ function showQ(){
   if(q.numeric&&!q.kind&&/^[\d,]+$/.test(q.answer)&&Math.random()<[0,.15,.3,.65][S.mode==='island'?S.d:2]){q.kind='keypad';return setupKeypad(q)}
   drawChoices(q,choose);
 }
-$('#howBtn').onclick=openHow;
+$('#howBtn').onclick=()=>{bump('w');openHow()};
 $('#speakBtn').onclick=()=>{const q=S&&S.qs[S.i];if(q)speak(q.speak||q.prompt,{user:true,pip:true})};
 function checkBtn(label,fn){const b=document.createElement('button');b.type='button';b.className='go';b.id='check';b.textContent=label;b.onclick=e=>{if(!S.locked)fn(e.currentTarget)};return b}
 function setupKeypad(q){
@@ -3417,11 +3509,14 @@ function judge(ok,btn){
     if(S.mode==='boss'){S.locked=true;track(q,true,false);loseHeart();reveal(q);say($('#say'),S.hearts>0?`Ouch! The ${BOSSES[S.boss].name} zapped a heart! Shake it off!`:`Oh no, no hearts left! It got away this time...`);
       const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ();return}
     if(S.tries===1&&S.mode==='island'&&q.meta&&q.meta.t!=null&&!q.rv&&byId(q.meta.i)&&byId(q.meta.i).gen){const k=q.meta.i+'|'+q.meta.t;S.missRun=S.missRun||{};S.helped=S.helped||{};S.missRun[k]=(S.missRun[k]||0)+1;if(S.missRun[k]>=2&&!S.helped[k]){S.helped[k]=1;S.helpQ=q}}
-    if(S.tries===1){track(q,true,false);say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge()}
+    if(S.tries===1){track(q,true,false);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge()}
     else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review'||q.rv)reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
       $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ()}
   }
 }
+function firstMistakeTip(){if(G.tutHint)return;G.tutHint=1;save(true);
+  setTimeout(()=>{['#hint','#howBtn'].forEach(sel=>{const el=$(sel);if(el&&!el.hidden){el.classList.remove('pulsehelp');void el.offsetWidth;el.classList.add('pulsehelp')}});
+    say($('#say'),`Stuck? Read the <b>Hint</b> below the puzzle. Still stuck? Tap <b>How?</b> and I'll show you step by step!`)},350)}
 function reviewResult(q,first){
   const r=G.review.find(x=>x.s===q.meta.s);if(!r)return;
   if(first){r.box++;if(r.box>=3){G.review=G.review.filter(x=>x!==r);G.fixedSeeds.push(r.s);G.fixed++;toast('Mistake fixed forever!','That puzzle won\'t trick you again.','#38b98a');if(G.fixed>=10)award('fixer')}else r.due=addDays([1,3,7][r.box])}
@@ -3571,13 +3666,15 @@ function shopItem(kind,id,it){
   if(wearing)btn=`<button type="button" class="worn" disabled>${word}</button>`;
   else if(owned)btn=`<button type="button" class="wear" data-k="${kind}" data-id="${id}">${act}</button>`;
   else if(it.reward)btn=`<button type="button" disabled>Event prize: ${EV_MILES[1][0]} pts</button>`;
+  else if(it.mast)btn=`<button type="button" disabled class="mastb">${mastLabel(it.mast)}${it.mast.isl?` · ${toTier(it.mast.isl,it.mast.tier)} more right`:''}</button>`;
   else if(G.coins>=it.price)btn=`<button type="button" class="buy" data-k="${kind}" data-id="${id}">${COIN_ICON} ${it.price}</button>`;
   else btn=`<button type="button" disabled>${COIN_ICON} ${it.price}</button>`;
-  const leg=it.price>=1000,isw=G.wish&&G.wish.k===kind&&G.wish.id===id,canWish=!owned&&!it.reward&&it.price>0;
+  const leg=it.price>=1000,isw=G.wish&&G.wish.k===kind&&G.wish.id===id,canWish=!owned&&!it.reward&&!it.mast&&it.price>0;
   return `<div class="item${wearing?' wearing':''}${leg?' leg':''}">${it.nw&&!owned?'<span class="newtag">NEW</span>':''}${canWish?`<button type="button" class="wishb${isw?' on':''}" data-wk="${kind}" data-wid="${id}" aria-label="${isw?'Remove from wish':'Make this my wish'}" title="${isw?'My wish!':'Make this my wish'}">${isw?'★':'☆'}</button>`:''}<div class="prev" data-tk="${kind}" data-tid="${id}" title="Try it on">${foxSVG({[kind]:id})}</div><b>${it.name}</b>${leg?'<span class="legtag">Legendary</span>':''}${btn}</div>`;
 }
 function renderCloset(){
   refreshFoxes();updateStats();
+  $('#shopMastery').innerHTML=MASTERY.map(([k,id])=>shopItem(k,id,SHOP[k].items()[id])).join('');
   $('#shopChars').innerHTML=Object.entries(CHARS).map(([k,v])=>shopItem('char',k,v)).join('');
   const keep=(list)=>([k,v])=>!v.ev||list.includes(k);
   $('#shopPets').innerHTML=Object.entries(PETS).filter(keep(G.pets)).map(([k,v])=>shopItem('pet',k,v)).join('');
@@ -3586,10 +3683,10 @@ function renderCloset(){
     $('#shopEvent').innerHTML=shopItem('hat',E.hat,HATS[E.hat])+shopItem('basket',E.basket,BASKETS[E.basket])+shopItem('pet',E.pet,PETS[E.pet])}
   const C=CHARS[G.char]||CHARS.fox;$('#swatches').innerHTML=`<span>${C.name} colors:</span>`+C.v.map((v,i)=>`<button type="button" class="sw${((G.charColor||{})[G.char]||0)===i?' on':''}" data-sw="${i}" title="${v.n}" aria-label="${v.n}" style="background:${v.m}"></button>`).join('');
   document.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{G.charColor=G.charColor||{};G.charColor[G.char]=+b.dataset.sw;save();renderCloset();tone([660,880]);setTimeout(()=>foxMove('spin'),50);say($('#csay'),`Ooh, ${C.v[+b.dataset.sw].n}! I love it!`)});
-  $('#shopHats').innerHTML=Object.entries(HATS).filter(keep(G.hats)).map(([k,v])=>shopItem('hat',k,v)).join('');
-  $('#shopBalloons').innerHTML=Object.entries(BALLOONS).map(([k,v])=>shopItem('balloon',k,v)).join('');
-  $('#shopGlasses').innerHTML=Object.entries(GLASSES).map(([k,v])=>shopItem('glass',k,v)).join('');
-  $('#shopDecos').innerHTML=Object.entries(DECOS).map(([k,v])=>shopItem('deco',k,v)).join('');
+  $('#shopHats').innerHTML=Object.entries(HATS).filter(([,v])=>!v.mast).filter(keep(G.hats)).map(([k,v])=>shopItem('hat',k,v)).join('');
+  $('#shopBalloons').innerHTML=Object.entries(BALLOONS).filter(([,v])=>!v.mast).map(([k,v])=>shopItem('balloon',k,v)).join('');
+  $('#shopGlasses').innerHTML=Object.entries(GLASSES).filter(([,v])=>!v.mast).map(([k,v])=>shopItem('glass',k,v)).join('');
+  $('#shopDecos').innerHTML=Object.entries(DECOS).filter(([,v])=>!v.mast).map(([k,v])=>shopItem('deco',k,v)).join('');
   $('#shopBaskets').innerHTML=Object.entries(BASKETS).filter(keep(G.baskets)).map(([k,v])=>shopItem('basket',k,v)).join('');
   $('#tcount').textContent=`${G.badges.length} of ${BADGES.length} badges`;
   $('#trophies').innerHTML=BADGES.map(b=>`<div class="trophy${G.badges.includes(b[0])?'':' off'}">${MEDAL(b[3])}<div><b>${b[1]}</b><small>${b[2]}</small></div></div>`).join('');
@@ -3895,7 +3992,7 @@ function renderParent(){
   $('#parentBody').innerHTML=`<div class="pgrid">${notes.length?`<div class="pcard wide pnotes"><h4>Pip's notes for grown-ups</h4><ul>${notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>`:''}
     <div class="pcard wide"><h4>Today</h4><div class="kpis">
       <div class="kpi"><b>${Math.floor(t.sec/60)}</b><small>minutes played</small></div><div class="kpi"><b>${t.q}</b><small>puzzles answered</small></div>
-      <div class="kpi"><b>${t.q?Math.round(t.c/t.q*100)+'%':'–'}</b><small>right on first try</small></div><div class="kpi"><b>${gi?(gi.cur>=gi.max?'Done':gi.label):'Off'}</b><small>daily goal</small></div></div></div>
+      <div class="kpi"><b>${t.q?Math.round(t.c/t.q*100)+'%':'–'}</b><small>right on first try</small></div><div class="kpi"><b>${gi?(gi.cur>=gi.max?'Done':gi.label):'Off'}</b><small>daily goal</small></div></div><p class="note">Today: ${t.h||0} hints shown · ${t.w||0} "How?" explanations · ${t.l||0} lessons · ${t.e||0} coins earned, ${t.s||0} spent.</p></div>
     <div class="pcard"><h4>Last 7 days (minutes)</h4><div class="days7">${last7.map((k,i)=>`<div><em>${mins[i]}</em><i style="height:${Math.max(2,mins[i]/maxM*100)}%"></i><span>${DSHORT[new Date(k+'T12:00').getDay()]}</span></div>`).join('')}</div>
       <p>All time: ${allA} puzzles, ${allA?Math.round(allC/allA*100):0}% right on the first try. Best combo: ${G.bestCombo}. Mistakes fixed for good: ${G.fixed}.</p></div>
     <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small></li>`).join('')}</ul><p>Tip: tap a topic below to play it together.</p>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
@@ -4187,6 +4284,8 @@ function startPop(next){
 
 /* ================= settings & toggles ================= */
 function applySettings(){document.body.classList.toggle('big',!!G.settings.big);document.body.classList.toggle('dys',!!G.settings.dys);$('#bigBtn').setAttribute('aria-pressed',!!G.settings.big)}
+$('#gearBtn').onclick=e=>{e.stopPropagation();const m=$('#tmenu'),o=m.hidden;m.hidden=!o;$('#gearBtn').setAttribute('aria-expanded',o)};
+document.addEventListener('click',e=>{const m=$('#tmenu');if(m&&!m.hidden&&!e.target.closest('.tmwrap')){m.hidden=true;$('#gearBtn').setAttribute('aria-expanded','false')}});
 $('#bigBtn').onclick=()=>{G.settings.big=!G.settings.big;save();applySettings()};
 $('#sound').onclick=e=>{soundOn=!soundOn;e.currentTarget.setAttribute('aria-pressed',soundOn);e.currentTarget.textContent='Sounds: '+(soundOn?'on':'off')};
 function musicLabel(){const b=$('#music');b.setAttribute('aria-pressed',musicOn);b.textContent='Music: '+(musicOn?'on':'off')}
