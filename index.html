@@ -1290,6 +1290,19 @@ html body.big .cisl .tneed{font-size:14px}
 .item.upgrade{position:relative;border:3px solid var(--sun);background:linear-gradient(180deg,#fffbea,var(--card) 60%)}
 .upbadge{position:absolute;top:8px;left:8px;z-index:1;background:var(--sun);color:#7a4a00;font-weight:800;font-size:12px;letter-spacing:.4px;text-transform:uppercase;border-radius:999px;padding:3px 9px 1px}
 html body.big .upbadge{font-size:14px}
+/* Build shop: one card style */
+#homeShop{align-items:stretch}
+#homeShop .item{padding:10px 10px 12px;gap:8px;justify-content:flex-start;border:0;outline:3px solid transparent;outline-offset:-3px;position:relative}
+#homeShop .item .prev{width:100%;height:120px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:16px;background:linear-gradient(180deg,#dff3ff,#f4fbff);overflow:hidden}
+#homeShop .item .prev svg{width:100%;height:100%;max-width:none;max-height:none;display:block}
+#homeShop .item b{flex:1;display:flex;align-items:center;justify-content:center;line-height:1.1;min-height:2.2em;text-wrap:balance}
+#homeShop .item button{width:100%;max-width:170px;justify-content:center;margin-top:auto}
+#homeShop .item.wearing{outline-color:var(--leaf);box-shadow:0 5px 0 var(--leaf-d)}
+#homeShop .item.upgrade{border:0;outline-color:var(--sun);box-shadow:0 5px 0 #e09a14;background:var(--card)}
+#homeShop .item.upgrade .prev{background:linear-gradient(180deg,#fff3c4,#fffbea)}
+#homeShop .upbadge{top:16px;left:16px}
+#homeShop .item:has([data-place]){outline-color:#c9d3e1}
+@media (max-width:760px){#homeShop .item .prev{height:96px}#homeShop .upbadge{top:13px;left:13px;font-size:11px;padding:2px 7px 0}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -5019,6 +5032,9 @@ function openHome(){
   stopTimers();homeEdit=false;homeSel='';show('home');renderHome();
   const n=homeCount();say($('#hsay'),n===0?`This is <b>your</b> island! Spend coins to build a home, plant trees and add fun things. Let's start with a tent!`:n<6?`Our island is looking great! What should we build next?`:`Wow, this is the best island in the whole sky!`);foxClass('waving',1500);
 }
+/* every picture in the Build shop fills its frame the same way, whatever its real size */
+function fitPreviews(root){if(!root)return;root.querySelectorAll('.prev svg').forEach(svg=>{try{const b=svg.getBBox();if(!b.width||!b.height)return;const w=Math.max(b.width,b.height*.9),h=Math.max(b.height,b.width*.55),pad=Math.max(w,h)*.1;
+  svg.setAttribute('viewBox',`${(b.x+b.width/2-w/2-pad).toFixed(1)} ${(b.y+b.height/2-h/2-pad).toFixed(1)} ${(w+2*pad).toFixed(1)} ${(h+2*pad).toFixed(1)}`);svg.setAttribute('preserveAspectRatio','xMidYMid meet')}catch(e){}})}
 function renderHome(){
   updateStats();G.home=G.home||{house:0,items:{}};const H=G.home;
   renderHomeView();
@@ -5034,6 +5050,7 @@ function renderHome(){
     return `<div class="item${have&&!away?' wearing':''}"><div class="prev"><svg viewBox="${vb}">${have?itemDraw(it):it.draw(x,y)}</svg></div><b>${have?itemName(it):it.name}</b>${away?`<button type="button" class="buy" data-place="${it.id}">Put back</button>`:have?`<button type="button" class="worn" disabled>Built!</button>`:`<button type="button" class="${G.coins>=it.price?'buy':''}" data-build="${it.id}" ${G.coins>=it.price?'':'disabled'}>${COIN_ICON} ${it.price}</button>`}</div>`}).join('');
   $('#homeProj').innerHTML=PROJECTS.map(P=>{const n=projStage(P.id),nx=projNext(P),goal=saveGoalProject()===P;
     return `<div class="pcard2${nx?'':' done'}"><div class="prev">${projThumb(P,nx?nx.n+1:n)}</div><div class="pinfo"><b>${P.name}</b><div class="psteps">${P.stages.map((st,i)=>`<span class="pst${i<n?' on':''}" title="${esc(st[0])}"></span>`).join('')}</div>${nx?`<small>Step ${nx.n+1} of ${P.stages.length}: <b>${esc(nx.name)}</b></small><div class="prow"><button type="button" class="${G.coins>=nx.price?'buy':''}" data-proj="${P.id}" ${G.coins>=nx.price?'':'disabled'}>${COIN_ICON}${fmt(nx.price)}</button><button type="button" class="pgoal${goal?' on':''}" data-pgoal="${P.id}" aria-pressed="${goal}">${goal?ICON.wishOn+'My goal':ICON.wishOff+'Make it my goal'}</button></div>`:`<small><b>Finished!</b> All ${P.stages.length} steps built.</small>`}</div></div>`}).join('');
+  fitPreviews($('#homeShop'));
   document.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{const P=PROJECTS.find(x=>x.id===b.dataset.proj),nx=projNext(P);if(!nx||G.coins<nx.price)return;G.coins-=nx.price;G.home.proj=Object.assign({},G.home.proj||{},{[P.id]:nx.n+1});
     if(projDone(P))award('grand');built0(projDone(P)?`We finished the <b>${P.name}</b>! It's the best thing in the whole sky!`:`Step ${nx.n+1} done: <b>${nx.name}</b>! Only ${P.stages.length-nx.n-1} more to go!`)});
   document.querySelectorAll('[data-pgoal]').forEach(b=>b.onclick=()=>{G.saveGoal=b.dataset.pgoal;save();renderHome();tone([523,659],.06)});
