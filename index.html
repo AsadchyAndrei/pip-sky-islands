@@ -957,10 +957,8 @@ body.newbie #mapact{font-size:24px;padding:12px 26px 8px;margin-top:12px}
 }
 body:has(#overlay:not([hidden])) #toasts{z-index:25}
 
-/* 11. closet: the item itself up close; locked prizes look locked; a clear wish button */
+/* 11. closet: every card shows the whole hero (no zoom, nothing cut off); locked prizes look locked; a clear wish button */
 .item .prev{overflow:hidden;border-radius:16px;background:linear-gradient(180deg,#e9f7ff,#fff)}
-.item[data-kind=hat] .prev svg,.item[data-kind=glass] .prev svg{transform:scale(1.9);transform-origin:50% 66%}
-.item[data-kind=basket] .prev svg,.item[data-kind=pet] .prev svg{transform:scale(1.5);transform-origin:50% 88%}
 .item.locked .prev{filter:grayscale(.85);opacity:.55}
 .item .locktag{position:absolute;top:8px;left:8px;font-size:18px;line-height:1}
 .item .wishb{font-size:13px!important;font-weight:800;padding:3px 8px!important;border-radius:999px!important;background:var(--pale-sun)!important;color:#8a5a00!important;min-height:0!important}
