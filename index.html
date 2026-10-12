@@ -1396,6 +1396,7 @@ html body.big .pzcard small,html body.big .pztag{font-size:16px}html body.big .p
   #map .navbtn:hover{transform:translateX(3px)}
   html body.big #map .navbtn b{font-size:19px}
 }
+.mist.pzlist li{background:#f4f7fb}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -4874,6 +4875,9 @@ function renderParent(){
       <p>All time: ${allA} puzzles, ${allA?Math.round(allC/allA*100):0}% right on the first try. Best combo: ${G.bestCombo}. Mistakes fixed for good: ${G.fixed}.</p></div>
     <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small></li>`).join('')}</ul><p>Tip: tap a topic below to play it together.</p>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
       <p>Waiting at Fix-It Falls: <b>${G.review.length}</b> puzzle${G.review.length===1?'':'s'} (${reviewDue().length} due today).</p></div>
+    ${(()=>{const P=(G.home&&G.home.inside&&G.home.inside.pz)||{n:0,by:{},att:{},first:{},done:{},day:''};const att=P.att||{},fst=P.first||{},by=P.by||{},today=P.day===dayKey()?P.done||{}:{};
+      const next=INSIDE.filter(it=>it.prize&&it.prize>(P.n||0)).sort((a,b)=>a.prize-b.prize)[0];
+      return `<div class="pcard"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
     <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
     <div class="pcard wide curmap"><h4>4th grade program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the California 4th grade program. Stars are the same as in the game: the best round, or recent accuracy (7 of 10 right lately = 2 stars, 8 of 10 = 3).</p>
       <div class="tscroll"><table class="topics cur"><thead><tr><th>Subject</th><th>Area</th><th>Standard</th><th>Islands</th></tr></thead><tbody>
@@ -5458,7 +5462,7 @@ const PZ_TYPES=[
   {id:'frac',name:'Paint Fractions',sub:'parts of a wall',color:'#2f9fe0'},
 ];
 const PZ_REW=20,PZ_ALL=30;
-function pzState(){const I=inState();const P=I.pz=I.pz||{n:0,day:'',done:{},by:{},claimed:{}};if(P.day!==dayKey()){P.day=dayKey();P.done={}}P.by=P.by||{};P.claimed=P.claimed||{};return P}
+function pzState(){const I=inState();const P=I.pz=I.pz||{n:0,day:'',done:{},by:{},claimed:{}};if(P.day!==dayKey()){P.day=dayKey();P.done={}}P.by=P.by||{};P.att=P.att||{};P.first=P.first||{};P.claimed=P.claimed||{};return P}
 const pzR=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 function pzOpts(right,cands){const set=[right];for(const c of cands){if(set.length>=4)break;if(c>0&&!set.includes(c))set.push(c)}let k=1;while(set.length<4){const c=right+k*(k%2?1:-1)*2;if(c>0&&!set.includes(c))set.push(c);k++}return shuffle(set)}
 function rugPuzzle(){const w=pzR(2,6),d=pzR(2,5),area=Math.random()<.5;const A=w*d,P=2*(w+d);
@@ -5478,14 +5482,14 @@ function openPuzzle(type){
   const P=pzState(),T=PZ_TYPES.find(t=>t.id===type),pz=type==='rug'?rugPuzzle():type==='shop'?shopPuzzle():fracPuzzle();let tries=0;
   const head=`<div class="eyebrow" style="color:${T.color}">${T.name} · ${T.sub}</div>`;
   const finish=ok=>{
-    P.by[type]=(P.by[type]||0)+(ok?1:0);let rew=0;
+    P.by[type]=(P.by[type]||0)+(ok?1:0);if(tries===0)P.att[type]=(P.att[type]||0)+1;if(ok&&tries===0)P.first[type]=(P.first[type]||0)+1;let rew=0;
     if(ok){P.n++;if(!P.done[type]&&tries===0){P.done[type]=1;rew=PZ_REW;if(PZ_TYPES.every(t=>P.done[t.id]))rew+=PZ_ALL}else if(!P.done[type])P.done[type]=1}
     if(rew){G.coins+=rew;updateStats('#coinPill')}
     save();sWin();const unlocked=INSIDE.filter(it=>it.prize&&P.n===it.prize);
     $('#ocard').querySelector('.pzres').innerHTML=`<p class="pzok">${CHECK} ${pickR(['Great job!','You got it!','Super smart!','Perfect!'])}${rew?` <b>+${rew} coins</b>${rew>PZ_REW?' (all 3 puzzles today!)':''}`:''}</p>${unlocked.map(it=>`<p class="pzprize">New prize unlocked: <b>${esc(it.name)}</b>! Find it in the Home Shop.</p>`).join('')}<div class="actrow"><button type="button" class="go" id="pzMore">Another one</button><button type="button" class="go alt" id="pzDone">Done</button></div>`;
     $('#pzMore').onclick=()=>{closeOverlay();setTimeout(()=>openPuzzle(type),80)};$('#pzDone').onclick=()=>{closeOverlay();renderInside()};$('#pzMore').focus();
     if(unlocked.length)setTimeout(()=>burstAt($('#ocard'),90),150)};
-  const wrong=()=>{tries++;sNo();$('#ocard').querySelector('.pzres').innerHTML=`<p class="pzno">Not quite! ${pz.why}</p>`};
+  const wrong=()=>{if(tries===0){P.att[type]=(P.att[type]||0)+1;save(true)}tries++;sNo();$('#ocard').querySelector('.pzres').innerHTML=`<p class="pzno">Not quite! ${pz.why}</p>`};
   if(pz.frac){const on=new Set();
     overlay(`${head}<h3 class="pzq">${pz.q}</h3><div class="pzwrap">${fracSVG(pz.n,on,pz.c)}</div><p class="pzcount" aria-live="polite">Painted: <b>0/${pz.n}</b></p><div class="pzres" aria-live="polite"></div><div class="actrow"><button type="button" class="go" id="pzCheck">Check</button><button type="button" class="go alt" id="pzClose">Close</button></div>`,()=>{
       const draw=()=>{$('#ocard .pzwrap').innerHTML=fracSVG(pz.n,on,pz.c);$('#ocard .pzcount').innerHTML=`Painted: <b>${on.size}/${pz.n}</b>`;bind()};
