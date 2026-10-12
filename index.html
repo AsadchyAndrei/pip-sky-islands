@@ -945,13 +945,13 @@ body.newbie #mapact{font-size:24px;padding:12px 26px 8px;margin-top:12px}
 .bnav{display:none}
 @media (max-width:760px){
   #map .nav{display:none}
-  body[data-screen=map] .bnav,body[data-screen=closet] .bnav,body[data-screen=home] .bnav,body[data-screen=albumS] .bnav,body[data-screen=story] .bnav{display:grid}
+  body[data-screen=map] .bnav,body[data-screen=closet] .bnav,body[data-screen=home] .bnav,body[data-screen=inside] .bnav,body[data-screen=albumS] .bnav,body[data-screen=story] .bnav{display:grid}
   .bnav{position:fixed;left:0;right:0;bottom:0;z-index:28;grid-template-columns:repeat(5,minmax(0,1fr));background:var(--card);box-shadow:0 -4px 18px rgba(31,53,87,.15);padding:4px 4px calc(env(safe-area-inset-bottom,0px) + 4px);border-radius:18px 18px 0 0}
   .bnav button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:52px;padding:4px 2px;border-radius:12px;font-weight:800;font-size:13px;color:var(--ink-soft);cursor:pointer}
   .bnav svg{width:28px;height:28px}
   .bnav button[data-go=closetBtn] svg path:first-child{stroke:var(--ink)}
-  body[data-screen=map] [data-go=map],body[data-screen=story] [data-go=storyBtn],body[data-screen=albumS] [data-go=albumBtn],body[data-screen=home] [data-go=homeBtn],body[data-screen=closet] [data-go=closetBtn]{background:var(--pale-sky);color:var(--ink)}
-  body[data-screen=map] .wrap,body[data-screen=closet] .wrap,body[data-screen=home] .wrap,body[data-screen=albumS] .wrap,body[data-screen=story] .wrap{padding-bottom:84px}
+  body[data-screen=map] [data-go=map],body[data-screen=story] [data-go=storyBtn],body[data-screen=albumS] [data-go=albumBtn],body[data-screen=home] [data-go=homeBtn],body[data-screen=inside] [data-go=homeBtn],body[data-screen=closet] [data-go=closetBtn]{background:var(--pale-sky);color:var(--ink)}
+  body[data-screen=map] .wrap,body[data-screen=closet] .wrap,body[data-screen=home] .wrap,body[data-screen=inside] .wrap,body[data-screen=albumS] .wrap,body[data-screen=story] .wrap{padding-bottom:84px}
   body:not([data-screen=play]) #toasts{bottom:calc(env(safe-area-inset-bottom,0px) + 70px)}
 }
 body:has(#overlay:not([hidden])) #toasts{z-index:25}
@@ -1303,6 +1303,35 @@ html body.big .upbadge{font-size:14px}
 #homeShop .upbadge{top:16px;left:16px}
 #homeShop .item:has([data-place]){outline-color:#c9d3e1}
 @media (max-width:760px){#homeShop .item .prev{height:96px}#homeShop .upbadge{top:13px;left:13px;font-size:11px;padding:2px 7px 0}}
+/* ===== inside the house ===== */
+.inroom{display:block;width:100%;height:auto}
+.inroom.editing{touch-action:none}
+.inview{background:linear-gradient(180deg,#c9efff,#eaf9ff)}
+.inthing.movable{cursor:grab}
+.inthing.movable:focus{outline:none}
+.inthing.sel{filter:drop-shadow(0 0 0 #ffc23d) drop-shadow(0 0 6px #ffc23d)}
+.inthing.dragging{cursor:grabbing;filter:drop-shadow(0 8px 6px rgba(31,53,87,.35))}
+.inthing.bad{opacity:.55;filter:drop-shadow(0 0 6px #ff6b57)}
+.inthing:not(.movable){cursor:pointer}
+.inthing.boing{animation:bump .4s}
+.inthing{transform-box:fill-box;transform-origin:50% 100%}
+.ingrid rect{fill:rgba(255,255,255,.22);stroke:#fff;stroke-width:2.5;stroke-dasharray:7 5}
+.ichips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+@media (max-width:760px){.ichips{flex-wrap:nowrap;overflow-x:auto;margin-inline:-16px;padding:0 16px 6px;scrollbar-width:none}.ichip{flex:none}}
+.ichip{border:0;border-radius:999px;padding:8px 16px 6px;font:800 15px var(--body);background:rgba(255,255,255,.6);color:var(--ink);cursor:pointer;min-height:44px;box-shadow:0 3px 0 rgba(31,53,87,.1)}
+.ichip.on{background:var(--ocean-d);color:#fff;box-shadow:0 3px 0 var(--ocean-dd)}
+html body.big .ichip{font-size:17px}
+#inShop{align-items:stretch}
+#inShop .item{padding:10px 10px 12px;gap:6px;justify-content:flex-start;outline:3px solid transparent;outline-offset:-3px;position:relative}
+#inShop .item .prev{width:100%;height:120px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:16px;background:linear-gradient(180deg,#dff3ff,#f4fbff);overflow:hidden}
+#inShop .item .prev svg{width:100%;height:100%;max-width:none;max-height:none;display:block}
+#inShop .item b{flex:1;display:flex;align-items:center;justify-content:center;line-height:1.1;min-height:2.2em;text-wrap:balance}
+#inShop .item .isize{font-weight:700;font-size:13px;color:var(--ink-soft);margin-top:-4px}
+#inShop .item button{width:100%;max-width:170px;justify-content:center;margin-top:auto}
+#inShop .item.wearing{outline-color:var(--leaf);box-shadow:0 5px 0 var(--leaf-d)}
+.ownbadge{position:absolute;top:16px;left:16px;z-index:1;background:var(--pale-leaf);color:#1d7a55;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px 1px}
+html body.big .ownbadge{font-size:14px}html body.big #inShop .item .isize{font-size:15px}
+@media (max-width:760px){#inShop .item .prev{height:96px}.ownbadge{top:13px;left:13px;font-size:11px;padding:2px 7px 0}.ichips{gap:6px}.ichip{padding:7px 12px 5px;font-size:14px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -1452,6 +1481,14 @@ html body.big .upbadge{font-size:14px}
       <div class="homewrap"><div><div class="homeview" id="homeView"></div><div class="actrow htools" id="homeTools"></div><div class="hstore" id="homeStore" hidden></div></div><div class="bubble" id="hsay"></div></div>
       <h3 class="sectitle">Grand Projects <small>big builds, one step at a time</small></h3><div class="projects" id="homeProj"></div>
       <h3 class="sectitle">Build <small>spend coins to make your island amazing</small></h3><div class="shop" id="homeShop"></div>
+    </section>
+    <section id="inside" hidden>
+      <div class="playhead"><button class="back" id="inBack" type="button"><span class="ico-slot" data-ico="back"></span>My Island</button>
+        <div class="ihead"><div class="iname" id="inTitle">Inside</div><div class="qnum" id="inSub"></div></div></div>
+      <div class="homewrap"><div><div class="homeview inview" id="inView"></div><div class="actrow htools" id="inTools"></div><div class="hstore" id="inStore" hidden></div></div><div class="bubble" id="insay"></div></div>
+      <h3 class="sectitle">Home Shop <small>furniture, lights and cozy things</small></h3>
+      <div class="ichips" id="inCats" role="toolbar" aria-label="Shop sections"></div>
+      <div class="shop" id="inShop"></div>
     </section>
     <section id="albumS" hidden>
       <div class="playhead"><button class="back" data-home type="button"><span class="ico-slot" data-ico="back"></span>Map</button>
@@ -3423,7 +3460,7 @@ function mergeProfiles(a,b){
   const nw=aNew?a:b,ol=aNew?b:a;
   const o=deepMax(nw,ol);
   for(const k of LATEST)o[k]=k in nw?clone(nw[k]):clone(ol[k]);
-  o.home=Object.assign({},o.home,{pos:clone((nw.home&&nw.home.pos)||(ol.home&&ol.home.pos)||{}),hidden:clone((nw.home&&nw.home.hidden)||(ol.home&&ol.home.hidden)||{})}); // island layout and storage: newest arrangement wins
+  o.home=Object.assign({},o.home,{pos:clone((nw.home&&nw.home.pos)||(ol.home&&ol.home.pos)||{}),hidden:clone((nw.home&&nw.home.hidden)||(ol.home&&ol.home.hidden)||{})});if((nw.home&&nw.home.inside)||(ol.home&&ol.home.inside))o.home.inside=clone((nw.home&&nw.home.inside)||ol.home.inside); // island layout and storage: newest arrangement wins
   const la=a.lastDaily||'',lb=b.lastDaily||'',st=la===lb?((a.dstreak||0)>=(b.dstreak||0)?a:b):(la>lb?a:b);o.lastDaily=st.lastDaily;o.dstreak=st.dstreak;
   const fixed=new Set(o.fixedSeeds);o.fixedSeeds=o.fixedSeeds.slice(-400);
   const rv=new Map();for(const r of ol.review)rv.set(r.s,r);for(const r of nw.review)rv.set(r.s,r);
@@ -3975,7 +4012,7 @@ function limitGate(go){if(limitLeft()>0)return false;
   return true}
 /* ================= screens ================= */
 let S=null,tipTimer=0,tips=[],tipI=0;
-const SCREENS=['gate','kids','map','play','done','closet','albumS','story','parent','home'];
+const SCREENS=['gate','kids','map','play','done','closet','albumS','story','parent','home','inside'];
 let curScreen='';
 function show(id){curScreen=id;document.body.classList.toggle('nogame',id==='gate'||id==='kids');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);document.body.dataset.screen=id;scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
 let EXPLORE=new Set();
@@ -5017,11 +5054,13 @@ function storageThumb(id){if(id.startsWith('p_')){const P=PROJECTS.find(x=>'p_'+
 function renderHomeView(){$('#homeView').innerHTML=homeSVG();bindHomeDrag();
   const sel=homeSel&&homeSel!=='hero'&&$(`#homeView [data-mv="${homeSel}"]`)?homeSel:'';
   const t=$('#homeTools');if(t)t.innerHTML=homeEdit?`<button type="button" class="go small leaf" id="hDone">Done</button>${sel?`<button type="button" class="go small alt" id="hAway">Put away: ${esc(thingName(sel))}</button>`:''}<button type="button" class="go small alt" id="hReset">Reset layout</button><span class="note">Drag things to move them. Tap one to put it in storage.</span>`
-    :`<button type="button" class="go small" id="hMove"${movableCount()?'':' hidden'}>Move or put away</button>`;
+    :`${G.home.house&&!(G.home.hidden||{}).house?`<button type="button" class="go small" id="hInside">Go inside</button>`:''}<button type="button" class="go small${G.home.house?' alt':''}" id="hMove"${movableCount()?'':' hidden'}>Move or put away</button>`;
   const st=storedIds(),tray=$('#homeStore');
   if(tray){tray.hidden=!st.length;tray.innerHTML=st.length?`<h4>In storage <small>still yours, free to bring back</small></h4><div class="storelist">${st.map(id=>`<button type="button" class="storeit" data-place="${id}" title="Put back on the island"><span class="prev">${storageThumb(id)}</span><b>${esc(thingName(id))}</b><small>Put back</small></button>`).join('')}</div>`:''}
   document.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>placeBack(b.dataset.place));
   if($('#hAway'))$('#hAway').onclick=()=>putAway(sel);
+  if($('#hInside'))$('#hInside').onclick=()=>{tone([523,784]);openInside()};
+  if(!homeEdit){const hs=$('#homeView [data-mv="house"]');if(hs){hs.style.cursor='pointer';hs.setAttribute('role','button');hs.setAttribute('tabindex','0');hs.setAttribute('aria-label','Go inside');hs.onclick=()=>{tone([523,784]);openInside()};hs.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openInside()}}}}
   if($('#hMove'))$('#hMove').onclick=()=>{homeEdit=true;homeSel='';renderHomeView();say($('#hsay'),`Let's decorate! <b>Drag</b> anything to a new spot. Tap something to <b>put it away</b>. I can move too!`);foxClass('waving',1200)};
   if($('#hDone'))$('#hDone').onclick=()=>{homeEdit=false;homeSel='';save();renderHomeView();if(typeof adoptRemote==='function'&&canAdopt())adoptRemote();say($('#hsay'),`I love how you arranged our island!`);foxMove('hop');sWin()};
   if($('#hReset'))$('#hReset').onclick=e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again: all back to the start';return}G.home.pos={};G.home.hidden={};save();renderHome()};
@@ -5091,6 +5130,184 @@ $('#gearBtn').onclick=e=>{e.stopPropagation();const m=$('#tmenu'),o=m.hidden;m.h
 /* on phones the Grown-ups button lives inside the Settings menu */
 (()=>{const b=document.createElement('button');b.type='button';b.className='tbtn menuonly';b.innerHTML=ICON.family+'<span>Grown-ups</span>';b.onclick=()=>{$('#tmenu').hidden=true;$('#gearBtn').setAttribute('aria-expanded','false');$('#parentBtn').click()};$('#tmenu').appendChild(b)})();
 document.querySelectorAll('.ico-slot[data-ico]').forEach(e=>{e.outerHTML=ICON[e.dataset.ico]});
+/* ================= inside the house: rooms you decorate ================= */
+/* the room is a doll-house cut-away: a wall with 2 rows of slots and a floor with 3 rows of cells.
+   Every thing snaps to cells, so it never overlaps and is easy to move with a finger. */
+const IN_CW=70,IN_WALL=[50,236],IN_FLOOR=[236,410],IN_ROWS=3,IN_WROWS=2;
+const IN_COLS=[0,4,6,7,8];                       // room width (cells) for tent, cottage, tower, castle
+const inCols=()=>IN_COLS[Math.min(4,(G.home&&G.home.house)||0)]||0;
+const inX0=()=>320-inCols()*IN_CW/2;
+const inBand=r=>{const h=(IN_FLOOR[1]-IN_FLOOR[0])/IN_ROWS;return [IN_FLOOR[0]+r*h,IN_FLOOR[0]+(r+1)*h]};
+const inScale=r=>[.84,.92,1][r]||1;
+const inWallY=r=>[100,182][r];
+const S2='stroke="#1f3557" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"';
+/* catalog: k = kind (f floor thing, w wall thing, r rug), w = width in cells, d = depth in rows (rugs) */
+const INSIDE=[
+  {id:'bed',name:'Cozy Bed',cat:'furn',k:'f',w:2,price:260,draw:()=>`<rect x="-64" y="-62" width="14" height="62" rx="5" fill="#c98a4b" ${S2}/><rect x="-60" y="-30" width="124" height="22" rx="7" fill="#c98a4b" ${S2}/><rect x="-54" y="-44" width="114" height="17" rx="7" fill="#fff" ${S2}/><rect x="-22" y="-47" width="84" height="24" rx="8" fill="#8f7cf0" ${S2}/><path d="M-10 -40 h60" stroke="#fff" stroke-width="3" opacity=".6"/><rect x="-50" y="-56" width="28" height="13" rx="6" fill="#fff" ${S2}/><path d="M-54 -8 V0 M58 -8 V0" stroke="#1f3557" stroke-width="5" stroke-linecap="round"/>`},
+  {id:'sofa',name:'Comfy Sofa',cat:'furn',k:'f',w:2,price:220,draw:()=>`<rect x="-56" y="-54" width="112" height="30" rx="12" fill="#ff8a6b" ${S2}/><rect x="-60" y="-30" width="120" height="24" rx="9" fill="#ff6b57" ${S2}/><rect x="-66" y="-40" width="18" height="36" rx="8" fill="#ff8a6b" ${S2}/><rect x="48" y="-40" width="18" height="36" rx="8" fill="#ff8a6b" ${S2}/><circle cx="-26" cy="-38" r="8" fill="#ffc23d" ${S2}/><path d="M-52 -6 V0 M52 -6 V0" stroke="#1f3557" stroke-width="5" stroke-linecap="round"/>`},
+  {id:'armchair',name:'Armchair',cat:'furn',k:'f',w:1,price:120,draw:()=>`<rect x="-24" y="-56" width="48" height="30" rx="12" fill="#5cc4b0" ${S2}/><rect x="-26" y="-30" width="52" height="22" rx="8" fill="#38b98a" ${S2}/><rect x="-32" y="-40" width="14" height="34" rx="7" fill="#5cc4b0" ${S2}/><rect x="18" y="-40" width="14" height="34" rx="7" fill="#5cc4b0" ${S2}/><path d="M-24 -6 V0 M24 -6 V0" stroke="#1f3557" stroke-width="5" stroke-linecap="round"/>`},
+  {id:'table',name:'Round Table',cat:'furn',k:'f',w:2,price:150,draw:()=>`<ellipse cx="0" cy="-46" rx="56" ry="10" fill="#e0a56a" ${S2}/><path d="M-40 -42 L-46 0 M40 -42 L46 0 M-8 -38 L-10 0 M8 -38 L10 0" stroke="#a0683a" stroke-width="5" stroke-linecap="round"/><ellipse cx="0" cy="-52" rx="16" ry="6" fill="#fff" ${S2}/><circle cx="-5" cy="-57" r="5" fill="#ff6b57" ${S2}/><circle cx="6" cy="-57" r="5" fill="#ffc23d" ${S2}/>`},
+  {id:'chair',name:'Little Chair',cat:'furn',k:'f',w:1,price:50,draw:()=>`<rect x="-18" y="-66" width="8" height="40" rx="3" fill="#2f9fe0" ${S2}/><rect x="-18" y="-34" width="36" height="9" rx="4" fill="#2f9fe0" ${S2}/><path d="M-14 -25 V0 M14 -25 V0" stroke="#1f3557" stroke-width="4" stroke-linecap="round"/><rect x="-18" y="-62" width="30" height="8" rx="3" fill="#7fd0f5" ${S2}/>`},
+  {id:'desk',name:'Study Desk',cat:'furn',k:'f',w:2,price:180,draw:()=>`<rect x="-58" y="-52" width="116" height="10" rx="3" fill="#c98a4b" ${S2}/><rect x="18" y="-42" width="36" height="36" rx="3" fill="#e0a56a" ${S2}/><path d="M28 -30 h16 M28 -18 h16" stroke="#1f3557" stroke-width="2.5" stroke-linecap="round"/><path d="M-52 -42 V0 M52 -6 V0" stroke="#1f3557" stroke-width="5" stroke-linecap="round"/><rect x="-40" y="-64" width="22" height="12" rx="2" fill="#6b5bd6" ${S2}/><rect x="-14" y="-70" width="18" height="18" rx="3" fill="#fff" ${S2}/><path d="M-10 -64 h10 M-10 -59 h10" stroke="#2f9fe0" stroke-width="2"/>`},
+  {id:'bookcase',name:'Bookcase',cat:'furn',k:'f',w:1,price:160,draw:()=>`<rect x="-28" y="-124" width="56" height="124" rx="4" fill="#c98a4b" ${S2}/>${[-118,-80,-42].map((y,i)=>`<rect x="-22" y="${y}" width="44" height="34" fill="#a0683a"/>${[['#ff6b57',0,30],['#2f9fe0',9,26],['#ffc23d',18,32],['#38b98a',27,28],['#8f7cf0',35,24]].slice(i,i+4).map(([c,x,h])=>`<rect x="${-20+x}" y="${y+34-h}" width="8" height="${h}" rx="1.5" fill="${c}" stroke="#1f3557" stroke-width="1.5"/>`).join('')}`).join('')}<path d="M-22 -84 h44 M-22 -46 h44 M-22 -8 h44" stroke="#1f3557" stroke-width="2.5"/>`},
+  {id:'lamp',name:'Floor Lamp',cat:'light',k:'f',w:1,price:80,draw:()=>`<circle class="hglow" cx="0" cy="-104" r="30" fill="#ffd56b" opacity=".35"/><path d="M0 -96 V-4" stroke="#1f3557" stroke-width="4"/><ellipse cx="0" cy="-3" rx="16" ry="5" fill="#1f3557"/><path d="M-20 -94 L-12 -124 H12 L20 -94Z" fill="#ffd56b" ${S2}/>`},
+  {id:'nightlight',name:'Star Night-Light',cat:'light',k:'f',w:1,price:60,draw:()=>`<circle class="hglow" cx="0" cy="-30" r="26" fill="#fff2a8" opacity=".5"/><rect x="-14" y="-12" width="28" height="12" rx="4" fill="#8f7cf0" ${S2}/><path d="M0 -50 L6 -36 L21 -35 L9 -26 L13 -12 L0 -20 L-13 -12 L-9 -26 L-21 -35 L-6 -36Z" fill="#ffd56b" ${S2}/>`},
+  {id:'lavalamp',name:'Lava Lamp',cat:'light',k:'f',w:1,price:110,draw:()=>`<circle class="hglow" cx="0" cy="-50" r="26" fill="#ff9fc4" opacity=".35"/><path d="M-10 -84 L-16 -20 H16 L10 -84Z" fill="#ffb3d1" ${S2}/><circle cx="-3" cy="-44" r="6" fill="#e2558f"/><circle cx="4" cy="-62" r="4.5" fill="#e2558f"/><ellipse cx="0" cy="-28" rx="9" ry="5" fill="#e2558f"/><path d="M-10 -84 H10 L6 -94 H-6Z" fill="#b9c3cf" ${S2}/><path d="M-16 -20 H16 L12 0 H-12Z" fill="#b9c3cf" ${S2}/>`},
+  {id:'garland',name:'String Lights',cat:'light',k:'w',w:2,price:90,draw:()=>`<path d="M-62 -16 Q-31 14 0 -10 Q31 14 62 -16" fill="none" stroke="#1f3557" stroke-width="2"/>${[[-48,-4,'#ff6b57'],[-31,2,'#ffc23d'],[-14,-2,'#38b98a'],[14,-2,'#2f9fe0'],[31,2,'#e2558f'],[48,-4,'#ffc23d']].map(([x,y,c])=>`<circle class="hglow" cx="${x}" cy="${y+6}" r="10" fill="${c}" opacity=".3"/><circle cx="${x}" cy="${y+6}" r="5.5" fill="${c}" stroke="#1f3557" stroke-width="1.8"/>`).join('')}`},
+  {id:'plant',name:'Potted Plant',cat:'decor',k:'f',w:1,price:60,draw:()=>`<path d="M0 -30 Q-24 -46 -22 -66 Q-4 -60 0 -32 Q2 -64 18 -74 Q24 -50 2 -30 Q20 -48 30 -44 Q24 -30 2 -28" fill="#38b98a" ${S2}/><path d="M-16 -30 H16 L12 0 H-12Z" fill="#ff8a6b" ${S2}/><rect x="-18" y="-34" width="36" height="7" rx="3" fill="#ff6b57" ${S2}/>`},
+  {id:'monstera',name:'Big Leafy Plant',cat:'decor',k:'f',w:1,price:110,draw:()=>`<path d="M0 -30 V-92" stroke="#2b8a62" stroke-width="3"/>${[[-22,-98,-30],[20,-104,30],[-26,-62,-50],[26,-66,50],[0,-118,0]].map(([x,y,r])=>`<ellipse cx="${x}" cy="${y}" rx="15" ry="24" fill="#38b98a" ${S2} transform="rotate(${r} ${x} ${y})"/><path d="M${x} ${y-16} V${y+16}" stroke="#2b8a62" stroke-width="2" transform="rotate(${r} ${x} ${y})"/>`).join('')}<path d="M-18 -32 H18 L13 0 H-13Z" fill="#fff5d6" ${S2}/>`},
+  {id:'globe',name:'Globe',cat:'decor',k:'f',w:1,price:130,draw:()=>`<path d="M0 -20 V-4" stroke="#1f3557" stroke-width="4"/><ellipse cx="0" cy="-3" rx="16" ry="5" fill="#c98a4b" ${S2}/><circle cx="0" cy="-48" r="26" fill="#5fc3f0" ${S2}/><path d="M-14 -62 q8 -4 12 4 q-2 8 -10 6 q-6 4 -4 10 q-8 -4 -6 -12Z M6 -46 q10 -6 14 4 q-4 12 -12 10 q-6 -6 -2 -14Z" fill="#38b98a"/><path d="M-30 -48 A30 30 0 0 1 22 -70" fill="none" stroke="#c98a4b" stroke-width="4" stroke-linecap="round"/>`},
+  {id:'fishtank',name:'Fish Tank',cat:'decor',k:'f',w:1,price:200,draw:()=>`<rect x="-26" y="-34" width="52" height="34" rx="3" fill="#c98a4b" ${S2}/><rect x="-30" y="-80" width="60" height="46" rx="5" fill="#bfe9ff" ${S2}/><rect x="-28" y="-72" width="56" height="36" fill="#7fd0f5" opacity=".7"/><path d="M-20 -36 q4 -14 0 -22 M18 -36 q-5 -10 2 -18" stroke="#38b98a" stroke-width="3" fill="none" stroke-linecap="round"/><g class="hduck"><ellipse cx="-4" cy="-58" rx="8" ry="5" fill="#ff9f43" stroke="#1f3557" stroke-width="1.5"/><path d="M4 -58 l7 -5 v10Z" fill="#ff9f43" stroke="#1f3557" stroke-width="1.5"/></g><circle cx="12" cy="-66" r="2.5" fill="#fff"/><circle cx="16" cy="-72" r="1.8" fill="#fff"/>`},
+  {id:'window',name:'Window',cat:'decor',k:'w',w:1,price:120,draw:()=>`<rect x="-28" y="-32" width="56" height="64" rx="6" fill="#9fdcff" ${S2}/><circle cx="12" cy="-14" r="8" fill="#ffd56b"/><path d="M-20 14 q6 -8 14 -2 q6 -8 14 0 q8 -2 10 6Z" fill="#fff"/><path d="M0 -32 V32 M-28 0 H28" stroke="#fff" stroke-width="4"/><rect x="-28" y="-32" width="56" height="64" rx="6" fill="none" ${S2}/><rect x="-34" y="30" width="68" height="8" rx="3" fill="#fff" ${S2}/>`},
+  {id:'painting',name:'Sunny Painting',cat:'decor',k:'w',w:1,price:70,draw:()=>`<rect x="-26" y="-24" width="52" height="46" rx="3" fill="#ffc23d" ${S2}/><rect x="-20" y="-18" width="40" height="34" fill="#dff3ff"/><circle cx="8" cy="-6" r="7" fill="#ff9f43"/><path d="M-20 16 L-8 2 L2 12 L10 4 L20 16Z" fill="#38b98a"/>`},
+  {id:'portrait',name:'Pip Portrait',cat:'decor',k:'w',w:1,price:90,draw:()=>`<ellipse cx="0" cy="0" rx="27" ry="31" fill="#e0a56a" ${S2}/><ellipse cx="0" cy="0" rx="21" ry="25" fill="#fff5d6"/><path d="M-14 -4 L-12 -20 L-4 -10 M14 -4 L12 -20 L4 -10" fill="#ff9f43" ${S2}/><circle cx="0" cy="2" r="12" fill="#ff9f43" ${S2}/><path d="M-6 6 Q0 14 6 6" fill="#fff"/><circle cx="-4" cy="0" r="1.8" fill="#1f3557"/><circle cx="4" cy="0" r="1.8" fill="#1f3557"/><circle cx="0" cy="5" r="1.8" fill="#1f3557"/>`},
+  {id:'clock',name:'Wall Clock',cat:'decor',k:'w',w:1,price:80,draw:()=>`<circle cx="0" cy="0" r="24" fill="#fff" stroke="#1f3557" stroke-width="3"/><circle cx="0" cy="0" r="24" fill="none" stroke="#ff6b57" stroke-width="5" opacity=".6"/>${[0,90,180,270].map(a=>`<path d="M0 -19 V-15" stroke="#1f3557" stroke-width="2.5" transform="rotate(${a})"/>`).join('')}<path d="M0 0 V-13 M0 0 L9 5" stroke="#1f3557" stroke-width="3" stroke-linecap="round"/><circle r="2.5" fill="#1f3557"/>`},
+  {id:'shelf',name:'Book Shelf',cat:'decor',k:'w',w:2,price:100,draw:()=>`<rect x="-60" y="14" width="120" height="8" rx="3" fill="#c98a4b" ${S2}/>${[['#ff6b57',-52,30],['#2f9fe0',-42,26],['#ffc23d',-32,32],['#38b98a',-22,24]].map(([c,x,h])=>`<rect x="${x}" y="${14-h}" width="9" height="${h}" rx="1.5" fill="${c}" stroke="#1f3557" stroke-width="1.8"/>`).join('')}<path d="M-8 14 V-4 Q2 -12 10 -4 V14" fill="#8f7cf0" ${S2}/><path d="M26 14 q4 -16 12 -16 q8 0 12 16Z" fill="#ff8a6b" ${S2}/><path d="M38 -2 v-10 M34 -12 q4 -8 8 0" stroke="#38b98a" stroke-width="3" fill="none"/>`},
+  {id:'rugRound',name:'Round Rug',cat:'cozy',k:'r',w:2,d:2,price:120,col:['#ffb3d1','#ff8ab5']},
+  {id:'rugStripe',name:'Stripy Rug',cat:'cozy',k:'r',w:3,d:2,price:180,col:['#bfe9ff','#7fd0f5']},
+  {id:'rugRainbow',name:'Rainbow Rug',cat:'cozy',k:'r',w:4,d:3,price:260,col:['#fff3c4','#ffc23d']},
+  {id:'beanbag',name:'Bean Bag',cat:'cozy',k:'f',w:1,price:90,draw:()=>`<path d="M-28 0 Q-34 -30 -12 -40 Q4 -48 18 -36 Q34 -22 28 0Z" fill="#ffc23d" ${S2}/><path d="M-14 -30 q10 6 24 -2" stroke="#e09a14" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+  {id:'cushions',name:'Floor Cushions',cat:'cozy',k:'f',w:1,price:50,draw:()=>`<rect x="-28" y="-16" width="56" height="16" rx="8" fill="#8f7cf0" ${S2}/><rect x="-22" y="-32" width="44" height="16" rx="8" fill="#5cc4b0" ${S2}/><circle cx="0" cy="-24" r="2.5" fill="#1f3557"/><circle cx="0" cy="-8" r="2.5" fill="#1f3557"/>`},
+  {id:'toybox',name:'Toy Box',cat:'cozy',k:'f',w:1,price:70,draw:()=>`<circle cx="-10" cy="-40" r="9" fill="#ff6b57" ${S2}/><path d="M6 -52 l4 10 l10 1 l-8 7 l3 10 l-9 -6 l-9 6 l3 -10 l-8 -7 l10 -1Z" fill="#ffd56b" ${S2}/><rect x="-28" y="-34" width="56" height="34" rx="4" fill="#2f9fe0" ${S2}/><path d="M-28 -24 H28" stroke="#1f3557" stroke-width="2.5"/><circle cx="0" cy="-12" r="5" fill="#ffc23d" ${S2}/>`},
+];
+const IN_CATS=[['furn','Furniture'],['light','Lights'],['decor','Decor'],['cozy','Cozy'],['walls','Walls & Floors']];
+const WALLS=[
+  {id:'cream',name:'Cream Wall',price:0,base:'#fff3dc',pat:''},
+  {id:'sky',name:'Sky Stripes',price:80,base:'#e4f5ff',pat:'<rect x="0" y="0" width="14" height="40" fill="#c9eaff"/>',pw:28,ph:40},
+  {id:'stars',name:'Starry Night',price:120,base:'#e9e3ff',pat:'<path d="M14 6 l2.4 5 l5.6 .8 l-4 3.9 l1 5.5 l-5 -2.6 l-5 2.6 l1 -5.5 l-4 -3.9 l5.6 -.8Z" fill="#ffd56b"/><circle cx="34" cy="30" r="2.5" fill="#fff"/>',pw:44,ph:44},
+  {id:'leafy',name:'Leafy Green',price:120,base:'#e3f6e8',pat:'<ellipse cx="14" cy="14" rx="5" ry="9" fill="#a8dfb8" transform="rotate(35 14 14)"/><ellipse cx="34" cy="34" rx="5" ry="9" fill="#a8dfb8" transform="rotate(-35 34 34)"/>',pw:48,ph:48},
+  {id:'candy',name:'Candy Dots',price:80,base:'#ffe6ef',pat:'<circle cx="10" cy="10" r="4" fill="#ffb3d1"/><circle cx="30" cy="30" r="4" fill="#ffd56b"/>',pw:40,ph:40},
+];
+const FLOORS=[
+  {id:'wood',name:'Wood Floor',price:0,base:'#e2ad74',pat:'<path d="M0 0 H80 M40 0 V20 M0 20 H80 M10 20 V40 M60 20 V40" stroke="#c98a4b" stroke-width="2"/>',pw:80,ph:40},
+  {id:'tiles',name:'Checker Tiles',price:80,base:'#ffffff',pat:'<rect width="24" height="24" fill="#cfe3f5"/><rect x="24" y="24" width="24" height="24" fill="#cfe3f5"/>',pw:48,ph:48},
+  {id:'cloud',name:'Cloud Carpet',price:120,base:'#eaf6ff',pat:'<circle cx="14" cy="14" r="7" fill="#fff"/><circle cx="22" cy="12" r="6" fill="#fff"/><circle cx="42" cy="36" r="6" fill="#fff"/><circle cx="49" cy="38" r="5" fill="#fff"/>',pw:60,ph:48},
+  {id:'grass',name:'Grass Mat',price:100,base:'#bfe6a0',pat:'<path d="M10 20 l3 -8 l3 8 M36 40 l3 -8 l3 8" stroke="#8fd46a" stroke-width="2.5" fill="none" stroke-linecap="round"/>',pw:48,ph:48},
+];
+const patDef=(id,P)=>P.pat?`<pattern id="${id}" patternUnits="userSpaceOnUse" width="${P.pw}" height="${P.ph}"><rect width="${P.pw}" height="${P.ph}" fill="${P.base}"/>${P.pat}</pattern>`:'';
+const patFill=(id,P)=>P.pat?`url(#${id})`:P.base;
+let inEdit=false,inSel='',inCat='furn';
+function inState(){G.home=G.home||{house:0,items:{}};const I=G.home.inside=G.home.inside||{};I.wall=I.wall||'cream';I.floor=I.floor||'wood';I.walls=I.walls||['cream'];I.floors=I.floors||['wood'];I.items=I.items||[];I.n=I.n||0;return I}
+const inItem=id=>INSIDE.find(x=>x.id===id);
+const inCount=id=>inState().items.filter(t=>t.id===id).length;
+/* cells a thing covers, so two things never sit on the same spot */
+function inCells(t,c=t.c,r=t.r){const it=inItem(t.id),out=[];const d=it.k==='r'?it.d:1;for(let i=0;i<it.w;i++)for(let j=0;j<d;j++)out.push((it.k)+':'+(c+i)+':'+(r+j));return out}
+function inFits(t,c,r){const it=inItem(t.id),C=inCols(),R=it.k==='w'?IN_WROWS:IN_ROWS,d=it.k==='r'?it.d:1;if(c<0||r<0||c+it.w>C||r+d>R)return false;
+  const busy=new Set();inState().items.forEach(o=>{if(o!==t&&o.p)inCells(o).forEach(k=>busy.add(k))});return inCells(t,c,r).every(k=>!busy.has(k))}
+function inFreeSpot(t){const it=inItem(t.id),R=it.k==='w'?IN_WROWS:IN_ROWS;for(let r=0;r<R;r++)for(let c=0;c<inCols();c++)if(inFits(t,c,r))return [c,r];return null}
+/* where a thing is drawn: floor things stand on the middle of their cells; back rows are a little smaller */
+function inPos(t){const it=inItem(t.id),x=inX0()+(t.c+it.w/2)*IN_CW;if(it.k==='w')return {x,y:inWallY(t.r),s:1};const [a,b]=inBand(t.r);return {x,y:a+(b-a)*.78,s:inScale(t.r)}}
+function rugSVG(it,x0,y0,x1,y1){const [c1,c2]=it.col,cx=(x0+x1)/2,cy=(y0+y1)/2;
+  if(it.id==='rugRound')return `<ellipse cx="${cx}" cy="${cy}" rx="${(x1-x0)/2-6}" ry="${(y1-y0)/2-6}" fill="${c1}" ${S2}/><ellipse cx="${cx}" cy="${cy}" rx="${(x1-x0)/2-20}" ry="${(y1-y0)/2-16}" fill="none" stroke="${c2}" stroke-width="6"/>`;
+  if(it.id==='rugStripe'){const w=x1-x0-12;return `<rect x="${x0+6}" y="${y0+6}" width="${w}" height="${y1-y0-12}" rx="10" fill="${c1}" ${S2}/>${[0.2,0.45,0.7].map(f=>`<rect x="${x0+6+w*f}" y="${y0+8}" width="${w*.1}" height="${y1-y0-16}" fill="${c2}"/>`).join('')}<rect x="${x0+6}" y="${y0+6}" width="${w}" height="${y1-y0-12}" rx="10" fill="none" ${S2}/>`}
+  const cols=['#ff6b57','#ff9f43','#ffc23d','#38b98a','#2f9fe0','#8f7cf0'],h=y1-y0-12;return `<rect x="${x0+6}" y="${y0+6}" width="${x1-x0-12}" height="${h}" rx="14" fill="${c1}" ${S2}/>${cols.map((c,i)=>`<rect x="${x0+12}" y="${y0+12+i*(h-12)/6}" width="${x1-x0-24}" height="${(h-12)/6-2}" rx="4" fill="${c}" opacity=".75"/>`).join('')}<rect x="${x0+6}" y="${y0+6}" width="${x1-x0-12}" height="${h}" rx="14" fill="none" ${S2}/>`}
+function rugCells(t){const it=inItem(t.id),x0=inX0()+t.c*IN_CW,x1=x0+it.w*IN_CW,y0=inBand(t.r)[0],y1=inBand(t.r+it.d-1)[1];return [x0,y0,x1,y1]}
+function inThingSVG(t){const it=inItem(t.id);if(it.k==='r')return rugSVG(it,...rugCells(t));const p=inPos(t);return `<g transform="translate(${p.x} ${p.y}) scale(${(t.f?-1:1)*p.s} ${p.s})">${it.draw()}</g>`}
+function insideSVG(){
+  const I=inState(),C=inCols(),x0=inX0(),x1=x0+C*IN_CW,W=WALLS.find(w=>w.id===I.wall)||WALLS[0],F=FLOORS.find(f=>f.id===I.floor)||FLOORS[0];
+  const placed=I.items.filter(t=>t.p&&inItem(t.id));
+  const thing=t=>`<g class="inthing${inEdit?' movable':''}${inSel===t.u?' sel':''}" data-iu="${t.u}"${inEdit?` tabindex="0" role="button" aria-label="Move ${esc(inItem(t.id).name)}"`:''}>${inThingSVG(t)}</g>`;
+  const grid=inEdit?`<g class="ingrid">${Array.from({length:IN_ROWS},(_,r)=>Array.from({length:C},(_,c)=>{const [a,b]=inBand(r);return `<rect x="${x0+c*IN_CW+3}" y="${a+3}" width="${IN_CW-6}" height="${b-a-6}" rx="8"/>`}).join('')).join('')}${Array.from({length:IN_WROWS},(_,r)=>Array.from({length:C},(_,c)=>`<rect x="${x0+c*IN_CW+3}" y="${inWallY(r)-38}" width="${IN_CW-6}" height="76" rx="8"/>`).join('')).join('')}</g>`:'';
+  const floorThings=placed.filter(t=>inItem(t.id).k==='f').sort((a,b)=>a.r-b.r||a.c-b.c);
+  const pipX=x1-34,pip=inEdit?'':foxSVG().replace('<svg class="fox" viewBox="0 0 120 165" aria-hidden="true">',`<svg class="infox" x="${pipX-34}" y="${IN_FLOOR[1]-104}" width="68" height="94" viewBox="0 0 120 165">`);
+  const lvl=(G.home&&G.home.house)||0,roof=['#ff9f43','#ff6b57','#2f9fe0','#8f7cf0'][Math.max(0,lvl-1)];
+  const vw=Math.max(x1-x0+88,540);return `<svg viewBox="${320-vw/2} 0 ${vw} 420" class="inroom${inEdit?' editing':''}" role="img" aria-label="Inside ${esc(G.name||'Pip')}'s home"><defs>${patDef('inW',W)}${patDef('inF',F)}</defs>
+    <path d="M${x0-26} ${IN_WALL[0]+2} L320 6 L${x1+26} ${IN_WALL[0]+2}Z" fill="${roof}" ${S2}/>
+    <rect x="${x0-14}" y="${IN_WALL[0]}" width="${x1-x0+28}" height="${IN_FLOOR[1]-IN_WALL[0]+4}" rx="10" fill="#a0683a" ${S2}/>
+    <rect x="${x0}" y="${IN_WALL[0]+8}" width="${x1-x0}" height="${IN_WALL[1]-IN_WALL[0]-8}" fill="${patFill('inW',W)}"/>
+    <path d="M${x0} ${IN_FLOOR[0]} H${x1} V${IN_FLOOR[1]} H${x0}Z" fill="${patFill('inF',F)}"/>
+    <path d="M${x0} ${IN_FLOOR[0]} H${x1}" stroke="#fff" stroke-width="8"/><path d="M${x0} ${IN_FLOOR[0]+4} H${x1}" stroke="#1f3557" stroke-width="2" opacity=".35"/>
+    <rect x="${x0}" y="${IN_WALL[0]+8}" width="${x1-x0}" height="${IN_FLOOR[1]-IN_WALL[0]-8}" fill="none" stroke="#1f3557" stroke-width="2.5"/>
+    ${placed.filter(t=>inItem(t.id).k==='w').map(thing).join('')}
+    ${placed.filter(t=>inItem(t.id).k==='r').map(thing).join('')}
+    ${grid}
+    ${floorThings.map(thing).join('')}
+    ${pip}
+    ${!placed.length&&!inEdit?`<text x="320" y="150" text-anchor="middle" ${FONT} font-size="20" fill="#1f3557" opacity=".55">An empty room! Let's decorate it.</text>`:''}
+  </svg>`;
+}
+function openInside(){
+  if(!G.home||!G.home.house){openHome();say($('#hsay'),`First let's build a home. Then we can go <b>inside</b> and decorate it!`);return}
+  stopTimers();inEdit=false;inSel='';show('inside');inState();renderInside();
+  const n=inState().items.length;say($('#insay'),n?`Welcome home${nm()}! Want to <b>decorate</b> a little more?`:`This is the inside of our <b>${esc(HOUSES[G.home.house-1].name)}</b>! Let's buy some furniture and make it cozy.`);foxClass('waving',1400);
+}
+function renderInside(){
+  updateStats();const I=inState(),lvl=G.home.house,C=inCols();
+  $('#inTitle').textContent=`Inside: ${HOUSES[lvl-1].name}`;
+  const nxt=HOUSES[lvl];$('#inSub').innerHTML=`Room size: <b>${C} × ${IN_ROWS}</b> floor squares${nxt?` · build the ${esc(nxt.name)} for a bigger room`:''}`;
+  renderInsideView();renderInShop();
+}
+function renderInsideView(){
+  $('#inView').innerHTML=insideSVG();bindInDrag();
+  const I=inState(),sel=inSel&&I.items.find(t=>t.u===inSel&&t.p);
+  $('#inTools').innerHTML=inEdit?`<button type="button" class="go small leaf" id="inDone">Done</button>${sel?`<button type="button" class="go small alt" id="inFlip">Flip</button><button type="button" class="go small alt" id="inAway">Put away: ${esc(inItem(sel.id).name)}</button>`:''}<span class="note">Drag things to a free square. Tap one to flip it or put it away.</span>`
+    :`<button type="button" class="go small" id="inDeco"${I.items.some(t=>t.p)?'':' hidden'}>Decorate</button><button type="button" class="go small alt" id="inOut">Back outside</button>`;
+  const st=I.items.filter(t=>!t.p&&inItem(t.id)),tray=$('#inStore');
+  tray.hidden=!st.length;tray.innerHTML=st.length?`<h4>In storage <small>still yours, free to put back</small></h4><div class="storelist">${st.map(t=>`<button type="button" class="storeit" data-iplace="${t.u}" title="Put it in the room"><span class="prev">${inThumb(t.id)}</span><b>${esc(inItem(t.id).name)}</b><small>Put back</small></button>`).join('')}</div>`:'';
+  fitPreviews(tray);
+  tray.querySelectorAll('[data-iplace]').forEach(b=>b.onclick=()=>inPlaceBack(b.dataset.iplace));
+  if($('#inDeco'))$('#inDeco').onclick=()=>{inEdit=true;inSel='';renderInsideView();say($('#insay'),`Decorating time! <b>Drag</b> things to a free square. Tap one to <b>flip</b> it or put it away.`)};
+  if($('#inDone'))$('#inDone').onclick=()=>{inEdit=false;inSel='';renderInsideView();say($('#insay'),`Looks amazing! I love our home.`);foxMove('hop')};
+  if($('#inOut'))$('#inOut').onclick=()=>{tone([523,392]);openHome()};
+  if($('#inFlip'))$('#inFlip').onclick=()=>{sel.f=sel.f?0:1;save();tone([523,659],.05);renderInsideView()};
+  if($('#inAway'))$('#inAway').onclick=()=>{sel.p=false;inSel='';save();tone([523,392],.06);renderInsideView();say($('#insay'),`I put the <b>${esc(inItem(sel.id).name)}</b> in storage. Put it back any time, for free!`)};
+  if(!inEdit)$('#inView').querySelectorAll('[data-iu]').forEach(g=>g.onclick=()=>{const t=I.items.find(x=>x.u===g.dataset.iu);if(!t)return;tone([659,784],.05);g.classList.remove('boing');void g.getBBox();g.classList.add('boing');say($('#insay'),pickR([`I love the <b>${esc(inItem(t.id).name)}</b>!`,`The <b>${esc(inItem(t.id).name)}</b> looks great right there.`,`Ooh, the <b>${esc(inItem(t.id).name)}</b>!`]))});
+}
+const pickR=a=>a[Math.floor(Math.random()*a.length)];
+function inThumb(id){const it=inItem(id);if(it.k==='r'){return `<svg viewBox="0 0 ${it.w*IN_CW} ${it.d*58}">${rugSVG(it,0,0,it.w*IN_CW,it.d*58)}</svg>`}return `<svg viewBox="-80 -140 160 150">${it.draw()}</svg>`}
+function inPlaceBack(u){const t=inState().items.find(x=>x.u===u);if(!t)return;const sp=inFreeSpot(t);
+  if(!sp){say($('#insay'),`There's no free spot for the <b>${esc(inItem(t.id).name)}</b>. Put something else away first${G.home.house<4?', or build a bigger home!':'.'}`);sNo();return}
+  [t.c,t.r]=sp;t.p=true;inSel=t.u;save();tone([392,523,659],.06);renderInsideView();say($('#insay'),`The <b>${esc(inItem(t.id).name)}</b> is back!`);foxMove('hop')}
+function bindInDrag(){
+  const svg=$('#inView svg');if(!svg||!inEdit)return;const I=inState();
+  const pt=e=>{const m=svg.getScreenCTM().inverse();const q=new DOMPoint(e.clientX,e.clientY).matrixTransform(m);return [q.x,q.y]};
+  const cellAt=(t,x,y)=>{const it=inItem(t.id);let c=Math.round((x-inX0())/IN_CW-it.w/2),r;
+    if(it.k==='w')r=y<(inWallY(0)+inWallY(1))/2?0:1;else{const h=(IN_FLOOR[1]-IN_FLOOR[0])/IN_ROWS,d=it.k==='r'?it.d:1;r=Math.round((y-IN_FLOOR[0])/h-d/2)}
+    const R=it.k==='w'?IN_WROWS:IN_ROWS,d=it.k==='r'?it.d:1;return [Math.max(0,Math.min(inCols()-it.w,c)),Math.max(0,Math.min(R-d,r))]};
+  svg.querySelectorAll('[data-iu]').forEach(g=>{const t=I.items.find(x=>x.u===g.dataset.iu);if(!t)return;
+    g.onpointerdown=e=>{e.preventDefault();inSel=t.u;svg.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));g.classList.add('sel','dragging');
+      const s=pt(e),p0=inPos(t),it=inItem(t.id),ctr=it.k==='r'?(()=>{const [a,b,c,d]=rugCells(t);return [(a+c)/2,(b+d)/2]})():[p0.x,it.k==='w'?p0.y:p0.y-20];let cell=[t.c,t.r],moved=false;
+      try{g.setPointerCapture(e.pointerId)}catch(err){}
+      g.onpointermove=ev=>{const q=pt(ev);if(Math.hypot(q[0]-s[0],q[1]-s[1])>4)moved=true;if(!moved)return;cell=cellAt(t,ctr[0]+q[0]-s[0],ctr[1]+q[1]-s[1]);
+        const old=[t.c,t.r];[t.c,t.r]=cell;const ok=inFits(t,...cell);const p=inPos(t);[t.c,t.r]=old;g.classList.toggle('bad',!ok);
+        g.setAttribute('transform',`translate(${(it.k==='r'?(cell[0]-t.c)*IN_CW:p.x-p0.x).toFixed(1)} ${(it.k==='r'?inBand(cell[1])[0]-inBand(t.r)[0]:p.y-p0.y).toFixed(1)})`)};
+      g.onpointerup=g.onpointercancel=()=>{g.onpointermove=g.onpointerup=g.onpointercancel=null;g.classList.remove('dragging','bad');
+        if(moved&&(cell[0]!==t.c||cell[1]!==t.r)){if(inFits(t,...cell)){[t.c,t.r]=cell;save();tone([392,523],.05)}else{sNo();say($('#insay'),`Oops, that spot is taken. Try a <b>free square</b>!`)}}
+        renderInsideView();const n=$(`#inView [data-iu="${t.u}"]`);n&&n.focus({preventScroll:true})}};
+    g.onkeydown=e=>{if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();t.p=false;inSel='';save();renderInsideView();return}
+      const k={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];if(!k)return;e.preventDefault();
+      const c=t.c+k[0],r=t.r+k[1];if(inFits(t,c,r)){t.c=c;t.r=r;save(true)}inSel=t.u;renderInsideView();const n=$(`#inView [data-iu="${t.u}"]`);n&&n.focus({preventScroll:true})};
+  });
+}
+function renderInShop(){
+  const I=inState();
+  $('#inCats').innerHTML=IN_CATS.map(([k,n])=>`<button type="button" class="ichip${inCat===k?' on':''}" data-icat="${k}" aria-pressed="${inCat===k}">${n}</button>`).join('');
+  $('#inCats').querySelectorAll('[data-icat]').forEach(b=>b.onclick=()=>{inCat=b.dataset.icat;tone([523,659],.04);renderInShop()});
+  const buyBtn=(price,attr)=>`<button type="button" class="${G.coins>=price?'buy':''}" ${attr} ${G.coins>=price?'':'disabled'}>${COIN_ICON} ${fmt(price)}</button>`;
+  let html;
+  if(inCat==='walls'){
+    const sw=(P,kind)=>{const own=(kind==='wall'?I.walls:I.floors).includes(P.id),use=(kind==='wall'?I.wall:I.floor)===P.id,pid=`sw${kind}${P.id}`;
+      return `<div class="item${use?' wearing':''}"><div class="prev"><svg viewBox="0 0 120 80"><defs>${patDef(pid,P)}</defs><rect x="4" y="4" width="112" height="72" rx="10" fill="${patFill(pid,P)}" ${S2}/></svg></div><b>${esc(P.name)}</b>${use?`<button type="button" class="worn" disabled>In use</button>`:own?`<button type="button" class="buy" data-iuse="${kind}:${P.id}">Use it</button>`:buyBtn(P.price,`data-ibuy="${kind}:${P.id}"`)}</div>`};
+    html=WALLS.map(P=>sw(P,'wall')).join('')+FLOORS.map(P=>sw(P,'floor')).join('');
+  }else html=INSIDE.filter(it=>it.cat===inCat).map(it=>{const n=inCount(it.id);
+    return `<div class="item">${n?`<span class="ownbadge">You have ${n}</span>`:''}<div class="prev">${inThumb(it.id)}</div><b>${esc(it.name)}</b><small class="isize">${it.k==='w'?`wall · ${it.w} wide`:it.k==='r'?`${it.w} × ${it.d} squares`:`${it.w} square${it.w>1?'s':''}`}</small>${buyBtn(it.price,`data-ibuy="item:${it.id}"`)}</div>`}).join('');
+  $('#inShop').innerHTML=html;fitPreviews($('#inShop'));
+  $('#inShop').querySelectorAll('[data-ibuy]').forEach(b=>b.onclick=()=>inBuy(...b.dataset.ibuy.split(':')));
+  $('#inShop').querySelectorAll('[data-iuse]').forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.iuse.split(':');I[k]=id;save();tone([523,659,784],.06);renderInside()});
+}
+function inBuy(kind,id){
+  const I=inState();
+  if(kind==='wall'||kind==='floor'){const P=(kind==='wall'?WALLS:FLOORS).find(x=>x.id===id);if(!P||G.coins<P.price)return;G.coins-=P.price;(kind==='wall'?I.walls:I.floors).push(id);I[kind]=id;save();sWin();renderInside();say($('#insay'),`New <b>${esc(P.name)}</b>! It feels like a brand new room.`);foxMove('hop');return}
+  const it=inItem(id);if(!it||G.coins<it.price)return;G.coins-=it.price;
+  const t={u:'i'+(++I.n),id,c:0,r:0,f:0,p:false};I.items.push(t);const sp=inFreeSpot(t);
+  if(sp){[t.c,t.r]=sp;t.p=true;inSel=t.u}
+  save();sWin();renderInside();
+  const v=$('#inView');if(v)v.scrollIntoView({behavior:'smooth',block:'center'});
+  if(sp){burstAt($(`#inView [data-iu="${t.u}"]`),50);say($('#insay'),pickR([`Yay, a <b>${esc(it.name)}</b>!`,`The <b>${esc(it.name)}</b> is perfect for our home!`,`Ooh, a new <b>${esc(it.name)}</b>! Tap <b>Decorate</b> to move it.`]));foxMove('hop')}
+  else say($('#insay'),`I love the <b>${esc(it.name)}</b>! There's no free spot right now, so it's waiting in <b>storage</b>.`);
+}
+$('#inBack').onclick=()=>{tone([523,392]);openHome()};
+
 /* phone bottom bar: the four sections + the map, always one tap away */
 document.querySelectorAll('#bnav [data-go]').forEach(b=>{const id=b.dataset.go;if(id!=='map'){const sv=document.querySelector('#'+id+' svg');if(sv)b.insertAdjacentHTML('afterbegin',sv.outerHTML)}
   b.onclick=()=>{tone([523,784]);if(id==='map'){stopTimers();renderMap()}else $('#'+id).click()}});
