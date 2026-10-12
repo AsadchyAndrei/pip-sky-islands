@@ -691,6 +691,10 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
 .x2{font-family:var(--display);font-size:18px;color:#fff;background:var(--coral);border-radius:12px;padding:4px 10px 2px;flex:none}
 .mbar{display:block;height:6px;border-radius:999px;background:var(--pale-sky);overflow:hidden;margin:4px auto 0;width:70%}.mbar i{display:block;height:100%;background:var(--sun)}.mbar.ok i{background:var(--leaf)}
 .bookt{grid-column:1/-1;margin:8px 0 0}
+.lesson{text-align:left;font-size:1.06em;line-height:1.5;font-weight:600}.lesson p{margin:6px 0}.lesson svg{max-width:100%;height:auto}
+.lbig{font-family:var(--display);font-size:1.45em;font-weight:400}.lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}.lpies{display:inline-flex;gap:4px}.lc{text-align:center}
+.pkbtns{display:flex;flex-direction:column;gap:8px;flex:none}
+@media (max-width:760px){.pkbtns{flex-direction:row;width:100%}.pkbtns .go{flex:1}.pickcard{flex-wrap:wrap}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -2742,7 +2746,7 @@ const BADGES=[
   ['daily7','Week Warrior','Finish the Daily Challenge 7 days in a row.','#ff6b57'],['shopper','Snappy Dresser','Buy something in Pip\'s Closet.','#e2558f'],
   ['thunder','Lightning Brain','Answer 20 facts in Thunder Tower.','#7c8fb8'],['level5','Sky Scholar','Reach level 5.','#38b98a'],['rich','Treasure Keeper','Have 500 coins at once.','#e09a14'],
   ['hard','Hard Mode Hero','Get 3 stars on an island in Hard mode.','#ff6b57'],['fixer','Comeback Kid','Fix 10 old mistakes at Fix-It Falls.','#5ec3d6'],
-  ['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
+  ['learner','Quick Learner','Finish a lesson with Pip.','#2f9fe0'],['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
   ['week','Personal Best','Beat last week\'s score.','#2f9fe0'],['builder','Home Builder','Build 5 things on your island.','#8fd16a'],['dream','Dream Island','Build everything on your island.','#ffc23d'],['popper','Balloon Popper','Pop 15 balloons in one bonus game.','#ff6b57'],['event','Event Champion','Win the top prize in a seasonal event.','#ff9f43'],['story','Map Master','Finish the whole Story Mode.','#6b5bd6']
 ];
 
@@ -2870,6 +2874,93 @@ function goalReached(){
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Daily goal reached!</div><h2>Awesome work${nm()}!</h2><p>You did your learning for today: <b>+${REW.goal} coins</b>! From now on, puzzles give fewer coins today. This is a great time for a break. Stretch, drink some water, or go play outside. You can keep playing too if you want!</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Okay!</button>`,()=>setTimeout(()=>foxMove('spin'),200));
 }
 
+/* ================= Pip's Lessons: learn the trick first (worked example -> do it together -> try it alone) ================= */
+const teachCard=(title,html,btn='Got it!')=>({teach:true,prompt:title,visual:`<div class="lesson">${html}</div>`,choices:[btn],answer:btn,speak:(title+'. '+html).replace(/<[^>]+>/g,' ')});
+const guided=(prompt,ch,hint,explain)=>Object.assign({prompt,hint,explain,guided:true},ch,{numeric:false});
+const fr=(n,d)=>`${n}/${d}`;
+function jumpsSVG(d,q,r){const n=q*d+r,W=320,x=v=>20+v/n*(W-40);let s=`<line x1="${x(0)}" y1="70" x2="${x(n)}" y2="70" stroke="#1f3557" stroke-width="3"/>`;
+  for(let v=0;v<=n;v++)s+=`<line x1="${x(v)}" y1="64" x2="${x(v)}" y2="76" stroke="#1f3557" stroke-width="${v%d===0?2.5:1}"/>`;
+  for(let k=0;k<q;k++){const a=x(k*d),b=x((k+1)*d);s+=`<path class="fadein" style="animation-delay:${k*.5}s" d="M${a} 62 Q${(a+b)/2} 18 ${b} 62" fill="none" stroke="#2f9fe0" stroke-width="3"/><text class="fadein" style="animation-delay:${k*.5}s" x="${(a+b)/2}" y="30" text-anchor="middle" ${FONT} font-size="15" fill="#2f9fe0">+${d}</text>`}
+  s+=`<rect class="fadein" style="animation-delay:${q*.5}s" x="${x(q*d)}" y="60" width="${x(n)-x(q*d)}" height="20" rx="4" fill="#ff6b57" opacity=".35"/>`;
+  [0,q*d,n].forEach(v=>s+=`<text x="${x(v)}" y="98" text-anchor="middle" ${FONT} font-size="15" fill="#1f3557">${v}</text>`);
+  return `<svg viewBox="0 0 ${W} 108" style="width:${W}px;max-width:100%">${s}</svg>`}
+const pies=(n,d,o)=>`<span class="lpies">${piesRow(n,d,Object.assign({size:84},o||{}))}</span>`;
+const LESSONS=[
+  {id:'mult_break',isl:'mult',types:[0,2],title:'Break it apart!',
+   build(){const a=R(2,4)*10+R(1,9),b=R(3,6),T=a-a%10,O=a%10;return [
+    teachCard('Big multiplying = small multiplying, added up!',`<p>To find <b>3 × 24</b>, break 24 into <b>20 + 4</b>.</p>${multAnim(24,[20,4],3)}<p>3 × 20 = 60 and 3 × 4 = 12. Add them: <b>60 + 12 = 72</b>.</p>`),
+    teachCard('The secret',`<p>Tens first, then ones, then <b>add</b>. That works for any big number!</p><p class="lbig">3 × 24 = 3 × 20 + 3 × 4</p>`,'Let\'s try one together!'),
+    guided(`Let's find <b>${b} × ${a}</b> together. First, break <b>${a}</b> into tens and ones.`,strChoices(`${T} + ${O}`,[`${T+10} + ${O}`,`${T/10} + ${O}`,`${T} + ${O+1}`]),`${a} has ${T/10} tens and ${O} ones.`,`${a} = <b>${T} + ${O}</b>.`),
+    guided(`Multiply the tens: <b>${b} × ${T} = ?</b>`,numChoices(b*T,[b*T+b,b*(T/10),b*T-10,b*T+10]),`${b} × ${T/10} = ${b*T/10}. Now put the zero back.`,`${b} × ${T} = <b>${b*T}</b>.`),
+    guided(`Multiply the ones: <b>${b} × ${O} = ?</b>`,numChoices(b*O,[b*O+b,b+O,b*O-1]),`Think of ${b} groups of ${O}.`,`${b} × ${O} = <b>${b*O}</b>.`),
+    guided(`Now add the two parts: <b>${b*T} + ${b*O} = ?</b>`,numChoices(b*a,[b*T+b*O+10,b*T+O,b*a-10]),`Add the tens and the ones.`,`So <b>${b} × ${a} = ${b*a}</b>. You did it!`)]},
+   practice:[0,0,2]},
+  {id:'mult_tens',isl:'mult',types:[3],title:'Zeros are easy!',
+   build(){const a=R(2,9),c=R(2,9),a2=R(2,9),c2=R(2,9);return [
+    teachCard('Hide the zeros, then bring them back',`<p class="lbig">4 × 30 = ?</p><p>Hide the zero: <b>4 × 3 = 12</b>. Bring the zero back: <b>120</b>.</p><p class="lbig">4 × 300 = 1,200</p><p>Two zeros hidden, two zeros back!</p>`,'Let\'s try one together!'),
+    guided(`Start with the small fact: <b>${a} × ${c} = ?</b>`,numChoices(a*c,[a*c+a,a+c,a*c-c]),`Use your times tables.`,`${a} × ${c} = <b>${a*c}</b>.`),
+    guided(`Now bring the zero back: <b>${a} × ${c*10} = ?</b>`,numChoices(a*c*10,[a*c,a*c*100,a*c*10+10]),`One zero was hidden, so put one zero back.`,`${a} × ${c*10} = <b>${fmt(a*c*10)}</b>.`),
+    guided(`Your turn with two zeros: <b>${a2} × ${c2*100} = ?</b>`,numChoices(a2*c2*100,[a2*c2*10,a2*c2*1000,a2*c2*100+100]),`${a2} × ${c2} = ${a2*c2}. Then put two zeros back.`,`${a2} × ${c2*100} = <b>${fmt(a2*c2*100)}</b>.`)]},
+   practice:[3,3,3]},
+  {id:'mult_2x2',isl:'mult',types:[1],title:'Two-digit times two-digit',
+   build(){const a=R(12,19),b=R(12,19),o=b-10;return [
+    teachCard('Split one number into 10 and the rest',`<p>To find <b>13 × 14</b>, split 14 into <b>10 + 4</b>.</p>${multAnim(14,[10,4],13)}<p>13 × 10 = 130 and 13 × 4 = 52. Add: <b>130 + 52 = 182</b>.</p>`,'Let\'s try one together!'),
+    guided(`Let's find <b>${a} × ${b}</b>. Split <b>${b}</b> into 10 and the rest.`,strChoices(`10 + ${o}`,[`${o} + ${o}`,`1 + ${o}`,`10 + ${o+1}`]),`${b} = 10 + something.`,`${b} = <b>10 + ${o}</b>.`),
+    guided(`<b>${a} × 10 = ?</b>`,numChoices(a*10,[a+10,a*100,a*10+a]),`Times 10: just add a zero.`,`${a} × 10 = <b>${a*10}</b>.`),
+    guided(`<b>${a} × ${o} = ?</b>`,numChoices(a*o,[a*o+a,a+o,a*o-o]),`Break ${a} into 10 + ${a-10}: 10 × ${o} = ${10*o}, ${a-10} × ${o} = ${(a-10)*o}.`,`${a} × ${o} = <b>${a*o}</b>.`),
+    guided(`Add the parts: <b>${a*10} + ${a*o} = ?</b>`,numChoices(a*b,[a*b+10,a*10+o,a*b-a]),`Add tens and ones.`,`So <b>${a} × ${b} = ${a*b}</b>. Amazing!`)]},
+   practice:[1,1,1]},
+  {id:'div_share',isl:'div',types:[0,2],title:'Share in friendly parts',
+   build(){const d=R(2,5),q=R(11,Math.floor(60/d)),n=q*d,t=Math.floor(n/(d*10))*d*10,rest=n-t;return [
+    teachCard('Big sharing = small sharings, added up!',`<p>Share <b>72</b> cookies with <b>3</b> friends.</p><p class="lbig">72 = 60 + 12</p><p>60 ÷ 3 = <b>20</b> and 12 ÷ 3 = <b>4</b>. Each friend gets <b>20 + 4 = 24</b>.</p><p>Pick a first part that is <b>easy to share</b> (like 30, 60, 90 for 3 friends).</p>`,'Let\'s try one together!'),
+    guided(`Share <b>${n}</b> by <b>${d}</b>. We split ${n} into <b>${t} + ${rest}</b>. What is <b>${t} ÷ ${d}</b>?`,numChoices(t/d,[t/d+10,t/d+1,t]),`${d} × ${t/d/10} = ${t/10}, so ${d} × ${t/d} = ${t}.`,`${t} ÷ ${d} = <b>${t/d}</b>.`),
+    guided(`Now the small part: <b>${rest} ÷ ${d} = ?</b>`,numChoices(rest/d,[rest/d+1,rest/d+2,rest]),`Which number times ${d} makes ${rest}?`,`${rest} ÷ ${d} = <b>${rest/d}</b>.`),
+    guided(`Add them: <b>${t/d} + ${rest/d} = ?</b> That is ${n} ÷ ${d}.`,numChoices(q,[q+1,q+10,q-1]),`Add the two answers.`,`So <b>${n} ÷ ${d} = ${q}</b>. Check: ${d} × ${q} = ${n}!`)]},
+   practice:[0,0,2]},
+  {id:'div_left',isl:'div',types:[1,3],title:'Leftovers!',
+   build(){const d=R(3,6),q=R(2,5),r=R(1,d-1),n=q*d+r;return [
+    teachCard('Jump by the number you share by',`<p><b>17 ÷ 5</b>: jump by 5s. 5, 10, 15... the next jump (20) is too far!</p>${jumpsSVG(5,3,2)}<p>3 jumps, and <b>2 are left over</b>. So 17 ÷ 5 = <b>3 R2</b>.</p>`,'Let\'s try one together!'),
+    guided(`<b>${n} ÷ ${d}</b>. Jump by ${d}s. What is the <b>last jump</b> that is not bigger than ${n}?`,numChoices(q*d,[(q+1)*d,(q-1)*d,n]),`Count: ${d}, ${2*d}, ${3*d}...`,`${Array.from({length:q},(_,i)=>(i+1)*d).join(', ')}. The last one is <b>${q*d}</b>.`),
+    guided(`How many <b>jumps</b> did we make?`,numChoices(q,[q+1,q-1>0?q-1:q+2,d]),`Count the jumps up to ${q*d}.`,`${q} jumps of ${d} make ${q*d}.`),
+    guided(`How many are <b>left over</b>? ${n} − ${q*d} = ?`,numChoices(r,[r+1,d,q]),`Take ${q*d} away from ${n}.`,`<b>${r}</b> left over.`),
+    guided(`So <b>${n} ÷ ${d} = ?</b>`,strChoices(`${q} R${r}`,[`${q+1} R${r}`,`${r} R${q}`,`${q} R${r===d-1?r-1:r+1}`]),`Jumps first, then the leftover.`,`<b>${n} ÷ ${d} = ${q} R${r}</b>.`)]},
+   practice:[1,1,3]},
+  {id:'frac_same',isl:'frac',types:[0,1],title:'Same amount, more pieces',
+   build(){const [a,b]=pick([[1,2],[1,3],[2,3],[1,4],[3,4]]),k=R(2,4),k2=k===2?3:2;return [
+    teachCard('Cut every piece again',`<div class="lrow">${pies(1,2)}<span class="lbig">=</span>${pies(2,4)}<span class="lbig">=</span>${pies(4,8)}</div><p class="lc lbig">${frac(1,2)} = ${frac(2,4)} = ${frac(4,8)}</p><p>The shaded part stays the same!</p><p>Cut every piece in 2: <b>twice as many pieces</b>, and <b>twice as many shaded</b>.</p><p>Rule: multiply the top <b>and</b> the bottom by the <b>same</b> number.</p>`,'Let\'s try one together!'),
+    guided(`${frac(a,b)} = ${frac('?',b*k)}. The bottom got ${k} times bigger (${b} × ${k} = ${b*k}). What is the new top? <b>${a} × ${k} = ?</b>`,numChoices(a*k,[a+k,a*k+1,b*k]),`Do the same to the top as to the bottom.`,`${frac(a,b)} = <b>${frac(a*k,b*k)}</b>.`),
+    Object.assign(guided(`Which fraction is the <b>same amount</b> as ${frac(a,b)}?`,strChoices(fr(a*k2,b*k2),[fr(a+k2,b+k2),fr(a*k2,b),fr(a,b*k2)]),`Multiply top and bottom by the same number.`,`${frac(a,b)} = ${frac(a*k2,b*k2)}: both were multiplied by ${k2}.`),{render:fracText})]},
+   practice:[1,1,0]},
+  {id:'frac_compare',isl:'frac',types:[2],title:'Which fraction is bigger?',
+   build(){const d=pick([5,6,8]),x=R(1,d-2),y=R(x+1,d-1),n=R(1,2),p=pick([3,4,5]),q=p+R(2,4);const lo=pick([[1,4],[2,5],[3,8]]),hi=pick([[3,4],[4,6],[5,8]]);return [
+    teachCard('Three tricks to compare',`<p><b>1. Same bottom:</b> the bigger top wins.</p><div class="lrow">${pies(5,8)}<span class="lbig">${frac(5,8)} &gt; ${frac(3,8)}</span>${pies(3,8)}</div><p><b>2. Same top:</b> the smaller bottom wins, because its pieces are bigger!</p><div class="lrow">${pies(1,3)}<span class="lbig">${frac(1,3)} &gt; ${frac(1,5)}</span>${pies(1,5)}</div><p><b>3. Different?</b> Compare each one to one half.</p>`,'Let\'s try!'),
+    Object.assign(guided(`Same bottom! Which is bigger?`,strChoices(fr(y,d),[fr(x,d)],2),`Same size pieces: more pieces is more.`,`${frac(y,d)} is bigger: ${y} pieces beat ${x}.`),{render:fracText}),
+    Object.assign(guided(`Same top! Which is bigger?`,strChoices(fr(n,p),[fr(n,q)],2),`Fewer pieces in the whole means each piece is bigger.`,`${frac(n,p)} is bigger: a whole cut in ${p} has bigger pieces than one cut in ${q}.`),{render:fracText}),
+    Object.assign(guided(`Compare to one half. Which is bigger?`,strChoices(fr(...hi),[fr(...lo)],2),`Is it more or less than half of its bottom number?`,`${frac(...hi)} is more than ${frac(1,2)}, and ${frac(...lo)} is less. So ${frac(...hi)} wins.`),{render:fracText})]},
+   practice:[2,2,2]},
+  {id:'frac_add',isl:'frac',types:[3,4],title:'Adding and taking away pieces',
+   build(){const d=pick([5,6,8]),a=R(1,d-3),b=R(1,d-1-a),c=R(3,d-1),e=R(1,c-1);return [
+    teachCard('Same size pieces? Just count them!',`<div class="lrow">${pies(5,8,{split:2,color2:true})}</div><p>${frac(2,8)} + ${frac(3,8)} = ${frac(5,8)}: 2 pieces and 3 pieces make <b>5 pieces</b>.</p><p>The bottom number <b>stays the same</b>, because the pieces are still eighths!</p>`,'Let\'s try one together!'),
+    guided(`${frac(a,d)} + ${frac(b,d)}. Add the tops: <b>${a} + ${b} = ?</b>`,numChoices(a+b,[a+b+1,a*b>0&&a*b!==a+b?a*b:a+b+2,d]),`Count the pieces.`,`${a} + ${b} = <b>${a+b}</b> pieces.`),
+    Object.assign(guided(`So ${frac(a,d)} + ${frac(b,d)} = ?`,strChoices(fr(a+b,d),[fr(a+b,d+d),fr(a+b,d+1),fr(a*b||1,d)]),`The bottom number stays the same.`,`${frac(a,d)} + ${frac(b,d)} = <b>${frac(a+b,d)}</b>.`),{render:fracText}),
+    Object.assign(guided(`Taking away works the same way: ${frac(c,d)} − ${frac(e,d)} = ?`,strChoices(fr(c-e,d),[fr(c+e,d),fr(c-e,d-e),fr(c,d-e)]),`Subtract the tops. Keep the bottom.`,`${c} − ${e} = ${c-e}, so the answer is <b>${frac(c-e,d)}</b>.`),{render:fracText})]},
+   practice:[3,4,3]}
+];
+const lessonsFor=id=>LESSONS.filter(L=>L.isl===id);
+function lessonFor(id){const ls=lessonsFor(id);if(!ls.length)return null;const miss=t=>G.review.filter(r=>r.i===id&&t.includes(r.t)).length,done=L=>((G.lessons||{})[L.id]||'');
+  return ls.slice().sort((x,y)=>miss(y.types)-miss(x.types)||done(x).localeCompare(done(y)))[0]}
+function lessonIsland(L){const base=byId(L.isl);return Object.assign({},base,{id:'lesson_'+L.id,name:'Lesson: '+L.title,special:'lesson',lesson:L,gen:null})}
+function startLesson(L){const isl=byId(L.isl);const qs=[...L.build(),...L.practice.map(t=>{const q=makeQ(isl,t%isl.types,R(1,2e9),1);q.numeric=false;return q})];
+  beginRound(lessonIsland(L),'lesson',qs);say($('#say'),`Lesson time${nm()}! First I'll show you the trick, then we try it together.`)}
+function finishLesson(){const L=S.isl.lesson,isl=byId(L.isl),n=S.qs.filter(q=>!q.teach).length,s=S.score,st=s===n?3:s>=Math.ceil(n*.66)?2:s>=1?1:0;
+  const first=!(G.lessons||{})[L.id];G.lessons=Object.assign({},G.lessons||{},{[L.id]:dayKey()});if(first)award('learner');
+  done(st,`You learned <b>${L.title}</b>! ${s} of ${n} right on the first try. Now use the trick on <b>${isl.name}</b>.`,{title:'Lesson complete!',sticker:first?.6:0});
+  const nb=$('#nextIsl');nb.hidden=false;nb.textContent=`Practice on ${isl.name}`;nb.onclick=()=>start(isl)}
+/* offer a lesson when an island is hard right now */
+function lessonOfferNeeded(isl){if(!lessonsFor(isl.id).length)return false;const m=rollAcc(isl.id),weak=(m.n>=6&&m.acc<.6)||(G.diff[isl.id]===1);G.lessonOffer=G.lessonOffer||{};return weak&&G.lessonOffer[isl.id]!==dayKey()}
+function offerLesson(isl,go){const L=lessonFor(isl.id);G.lessonOffer=Object.assign({},G.lessonOffer||{},{[isl.id]:dayKey()});save(true);
+  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Pip's tip</div><h2>Learn the trick first?</h2><p>${esc(isl.name)} has been tricky lately. I have a <b>3-minute lesson</b>: <b>${L.title}</b>. Then the puzzles get easier!</p><div class="btnrow"><button class="go leaf" type="button" id="lsYes">Show me the trick</button><button class="go alt" type="button" id="lsNo">Just play</button></div>`,()=>{
+    $('#lsYes').onclick=()=>{closeOverlay();start(lessonIsland(L))};$('#lsNo').onclick=()=>{closeOverlay();go()}})}
 /* ---------- quick check for new players: sets Easy or Normal on the core math islands ---------- */
 const PLACE_ISL=['place','addsub','mult','div','frac','area'];
 function startPlacement(){const base=byId('daily'),isl=Object.assign({},base,{id:'placement',name:'Quick Check',special:'placement'});
@@ -2891,8 +2982,8 @@ function pipPick(){
   if(!weak.length)weak=pool.filter(i=>i.group==='math').sort((a,b)=>(G.best[a.id]||0)-(G.best[b.id]||0)||((G.stats[a.id]||{}).a||0)-((G.stats[b.id]||{}).a||0)).slice(0,3);
   if(!weak.length)return null;const d=Math.floor(Date.parse(dayKey())/864e5);return weak[d%weak.length]}
 function renderPickCard(){const el=$('#pickCard');if(!el)return;const P=pipPick();if(!P){el.hidden=true;return}el.hidden=false;const st=G.stats[P.id],pc=st&&st.a>=6?Math.round(st.c/st.a*100):null;
-  el.innerHTML=`<div class="pkisl">${islandSVG(P.color,LANDMARKS[P.lm])}</div><div class="gtxt"><b>Pip's Pick for today: ${esc(P.name)}</b><span>${pc!==null?`Your trickiest topic right now (${pc}% right). Practice makes it easier!`:`${esc(P.topic)}: let's get stronger here!`}</span></div><span class="x2">×2 coins</span><button type="button" class="go small" id="pickGo">Play</button>`;
-  $('#pickGo').onclick=()=>start(P)}
+  el.innerHTML=`<div class="pkisl">${islandSVG(P.color,LANDMARKS[P.lm])}</div><div class="gtxt"><b>Pip's Pick for today: ${esc(P.name)}</b><span>${pc!==null?`Your trickiest topic right now (${pc}% right). Practice makes it easier!`:`${esc(P.topic)}: let's get stronger here!`}</span></div><span class="x2">×2 coins</span><div class="pkbtns">${lessonsFor(P.id).length?'<button type="button" class="go small alt" id="pickLearn">Learn the trick</button>':''}<button type="button" class="go small" id="pickGo">Play</button></div>`;
+  $('#pickGo').onclick=()=>start(P,{noOffer:true});if($('#pickLearn'))$('#pickLearn').onclick=()=>start(lessonIsland(lessonFor(P.id)))}
 /* ---------- after the daily goal, coins taper off, so long sessions are not over-rewarded ---------- */
 function taper(c){const gi=goalInfo();if(!gi||G.goalDone!==dayKey()||c<=0)return c;const f=gi.cur>=gi.max*2?.25:.5;
   if(G.taperNote!==dayKey()){G.taperNote=dayKey();setTimeout(()=>toast('Pip is getting sleepy','You reached today\'s goal, so puzzles give fewer coins now. A break is a great idea!','#7c8fb8'),400)}
@@ -2985,6 +3076,9 @@ function dealTypes(key,total,k){G.deck=Object.assign({},G.deck||{});let d=(G.dec
   G.deck[key]=d;return out}
 function start(isl,opts={}){
   if(limitGate(()=>start(isl,opts)))return;
+  if(isl.special==='lesson')return startLesson(isl.lesson);
+  if(isl.special==='placement')return startPlacement();
+  if(isl.gen&&!isl.special&&!opts.noOffer&&lessonOfferNeeded(isl))return offerLesson(isl,()=>start(isl,{noOffer:true}));
   if(isl.special==='boss')return startBoss(isl,opts);
   if(isl.special==='daily'){const keep=rand;rand=seeded(+dayKey().replace(/-/g,''));const qs=Array.from({length:8},()=>mixedQ());rand=keep;
     /* 3 old mistakes that are due come back inside the daily challenge, so spaced practice happens every day */
@@ -3013,7 +3107,7 @@ function stopTimers(){if(S){clearInterval(S.timer);clearTimeout(S.nudge)}}
 function armNudge(){clearTimeout(S.nudge);S.nudge=setTimeout(()=>{if(!S.locked&&!$('#play').hidden){say($('#say'),pick(NUDGE));foxClass('waving',1500)}},25000)}
 function label(c,unit){const m=/^(\d+)\/(\d+)$/.exec(c);return m?frac(m[1],m[2]):c+(unit?` <small>${unit}</small>`:'')}
 function drawChoices(q,handler){
-  const box=$('#choices');box.className='choices'+(q.long?' long':(q.choices.length===3?' three':''));box.innerHTML='';
+  const box=$('#choices');box.className='choices'+(q.teach?' one':q.long?' long':(q.choices.length===3?' three':''));box.innerHTML='';
   q.choices.forEach((c,k)=>{const b=document.createElement('button');b.type='button';b.className='choice';b.id='ch'+k;b.dataset.v=c;
     if(q.clockChoices){b.classList.add('clockc');b.setAttribute('aria-label','Clock choice '+(k+1));b.innerHTML=clockSVG(...c.split(':').map(Number),140)}
     else if(q.render){b.innerHTML=q.render(c);b.setAttribute('aria-label',c)}
@@ -3026,6 +3120,7 @@ function showQ(){
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
   else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}`;if(q.rv&&S.mode==='daily')say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i))}
   $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);
+  if(S.mode==='lesson'&&S.i>0){const pv=S.qs[S.i-1];if(q.guided&&!pv.guided)say($('#say'),`Now let's do one <b>together</b>, step by step!`);else if(!q.teach&&!q.guided&&(pv.guided||pv.teach))say($('#say'),`Your turn! Try these <b>on your own</b>. Use the trick!`)}
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;
   $('#hint').hidden=$('#feedback').hidden=$('#next').hidden=true;
   $('#speakBtn').hidden=!canSpeak;
@@ -3123,6 +3218,7 @@ function explainHTML(q,ok){
 function comboUI(){const c=$('#combo');if(S.streak>=2){c.hidden=false;c.innerHTML=`${FLAME} Combo ×${S.streak}`;c.classList.remove('pulse');void c.offsetWidth;c.classList.add('pulse')}else c.hidden=true}
 function judge(ok,btn){
   clearTimeout(S.nudge);stopSpeak();
+  if(S.qs[S.i]&&S.qs[S.i].teach){S.locked=true;if(btn)btn.classList.add('right');tone([660,880],.05);$('#hint').hidden=true;$('#howBtn').hidden=true;finishQ();return}
   const q=S.qs[S.i],dot=S.mode==='boss'?null:document.querySelectorAll('.dot')[S.i];
   if(ok){
     S.locked=true;if(btn)btn.classList.add('right');
@@ -3162,6 +3258,7 @@ function finishQ(){
   $('#howBtn').hidden=true;
   const n=$('#next');
   if(S.mode==='boss')n.textContent=S.hp<=0?'Victory!':S.hearts<=0?'See results':'Next attack';
+  else if(S.mode==='lesson')n.textContent=S.i===S.qs.length-1?'Finish the lesson':S.qs[S.i+1]&&!S.qs[S.i+1].teach&&!S.qs[S.i+1].guided?'Now try it alone!':'Next';
   else n.textContent=S.bonus?'Bonus game!':S.i===S.qs.length-1?'See my results':'Next puzzle';
   n.hidden=false;setTimeout(()=>{try{n.focus({preventScroll:true})}catch(e){}},50);
 }
@@ -3211,6 +3308,7 @@ function nextFlash(){
 
 /* results */
 function finishRound(){
+  if(S.mode==='lesson')return finishLesson();
   const n=S.qs.length,s=S.score;let st=s===n?3:s>=Math.ceil(n*.66)?2:s>=1?1:0;let extra='',stick=st>=3?.6:st===2?.4:st===1?.2:0;
   if(S.mode==='daily'){
     if(!dailyDone()){G.dstreak=G.lastDaily===yesterdayKey()?G.dstreak+1:1;G.lastDaily=dayKey();gain(REW.daily,5,$('#prompt'));extra=` Daily bonus: +${REW.daily} coins! Streak: ${G.dstreak} day${G.dstreak>1?'s':''}!`;stick=1;
@@ -3262,6 +3360,7 @@ function done(st,line,o={}){
   if(S.chapter!=null){nb.hidden=false;nb.textContent='Back to Story';nb.onclick=openStory}
   else if(reviewDue().length&&S.mode!=='review'){nb.hidden=false;nb.textContent=`Fix ${reviewDue().length} mistake${reviewDue().length>1?'s':''}`;nb.onclick=()=>start(byId('review'))}
   else if(sugg){nb.hidden=false;nb.textContent=`Next: ${sugg.name}`;nb.onclick=()=>start(sugg)}else nb.hidden=true;
+  if(S.mode==='island'&&S.chapter==null&&S.score<=3&&lessonsFor(isl.id).length){nb.hidden=false;nb.textContent='Learn the trick (3 min)';nb.onclick=()=>start(lessonIsland(lessonFor(isl.id)))}
   $('#again').hidden=S.mode==='review'&&!reviewDue().length;
   show('done');refreshFoxes();
   if(st>0){sWin();setTimeout(()=>burst(innerWidth/2,innerHeight/3,120),300)}
