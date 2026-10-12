@@ -718,6 +718,156 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
 .lbig{font-family:var(--display);font-size:1.45em;font-weight:400}.lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}.lpies{display:inline-flex;gap:4px}.lc{text-align:center}
 .pkbtns{display:flex;flex-direction:column;gap:8px;flex:none}
 @media (max-width:760px){.pkbtns{flex-direction:row;width:100%}.pkbtns .go{flex:1}.pickcard{flex-wrap:wrap}}
+
+/* ===== Phone layout fixes (mobile audit, Oct 2026) ===== */
+.tdmeta{display:none}
+.tmenu .menuonly{display:none}
+.iname .idiff{font-family:var(--body);font-weight:800;font-size:max(13px,.62em);color:var(--ink-soft);white-space:nowrap}
+.diff{font-size:12px}.stk small,.item .newtag,.item.leg .legtag,.cisl .tneed,.placechart b{font-size:12px}
+.choice small{font-size:max(12px,.6em)}
+/* the tip buttons float beside the question, so the question text gets the full card width under them */
+.qtop .prompt{order:0}.qtop .howbtn{order:1}.qtop .speak{order:2}
+@media (max-width:760px){
+  /* 2. compact header: logo + sync + settings / level / player + coins + stars */
+  .top{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}
+  .row1,.tools,.stats{display:contents}
+  .logo{order:1;flex:1 1 auto;min-width:0;font-size:clamp(19px,6.2vw,26px)}
+  #syncBadge{order:2;padding:0;width:44px;height:44px;justify-content:center}
+  #syncBadge span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .tmwrap{order:3}
+  #gearBtn{width:44px;height:44px;padding:0;font-size:0}
+  #gearBtn::before{content:"⚙";font-size:22px;line-height:44px}
+  #parentBtn{display:none}
+  .tmenu .menuonly{display:block}
+  .lvl{order:4;flex:1 1 100%;padding:5px 12px 6px}
+  .lvltop span{white-space:normal;overflow:visible}
+  .lvl small{display:none}
+  #playerBtn{order:5;height:44px;padding:0 14px;max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #coinPill{order:6}#starPill{order:7}
+  .pill{font-size:18px;padding:5px 11px 3px;min-height:40px}
+  .pill svg{width:20px;height:20px}
+  #goalPill,#streakPill{display:none}
+  .tdmeta{display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap;font-weight:700;color:var(--ink-soft);font-size:14px;margin:-2px 0 8px}
+  .tdmeta .bar{flex:1 1 90px;min-width:70px;height:8px}
+  .tdmeta svg{width:16px;height:16px;vertical-align:-3px}
+  .intro{margin-block:14px 2px;gap:12px}
+  .intro .pipbob{width:64px}
+  .intro .bubble{font-size:15px;padding:10px 14px 8px}
+  #pickCard{margin-block:12px}
+  /* 3. section screens (closet, island, album, story, grown-ups): only the player + coins + stars row */
+  body:not([data-screen=map]) .logo,body:not([data-screen=map]) #syncBadge,body:not([data-screen=map]) .tmwrap,body:not([data-screen=map]) .lvl{display:none}
+  body:not([data-screen=map]) .playhead{margin-block:12px 10px}
+  .closetTop .pipbob{width:72px}
+  /* 7. section titles go under the back button when there's no room beside it */
+  body:not([data-screen=play]) .playhead{gap:8px 14px}
+  body:not([data-screen=play]) .playhead .ihead{flex:1 1 220px}
+  /* 1. Next stays reachable at the bottom of the screen after an answer */
+  body[data-screen=play] #next{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:6;align-self:stretch;box-shadow:0 6px 0 #c9473a,0 8px 22px rgba(31,53,87,.25)}
+  /* 4. question text full width: tip buttons float to the right, passages start below them */
+  body[data-screen=play] .qtop{display:block}
+  body[data-screen=play] .prompt{text-wrap:pretty}
+  body[data-screen=play] .qtop::after{content:"";display:block;clear:both}
+  body[data-screen=play] .qtop .howbtn,body[data-screen=play] .qtop .speak{float:right;margin:0 0 6px 8px}
+  body[data-screen=play] .qtop .howbtn{display:flex}
+  body[data-screen=play] .qtop .howbtn[hidden],body[data-screen=play] .qtop .speak[hidden]{display:none}
+  body[data-screen=play] .qtop .prompt .passage{clear:both;margin-bottom:8px}
+  body[data-screen=play] .qtop .howbtn,body[data-screen=play] .qtop .speak{height:44px;font-size:15px}
+  body[data-screen=play] .qtop .speak{width:44px}
+  /* Pip's speech strip: clipped lines never peek out under the bubble */
+  body[data-screen=play] .pipside .bubble{padding-bottom:0!important;border-bottom:6px solid var(--card)}
+  /* 10. island name wraps instead of being cut off */
+  body[data-screen=play] .iname{white-space:normal;overflow:visible;text-overflow:clip;font-size:18px;line-height:1.1;overflow-wrap:anywhere}
+  /* 5. interactive pictures fit next to their controls */
+  .setwrap{display:grid;grid-template-columns:auto 118px;grid-template-areas:"clock lcd" "clock ctl";gap:10px 12px;align-items:center;justify-content:center}
+  .setwrap .lcd{grid-area:lcd;justify-self:center;font-size:34px;padding:8px 14px 4px;letter-spacing:2px}
+  .setwrap>svg{grid-area:clock;width:clamp(120px,38vw,190px)!important;height:auto!important;max-height:none!important;max-width:none}
+  .setwrap .clockctl{grid-area:ctl;gap:8px;width:118px}
+  .setwrap .ctl{gap:6px;font-size:15px}.setwrap .ctl span{width:100%;text-align:center}
+  .setwrap .ctl button{min-width:52px;height:48px}
+  .moneybox{gap:8px}.pricetag{font-size:26px;padding:4px 12px 0}
+  .tray{min-height:76px;padding:6px}
+  .coinrow{gap:4px}.coinbtn{padding:2px}
+  .coinbtn svg{height:50px!important;width:auto!important}
+  .trayempty{font-size:15px;text-align:center}
+  .slot{min-width:44px;min-height:44px;padding:6px 10px 4px;font-size:17px}
+  .choice.chip{min-height:48px;font-size:19px;padding:8px 14px 5px}
+  .chips{gap:8px}
+  /* 9. comfortable tap targets */
+  .itabs button{min-height:44px}
+  .back,.tbtn,.mini,.go.small,.cisl,.item button,.prow [data-proj],.pgoal,.prof,.linkbtn{min-height:44px}
+  .back{display:inline-flex;align-items:center}
+  .go.small{display:inline-flex;align-items:center;justify-content:center}
+  .item button{justify-content:center}
+  .cisl{padding:6px 12px 4px}
+  /* 8. badge pop-ups: slim strips at the bottom, two at a time */
+  #toasts{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);width:calc(100vw - 24px)}
+  .toast{padding:6px 12px;gap:8px;font-size:14px;line-height:1.25;animation-name:tinb}
+  .toast svg{width:30px;height:30px}
+  .toast b{font-size:16px}
+  .toast.out{animation-name:toutb}
+  /* during a puzzle the Next button lives at the bottom, so pop-ups stay at the top there */
+  body[data-screen=play] #toasts{top:calc(env(safe-area-inset-top,0px) + 8px);bottom:auto}
+  body[data-screen=play] .toast{animation-name:tin}
+  body[data-screen=play] .toast.out{animation-name:tout}
+}
+@keyframes tinb{from{transform:translateY(40px) scale(.95);opacity:0}}
+@keyframes toutb{to{transform:translateY(30px);opacity:0}}
+/* 5. short phones (iPhone SE, small Android): smaller pictures, Pip in a small strip */
+@media (max-width:760px) and (max-height:760px){
+  body[data-screen=play] .pipfly{width:44px}
+  body[data-screen=play] .pipside .bubble{font-size:13.5px;padding:6px 10px 4px;-webkit-line-clamp:2}
+  body[data-screen=play] .stage{gap:8px}
+  body[data-screen=play] .card{gap:10px;padding:14px 12px 14px}
+  body[data-screen=play] .visual svg{max-height:min(220px,30vh)}
+  body[data-screen=play] .visual .protractor{max-height:min(170px,26vh)}
+  body[data-screen=play] .choice{min-height:56px;padding:10px 8px 8px}
+  body[data-screen=play] .choices{gap:10px}
+  .setwrap>svg{width:clamp(110px,34vw,160px)!important}
+  .setwrap .lcd{font-size:28px}
+  .keys button{height:50px}.keypad{gap:8px}.entry{min-height:52px;font-size:32px}
+}
+/* the smallest phones (320 px wide, 568 px tall): every pixel counts */
+@media (max-width:360px){.coinbtn svg{height:40px!important}.coinrow{gap:2px}.choice.chip{padding:6px 10px 4px;font-size:17px}.chips{gap:6px}}
+@media (max-width:760px) and (max-height:600px){
+  body[data-screen=play] .pipside .bubble{font-size:13px}
+  body[data-screen=play] .pipfly{width:36px}
+  body[data-screen=play] .visual svg{max-height:min(180px,27vh)}
+  body[data-screen=play] .visual .protractor{max-height:min(150px,24vh)}
+  body[data-screen=play] .prompt{font-size:19px}
+  body[data-screen=play] .playhead{margin-block:2px 6px}
+  body[data-screen=play] .card{gap:8px;padding:12px 10px}
+  .slot{min-width:38px;min-height:38px;font-size:16px;padding:4px 8px 2px}.slots{gap:6px}
+  .choice.chip{min-height:44px;font-size:18px}
+  .tray{min-height:60px}.pricetag{font-size:23px}
+}
+@media (max-width:760px) and (max-height:760px){body.big[data-screen=play] .visual svg{max-height:min(200px,26vh)}}
+/* 11. phone on its side: Pip on the left, the puzzle on the right, answers in one row */
+@media (max-height:520px) and (orientation:landscape){
+  body[data-screen=play] .top{display:none}
+  body[data-screen=play] .wrap{padding-block-start:6px}
+  body[data-screen=play] .stage{grid-template-columns:120px minmax(0,1fr);gap:12px}
+  body[data-screen=play] .pipside{position:sticky;top:6px;flex-direction:column;align-items:center;margin:0}
+  body[data-screen=play] .pipfly{width:64px}
+  body[data-screen=play] .pipside .bubble{text-align:center;font-size:13px;padding:6px 8px 4px;-webkit-line-clamp:5}
+  body[data-screen=play] .pipside .bubble::before{top:-12px;left:50%;margin:0 0 0 -10px;border:10px solid transparent;border-bottom:14px solid var(--card);border-top:0}
+  body[data-screen=play] .choices:not(.one):not(.long):not(.three){grid-template-columns:repeat(4,minmax(0,1fr))}
+  body[data-screen=play] .choices.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  body[data-screen=play] .choice{min-height:52px}
+  body[data-screen=play] .visual svg{max-height:min(170px,40vh)}
+  .moneybox{flex-direction:row;flex-wrap:wrap;justify-content:center}.moneybox .tray{flex:1 1 200px;min-height:56px}
+  /* a picture and its answers sit side by side */
+  body[data-screen=play] .card:not(.reading):not(:has(.moneybox)):has(>.visual:not([hidden])){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;column-gap:16px}
+  body[data-screen=play] .card:not(.reading):not(:has(.moneybox)):has(>.visual:not([hidden]))>*{grid-column:1/-1}
+  body[data-screen=play] .card:not(.reading):not(:has(.moneybox)):has(>.visual:not([hidden]))>.visual{grid-column:1}
+  body[data-screen=play] .card:not(.reading):not(:has(.moneybox)):has(>.visual:not([hidden]))>#choices{grid-column:2}
+  body[data-screen=play] .card:not(.reading):not(:has(.moneybox)):has(>.visual:not([hidden]))>.choices:not(.one):not(.long){grid-template-columns:repeat(2,minmax(0,1fr))}
+  body[data-screen=play] .card{gap:10px;padding:12px 14px}
+  body[data-screen=play] .playhead{margin-block:2px 6px}
+  .setwrap{grid-template-columns:auto auto;grid-template-areas:"clock lcd" "clock ctl"}
+  .setwrap>svg{width:clamp(110px,30vh,150px)!important}
+  .keypad{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center}
+  .keys{grid-template-columns:repeat(6,52px)}.keys button{height:46px}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -3007,8 +3157,12 @@ function burst(x,y,n=60){if(reduce)return;cv.width=innerWidth;cv.height=innerHei
 function tick(){cx2.clearRect(0,0,cv.width,cv.height);parts=parts.filter(p=>p.life-->0);for(const p of parts){p.vy+=.25;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.rot+=.2;cx2.save();cx2.translate(p.x,p.y);cx2.rotate(p.rot);cx2.fillStyle=p.c;cx2.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx2.restore()}raf=parts.length?requestAnimationFrame(tick):0}
 function burstAt(el,n){if(!el)return;const r=el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,n)}
 function floatText(el,text){if(!el)return;const r=el.getBoundingClientRect(),f=document.createElement('div');f.className='floater';f.textContent=text;f.style.left=(r.left+r.width/2)+'px';f.style.top=(r.top-6)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),1200)}
-function toast(title,desc,color,icon){const t=document.createElement('div');t.className='toast';t.innerHTML=`${icon||MEDAL(color)}<div><b>${title}</b>${desc}</div>`;$('#toasts').appendChild(t);
-  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400)},3600)}
+/* at most 2 pop-ups on screen at once; the rest wait their turn, so they never pile up over the round summary */
+const toastQ=[];let toastLive=0;
+function toast(title,desc,color,icon){toastQ.push([title,desc,color,icon]);pumpToasts()}
+function pumpToasts(){while(toastLive<2&&toastQ.length){const [title,desc,color,icon]=toastQ.shift();toastLive++;
+  const t=document.createElement('div');t.className='toast';t.innerHTML=`${icon||MEDAL(color)}<div><b>${title}</b>${desc}</div>`;$('#toasts').appendChild(t);
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>{t.remove();toastLive--;pumpToasts()},400)},toastQ.length?2600:3600)}}
 let ovQueue=[],ovOpen=false;
 function overlay(html,onOpen){ovQueue.push([html,onOpen]);if(!ovOpen)nextOverlay()}
 function nextOverlay(){const it=ovQueue.shift();if(!it){$('#overlay').hidden=true;ovOpen=false;return}ovOpen=true;$('#ocard').innerHTML=it[0];$('#overlay').hidden=false;refreshFoxes();it[1]&&it[1]()}
@@ -3327,7 +3481,7 @@ function renderPickCard(){const el=$('#pickCard');if(!el)return;const P=pipPick(
     P?{done:pickPlayed,title:`Pip's Pick: ${esc(P.name)}`,sub:(()=>{const st=G.stats[P.id],pc=st&&st.a>=6?Math.round(st.c/st.a*100):null;return `${pc!==null?`Trickiest topic right now (${pc}% right)`:esc(P.topic)} · <span class="x2">×2 coins</span>`})(),btn:`<span class="pkbtns">${lessonsFor(P.id).length?'<button type="button" class="go small alt" id="pickLearn">Learn the trick</button>':''}<button type="button" class="go small" id="pickGo">Play</button></span>`}:null,
     {done:!!gi&&G.goalDone===dayKey(),title:'Free flight',sub:gi?`Any island you like · today's goal ${gi.label}`:'Any island you like',btn:''}].filter(Boolean);
   const nd=steps.filter(x=>x.done).length;
-  el.innerHTML=`<div class="today"><div class="tdhead"><b>Today's flight plan</b><span>${nd===steps.length?'All done! Rest, or play for fun.':`${nd} of ${steps.length} done`}</span></div><ol class="tdsteps">${steps.map((x,i)=>`<li class="${x.done?'done':''}"><span class="tdchk">${x.done?CHECK:i+1}</span><div class="tdtx"><b>${x.title}</b><small>${x.sub}</small></div>${x.done?'':x.btn}</li>`).join('')}</ol></div>`;
+  el.innerHTML=`<div class="today"><div class="tdhead"><b>Today's flight plan</b><span>${nd===steps.length?'All done! Rest, or play for fun.':`${nd} of ${steps.length} done`}</span></div><div class="tdmeta">${gi?`<span>${gi.cur>=gi.max?'Goal done!':'Today'} · ${gi.label}</span><div class="bar warm"><i style="width:${Math.min(100,gi.cur/gi.max*100)}%"></i></div>`:''}<span>${FLAME} ${curStreak()} day streak</span></div><ol class="tdsteps">${steps.map((x,i)=>`<li class="${x.done?'done':''}"><span class="tdchk">${x.done?CHECK:i+1}</span><div class="tdtx"><b>${x.title}</b><small>${x.sub}</small></div>${x.done?'':x.btn}</li>`).join('')}</ol></div>`;
   if($('#tdDaily'))$('#tdDaily').onclick=()=>start(byId('daily'));
   if(!P)return;
   if($('#pickGo'))$('#pickGo').onclick=()=>start(P,{noOffer:true});if($('#pickLearn'))$('#pickLearn').onclick=()=>start(lessonIsland(lessonFor(P.id)));
@@ -3454,7 +3608,7 @@ function start(isl,opts={}){
 function freshState(isl,mode){return {isl,mode,qs:[],i:0,score:0,tries:0,streak:0,bestStreak:0,coins:0,xp:0,locked:false,badges:[],lvNow:levelOf(G.xp),lv0:levelOf(G.xp)}}
 function beginRound(isl,mode,qs){
   stopTimers();S=freshState(isl,mode);S.qs=qs;S.d=diffFor(isl);
-  $('#iname').textContent=isl.name+(mode==='island'?` · ${DIFF_NAME[S.d]}`:'');$('#timer').hidden=true;$('#bossbar').hidden=true;$('#dots').hidden=false;$('#combo').hidden=true;
+  {const nm=$('#iname');nm.textContent=isl.name;if(mode==='island'){const d=document.createElement('span');d.className='idiff';d.textContent=` · ${DIFF_NAME[S.d]}`;nm.appendChild(d)}}$('#timer').hidden=true;$('#bossbar').hidden=true;$('#dots').hidden=false;$('#combo').hidden=true;
   $('#dots').innerHTML=qs.map(()=>'<span class="dot"></span>').join('');setAlt(0);
   show('play');refreshFoxes();
   say($('#say'),mode==='daily'?`Daily Challenge! 8 surprise puzzles from all over the sky. Let's go${nm()}!`:mode==='review'?`Fix-It Falls! These are puzzles that tricked you before. Let's beat them this time!`
@@ -3623,7 +3777,13 @@ function finishQ(){
   else if(S.mode==='lesson')n.textContent=S.i===S.qs.length-1?'Finish the lesson':S.qs[S.i+1]&&!S.qs[S.i+1].teach&&!S.qs[S.i+1].guided?'Now try it alone!':'Next';
   else n.textContent=S.bonus?'Bonus game!':S.i===S.qs.length-1?'See my results':'Next puzzle';
   n.hidden=false;setTimeout(()=>{try{n.focus({preventScroll:true})}catch(e){}},50);
+  setTimeout(showAnswerArea,120);
 }
+/* after an answer, gently scroll so the explanation (and the Next button) are on screen; never scroll past the top of the explanation */
+function showAnswerArea(){const n=$('#next');if(n.hidden||$('#play').hidden)return;const fb=$('#feedback');
+  const sticky=getComputedStyle(n).position==='sticky',nr=n.getBoundingClientRect(),fr=fb.hidden?nr:fb.getBoundingClientRect();
+  const limit=innerHeight-(sticky?nr.height+24:16),want=sticky?fr.bottom-limit:nr.bottom-limit;
+  const dy=Math.min(want,fr.top-12);if(dy>4)scrollBy({top:dy,behavior:reduce?'auto':'smooth'})}
 $('#next').onclick=()=>{
   if(S.bonus){S.bonus=false;return startPop(()=>{S.i++;if(S.i>=S.qs.length)finishRound();else showQ()})}
   if(S.mode==='boss'){if(S.hp<=0)return finishBoss(true);if(S.hearts<=0)return finishBoss(false);S.qs.push(mixedQ(S.pool));S.i++;return showQ()}
@@ -4386,7 +4546,13 @@ function startPop(next){
 
 /* ================= settings & toggles ================= */
 function applySettings(){document.body.classList.toggle('big',!!G.settings.big);document.body.classList.toggle('dys',!!G.settings.dys);$('#bigBtn').setAttribute('aria-pressed',!!G.settings.big)}
-$('#gearBtn').onclick=e=>{e.stopPropagation();const m=$('#tmenu'),o=m.hidden;m.hidden=!o;$('#gearBtn').setAttribute('aria-expanded',o)};
+$('#gearBtn').onclick=e=>{e.stopPropagation();const m=$('#tmenu'),o=m.hidden;m.hidden=!o;$('#gearBtn').setAttribute('aria-expanded',o);
+  /* keep the menu on screen: if it would stick out on the left, open it from the button's left edge instead */
+  if(o){m.style.left='';m.style.right='';const r=m.getBoundingClientRect();if(r.left<8){m.style.left='0';m.style.right='auto'}const r2=m.getBoundingClientRect();if(r2.right>innerWidth-8){m.style.left='auto';m.style.right=Math.min(0,innerWidth-8-m.parentNode.getBoundingClientRect().right)+'px'}}};
+/* on phones the Grown-ups button lives inside the Settings menu */
+(()=>{const b=document.createElement('button');b.type='button';b.className='tbtn menuonly';b.textContent='Grown-ups';b.onclick=()=>{$('#tmenu').hidden=true;$('#gearBtn').setAttribute('aria-expanded','false');$('#parentBtn').click()};$('#tmenu').appendChild(b)})();
+/* tip buttons first in the markup, so on phones they float right and the question wraps around them */
+(()=>{const qt=document.querySelector('.qtop'),p=$('#prompt');qt.insertBefore($('#speakBtn'),p);qt.insertBefore($('#howBtn'),p)})();
 document.addEventListener('click',e=>{const m=$('#tmenu');if(m&&!m.hidden&&!e.target.closest('.tmwrap')){m.hidden=true;$('#gearBtn').setAttribute('aria-expanded','false')}});
 $('#bigBtn').onclick=()=>{G.settings.big=!G.settings.big;save();applySettings()};
 $('#sound').onclick=e=>{soundOn=!soundOn;e.currentTarget.setAttribute('aria-pressed',soundOn);e.currentTarget.textContent='Sounds: '+(soundOn?'on':'off')};
