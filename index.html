@@ -457,7 +457,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .sw.on{box-shadow:0 0 0 4px var(--ocean)}
 .shop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .item{background:var(--card);border-radius:22px;padding:10px 10px 12px;box-shadow:0 5px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
-.item{position:relative}.item .newtag{position:absolute;top:8px;left:8px;background:var(--berry);color:#fff;font-size:11px;font-weight:800;border-radius:8px;padding:2px 7px 1px;letter-spacing:.04em}
+.item{position:relative}.item .wishb{position:absolute;top:4px;right:4px;background:none;box-shadow:none;border:0;padding:4px 7px;font-size:22px;line-height:1;color:#e09a14;cursor:pointer}.item .wishb.on{color:#e09a14;text-shadow:0 0 6px #ffd56b}.item .prev[data-tk]{cursor:zoom-in}.wishprev svg{width:84px}.item .newtag{position:absolute;top:8px;left:8px;background:var(--berry);color:#fff;font-size:11px;font-weight:800;border-radius:8px;padding:2px 7px 1px;letter-spacing:.04em}
 .item.leg{background:linear-gradient(160deg,#fff8dc,#ffe79a 55%,#ffd8e8);box-shadow:0 5px 0 #e09a14}.item.leg .legtag{font-size:11px;font-weight:800;color:#a8650a;letter-spacing:.08em;text-transform:uppercase;margin-top:-4px}
 .fox .twk{animation:twk 1.6s ease-in-out infinite}.fox .twk:nth-of-type(2n){animation-delay:.8s}@keyframes twk{50%{opacity:.3}}
 .fox .prop{transform-box:view-box;transform-origin:60px 4.5px;animation:propx .35s linear infinite}@keyframes propx{50%{transform:scaleX(.12)}}
@@ -701,7 +701,9 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
 .pickcard{border:3px solid var(--coral)}
 .pickcard .pkisl{width:92px;flex:none}.pickcard .pkisl svg{width:100%;height:auto}
 .x2{font-family:var(--display);font-size:18px;color:#fff;background:var(--coral);border-radius:12px;padding:4px 10px 2px;flex:none}
-.mbar{display:block;height:6px;border-radius:999px;background:var(--pale-sky);overflow:hidden;margin:4px auto 0;width:70%}.mbar i{display:block;height:100%;background:var(--sun)}.mbar.ok i{background:var(--leaf)}
+.limchk{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin:2px 0 6px;cursor:pointer}.limchk input{width:20px;height:20px}.limchk small{flex-basis:100%;text-align:center;font-weight:600;opacity:.7}.pnotes{background:#fff8e1}.pnotes ul{margin:4px 0 0;padding-left:18px}.pnotes li{margin:4px 0;line-height:1.4}
+.helpex{text-align:left;max-height:46vh;overflow:auto;background:var(--pale-sky);border-radius:16px;padding:10px 12px;margin:4px 0 10px}.helpex .hxq{font-weight:800;margin-bottom:6px}.helpex .hxv svg{max-width:100%;height:auto;max-height:180px}.helpex .feedback{margin:6px 0 0}
+.mbar{display:block;height:6px;border-radius:999px;background:var(--pale-sky);overflow:hidden;margin:4px auto 0;width:70%}.mbar i{display:block;height:100%;background:var(--sun)}.mbar.ok i{background:var(--leaf)}.mbar.t1 i{background:#d08a4e}.mbar.t2 i{background:#9aa6b6}.mbar.t3 i{background:var(--leaf)}.cisl .tneed{display:block;font-size:11px;font-weight:700;opacity:.75}
 .bookt{grid-column:1/-1;margin:8px 0 0}
 .lesson{text-align:left;font-size:1.06em;line-height:1.5;font-weight:600}.lesson p{margin:6px 0}.lesson svg{max-width:100%;height:auto}
 .lbig{font-family:var(--display);font-size:1.45em;font-weight:400}.lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}.lpies{display:inline-flex;gap:4px}.lc{text-align:center}
@@ -2669,6 +2671,9 @@ function attachCoins(g){
     get(){let t=0;for(const k in this.cdev){const c=this.cdev[k]||{};t+=(+c.e||0)-(+c.s||0)}return Math.max(0,Math.round(t))},
     set(v){const d=Math.round(v)-this.coins;if(!d)return;const c=this.cdev[DEV]||(this.cdev[DEV]={e:0,s:0});if(d>0)c.e+=d;else c.s+=-d}});
   return g}
+/* keep at most 3 waiting mistakes per kind of puzzle (most practiced first), so the list stays doable */
+function trimReview(a){const by=new Map();for(const r of a){const k=r.i+'|'+r.t;if(!by.has(k))by.set(k,[]);by.get(k).push(r)}const keep=new Set();
+  for(const l of by.values())l.slice().sort((x,y)=>(y.box||0)-(x.box||0)||String(x.s).localeCompare(String(y.s))).slice(0,3).forEach(r=>keep.add(r));return a.filter(r=>keep.has(r))}
 function normalizeProfile(p){
   p=p?clone(p):{};const legacy=p.coins;delete p.coins;
   const g=Object.assign(freshRaw(),p);
@@ -2677,6 +2682,7 @@ function normalizeProfile(p){
   g.settings=Object.assign({...DEF_SETTINGS},g.settings||{});if((g.settings.sv||0)<2){g.settings.talk=false;g.settings.read=false;g.settings.sv=2}
   g.story=Object.assign({ch:0,seen:{}},g.story||{});if(g.placed==null&&(g.xp||0)>0)g.placed=1;g.home=Object.assign({house:0,items:{},pos:{},hidden:{}},g.home||{});
   for(const k of ['review','wrongLog','fixedSeeds','badges'])if(!Array.isArray(g[k]))g[k]=[];
+  g.review=trimReview(g.review);
   return attachCoins(g)}
 const freshProfile=()=>normalizeProfile(null);
 /* stable string (sorted keys and arrays) to compare two profiles */
@@ -2690,7 +2696,7 @@ function deepMax(a,b){
   if(typeof a==='boolean'&&typeof b==='boolean')return a||b;
   return clone(a)}
 /* fields where the most recent choice wins (what Pip wears, settings, difficulty...) */
-const LATEST=['name','char','hat','balloon','pet','basket','glass','deco','charColor','settings','diff','wrongLog','kidPin','greetedName','saveGoal','roll','deck'];
+const LATEST=['name','char','hat','balloon','pet','basket','glass','deco','wish','pickDay','charColor','settings','diff','wrongLog','kidPin','greetedName','saveGoal','roll','deck'];
 function mergeProfiles(a,b){
   if(!a&&!b)return freshProfile();if(!a)return normalizeProfile(b);if(!b)return normalizeProfile(a);
   a=normalizeProfile(a);b=normalizeProfile(b);
@@ -2703,7 +2709,7 @@ function mergeProfiles(a,b){
   const la=a.lastDaily||'',lb=b.lastDaily||'',st=la===lb?((a.dstreak||0)>=(b.dstreak||0)?a:b):(la>lb?a:b);o.lastDaily=st.lastDaily;o.dstreak=st.dstreak;
   const fixed=new Set(o.fixedSeeds);o.fixedSeeds=o.fixedSeeds.slice(-400);
   const rv=new Map();for(const r of ol.review)rv.set(r.s,r);for(const r of nw.review)rv.set(r.s,r);
-  o.review=[...rv.values()].filter(r=>!fixed.has(r.s)).slice(-200).map(clone);
+  o.review=trimReview([...rv.values()].filter(r=>!fixed.has(r.s)).slice(-200).map(clone));
   return normalizeProfile(o)}
 const sameProfile=(a,b)=>stable(normalizeProfile(a))===stable(normalizeProfile(b));
 
@@ -2810,9 +2816,11 @@ function reviewDue(){const k=dayKey();return G.review.filter(r=>r.due<=k)}
 
 const LV=[0,15,40,75,120,180,250,340,450,600,800,1050,1350,1700,2100];
 const TITLES=['Cloud Cadet','Breeze Rider','Sky Scout','Kite Captain','Rainbow Racer','Storm Chaser','Star Pilot','Comet Commander','Galaxy Guide','Sky Legend','Wizard of the Winds','Grand Sky Master','Sky Champion','Cosmic Captain','Legend of the Skies'];
+/* levels never run out: after the 15 named titles come Legend stars */
+for(let k=LV.length;k<60;k++){LV.push(LV[k-1]+400+(k-15)*50);TITLES.push(`Legend of the Skies ★${k-13}`)}
 function levelOf(xp){let l=0;while(l+1<LV.length&&xp>=LV[l+1])l++;return l}
 /* coin rewards (rebalanced Oct 2026: about 2.5x lower, so the shop and big projects last) */
-const REW={ans:4,ans2:2,star:4,best:8,daily:20,goal:12,week:40,badge:10,dup:4,set:40,story:200};
+const REW={ans:4,ans2:2,star:4,best:8,daily:20,goal:12,week:40,badge:10,dup:4,set:40,story:200,chest:25};
 const BADGES=[
   ['first','First Flight','Finish your first island.','#38b98a'],['perfect','Perfect Flight','Get every puzzle right on the first try.','#ffc23d'],
   ['combo5','Hot Streak','Answer 5 in a row on the first try.','#ff9f43'],['combo10','Unstoppable','Answer 10 in a row on the first try.','#ff6b57'],
@@ -2925,11 +2933,11 @@ function gain(c,x,el){
   if(lv>=4)award('level5');if(G.coins>=500)award('rich');save();
 }
 function track(q,first,correct){
-  if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss')rollAdd(id,correct);const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
+  if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss'){const t0=tierOf(id);rollAdd(id,correct);const t1=tierOf(id);if(t1>t0&&byId(id)){G.tierBest=Object.assign({},G.tierBest||{});if(t1>(G.tierBest[id]||0)){G.tierBest[id]=t1;toast(`${TIERS[t1][1]} bar on ${byId(id).name}!`,`${Math.round(rollAcc(id).acc*100)}% right lately. Keep it up!`,TIERS[t1][2])}}}const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
   const t=today();t.q++;if(first&&correct){t.c++;thisWeek().c++}
   if(!(first&&correct)){
     G.wrongLog.unshift({p:htmlToSpeech(q.prompt).slice(0,140),a:String(q.answer!=null?q.answer:q.kind==='order'?q.items.join(', '):q.kind==='multi'?q.correct.map(k=>SHAPES[k].name).join(', '):q.kind==='money'?fmtM(q.target):q.kind==='angle'?q.target+'°':q.target&&q.target.h?tf(q.target.h,q.target.m):''),i:id,d:dayKey()});G.wrongLog=G.wrongLog.slice(0,30);
-    if(S&&S.mode!=='review'&&id!=='ev'&&!G.review.some(r=>r.s===q.meta.s)){G.review.push({...q.meta,box:0,due:addDays(1)});if(G.review.length>200)G.review.shift()}
+    if(S&&S.mode!=='review'&&id!=='ev'&&!G.review.some(r=>r.s===q.meta.s)&&G.review.filter(r=>r.i===id&&r.t===q.meta.t).length<3){G.review.push({...q.meta,box:0,due:addDays(1)});if(G.review.length>200)G.review.shift()}
   }
   checkWeek();
 }
@@ -2946,8 +2954,8 @@ setInterval(()=>{
   const gi=goalInfo();if(gi&&gi.cur>=gi.max&&G.goalDone!==dayKey())goalReached();
 },1000);
 function goalReached(){
-  G.goalDone=dayKey();G.coins+=REW.goal;award('goal');save();updateStats('#goalPill');sWin();burst(innerWidth/2,innerHeight/3,120);
-  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Daily goal reached!</div><h2>Awesome work${nm()}!</h2><p>You did your learning for today: <b>+${REW.goal} coins</b>! From now on, puzzles give fewer coins today. This is a great time for a break. Stretch, drink some water, or go play outside. You can keep playing too if you want!</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Okay!</button>`,()=>setTimeout(()=>foxMove('spin'),200));
+  G.goalDone=dayKey();G.chest={from:dayKey()};G.coins+=REW.goal;award('goal');save();updateStats('#goalPill');sWin();burst(innerWidth/2,innerHeight/3,120);
+  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Daily goal reached!</div><h2>Awesome work${nm()}!</h2><p>You did your learning for today: <b>+${REW.goal} coins</b>! Pip packed a <b>surprise chest</b> for you. Come back tomorrow to open it! From now on, puzzles give fewer coins today. This is a great time for a break. Stretch, drink some water, or go play outside. You can keep playing too if you want!</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Okay!</button>`,()=>setTimeout(()=>foxMove('spin'),200));
 }
 
 /* ================= Pip's Lessons: learn the trick first (worked example -> do it together -> try it alone) ================= */
@@ -3125,13 +3133,21 @@ function rollAcc(id){const r=(G.roll||{})[id]||'';return {n:r.length,acc:r.lengt
 function rollAdd(id,ok){if(!id)return;G.roll=Object.assign({},G.roll||{});G.roll[id]=(((G.roll[id]||'')+(ok?'1':'0')).slice(-20))}
 const MASTER_N=12,MASTER_ACC=.8;
 const mastered=id=>{const m=rollAcc(id);return m.n>=MASTER_N&&m.acc>=MASTER_ACC};
+/* mastery steps on the bar: bronze 60%, silver 70%, gold 80% of the last 20 first tries */
+const TIERS=[[0,'',''],[.6,'Bronze','#d08a4e'],[.7,'Silver','#8e9aab'],[MASTER_ACC,'Gold','#38b98a']];
+function tierOf(id){const m=rollAcc(id);let t=0;for(let k=1;k<4;k++)if(m.acc>=TIERS[k][0]&&m.n>=(k===1?10:MASTER_N))t=k;return t}
+function toTier(id,k){const r=(G.roll||{})[id]||'',need=k===1?10:MASTER_N;for(let x=0;x<=40;x++){const w=(r+'1'.repeat(x)).slice(-20),a=w.split('').filter(c=>c==='1').length/(w.length||1);if(w.length>=need&&a>=TIERS[k][0])return x}return 40}
+const tierBest=id=>Math.max(tierOf(id),(G.tierBest||{})[id]||0);
 /* ---------- Pip's Pick: the trickiest topic pays double today ---------- */
 function pipPick(){
   const pool=ISLANDS.filter(i=>i.gen&&['math','time','world'].includes(i.group)&&!i.special&&!i.flash&&STAR_ISLANDS.includes(i));
-  const accOf=i=>{const st=G.stats[i.id];return st&&st.a>=6?st.c/st.a:null};
+  const accOf=i=>{const m=rollAcc(i.id);if(m.n>=8)return m.acc;const st=G.stats[i.id];return st&&st.a>=6?st.c/st.a:null};
   let weak=pool.filter(i=>accOf(i)!==null&&accOf(i)<.8).sort((a,b)=>accOf(a)-accOf(b)).slice(0,3);
   if(!weak.length)weak=pool.filter(i=>i.group==='math').sort((a,b)=>(G.best[a.id]||0)-(G.best[b.id]||0)||((G.stats[a.id]||{}).a||0)-((G.stats[b.id]||{}).a||0)).slice(0,3);
-  if(!weak.length)return null;const d=Math.floor(Date.parse(dayKey())/864e5);return weak[d%weak.length]}
+  if(!weak.length)return null;const d=Math.floor(Date.parse(dayKey())/864e5),pd=G.pickDay&&G.pickDay.d===dayKey()?G.pickDay:null;
+  /* after 3 rounds on today's pick, Pip moves the x2 to the next weak topic, so no single topic gets all the practice */
+  for(let k=0;k<weak.length;k++){const c=weak[(d+k)%weak.length];if(!pd||!(pd.done||[]).includes(c.id))return c}
+  return weak[d%weak.length]}
 function renderPickCard(){const el=$('#pickCard');if(!el)return;const P=pipPick();if(!P){el.hidden=true;return}el.hidden=false;const st=G.stats[P.id],pc=st&&st.a>=6?Math.round(st.c/st.a*100):null;
   el.innerHTML=`<div class="pkisl">${islandSVG(P.color,LANDMARKS[P.lm])}</div><div class="gtxt"><b>Pip's Pick for today: ${esc(P.name)}</b><span>${pc!==null?`Your trickiest topic right now (${pc}% right). Practice makes it easier!`:`${esc(P.topic)}: let's get stronger here!`}</span></div><span class="x2">×2 coins</span><div class="pkbtns">${lessonsFor(P.id).length?'<button type="button" class="go small alt" id="pickLearn">Learn the trick</button>':''}<button type="button" class="go small" id="pickGo">Play</button></div>`;
   $('#pickGo').onclick=()=>start(P,{noOffer:true});if($('#pickLearn'))$('#pickLearn').onclick=()=>start(lessonIsland(lessonFor(P.id)))}
@@ -3160,7 +3176,7 @@ function card(isl,i){
   else if(isl.special==='boss'&&starTotal()<BOSS_NEED){cls=' locked';status=`<span class="status lock">Locked: ${starTotal()}/${BOSS_NEED} stars</span>`}
   else{status=`<span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}${G.hardMaster[isl.id]?CROWN_MINI:''}</span>`;
     if(isl.gen&&!isl.noDiff)status+=`<span class="diff d${diffFor(isl)}">${DIFF_NAME[diffFor(isl)]}</span>`;
-    const mm=rollAcc(isl.id);if(isl.gen&&mm.n>=4)status+=`<span class="mbar${mastered(isl.id)?' ok':''}" title="Last ${mm.n} puzzles: ${Math.round(mm.acc*100)}% right"><i style="width:${Math.round(mm.acc*100)}%"></i></span>`}
+    const mm=rollAcc(isl.id);if(isl.gen&&mm.n>=4)status+=`<span class="mbar t${tierOf(isl.id)}${mastered(isl.id)?' ok':''}" title="${TIERS[tierOf(isl.id)][1]?TIERS[tierOf(isl.id)][1]+' bar. ':''}Last ${mm.n} puzzles: ${Math.round(mm.acc*100)}% right"><i style="width:${Math.round(mm.acc*100)}%"></i></span>`}
   if(isl.gen&&!G.visited[isl.id])rib='<span class="ribbon blue">Explore!</span>';
   else if(isl.gen){const pk=pipPick();if(pk&&pk.id===isl.id)rib='<span class="ribbon">×2 coins</span>'}
   return `<button class="isle${cls}" type="button" data-id="${isl.id}" style="--d:${-(i%7)*0.6}s" aria-label="${isl.name}: ${isl.topic}">${rib}
@@ -3174,7 +3190,7 @@ function weekCard(){const tw=thisWeek(),lw=G.weeks[lastWeekKey()];
 }
 function buildTips(){
   const t=[],st=starTotal(),lv=levelOf(G.xp),n=G.name?`${esc(G.name)}, `:'';
-  if(!dailyDone())t.push({text:curStreak()>0?`${n}your <b>${curStreak()}-day streak</b> is on the line! Finish today's <b>Daily Challenge</b> to keep it going!`:`Today's <b>Daily Challenge</b> is ready! Finish it for <b>+50 bonus coins</b> and start a streak!`,label:'Play the Daily Challenge',act:()=>start(byId('daily'))});
+  if(!dailyDone())t.push({text:curStreak()>0?`${n}your <b>${curStreak()}-day streak</b> is on the line! Finish today's <b>Daily Challenge</b> to keep it going!`:`Today's <b>Daily Challenge</b> is ready! Finish it for <b>+${REW.daily} bonus coins</b> and start a streak!`,label:'Play the Daily Challenge',act:()=>start(byId('daily'))});
   if(CUR_EV){const st=evState(CUR_EV),nx=EV_MILES.find(m=>st.pts<m[0]);t.push({text:`The <b>${CUR_EV.name}</b> is on until ${evEnd(CUR_EV)}!${nx?` Only <b>${nx[0]-st.pts} more points</b> to the next prize!`:' You won every prize. WOW!'}`,label:`Play ${CUR_EV.island}`,act:()=>start(eventIsland())})}
   if(!G.home||homeCount()<HOME.length+HOUSES.length)t.push({text:homeCount()?`Let's keep building <b>our island</b>! What should we add next?`:`Did you know we can build <b>our own island</b>? Let's start with a cozy tent!`,label:'Go to My Island',act:openHome});
   const due=reviewDue().length;if(due)t.push({text:`${n}<b>${due} old mistake${due>1?'s are':' is'}</b> waiting at Fix-It Falls. Fixing them makes your brain super strong!`,label:'Go to Fix-It Falls',act:()=>start(byId('review'))});
@@ -3194,9 +3210,11 @@ function buildTips(){
   return t;
 }
 function showTip(){const tp=tips[tipI%tips.length];tipI++;say($('#maptext'),tp.text,true);const b=$('#mapact');if(tp.act){b.hidden=false;b.textContent=tp.label;b.onclick=()=>{tone([523,784]);tp.act()}}else b.hidden=true}
+function checkChest(){const c=G.chest;if(!c||!c.from||c.from>=dayKey()||c.from<=(G.chestOpened||''))return;G.chestOpened=c.from;G.coins+=REW.chest;save();
+  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Welcome back${nm()}!</div><h2>Your surprise chest</h2><svg viewBox="0 0 120 90" style="width:150px;align-self:center" aria-hidden="true"><rect x="14" y="40" width="92" height="44" rx="6" fill="#b5773f" stroke="#8c5a2c" stroke-width="3"/><path d="M14 44 Q14 14 60 14 Q106 14 106 44Z" fill="#c98a4c" stroke="#8c5a2c" stroke-width="3"/><rect x="52" y="36" width="16" height="18" rx="3" fill="#ffc23d" stroke="#e09a14" stroke-width="2"/><g fill="#ffd56b"><circle cx="34" cy="10" r="4"/><circle cx="86" cy="8" r="3"/><circle cx="60" cy="4" r="3"/></g></svg><p>You reached your goal yesterday and took a break. That's how brains grow! <b>+${REW.chest} coins</b>.</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Yay!</button>`,()=>{updateStats('#coinPill');sWin();burst(innerWidth/2,innerHeight/3,100)})}
 function renderMap(){
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
-  adoptRemote();stopTimers();updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();
+  adoptRemote();stopTimers();updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();checkChest();
   const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
   for(const [g,sel] of Object.entries(groups))$(sel).innerHTML=ISLANDS.map((isl,i)=>isl.group===g?card(isl,i):'').join('');
   $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'Compass fixed! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
@@ -3233,7 +3251,7 @@ function start(isl,opts={}){
   if(isl.special==='boss')return startBoss(isl,opts);
   if(isl.special==='daily'){const keep=rand;rand=seeded(+dayKey().replace(/-/g,''));const qs=Array.from({length:8},()=>mixedQ());rand=keep;
     /* 3 old mistakes that are due come back inside the daily challenge, so spaced practice happens every day */
-    if(!dailyDone())shuffle(reviewDue().slice()).slice(0,3).forEach((r,i)=>{const isl2=byId(r.i);if(!isl2)return;const q=makeQ(isl2,r.t,r.s,r.d);q.from=isl2.name;q.rv=1;qs[2+i*2]=q});
+    if(!dailyDone())shuffle(reviewDue().filter(r=>byId(r.i))).slice(0,5).forEach((r,i)=>{const isl2=byId(r.i);const q=makeQ(isl2,r.t,r.s,r.d);q.from=isl2.name;q.rv=1;qs[[1,3,4,6,7][i]]=q});
     return beginRound(isl,'daily',qs)}
   if(isl.special==='review'){const due=reviewDue();
     if(!due.length){const all=G.review.length;say($('#maptext'),all?`Nothing to fix today! <b>${all} puzzle${all>1?'s':''}</b> will come back on another day, so your brain can practice remembering.`:`No mistakes to fix. Wow! When you miss a puzzle, it comes here so you can try it again later.`);$('#mapact').hidden=true;show('map');scrollTo({top:0,behavior:'smooth'});foxMove('hop');return}
@@ -3242,7 +3260,10 @@ function start(isl,opts={}){
   if(isl.flash)return startFlash(isl);
   if(isl.round)return beginRound(isl,'island',isl.round(isl));
   const order=isl.types>6?dealTypes(isl.id,isl.types,6):shuffle([...Array(isl.types).keys()]),d=diffFor(isl);
-  beginRound(isl,'island',Array.from({length:6},(_,i)=>makeQ(isl,order[i%order.length],R(1,2e9),d)));
+  const qs=Array.from({length:6},(_,i)=>makeQ(isl,order[i%order.length],R(1,2e9),d));
+  /* one old mistake that is due rides along in every normal round, so the mistake list keeps shrinking */
+  const due=isl.id==='ev'?[]:reviewDue().filter(r=>byId(r.i));if(due.length){const r=pick(due),i2=byId(r.i),q=makeQ(i2,r.t,r.s,r.d);q.rv=1;if(i2.id!==isl.id)q.from=i2.name;qs[2]=q}
+  beginRound(isl,'island',qs);
 }
 function freshState(isl,mode){return {isl,mode,qs:[],i:0,score:0,tries:0,streak:0,bestStreak:0,coins:0,xp:0,locked:false,badges:[],lvNow:levelOf(G.xp),lv0:levelOf(G.xp)}}
 function beginRound(isl,mode,qs){
@@ -3269,7 +3290,7 @@ function showQ(){
   const q=S.qs[S.i];S.tries=0;S.locked=false;
   const c=$('#card');c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
-  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}`;if(q.rv&&S.mode==='daily')say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i))}
+  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i))}
   $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);
   if(S.mode==='lesson'&&S.i>0){const pv=S.qs[S.i-1];if(q.guided&&!pv.guided)say($('#say'),`Now let's do one <b>together</b>, step by step!`);else if(!q.teach&&!q.guided&&(pv.guided||pv.teach))say($('#say'),`Your turn! Try these <b>on your own</b>. Use the trick!`)}
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;
@@ -3374,7 +3395,7 @@ function judge(ok,btn){
   if(ok){
     S.locked=true;if(btn)btn.classList.add('right');
     const first=S.tries===0;if(first)track(q,true,true);
-    if(first){S.score++;S.streak++;dot&&dot.classList.add('gold')}else{S.streak=0;dot&&dot.classList.add('ok')}
+    if(first){S.score++;S.streak++;dot&&dot.classList.add('gold');if(q.meta)(S.missRun||(S.missRun={}))[q.meta.i+'|'+q.meta.t]=0}else{S.streak=0;dot&&dot.classList.add('ok')}
     if(first&&S.mode==='place'){S.pr=S.pr||{};S.pr[q.meta.i]=(S.pr[q.meta.i]||0)+1}
     S.bestStreak=Math.max(S.bestStreak,S.streak);if(S.bestStreak>G.bestCombo)G.bestCombo=S.bestStreak;
     let c=first?REW.ans:REW.ans2;if(first&&S.streak>=3)c+=Math.min(S.streak,8)-1;if(S.mode==='island'){const pk=pipPick();if(pk&&pk.id===S.isl.id)c*=2}c=taper(c);if(S.mode==='island'&&S.d===3)c=Math.round(c*1.5);
@@ -3395,6 +3416,7 @@ function judge(ok,btn){
     if(q.kind==='keypad'){S.entry='';const t=$('#entryTxt');if(t)t.textContent=''}
     if(S.mode==='boss'){S.locked=true;track(q,true,false);loseHeart();reveal(q);say($('#say'),S.hearts>0?`Ouch! The ${BOSSES[S.boss].name} zapped a heart! Shake it off!`:`Oh no, no hearts left! It got away this time...`);
       const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ();return}
+    if(S.tries===1&&S.mode==='island'&&q.meta&&q.meta.t!=null&&!q.rv&&byId(q.meta.i)&&byId(q.meta.i).gen){const k=q.meta.i+'|'+q.meta.t;S.missRun=S.missRun||{};S.helped=S.helped||{};S.missRun[k]=(S.missRun[k]||0)+1;if(S.missRun[k]>=2&&!S.helped[k]){S.helped[k]=1;S.helpQ=q}}
     if(S.tries===1){track(q,true,false);say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge()}
     else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review'||q.rv)reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
       $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ()}
@@ -3416,8 +3438,14 @@ function finishQ(){
 $('#next').onclick=()=>{
   if(S.bonus){S.bonus=false;return startPop(()=>{S.i++;if(S.i>=S.qs.length)finishRound();else showQ()})}
   if(S.mode==='boss'){if(S.hp<=0)return finishBoss(true);if(S.hearts<=0)return finishBoss(false);S.qs.push(mixedQ(S.pool));S.i++;return showQ()}
+  if(S.helpQ&&S.i+1<S.qs.length){const hq=S.helpQ;S.helpQ=null;return showHelp(hq,()=>{S.i++;showQ()})}
   S.i++;if(S.i>=S.qs.length)finishRound();else showQ();
 };
+/* two misses in a row on the same kind of puzzle: Pip solves one out loud, and the next puzzle is a bit easier */
+function showHelp(q,go){const isl=byId(q.meta.i),d=Math.max(1,(q.meta.d||2)-1),ex=makeQ(isl,q.meta.t,R(1,2e9),d),nx=S.qs[S.i+1];
+  if(nx&&!nx.rv&&!nx.teach){const e=makeQ(isl,q.meta.t,R(1,2e9),d);e.eased=1;S.qs[S.i+1]=e}
+  const how=explainHTML(ex,true).replace('<b>Yes!</b>',"<b>Here's how Pip does it:</b>");
+  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Pip's tip</div><h2>Let's slow down</h2><p>Two tricky ones in a row! Watch me solve one, then you try a slightly easier one.</p><div class="helpex"><div class="hxq">${ex.prompt}</div>${ex.visual?`<div class="hxv">${ex.visual}</div>`:''}<div class="feedback">${how}</div></div><button class="go" type="button" id="helpOk" style="align-self:center">Got it, let me try!</button>`,()=>{$('#helpOk').onclick=()=>{closeOverlay();go()}})}
 
 /* boss */
 function startBoss(isl,opts={}){
@@ -3473,6 +3501,9 @@ function finishRound(){
     if(s===n&&S.d===3){G.hardMaster[S.isl.id]=1;award('hard')}
     const id=S.isl.id,m=rollAcc(id);
     if(st===3&&!mastered(id)&&!(G.best[id]>=3)){st=2;extra+=m.n<MASTER_N?` Almost a 3rd star! Play <b>${MASTER_N-m.n} more</b> puzzles here and keep getting them right to earn it.`:` Almost a 3rd star! It shines when you get <b>8 of 10</b> right here (right now: ${Math.round(m.acc*100)}%).`}
+    {const tk=tierOf(id)+1;if(tk<=3&&m.n>=4&&!/3rd star/.test(extra))extra+=` Next: the <b>${TIERS[tk][1].toLowerCase()} bar</b> after <b>${toTier(id,tk)} more</b> right answers.`}
+    {const pk=pipPick();if(pk&&pk.id===id){const pd=G.pickDay&&G.pickDay.d===dayKey()?G.pickDay:(G.pickDay={d:dayKey(),done:[],n:{}});pd.n=pd.n||{};pd.done=pd.done||[];pd.n[id]=(pd.n[id]||0)+1;
+      if(pd.n[id]>=3&&!pd.done.includes(id)){pd.done.push(id);const nx=pipPick();if(nx&&nx.id!==id)extra+=` Great practice! Pip's Pick now moves to <b>${esc(nx.name)}</b> (×2 coins there).`}}}
     if(G.settings.diff==='auto'&&!S.isl.noDiff){const cur=G.diff[id]||2;
       if(cur<3&&m.n>=MASTER_N&&m.acc>=.85){G.diff[id]=cur+1;G.roll[id]='';extra+=` ${S.isl.name} is now <b>${DIFF_NAME[cur+1]}</b> mode. Bigger challenges, more coins!`}
       else if(cur>1&&m.n>=8&&m.acc<.6){G.diff[id]=cur-1;G.roll[id]='';extra+=` Next time ${S.isl.name} will be <b>${DIFF_NAME[cur-1]}</b> so you can practice and grow.`}}
@@ -3542,8 +3573,8 @@ function shopItem(kind,id,it){
   else if(it.reward)btn=`<button type="button" disabled>Event prize: ${EV_MILES[1][0]} pts</button>`;
   else if(G.coins>=it.price)btn=`<button type="button" class="buy" data-k="${kind}" data-id="${id}">${COIN_ICON} ${it.price}</button>`;
   else btn=`<button type="button" disabled>${COIN_ICON} ${it.price}</button>`;
-  const leg=it.price>=1000;
-  return `<div class="item${wearing?' wearing':''}${leg?' leg':''}">${it.nw&&!owned?'<span class="newtag">NEW</span>':''}<div class="prev">${foxSVG({[kind]:id})}</div><b>${it.name}</b>${leg?'<span class="legtag">Legendary</span>':''}${btn}</div>`;
+  const leg=it.price>=1000,isw=G.wish&&G.wish.k===kind&&G.wish.id===id,canWish=!owned&&!it.reward&&it.price>0;
+  return `<div class="item${wearing?' wearing':''}${leg?' leg':''}">${it.nw&&!owned?'<span class="newtag">NEW</span>':''}${canWish?`<button type="button" class="wishb${isw?' on':''}" data-wk="${kind}" data-wid="${id}" aria-label="${isw?'Remove from wish':'Make this my wish'}" title="${isw?'My wish!':'Make this my wish'}">${isw?'★':'☆'}</button>`:''}<div class="prev" data-tk="${kind}" data-tid="${id}" title="Try it on">${foxSVG({[kind]:id})}</div><b>${it.name}</b>${leg?'<span class="legtag">Legendary</span>':''}${btn}</div>`;
 }
 function renderCloset(){
   refreshFoxes();updateStats();
@@ -3562,10 +3593,14 @@ function renderCloset(){
   $('#shopBaskets').innerHTML=Object.entries(BASKETS).filter(keep(G.baskets)).map(([k,v])=>shopItem('basket',k,v)).join('');
   $('#tcount').textContent=`${G.badges.length} of ${BADGES.length} badges`;
   $('#trophies').innerHTML=BADGES.map(b=>`<div class="trophy${G.badges.includes(b[0])?'':' off'}">${MEDAL(b[3])}<div><b>${b[1]}</b><small>${b[2]}</small></div></div>`).join('');
+  document.querySelectorAll('.item .wishb').forEach(b=>b.onclick=()=>{const k=b.dataset.wk,id=b.dataset.wid,it=SHOP[k].items()[id];if(G.wish&&G.wish.k===k&&G.wish.id===id){G.wish=null;save();renderCloset();return}
+    G.wish={k,id};save();renderCloset();tone([660,990],.06);say($('#csay'),`The <b>${it.name}</b> is our wish! I'll show on the map how close we are. ${G.coins>=it.price?'And guess what? We can get it right now!':`Only <b>${fmt(it.price-G.coins)} more coins</b>!`}`)});
+  document.querySelectorAll('.item .prev[data-tk]').forEach(el=>el.onclick=()=>{const k=el.dataset.tk,id=el.dataset.tid,it=SHOP[k].items()[id],bob=$('.closetTop .pipbob');if(!bob)return;bob.innerHTML=foxSVG({[k]:id});foxMove('spin');
+    say($('#csay'),SHOP[k].list().includes(id)?`I already have the <b>${it.name}</b>. Tap the button to use it!`:`Trying on the <b>${it.name}</b>... What do you think? It costs <b>${fmt(it.price)} coins</b>.`)});
   document.querySelectorAll('.item button[data-id]').forEach(b=>b.onclick=()=>{
     const kind=b.dataset.k,id=b.dataset.id,K=SHOP[kind],it=K.items()[id],list=K.list();
     const pname=kind==='pet'&&id!=='none'?it.name.split(' the ')[0]:'';
-    if(!list.includes(id)){if(G.coins<it.price)return;G.coins-=it.price;list.push(id);award('shopper');if(it.price>=1000)award('legend');sWin();burstAt(b,80);
+    if(!list.includes(id)){if(G.coins<it.price)return;G.coins-=it.price;list.push(id);award('shopper');if(G.wish&&G.wish.k===kind&&G.wish.id===id)G.wish=null;if(it.price>=1000)award('legend');sWin();burstAt(b,80);
       say($('#csay'),kind==='basket'?pick([`What a ride! I love my new <b>${it.name}</b>!`,`Wheee! The <b>${it.name}</b> is so comfy!`]):kind==='char'?`Ta-da! I'm a <b>${it.animal}</b> now! Try my 3 colors above!`:kind==='pet'?pick([`Meet my new best friend, <b>${pname}</b>! Thank you SO much!`,`<b>${pname}</b> is coming on all our adventures!`,`Hi <b>${pname}</b>! Welcome to the balloon!`]):pick([`I LOVE it! Thank you so much!`,`Wow! I look amazing! Thank you!`,`Best. Gift. EVER!`]))}
     else{tone([660,880]);say($('#csay'),kind==='char'?`I'm a ${it.animal} again! Let's fly!`:kind==='pet'?(id==='none'?`Just me for now!`:`<b>${pname}</b>, hop in! Let's fly!`):pick([`Good choice!`,`Looking sharp!`,`Ta-da!`]))}
     G[K.key]=id;save();renderCloset();setTimeout(()=>foxMove(kind==='pet'?'hop':'spin'),50);
@@ -3630,7 +3665,7 @@ function mapSVG(pieces,fresh){
   });
   return `<svg class="storymap" viewBox="0 0 316 216" role="img" aria-label="Treasure map with ${pieces} of 4 pieces found"><defs>${defs}</defs>${body}</svg>`;
 }
-function chapterReady(i){const ch=CHAPTERS[i];return ch.book===2?ch.islands.every(id=>mastered(id)):ch.islands.every(id=>(G.best[id]||0)>=2)}
+function chapterReady(i){const ch=CHAPTERS[i];return ch.book===2?ch.islands.every(id=>tierBest(id)>=2):ch.islands.every(id=>(G.best[id]||0)>=2)}
 /* Book 2 opens one chapter at a time: a new chapter can start 2 days after the one before it was won */
 function chapterOpensOn(i){if(!CHAPTERS[i]||CHAPTERS[i].book!==2||i===4)return '';const at=((G.story||{}).at||{})[i-1];if(!at)return '';const d=new Date(at+'T12:00:00');d.setDate(d.getDate()+2);return d.toISOString().slice(0,10)}
 const chapterWaiting=i=>{const o=chapterOpensOn(i);return o&&dayKey()<o?o:''};
@@ -3646,14 +3681,14 @@ function compassSVG2(n,fresh){const cx=158,cy=108,R1=92,R0=26,cols=['#2f9fe0','#
 function openStory(){
   stopTimers();show('story');refreshFoxes();
   const book2=G.story.ch>=4;$('#storyMap').innerHTML=book2?compassSVG2(G.story.ch-4):mapSVG(Math.min(G.story.ch,4));
-  const st=$('#story .iname');if(st)st.textContent=book2?'The Starlight Compass':"Pip's Lost Map";const sq=$('#story .qnum');if(sq)sq.textContent=book2?'Get the green bar (8 of 10 right lately) on every island in a chapter, then beat its boss.':'Earn 2 stars on every island in a chapter, then beat its boss to win a map piece.';
+  const st=$('#story .iname');if(st)st.textContent=book2?'The Starlight Compass':"Pip's Lost Map";const sq=$('#story .qnum');if(sq)sq.textContent=book2?'Get the silver bar (7 of 10 right lately) on every island in a chapter, then beat its boss.':'Earn 2 stars on every island in a chapter, then beat its boss to win a map piece.';
   const cur=CHAPTERS[G.story.ch],wait=cur?chapterWaiting(G.story.ch):'';
-  say($('#storysay'),!cur?`We fixed the Starlight Compass together${nm()}! You can replay any chapter boss for fun and stickers.`:wait?`What an adventure! The next chapter, <b>${cur.name}</b>, opens on <b>${new Date(wait+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}</b>. Practice its islands now so you're ready!`:chapterReady(G.story.ch)?`All islands are ready! Time to battle the <b>${BOSSES[cur.boss].name}</b>!`:`Chapter ${G.story.ch+1}: <b>${cur.name}</b>. ${cur.book===2?'Get the <b>green bar</b> (8 of 10 right lately) on each island below':'Earn 2 stars on each island below'} to call out the boss.`);
+  say($('#storysay'),!cur?`We fixed the Starlight Compass together${nm()}! You can replay any chapter boss for fun and stickers.`:wait?`What an adventure! The next chapter, <b>${cur.name}</b>, opens on <b>${new Date(wait+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}</b>. Practice its islands now so you're ready!`:chapterReady(G.story.ch)?`All islands are ready! Time to battle the <b>${BOSSES[cur.boss].name}</b>!`:`Chapter ${G.story.ch+1}: <b>${cur.name}</b>. ${cur.book===2?'Get the <b>silver bar</b> (7 of 10 right lately) on each island below':'Earn 2 stars on each island below'} to call out the boss.`);
   const order=CHAPTERS.map((_,i)=>i).sort((x,y)=>book2?((x>=4?0:1)-(y>=4?0:1))||x-y:x-y);
   $('#chapters').innerHTML=order.map(i=>{const ch=CHAPTERS[i];const lock=i>G.story.ch,fin=i<G.story.ch,w=i===G.story.ch?chapterWaiting(i):'',ready=chapterReady(i)&&!w;
     return `${i===4?'<h3 class="sectitle bookt">Book 2: The Starlight Compass</h3>':i===0?'<h3 class="sectitle bookt">Book 1: The Lost Map</h3>':''}<div class="chap${lock?' lock':''}${fin?' done':''}"><h4>${ch.name}<small>Chapter ${i+1} · ${fin?(ch.book===2?'Compass part found!':'Piece found!'):lock?'Locked':w?'Opens '+new Date(w+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'In progress'}</small></h4>
       <p>Boss: ${BOSSES[ch.boss].name}</p>
-      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=ch.book===2?mastered(id):(G.best[id]||0)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(G.best[id]||0)}</button>`}).join('')}</div>
+      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=ch.book===2?tierBest(id)>=2:(G.best[id]||0)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(G.best[id]||0)}${ch.book===2&&!ok&&!lock?`<small class="tneed">${toTier(id,2)} more right for silver</small>`:''}</button>`}).join('')}</div>
       <div class="actrow" style="justify-content:flex-start">${lock?'':`<button type="button" class="go small alt" data-intro="${i}">Story</button><button type="button" class="go small${ready?'':' alt'}" data-boss="${i}" ${ready?'':'disabled'}>${fin?'Replay boss':'Battle boss'}</button>`}</div></div>`}).join('');
   document.querySelectorAll('[data-isl]').forEach(b=>b.onclick=()=>start(byId(b.dataset.isl)));
   document.querySelectorAll('[data-intro]').forEach(b=>b.onclick=()=>playDialog(CHAPTERS[+b.dataset.intro].intro));
@@ -3796,8 +3831,8 @@ function selectKid(id){
 }
 function newPlayer(then){
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New player</div><h2>What's the player's name?</h2><p>A first name or nickname is perfect.</p>
-    <input type="text" id="nameIn" maxlength="16" autocomplete="off" aria-label="Player name"><div class="btnrow"><button class="go" type="button" id="nameOk">Add player</button><button class="go alt" type="button" id="nameNo">Cancel</button></div>`,
-    ()=>{const i=$('#nameIn');setTimeout(()=>i.focus(),100);const ok=()=>{const n=i.value.trim().slice(0,16);if(!n){i.focus();return}const p=freshProfile();p.name=n;const id=addKid(p);closeOverlay();then&&then(id)};
+    <input type="text" id="nameIn" maxlength="16" autocomplete="off" aria-label="Player name"><label class="limchk"><input type="checkbox" id="limIn" checked> Limit play to 45 minutes a day <small>Recommended. Grown-ups can change it any time.</small></label><div class="btnrow"><button class="go" type="button" id="nameOk">Add player</button><button class="go alt" type="button" id="nameNo">Cancel</button></div>`,
+    ()=>{const i=$('#nameIn');setTimeout(()=>i.focus(),100);const ok=()=>{const n=i.value.trim().slice(0,16);if(!n){i.focus();return}const p=freshProfile();p.name=n;if($('#limIn')&&$('#limIn').checked)p.settings.limit='45';const id=addKid(p);closeOverlay();then&&then(id)};
       $('#nameOk').onclick=ok;i.onkeydown=e=>{if(e.key==='Enter')ok()};$('#nameNo').onclick=closeOverlay});
 }
 function pinPad(title,sub,onDone){let buf='';
@@ -3854,7 +3889,10 @@ function renderParent(){
   $('#pSub').textContent=`${G.name||'Player'} · Level ${levelOf(G.xp)+1} · ${starTotal()} stars · ${fmt(G.coins)} coins`;
   const sel=(id,opts,val)=>`<select id="${id}">${opts.map(([v,l])=>`<option value="${v}"${v===val?' selected':''}>${l}</option>`).join('')}</select>`;
   const sw=(id,on)=>`<button type="button" class="switch" role="switch" id="${id}" aria-checked="${on}"></button>`;
-  $('#parentBody').innerHTML=`<div class="pgrid">
+  const notes=[];{const mx=Math.max(...mins),di=mins.indexOf(mx);if(mx>60&&!+(G.settings.limit||0))notes.push(`<b>${Math.floor(mx/60)} h ${mx%60} min</b> played on ${new Date(last7[di]+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}. That is a lot for one day. You can set a daily time limit in Settings below.`)}
+  {const w=rows.find(r=>r.s.a>=10&&r.p<60);if(w){const ln=Object.keys(G.lessons||{}).filter(k=>LESSONS.some(L=>L.id===k&&L.isl===w.i.id)).length;notes.push(`<b>${esc(w.i.name)}</b> is the hardest topic right now: ${w.p}% right on the first try (${w.s.a} puzzles). ${lessonsFor(w.i.id).length?(ln?`${ln} of ${lessonsFor(w.i.id).length} Pip lessons done for it.`:`Pip has ${lessonsFor(w.i.id).length} short lessons for it; none done yet.`):''}`)}}
+  if(G.review.length>=15)notes.push(`<b>${G.review.length} old mistakes</b> are waiting for practice (${G.fixed} fixed so far). One comes back in every round and up to five in the Daily Challenge.`);
+  $('#parentBody').innerHTML=`<div class="pgrid">${notes.length?`<div class="pcard wide pnotes"><h4>Pip's notes for grown-ups</h4><ul>${notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>`:''}
     <div class="pcard wide"><h4>Today</h4><div class="kpis">
       <div class="kpi"><b>${Math.floor(t.sec/60)}</b><small>minutes played</small></div><div class="kpi"><b>${t.q}</b><small>puzzles answered</small></div>
       <div class="kpi"><b>${t.q?Math.round(t.c/t.q*100)+'%':'–'}</b><small>right on first try</small></div><div class="kpi"><b>${gi?(gi.cur>=gi.max?'Done':gi.label):'Off'}</b><small>daily goal</small></div></div></div>
@@ -4028,7 +4066,12 @@ const projDone=P=>projStage(P.id)>=P.stages.length;
 function projNext(P){const n=projStage(P.id);return n<P.stages.length?{n,name:P.stages[n][0],price:P.stages[n][1]}:null}
 function saveGoalProject(){const g=PROJECTS.find(P=>P.id===G.saveGoal&&!projDone(P));if(g)return g;const open=PROJECTS.filter(P=>!projDone(P));if(!open.length)return null;return open.slice().sort((a,b)=>projNext(a).price-projNext(b).price)[0]}
 function projThumb(P,n){const [x,y]=P.pos;const vb=P.sky?`${x-110} ${y-45} 200 115`:`${x-90} ${y-205} 180 215`;return `<svg viewBox="${vb}">${P.draw(x,y,Math.max(1,n))}</svg>`}
-function renderGoalCard(){const el=$('#goalCard');if(!el)return;const P=saveGoalProject();if(!P){el.hidden=true;return}el.hidden=false;const nx=projNext(P),have=Math.max(0,G.coins),pct=Math.min(100,have/nx.price*100),can=have>=nx.price;
+function wishItem(){const w=G.wish;if(!w||!SHOP[w.k])return null;const it=SHOP[w.k].items()[w.id];if(!it||SHOP[w.k].list().includes(w.id))return null;return {...w,it}}
+function renderGoalCard(){const el=$('#goalCard');if(!el)return;const W=wishItem();
+  if(W){el.hidden=false;const have=Math.max(0,G.coins),pr=W.it.price,can=have>=pr;
+    el.innerHTML=`<div class="gprev wishprev">${foxSVG({[W.k]:W.id})}</div><div class="gtxt"><b>${can?'You can get your wish!':'My wish'}: ${esc(W.it.name)}</b><span>${can?'Go to the closet and get it!':`${fmt(pr-have)} more coins to go`}</span><div class="bar warm"><i style="width:${Math.min(100,have/pr*100)}%"></i></div><small>${fmt(Math.min(have,pr))} / ${fmt(pr)} coins</small></div><button type="button" class="go small${can?' leaf':' alt'}" id="goalGo">${can?'Get it':'Closet'}</button>`;
+    $('#goalGo').onclick=openCloset;return}
+  const P=saveGoalProject();if(!P){el.hidden=true;return}el.hidden=false;const nx=projNext(P),have=Math.max(0,G.coins),pct=Math.min(100,have/nx.price*100),can=have>=nx.price;
   el.innerHTML=`<div class="gprev">${projThumb(P,nx.n+1)}</div><div class="gtxt"><b>${can?'You can build it!':'Saving for'}: ${esc(P.name)}</b><span>Step ${nx.n+1} of ${P.stages.length}: ${esc(nx.name)}</span><div class="bar warm"><i style="width:${pct}%"></i></div><small>${fmt(Math.min(have,nx.price))} / ${fmt(nx.price)} coins</small></div><button type="button" class="go small${can?' leaf':' alt'}" id="goalGo">${can?'Build it':'See projects'}</button>`;
   $('#goalGo').onclick=()=>{openHome();setTimeout(()=>{const t=$('#homeProj');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},150)}}
 const HOUSE_POS=[320,206],HERO_POS=[547,283];
