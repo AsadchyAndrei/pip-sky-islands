@@ -1381,6 +1381,21 @@ html body.big .setit small{font-size:13px}html body.big .setcard p{font-size:16.
 .pzit b{font-size:14px;line-height:1.15}.pzit small{display:inline-flex;align-items:center;gap:4px;font-weight:800}.pzit small svg{width:16px;height:16px}
 html body.big .pzcard small,html body.big .pztag{font-size:16px}html body.big .pzit b{font-size:16px}
 @media (max-width:760px){.pzgrid{grid-template-columns:1fr;gap:10px}.pzcard{padding:12px}.pzit{width:118px}}
+/* wide screens: the four sections sit beside Pip as a neat menu, so the space next to the character is used */
+@media (min-width:1100px){
+  .mapL{display:grid;grid-template-columns:104px minmax(0,1fr);column-gap:16px;align-content:start}
+  .mapL>*{grid-column:1/-1}
+  #map .intro{display:contents}
+  #map .intro .pipbob{grid-column:1;grid-row:1;width:104px;align-self:center;justify-self:center;margin-top:16px}
+  #map .intro .bubble{grid-column:1/-1;grid-row:2;margin-top:12px}
+  #map .intro .bubble::before{left:44px}
+  #map .nav{grid-column:2;grid-row:1;align-self:center;grid-template-columns:1fr;gap:8px;margin-top:16px}
+  #map .navbtn{padding:7px 14px 5px;border-radius:16px;gap:10px;min-height:46px;box-shadow:0 4px 0 rgba(31,53,87,.18)}
+  #map .navbtn svg{width:30px;height:30px}
+  #map .navbtn b{font-size:18px}
+  #map .navbtn:hover{transform:translateX(3px)}
+  html body.big #map .navbtn b{font-size:19px}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
