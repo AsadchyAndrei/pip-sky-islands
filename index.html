@@ -735,8 +735,9 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
   #syncBadge{order:2;padding:0;width:44px;height:44px;justify-content:center}
   #syncBadge span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .tmwrap{order:3}
-  #gearBtn{width:44px;height:44px;padding:0;font-size:0}
-  #gearBtn::before{content:"⚙";font-size:22px;line-height:44px}
+  #gearBtn{width:44px;height:44px;padding:0;justify-content:center}
+  #gearBtn .tlabel{display:none}
+  #gearBtn .ico{width:26px;height:26px}
   #parentBtn{display:none}
   .tmenu .menuonly{display:block}
   .lvl{order:4;flex:1 1 100%;padding:5px 12px 6px}
@@ -1122,6 +1123,26 @@ html body.big .status.go{font-size:15px;font-family:var(--body)}
 html,body,button,a,input,select,textarea,label,.choice,.isle,.item,.tile,.coinbtn,.slot,.kid,.chap,.navbtn,.bnav button,.card,.ocard{touch-action:manipulation}
 /* iPhones zoom in when a text field with small text gets focus: keep fields at 16px or more on phones */
 @media (max-width:760px){input,select,textarea,textarea.code{font-size:max(16px,1em)}}
+/* ===== icons: one set, one size system ===== */
+.ico{width:1.25em;height:1.25em;flex:none;display:inline-block;vertical-align:-.28em}
+.tbtn,.back{display:inline-flex;align-items:center;gap:6px}
+.back .ico{width:1.1em;height:1.1em}
+.tmenu .tbtn{justify-content:flex-start;gap:10px}.tmenu .tbtn .ico{width:22px;height:22px}
+#gearBtn .ico{width:22px;height:22px}
+#music[aria-pressed=false] .ico,#sound[aria-pressed=false] .ico{opacity:.45}
+#sound[aria-pressed=false] .wave{display:none}
+.item .locktag{position:absolute;top:6px;left:6px;width:30px;height:30px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 2px 0 var(--line)}
+.item .locktag .ico{width:20px;height:20px}
+.item .wishb .ico,.pgoal .ico{width:15px;height:15px;margin-right:3px;vertical-align:-.18em}
+.stmini{display:inline-flex;gap:1px;vertical-align:-.15em}.stmini svg{width:1em;height:1em}
+.cisl .stmini svg{width:14px;height:14px}
+.klock .ico{width:18px;height:18px}
+.keys button .ico,.pinpad button .ico{width:26px;height:26px;vertical-align:middle}
+.keys .del,.keys [data-kp],.keys [data-pk]{color:var(--ink)}
+.choice.right::after,.choice.wrong::after{content:"";background-repeat:no-repeat;background-position:center;background-size:18px}
+.choice.right::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"),none;background-color:var(--leaf-dd)}
+.choice.wrong::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7L7 17' stroke='white' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E"),none;background-color:var(--coral-d)}
+.tile.sel::after{content:"";top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--ocean-d) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -1149,13 +1170,13 @@ html,body,button,a,input,select,textarea,label,.choice,.isle,.item,.tile,.coinbt
       <div class="tools">
         <button class="tbtn player" id="playerBtn" type="button" title="Switch player"></button>
         <span class="tbtn sync" id="syncBadge" role="status"></span>
-        <div class="tmwrap"><button class="tbtn" id="gearBtn" type="button" aria-expanded="false" aria-controls="tmenu">⚙ Settings</button>
+        <div class="tmwrap"><button class="tbtn" id="gearBtn" type="button" aria-expanded="false" aria-controls="tmenu" aria-label="Settings"><span class="ico-slot" data-ico="gear"></span><span class="tlabel">Settings</span></button>
           <div class="tmenu" id="tmenu" hidden>
-            <button class="tbtn" id="bigBtn" type="button" aria-pressed="false" title="Bigger text">Aa Bigger text</button>
-            <button class="tbtn" id="music" type="button" aria-pressed="true">Music: on</button>
-            <button class="tbtn" id="sound" type="button" aria-pressed="true">Sounds: on</button>
+            <button class="tbtn" id="bigBtn" type="button" aria-pressed="false" title="Bigger text"><span class="ico-slot" data-ico="text"></span><span>Bigger text</span></button>
+            <button class="tbtn" id="music" type="button" aria-pressed="true"><span class="ico-slot" data-ico="music"></span><span class="tval">Music: on</span></button>
+            <button class="tbtn" id="sound" type="button" aria-pressed="true"><span class="ico-slot" data-ico="sound"></span><span class="tval">Sounds: on</span></button>
           </div></div>
-        <button class="tbtn" id="parentBtn" type="button">Grown-ups</button>
+        <button class="tbtn" id="parentBtn" type="button"><span class="ico-slot" data-ico="family"></span><span>Grown-ups</span></button>
       </div>
     </div>
     <div class="stats">
@@ -1200,7 +1221,7 @@ html,body,button,a,input,select,textarea,label,.choice,.isle,.item,.tile,.coinbt
 
     <section id="play" hidden>
       <div class="playhead">
-        <button class="back" id="back" type="button">← Map</button>
+        <button class="back" id="back" type="button"><span class="ico-slot" data-ico="back"></span>Map</button>
         <div class="ihead"><div class="iname" id="iname"></div><div class="qnum" id="qnum"></div></div>
         <div class="combo" id="combo" hidden></div>
         <div class="dots" id="dots"></div>
@@ -1248,7 +1269,7 @@ html,body,button,a,input,select,textarea,label,.choice,.isle,.item,.tile,.coinbt
     </section>
 
     <section id="closet" hidden>
-      <div class="playhead"><button class="back" data-home type="button">← Map</button>
+      <div class="playhead"><button class="back" data-home type="button"><span class="ico-slot" data-ico="back"></span>Map</button>
         <div class="ihead"><div class="iname">Pip's Closet</div><div class="qnum">Spend coins on hats, glasses, balloons and more. Earn coins by solving puzzles!</div></div></div>
       <div class="closetTop"><div class="pipbob" data-fox></div><div><div class="bubble" id="csay"></div><div class="swatches" id="swatches"></div></div></div>
       <h3 class="sectitle" id="evShopTitle" hidden></h3><div class="shop" id="shopEvent" hidden></div>
@@ -1264,27 +1285,27 @@ html,body,button,a,input,select,textarea,label,.choice,.isle,.item,.tile,.coinbt
     </section>
 
     <section id="home" hidden>
-      <div class="playhead"><button class="back" data-home type="button">← Map</button>
+      <div class="playhead"><button class="back" data-home type="button"><span class="ico-slot" data-ico="back"></span>Map</button>
         <div class="ihead"><div class="iname">My Island</div><div class="qnum" id="homeProg"></div></div></div>
       <div class="homewrap"><div><div class="homeview" id="homeView"></div><div class="actrow htools" id="homeTools"></div><div class="hstore" id="homeStore" hidden></div></div><div class="bubble" id="hsay"></div></div>
       <h3 class="sectitle">Grand Projects <small>big builds, one step at a time</small></h3><div class="projects" id="homeProj"></div>
       <h3 class="sectitle">Build <small>spend coins to make your island amazing</small></h3><div class="shop" id="homeShop"></div>
     </section>
     <section id="albumS" hidden>
-      <div class="playhead"><button class="back" data-home type="button">← Map</button>
+      <div class="playhead"><button class="back" data-home type="button"><span class="ico-slot" data-ico="back"></span>Map</button>
         <div class="ihead"><div class="iname">Sticker Album</div><div class="qnum">Finish islands to win stickers. Complete a set for +40 coins! Doubles turn into 4 coins.</div></div></div>
       <div id="albumBody"></div>
     </section>
 
     <section id="story" hidden>
-      <div class="playhead"><button class="back" data-home type="button">← Map</button>
+      <div class="playhead"><button class="back" data-home type="button"><span class="ico-slot" data-ico="back"></span>Map</button>
         <div class="ihead"><div class="iname">Pip's Lost Map</div><div class="qnum">Earn 2 stars on every island in a chapter, then beat its boss to win a map piece.</div></div></div>
       <div class="storytop"><div id="storyMap"></div><div class="bubble" id="storysay"></div></div>
       <div class="chapters" id="chapters"></div>
     </section>
 
     <section id="parent" hidden>
-      <div class="playhead"><button class="back" data-home type="button">← Back to the game</button>
+      <div class="playhead"><button class="back" data-home type="button"><span class="ico-slot" data-ico="back"></span>Back to the game</button>
         <div class="ihead"><div class="iname">Grown-ups Corner</div><div class="qnum" id="pSub"></div></div></div>
       <div id="parentBody"></div>
     </section>
@@ -1329,6 +1350,23 @@ const FLAME=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 4 6 6 
 const CROWN_MINI=`<svg viewBox="0 0 24 18" style="width:20px;height:15px" aria-label="Hard mode mastered"><path d="M2 16 L2 5 L7 10 L12 2 L17 10 L22 5 L22 16Z" fill="#ffc23d" stroke="#e09a14" stroke-width="1.5"/></svg>`;
 const HEART=on=>`<svg viewBox="0 0 24 24" class="${on?'':'lost'}"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" fill="#ff6b57" stroke="#c9473a" stroke-width="1.5"/></svg>`;
 const MEDAL=c=>`<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 2h7l-3 14h-6zM25 2h7l-3 14h-6z" fill="#2f9fe0"/><circle cx="24" cy="30" r="15" fill="${c}" stroke="#1f3557" stroke-width="2.5"/><path d="M24 21l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z" fill="#fff"/></svg>`;
+/* ===== icon set: same look as the game's art (soft fill, dark ink outline, round ends) ===== */
+const ICON={
+  lock:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#1f3557" stroke-width="2.6" stroke-linecap="round"/><rect x="4.5" y="10.5" width="15" height="11" rx="3" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/><circle cx="12" cy="15.3" r="1.6" fill="#1f3557"/><path d="M12 16.5v2" stroke="#1f3557" stroke-width="2" stroke-linecap="round"/></svg>`,
+  gear:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l1.6.2.5 2.3a7 7 0 0 1 1.9.8l2-1.3 2.2 2.2-1.3 2a7 7 0 0 1 .8 1.9l2.3.5v3.2l-2.3.5a7 7 0 0 1-.8 1.9l1.3 2-2.2 2.2-2-1.3a7 7 0 0 1-1.9.8l-.5 2.3h-3.2l-.5-2.3a7 7 0 0 1-1.9-.8l-2 1.3-2.2-2.2 1.3-2a7 7 0 0 1-.8-1.9L2.8 13.6v-3.2l2.3-.5a7 7 0 0 1 .8-1.9l-1.3-2 2.2-2.2 2 1.3a7 7 0 0 1 1.9-.8l.5-2.3z" fill="#bfe3fb" stroke="#1f3557" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#1f3557" stroke-width="1.8"/></svg>`,
+  back:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H6m5-6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  wishOff:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z" fill="#fff" stroke="#e09a14" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  wishOn:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z" fill="#ffc23d" stroke="#e09a14" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  check:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  del:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 5H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8.5L3 12z" fill="#fff" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 9.5l5 5m0-5-5 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  close:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11m0-11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
+  text:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18l4.5-12h1L13 18M4.8 14h6.4" fill="none" stroke="#1f3557" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 11.5a3 3 0 0 1 5 2.2V18m0-3c-2.5-.5-5 0-5 1.6 0 1.6 2.5 1.8 5 .4" fill="none" stroke="#2f9fe0" stroke-width="2" stroke-linecap="round"/></svg>`,
+  music:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V5.5l10-2V15" fill="none" stroke="#1f3557" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="6.5" cy="17.5" rx="3" ry="2.4" fill="#e2558f" stroke="#1f3557" stroke-width="1.8"/><ellipse cx="16.5" cy="15.5" rx="3" ry="2.4" fill="#e2558f" stroke="#1f3557" stroke-width="1.8"/></svg>`,
+  sound:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="#ffc23d" stroke="#1f3557" stroke-width="1.8" stroke-linejoin="round"/><path class="wave" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="#2f9fe0" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  family:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="7" r="3" fill="#ffd2b8" stroke="#1f3557" stroke-width="1.8"/><path d="M2.8 20a5.2 5.2 0 0 1 10.4 0z" fill="#2f9fe0" stroke="#1f3557" stroke-width="1.8" stroke-linejoin="round"/><circle cx="16.5" cy="10" r="2.4" fill="#ffd2b8" stroke="#1f3557" stroke-width="1.6"/><path d="M12.5 20a4 4 0 0 1 8 0z" fill="#ff6b57" stroke="#1f3557" stroke-width="1.6" stroke-linejoin="round"/></svg>`
+};
+/* small inline stars for labels (story chips, grown-ups tables, toasts) */
+const starsMini=n=>n>0?`<span class="stmini" aria-label="${n} star${n>1?'s':''}">${'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z" fill="#ffc23d" stroke="#e09a14" stroke-width="2" stroke-linejoin="round"/></svg>'.repeat(n)}</span>`:'';
 const CHECK=`<svg viewBox="0 0 16 16"><path d="M3 8.5 L6.5 12 L13 4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 /* ================= Pip the fox ================= */
@@ -3468,7 +3506,7 @@ function gain(c,x,el){
   if(lv>=4)award('level5');if(G.coins>=500)award('rich');save();
 }
 function track(q,first,correct){
-  if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss'){const t0=tierOf(id);rollAdd(id,correct);const t1=tierOf(id);if(t1>t0&&byId(id)){G.tierBest=Object.assign({},G.tierBest||{});if(t1>(G.tierBest[id]||0)){const before=starFor(id);G.tierBest[id]=t1;if(starFor(id)>before)toast(`${'★'.repeat(starFor(id))} on ${byId(id).name}!`,`${Math.round(rollAcc(id).acc*100)}% right lately. A new star!`,'#e09a14');grantMastery()}}}const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
+  if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss'){const t0=tierOf(id);rollAdd(id,correct);const t1=tierOf(id);if(t1>t0&&byId(id)){G.tierBest=Object.assign({},G.tierBest||{});if(t1>(G.tierBest[id]||0)){const before=starFor(id);G.tierBest[id]=t1;if(starFor(id)>before)toast(`${starsMini(starFor(id))} ${byId(id).name}!`,`${Math.round(rollAcc(id).acc*100)}% right lately. A new star!`,'#e09a14');grantMastery()}}}const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
   const t=today();t.q++;if(first&&correct){t.c++;thisWeek().c++}
   if(!(first&&correct)){
     G.wrongLog.unshift({p:htmlToSpeech(q.prompt).slice(0,140),a:String(q.answer!=null?q.answer:q.kind==='order'?q.items.join(', '):q.kind==='multi'?q.correct.map(k=>SHAPES[k].name).join(', '):q.kind==='money'?fmtM(q.target):q.kind==='angle'?q.target+'°':q.target&&q.target.h?tf(q.target.h,q.target.m):''),i:id,d:dayKey()});G.wrongLog=G.wrongLog.slice(0,30);
@@ -3943,7 +3981,7 @@ function checkBtn(label,fn){const b=document.createElement('button');b.type='but
 function setupKeypad(q){
   S.entry='';const box=$('#choices');box.className='choices one';
   box.innerHTML=`<div class="keypad"><div class="entry" id="entry"><span id="entryTxt"></span><span class="caret"></span>${q.unit?`<small>${q.unit}</small>`:''}</div>
-    <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-k="${n}">${n}</button>`).join('')}<button type="button" class="del" data-k="del" aria-label="Delete">⌫</button><button type="button" data-k="0">0</button><button type="button" class="ok" data-k="ok" aria-label="Check">✓</button></div></div>`;
+    <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-k="${n}">${n}</button>`).join('')}<button type="button" class="del" data-k="del" aria-label="Delete">${ICON.del}</button><button type="button" data-k="0">0</button><button type="button" class="ok" data-k="ok" aria-label="Check">${ICON.check}</button></div></div>`;
   box.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>keyIn(b.dataset.k,b));
   S.keyH=e=>{if($('#play').hidden||!S||S.locked||S.qs[S.i]!==q)return;if(/^\d$/.test(e.key))keyIn(e.key);else if(e.key==='Backspace')keyIn('del');else if(e.key==='Enter')keyIn('ok')};
   removeEventListener('keydown',window._keyH||(()=>{}));window._keyH=S.keyH;addEventListener('keydown',S.keyH);
@@ -4211,11 +4249,11 @@ function shopItem(kind,id,it){
   if(wearing)btn=`<button type="button" class="worn" disabled>${word}</button>`;
   else if(owned)btn=`<button type="button" class="wear" data-k="${kind}" data-id="${id}">${act}</button>`;
   else if(it.reward)btn=`<button type="button" disabled>Prize: ${EV_MILES[1][0]} pts</button>`;
-  else if(it.mast)btn=`<button type="button" disabled class="mastb">${mastLabel(it.mast)}${it.mast.isl?` · now ${'★'.repeat(starFor(it.mast.isl))||'no stars'}`:''}</button>`;
+  else if(it.mast)btn=`<button type="button" disabled class="mastb">${mastLabel(it.mast)}${it.mast.isl?` · now ${starsMini(starFor(it.mast.isl))||'no stars'}`:''}</button>`;
   else if(G.coins>=it.price)btn=`<button type="button" class="buy" data-k="${kind}" data-id="${id}">${COIN_ICON} ${it.price}</button>`;
   else btn=`<button type="button" disabled>${COIN_ICON} ${it.price}</button>`;
   const leg=it.price>=1000,isw=G.wish&&G.wish.k===kind&&G.wish.id===id,canWish=!owned&&!it.reward&&!it.mast&&it.price>0;
-  return `<div class="item${wearing?' wearing':''}${leg?' leg':''}${it.mast&&!owned?' locked':''}" data-kind="${kind}">${it.mast&&!owned?'<span class="locktag" aria-label="Locked">🔒</span>':''}${it.nw&&!owned?'<span class="newtag">NEW</span>':''}${canWish?`<button type="button" class="wishb${isw?' on':''}" data-wk="${kind}" data-wid="${id}" aria-label="${isw?'Remove from wish':'Make this my wish'}" title="${isw?'My wish!':'Make this my wish'}">${isw?'★ My wish':'☆ Wish'}</button>`:''}<div class="prev" data-tk="${kind}" data-tid="${id}" title="Try it on">${foxSVG({[kind]:id})}</div><b>${it.name}</b>${leg?'<span class="legtag">Legendary</span>':''}${btn}</div>`;
+  return `<div class="item${wearing?' wearing':''}${leg?' leg':''}${it.mast&&!owned?' locked':''}" data-kind="${kind}">${it.mast&&!owned?`<span class="locktag" aria-label="Locked">${ICON.lock}</span>`:''}${it.nw&&!owned?'<span class="newtag">NEW</span>':''}${canWish?`<button type="button" class="wishb${isw?' on':''}" data-wk="${kind}" data-wid="${id}" aria-label="${isw?'Remove from wish':'Make this my wish'}" title="${isw?'My wish!':'Make this my wish'}">${isw?ICON.wishOn+'My wish':ICON.wishOff+'Wish'}</button>`:''}<div class="prev" data-tk="${kind}" data-tid="${id}" title="Try it on">${foxSVG({[kind]:id})}</div><b>${it.name}</b>${leg?'<span class="legtag">Legendary</span>':''}${btn}</div>`;
 }
 function renderCloset(){
   refreshFoxes();updateStats();
@@ -4330,7 +4368,7 @@ function openStory(){
   $('#chapters').innerHTML=order.map(i=>{const ch=CHAPTERS[i];const lock=i>G.story.ch,fin=i<G.story.ch,w=i===G.story.ch?chapterWaiting(i):'',ready=chapterReady(i)&&!w;
     return `${i===8?'<h3 class="sectitle bookt">Book 3: The Rainbow Bridge</h3>':i===4?'<h3 class="sectitle bookt">Book 2: The Starlight Compass</h3>':i===0?'<h3 class="sectitle bookt">Book 1: The Lost Map</h3>':''}<div class="chap${lock?' lock':''}${fin?' done':''}"><h4>${ch.name}<small>Chapter ${i+1} · ${fin?BOOKS[ch.book||1].won:lock?'Locked':w?'Opens '+new Date(w+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'In progress'}</small></h4>
       <p>Boss: ${BOSSES[ch.boss].name}</p>
-      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=starFor(id)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(starFor(id))}${!ok&&!lock?`<small class="tneed">needs ${2-starFor(id)} more ★</small>`:''}</button>`}).join('')}</div>
+      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=starFor(id)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${starsMini(starFor(id))}${!ok&&!lock?`<small class="tneed">needs ${2-starFor(id)} more ${starsMini(1)}</small>`:''}</button>`}).join('')}</div>
       <div class="actrow" style="justify-content:flex-start">${lock?'':`<button type="button" class="go small alt" data-intro="${i}">Story</button><button type="button" class="go small${ready?'':' alt'}" data-boss="${i}" ${ready?'':'disabled'}>${fin?'Replay boss':'Battle boss'}</button>`}</div></div>`}).join('');
   document.querySelectorAll('[data-isl]').forEach(b=>b.onclick=()=>start(byId(b.dataset.isl)));
   document.querySelectorAll('[data-intro]').forEach(b=>b.onclick=()=>playDialog(CHAPTERS[+b.dataset.intro].intro));
@@ -4349,7 +4387,7 @@ $('#storyBtn').onclick=()=>{tone([523,784]);openStory()};
 /* ================= sign-in, consent, players ================= */
 const CLOUD_ICON='<svg viewBox="0 0 24 16" width="20" height="14" aria-hidden="true"><path d="M6 15h12a4.5 4.5 0 0 0 .6-8.96A6 6 0 0 0 7.1 5.2 4.9 4.9 0 0 0 6 15z" fill="currentColor"/></svg>';
 const G_ICON='<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.6 28.6A14.4 14.4 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.2 0-11.5-4.1-13.4-9.8l-8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
-const LOCK='<svg viewBox="0 0 16 18" width="14" height="16" aria-hidden="true"><rect x="2" y="8" width="12" height="9" rx="2" fill="currentColor"/><path d="M5 8V5.5a3 3 0 0 1 6 0V8" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+const LOCK=ICON.lock;
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 const lsJSON=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
@@ -4450,7 +4488,7 @@ function renderKids(){
     :CL.api&&CL.api.configured?`<span>Not signed in: progress is saved on this device only.</span><button class="linkbtn" type="button" id="kIn">Grown-up sign in</button>`:`<span>Progress is saved on this device.</span>`;
   el.innerHTML=`<div class="kidshead"><div class="kfox" data-fox></div><div><div class="eyebrow">Who's playing?</div><h2>${ids.length?'Tap your name!':'Add the first player!'}</h2></div>${ROOT.current&&ROOT.profiles[ROOT.current]?'<button class="go small alt" type="button" id="kBack">Back to the game</button>':''}</div>
     <div class="kidgrid">${ids.map(id=>{const p=ROOT.profiles[id],stars=STAR_ISLANDS.reduce((s,i)=>s+(p.best[i.id]||0),0);
-      return `<button type="button" class="kid${id===ROOT.current?' cur':''}" data-kid="${id}"><span class="kav">${kidAvatar(p)}</span><b>${esc(p.name||'Player')}${p.kidPin?` <i class="klock" title="Has a PIN">${LOCK}</i>`:''}</b><small>Level ${levelOf(p.xp)+1} · ${stars} ★</small></button>`}).join('')}
+      return `<button type="button" class="kid${id===ROOT.current?' cur':''}" data-kid="${id}"><span class="kav">${kidAvatar(p)}</span><b>${esc(p.name||'Player')}${p.kidPin?` <i class="klock" title="Has a PIN">${LOCK}</i>`:''}</b><small>Level ${levelOf(p.xp)+1} · ${stars} ${starsMini(1)}</small></button>`}).join('')}
       <button type="button" class="kid add" id="kAdd"><span class="plus">+</span><b>Add a player</b><small>Just a first name or nickname</small></button></div>
     ${ids.length?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for 4th graders, built on California's grade 4 standards: math, reading, grammar, science and California history. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A grown-up can sign in to save progress and see what to practice</li></ul></div>`}
     ${guest.length?`<div class="kimport"><p>This device has progress from before you signed in: <b>${guest.map(([,p])=>esc(p.name||'Player')).join(', ')}</b>. Keep it safe in your account?</p><button class="go small leaf" type="button" id="kImp">Add to my account</button></div>`:''}
@@ -4479,7 +4517,7 @@ function newPlayer(then){
 }
 function pinPad(title,sub,onDone){let buf='';
   const html=()=>`<div class="pipbob" data-fox></div><h2 style="font-size:28px">${title}</h2>${sub?`<p>${sub}</p>`:''}<div class="pinbox" id="pinbox">${[0,1,2,3].map(i=>`<i class="${i<buf.length?'on':''}"></i>`).join('')}</div>
-    <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-kp="${n}">${n}</button>`).join('')}<button type="button" class="del" data-kp="x" aria-label="Cancel">✕</button><button type="button" data-kp="0">0</button><button type="button" class="del" data-kp="del" aria-label="Delete">⌫</button></div>`;
+    <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-kp="${n}">${n}</button>`).join('')}<button type="button" class="del" data-kp="x" aria-label="Cancel">${ICON.close}</button><button type="button" data-kp="0">0</button><button type="button" class="del" data-kp="del" aria-label="Delete">${ICON.del}</button></div>`;
   const bind=()=>document.querySelectorAll('[data-kp]').forEach(b=>b.onclick=()=>{const k=b.dataset.kp;if(k==='x'){closeOverlay();return}if(k==='del')buf=buf.slice(0,-1);else if(buf.length<4)buf+=k;
     if(buf.length===4){const v=buf;buf='';if(onDone(v)===false){$('#ocard').innerHTML=html();refreshFoxes();bind();setTimeout(()=>{const p=$('#pinbox');p&&p.classList.add('bad')},10);sNo();return}const pb=$('#pinbox');if(pb)pb.innerHTML='<i></i><i></i><i></i><i></i>';return}
     const pb=$('#pinbox');if(pb){pb.classList.remove('bad');pb.innerHTML=[0,1,2,3].map(i=>`<i class="${i<buf.length?'on':''}"></i>`).join('')}return
@@ -4504,7 +4542,7 @@ function openParent(){
 function pinHTML(){const t={enter:'Enter your grown-up PIN',create:'Create a 4-digit PIN',confirm:'Type the PIN again'}[pinStage];
   return `<div class="eyebrow">Grown-ups only</div><h2 style="font-size:28px">${t}</h2>${pinStage==='create'?'<p>Kids won\'t know it, so this page stays private.</p>':''}
   <div class="pinbox" id="pinbox">${[0,1,2,3].map(i=>`<i class="${i<pinBuf.length?'on':''}"></i>`).join('')}</div>
-  <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-pk="${n}">${n}</button>`).join('')}<button type="button" class="del" data-pk="x" aria-label="Cancel">✕</button><button type="button" data-pk="0">0</button><button type="button" class="del" data-pk="del" aria-label="Delete">⌫</button></div>
+  <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-pk="${n}">${n}</button>`).join('')}<button type="button" class="del" data-pk="x" aria-label="Cancel">${ICON.close}</button><button type="button" data-pk="0">0</button><button type="button" class="del" data-pk="del" aria-label="Delete">${ICON.del}</button></div>
   ${pinStage==='enter'?`<p class="note">${CL.mode==='cloud'?'Forgot the PIN? Tap "Switch player" (the name button), sign out, then sign in again: Grown-ups opens without the PIN for 10 minutes so you can set a new one.':'Forgot the PIN? Use the save code to restore progress, or contact whoever set it.'}</p>`:''}`}
 let pinThen=null;
 function askPinThen(fn){pinThen=fn;pinBuf='';pinStage='enter';pinFirst='';overlay(pinHTML(),bindPin)}
@@ -4561,10 +4599,10 @@ function renderParent(){
     <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
     <div class="pcard wide curmap"><h4>4th grade program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the California 4th grade program. Stars are the same as in the game: the best round, or recent accuracy (7 of 10 right lately = 2 stars, 8 of 10 = 3).</p>
       <div class="tscroll"><table class="topics cur"><thead><tr><th>Subject</th><th>Area</th><th>Standard</th><th>Islands</th></tr></thead><tbody>
-      ${CURRIC.map(([sub,area,code,ids])=>{const isl=ids.map(byId).filter(Boolean),done=isl.filter(i=>starFor(i.id)>=2).length;return `<tr><td>${sub}</td><td>${area}<small class="cdone">${done} of ${isl.length} islands at 2 stars or more</small></td><td><code>${code}</code></td><td>${isl.map(i=>{const sf=starFor(i.id),st=(G.stats[i.id]||{}).a||0,lab=sf?'★'.repeat(sf):st?'Practicing':'Not started';return `<span class="cst s${sf||(st?'p':'n')}">${esc(i.name)} · ${lab}</span>`}).join(' ')}</td></tr>`}).join('')}
+      ${CURRIC.map(([sub,area,code,ids])=>{const isl=ids.map(byId).filter(Boolean),done=isl.filter(i=>starFor(i.id)>=2).length;return `<tr><td>${sub}</td><td>${area}<small class="cdone">${done} of ${isl.length} islands at 2 stars or more</small></td><td><code>${code}</code></td><td>${isl.map(i=>{const sf=starFor(i.id),st=(G.stats[i.id]||{}).a||0,lab=sf?starsMini(sf):st?'Practicing':'Not started';return `<span class="cst s${sf||(st?'p':'n')}">${esc(i.name)} · ${lab}</span>`}).join(' ')}</td></tr>`}).join('')}
       </tbody></table></div></div>
     <div class="pcard wide"><h4>Topics</h4><div class="tscroll"><table class="topics"><thead><tr><th>Island</th><th>Puzzles</th><th>First-try accuracy</th><th>Last 20</th><th>Level</th><th>Stars</th></tr></thead><tbody>
-      ${rows.map(r=>`<tr><td><button type="button" class="cisl" data-play="${r.i.id}">${r.i.name}</button></td><td>${r.s.a}</td><td>${r.p==null?'–':`<div class="acc ${r.p<60?'low':r.p<80?'mid':''}"><div class="bar"><i style="width:${r.p}%"></i></div>${r.p}%</div>`}</td><td>${(()=>{const m=rollAcc(r.i.id);return m.n?`${Math.round(m.acc*100)}%${m.n>=12&&m.acc>=.8?' ✓':''}`:'–'})()}</td><td>${DIFF_NAME[diffFor(r.i)]}</td><td>${'★'.repeat(starFor(r.i.id))||'–'}</td></tr>`).join('')}
+      ${rows.map(r=>`<tr><td><button type="button" class="cisl" data-play="${r.i.id}">${r.i.name}</button></td><td>${r.s.a}</td><td>${r.p==null?'–':`<div class="acc ${r.p<60?'low':r.p<80?'mid':''}"><div class="bar"><i style="width:${r.p}%"></i></div>${r.p}%</div>`}</td><td>${(()=>{const m=rollAcc(r.i.id);return m.n?`${Math.round(m.acc*100)}%${m.n>=12&&m.acc>=.8?' ✓':''}`:'–'})()}</td><td>${DIFF_NAME[diffFor(r.i)]}</td><td>${starsMini(starFor(r.i.id))||'–'}</td></tr>`).join('')}
     </tbody></table></div></div>
     <div class="pcard wide"><h4>Recent mistakes</h4>${G.wrongLog.length?`<ul class="mist">${G.wrongLog.slice(0,10).map(w=>`<li>${esc(w.p)}<small>${(byId(w.i)||{}).name||''} · answer: ${esc(w.a)} · ${w.d}</small></li>`).join('')}</ul>`:'<p>No mistakes yet!</p>'}</div>
     <div class="pcard"><h4>Settings for ${esc(G.name||'this player')}</h4>
@@ -4816,7 +4854,7 @@ function renderHome(){
     const away=have&&(H.hidden||{})[it.id];
     return `<div class="item${have&&!away?' wearing':''}"><div class="prev"><svg viewBox="${vb}">${it.draw(x,y)}</svg></div><b>${it.name}</b>${away?`<button type="button" class="buy" data-place="${it.id}">Put back</button>`:have?`<button type="button" class="worn" disabled>Built!</button>`:`<button type="button" class="${G.coins>=it.price?'buy':''}" data-build="${it.id}" ${G.coins>=it.price?'':'disabled'}>${COIN_ICON} ${it.price}</button>`}</div>`}).join('');
   $('#homeProj').innerHTML=PROJECTS.map(P=>{const n=projStage(P.id),nx=projNext(P),goal=saveGoalProject()===P;
-    return `<div class="pcard2${nx?'':' done'}"><div class="prev">${projThumb(P,nx?nx.n+1:n)}</div><div class="pinfo"><b>${P.name}</b><div class="psteps">${P.stages.map((st,i)=>`<span class="pst${i<n?' on':''}" title="${esc(st[0])}"></span>`).join('')}</div>${nx?`<small>Step ${nx.n+1} of ${P.stages.length}: <b>${esc(nx.name)}</b></small><div class="prow"><button type="button" class="${G.coins>=nx.price?'buy':''}" data-proj="${P.id}" ${G.coins>=nx.price?'':'disabled'}>${COIN_ICON}${fmt(nx.price)}</button><button type="button" class="pgoal${goal?' on':''}" data-pgoal="${P.id}" aria-pressed="${goal}">${goal?'★ My goal':'☆ Make it my goal'}</button></div>`:`<small><b>Finished!</b> All ${P.stages.length} steps built.</small>`}</div></div>`}).join('');
+    return `<div class="pcard2${nx?'':' done'}"><div class="prev">${projThumb(P,nx?nx.n+1:n)}</div><div class="pinfo"><b>${P.name}</b><div class="psteps">${P.stages.map((st,i)=>`<span class="pst${i<n?' on':''}" title="${esc(st[0])}"></span>`).join('')}</div>${nx?`<small>Step ${nx.n+1} of ${P.stages.length}: <b>${esc(nx.name)}</b></small><div class="prow"><button type="button" class="${G.coins>=nx.price?'buy':''}" data-proj="${P.id}" ${G.coins>=nx.price?'':'disabled'}>${COIN_ICON}${fmt(nx.price)}</button><button type="button" class="pgoal${goal?' on':''}" data-pgoal="${P.id}" aria-pressed="${goal}">${goal?ICON.wishOn+'My goal':ICON.wishOff+'Make it my goal'}</button></div>`:`<small><b>Finished!</b> All ${P.stages.length} steps built.</small>`}</div></div>`}).join('');
   document.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{const P=PROJECTS.find(x=>x.id===b.dataset.proj),nx=projNext(P);if(!nx||G.coins<nx.price)return;G.coins-=nx.price;G.home.proj=Object.assign({},G.home.proj||{},{[P.id]:nx.n+1});
     if(projDone(P))award('grand');built0(projDone(P)?`We finished the <b>${P.name}</b>! It's the best thing in the whole sky!`:`Step ${nx.n+1} done: <b>${nx.name}</b>! Only ${P.stages.length-nx.n-1} more to go!`)});
   document.querySelectorAll('[data-pgoal]').forEach(b=>b.onclick=()=>{G.saveGoal=b.dataset.pgoal;save();renderHome();tone([523,659],.06)});
@@ -4854,7 +4892,8 @@ $('#gearBtn').onclick=e=>{e.stopPropagation();const m=$('#tmenu'),o=m.hidden;m.h
   /* keep the menu on screen: if it would stick out on the left, open it from the button's left edge instead */
   if(o){m.style.left='';m.style.right='';const r=m.getBoundingClientRect();if(r.left<8){m.style.left='0';m.style.right='auto'}const r2=m.getBoundingClientRect();if(r2.right>innerWidth-8){m.style.left='auto';m.style.right=Math.min(0,innerWidth-8-m.parentNode.getBoundingClientRect().right)+'px'}}};
 /* on phones the Grown-ups button lives inside the Settings menu */
-(()=>{const b=document.createElement('button');b.type='button';b.className='tbtn menuonly';b.textContent='Grown-ups';b.onclick=()=>{$('#tmenu').hidden=true;$('#gearBtn').setAttribute('aria-expanded','false');$('#parentBtn').click()};$('#tmenu').appendChild(b)})();
+(()=>{const b=document.createElement('button');b.type='button';b.className='tbtn menuonly';b.innerHTML=ICON.family+'<span>Grown-ups</span>';b.onclick=()=>{$('#tmenu').hidden=true;$('#gearBtn').setAttribute('aria-expanded','false');$('#parentBtn').click()};$('#tmenu').appendChild(b)})();
+document.querySelectorAll('.ico-slot[data-ico]').forEach(e=>{e.outerHTML=ICON[e.dataset.ico]});
 /* phone bottom bar: the four sections + the map, always one tap away */
 document.querySelectorAll('#bnav [data-go]').forEach(b=>{const id=b.dataset.go;if(id!=='map'){const sv=document.querySelector('#'+id+' svg');if(sv)b.insertAdjacentHTML('afterbegin',sv.outerHTML)}
   b.onclick=()=>{tone([523,784]);if(id==='map'){stopTimers();renderMap()}else $('#'+id).click()}});
@@ -4864,8 +4903,8 @@ $('#card').insertBefore($('#hint'),$('#choices'));
 (()=>{const qt=document.querySelector('.qtop'),p=$('#prompt');qt.insertBefore($('#speakBtn'),p);qt.insertBefore($('#howBtn'),p)})();
 document.addEventListener('click',e=>{const m=$('#tmenu');if(m&&!m.hidden&&!e.target.closest('.tmwrap')){m.hidden=true;$('#gearBtn').setAttribute('aria-expanded','false')}});
 $('#bigBtn').onclick=()=>{G.settings.big=!G.settings.big;save();applySettings()};
-$('#sound').onclick=e=>{soundOn=!soundOn;e.currentTarget.setAttribute('aria-pressed',soundOn);e.currentTarget.textContent='Sounds: '+(soundOn?'on':'off')};
-function musicLabel(){const b=$('#music');b.setAttribute('aria-pressed',musicOn);b.textContent='Music: '+(musicOn?'on':'off')}
+$('#sound').onclick=e=>{soundOn=!soundOn;e.currentTarget.setAttribute('aria-pressed',soundOn);e.currentTarget.querySelector('.tval').textContent='Sounds: '+(soundOn?'on':'off')};
+function musicLabel(){const b=$('#music');b.setAttribute('aria-pressed',musicOn);b.querySelector('.tval').textContent='Music: '+(musicOn?'on':'off')}
 $('#music').onclick=()=>{musicOn=!musicOn;try{localStorage.setItem('pip-music',musicOn?'on':'off')}catch(e){}musicLabel();musicOn?musicStart():musicStop()};
 musicLabel();
 addEventListener('resize',()=>{if(parts.length){cv.width=innerWidth;cv.height=innerHeight}});
