@@ -531,6 +531,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .days7 span{font-size:12px;font-weight:800;color:var(--ink-soft)}
 .days7 em{font-style:normal;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
 .tscroll{overflow-x:auto}
+.cst{display:inline-block;margin:2px 4px 2px 0;padding:3px 9px 2px;border-radius:999px;font-size:13px;font-weight:800;white-space:nowrap;background:#eef1f6;color:var(--ink-soft)}.cst.sp{background:var(--pale-sky);color:var(--ink)}.cst.s1{background:#f7dcc8;color:#7a4320}.cst.s2{background:#e3e8ef;color:#3d4a5c;box-shadow:inset 0 0 0 2px #9aa6b6}.cst.s3{background:#d8f2df;color:#1d6b3c;box-shadow:inset 0 0 0 2px var(--leaf)}.cur td{vertical-align:top}@media (max-width:640px){table.topics.cur{min-width:0}.cur thead{display:none}.cur tr{display:block;padding:8px 0;border-bottom:1px solid var(--line)}.cur td{display:block;border:0;padding:2px 0}.cur td:first-child{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft)}.cur td:nth-child(3){display:none}}.cur small.cdone{display:block;font-weight:600;color:var(--ink-soft);font-size:12px}.cur code{font-size:12px;white-space:nowrap}
 table.topics{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:460px}
 .topics th{text-align:left;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);padding:6px 8px;border-bottom:2px solid var(--line)}
 .topics td{padding:7px 8px;border-bottom:1px solid var(--line);font-weight:700}
@@ -782,10 +783,10 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
       <div class="week" id="weekCard"></div>
       <h3 class="sectitle">Challenges <small>come back every day!</small></h3>
       <div class="islands four" id="g-ch"></div>
-      <div class="itabs" role="tablist" aria-label="Island groups"><button type="button" role="tab" data-tab="math">Math</button><button type="button" role="tab" data-tab="world">Words &amp; World</button><button type="button" role="tab" data-tab="time">Time</button></div>
+      <div class="itabs" role="tablist" aria-label="Island groups"><button type="button" role="tab" data-tab="math">Math</button><button type="button" role="tab" data-tab="world">Words &amp; World</button></div>
       <div class="tabp" data-tabp="math"><div class="islands five" id="g-math"></div></div>
       <div class="tabp" data-tabp="world"><div class="islands five" id="g-world"></div></div>
-      <div class="tabp" data-tabp="time"><div class="islands three" id="g-time"></div></div>
+      <div id="g-time" hidden></div>
       <p class="foot">4th grade: place value, multiplying, dividing, fractions, decimals, area &amp; perimeter, angles, shapes, money, measurement, patterns, graphs, time, calendars, words, maps and science.</p>
     </section>
 
@@ -1128,6 +1129,7 @@ function islandSVG(c,landmark){
 }
 const TW=`${FONT} text-anchor="middle" fill="#fff"`, TI=`${FONT} text-anchor="middle" fill="#1f3557"`;
 const LANDMARKS={
+  pencil:`<rect x="48" y="22" width="44" height="44" rx="4" fill="#fff" stroke="#1f3557" stroke-width="2.5"/><path d="M54 32 H86 M54 40 H86 M54 48 H78 M54 56 H82" stroke="#9aa6b6" stroke-width="2"/><g transform="rotate(35 100 36)"><rect x="94" y="8" width="11" height="40" rx="2" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/><path d="M94 48 L99.5 58 L105 48Z" fill="#f5d6a8" stroke="#1f3557" stroke-width="2"/><rect x="94" y="8" width="11" height="6" fill="#ff9fb7" stroke="#1f3557" stroke-width="2"/></g>`,
   tower:`<rect x="66" y="12" width="28" height="18" rx="4" fill="#ffc23d"/><text x="80" y="26" font-size="14" ${TW}>1</text><rect x="60" y="30" width="40" height="18" rx="4" fill="#ff6b57"/><text x="80" y="44" font-size="14" ${TW}>10</text><rect x="54" y="48" width="52" height="18" rx="4" fill="#2f9fe0"/><text x="80" y="62" font-size="14" ${TW}>100</text>`,
   meadow:(()=>{let s='';for(let r=0;r<2;r++)for(let c=0;c<4;c++){const x=50+c*20,y=44+r*14;s+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y+12}" stroke="#2b8a62" stroke-width="2"/><circle cx="${x}" cy="${y}" r="6" fill="${(r+c)%2?'#e2558f':'#ffc23d'}"/><circle cx="${x}" cy="${y}" r="2.4" fill="#fff"/>`}return s})(),
   shore:[46,70,94].map(x=>`<rect x="${x}" y="44" width="20" height="20" rx="3" fill="#c98a4b"/><path d="M${x} 54 H${x+20}" stroke="#8c5a2c" stroke-width="2"/><circle cx="${x+6}" cy="41" r="5" fill="#ff6b57"/><circle cx="${x+14}" cy="41" r="5" fill="#ff6b57"/>`).join(''),
@@ -1161,7 +1163,11 @@ const BOSSES={
   hail:{name:'Hailstone Hopper',c1:'#4f86a6',c2:'#76aecb'},
   dust:{name:'Dust Devil',c1:'#a07c4e',c2:'#c49c6a'},
   gloom:{name:'Night Gloom',c1:'#2e3360',c2:'#4a5190'},
-  queen:{name:'Thunder Queen',c1:'#7a3f8f',c2:'#9d5cb6',crown:true}
+  queen:{name:'Thunder Queen',c1:'#7a3f8f',c2:'#9d5cb6',crown:true},
+  mumble:{name:'Mumble Mist',c1:'#9c8fb8',c2:'#b9aed3'},
+  quake:{name:'Shape Quake',c1:'#a0603f',c2:'#c47e5a'},
+  tangle:{name:'Tangle Wind',c1:'#3f8f6e',c2:'#5cb38f'},
+  eclipse:{name:'Eclipse Dragon',c1:'#2a1f5c',c2:'#4a3a8f',crown:true}
 };
 function bossSVG(k='grumble'){const b=BOSSES[k];return `<svg class="boss" viewBox="0 0 130 104" aria-hidden="true">
   ${b.crown?`<path d="M44 22 L44 8 L54 16 L66 2 L78 16 L88 8 L88 22Z" fill="#ffc23d" stroke="#e09a14" stroke-width="2"/>`:''}
@@ -2456,6 +2462,72 @@ const GRAM=[
 ];
 const GRAMF=GRAM.flatMap(g=>g.items.map(f=>({f,long:g.long,cat:g.name})));
 function genGrammar(t){const x=GRAMF[t%GRAMF.length],f=x.f;return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:x.long,render:c=>c}}
+/* ---------- Story Studio: 4th grade writing (sentences, paragraphs, transitions, opinions) ---------- */
+const WR={
+  build:['The brave kitten climbed the tall tree.','My little brother loves green apples.','We planted bright flowers in the garden.','After lunch, the class read a funny story.','Pip flew his red balloon over the ocean.','Our team won the soccer game on Saturday.','The hungry bear found a jar of honey.','Grandma baked warm cookies for everyone.'],
+  topic:[['Some bees collect nectar. Other bees guard the hive. The queen lays all the eggs.','Every bee in a hive has a special job.',['Bees are yellow and black.','I once saw a bee.','Honey tastes sweet on toast.']],
+    ['You can swim in the lake. You can hike on the trails. At night, you can see a million stars.','There are many fun things to do at the camp.',['Lakes are full of water.','Stars are very far away.','I need new hiking shoes.']],
+    ['Wash your hands before you cook. Read the whole recipe first. Ask a grown-up to help with the stove.','Cooking is safer when you follow a few rules.',['Pizza is my favorite food.','Stoves get very hot.','My kitchen is blue.']],
+    ['Dolphins whistle to talk to each other. They swim in groups called pods. They even play games with seaweed.','Dolphins are smart and friendly animals.',['The ocean is salty.','Seaweed is green.','Some fish are tiny.']],
+    ['Leaves turn red and orange. The air gets cool. Pumpkins appear at the market.','Fall brings many changes.',['Pumpkins can be very heavy.','Red is my favorite color.','Summer is hot.']],
+    ['The library has books about every topic. It has computers you can use. Story time happens every Tuesday.','The library is a great place to visit.',['Tuesday comes after Monday.','Computers need electricity.','Some books are very old.']]],
+  trans:[['First, we mixed the flour and eggs. ___, we poured the batter into a pan.','Next',['Because','But','Although']],
+    ['We packed our bags. ___, we drove to the beach.','Then',['Because','Instead','For example']],
+    ['I wanted to play outside. ___, it started to rain.','However',['Finally','First','For example']],
+    ['There are many ways to save water. ___, you can turn off the tap while brushing.','For example',['However','Finally','In the end']],
+    ['We cleaned up the whole park. ___, it looked beautiful again.','In the end',['For example','First','However']],
+    ['The ants found crumbs. ___ they carried them back to the nest.','Then',['However','For example','Although']]],
+  combine:[['It was raining.','We stayed inside.','It was raining, so we stayed inside.',['It was raining, but we stayed inside.','It was raining or we stayed inside.','It was raining because we stayed inside.']],
+    ['Maya likes to paint.','Her brother likes to sing.','Maya likes to paint, and her brother likes to sing.',['Maya likes to paint, so her brother likes to sing.','Maya likes to paint because her brother likes to sing.','Maya likes to paint or her brother likes to sing.']],
+    ['I studied hard.','I did well on the test.','I studied hard, so I did well on the test.',['I studied hard, but I did well on the test.','I studied hard or I did well on the test.','I did well on the test, but I studied hard.']],
+    ['The puppy was tired.','It still wanted to play.','The puppy was tired, but it still wanted to play.',['The puppy was tired, so it still wanted to play.','The puppy was tired or it still wanted to play.','The puppy was tired because it still wanted to play.']],
+    ['We were hungry.','We ate a big lunch.','We were hungry, so we ate a big lunch.',['We were hungry, but we ate a big lunch.','We were hungry or we ate a big lunch.','We ate a big lunch, but we were hungry.']],
+    ['Leo can ride a bike.','He cannot ride a skateboard yet.','Leo can ride a bike, but he cannot ride a skateboard yet.',['Leo can ride a bike, so he cannot ride a skateboard yet.','Leo can ride a bike because he cannot ride a skateboard yet.','Leo can ride a bike or he cannot ride a skateboard yet.']]],
+  detail:[['Recess is the best part of the school day.','Kids get to run, play and talk with friends.',['Math class starts at nine.','The school has a red roof.','Lunch is in the cafeteria.']],
+    ['Cats make good pets.','They are clean and can stay home alone for a few hours.',['Some cats are orange.','Lions are big cats.','My aunt has a car.']],
+    ['Exercise keeps your body healthy.','It makes your heart and muscles strong.',['Shoes come in many sizes.','Soccer balls are round.','My friend is tall.']],
+    ['Our town needs a new park.','The old park is broken, and kids have nowhere to play.',['Parks have trees.','Our town has a bakery.','I like the color green.']],
+    ['Reading every day helps you learn.','Each book teaches new words and new ideas.',['Some books are heavy.','The library opens at ten.','My book has a blue cover.']]],
+  concl:[['Penguins slide on their bellies. They dive deep for fish. They huddle together to stay warm.','Penguins have clever ways to live in the cold.',['Fish live in the ocean.','My sister likes the color black.','Ice is frozen water.']],
+    ['First, gather paper and crayons. Next, draw a picture. Then, fold the paper in half.','Now you have a homemade card to give a friend!',['Crayons come in a box.','Paper is made from trees.','Folding is hard.']],
+    ['Our class collected cans. We sorted them by size. We took them to the food bank.','Our project helped families who needed food.',['Cans are made of metal.','The food bank is downtown.','Sorting is boring.']],
+    ['Volcanoes can erupt with hot lava. Lava cools into new rock. Some islands were made this way.','Volcanoes can change the shape of the land.',['Rocks can be smooth.','Hot things can burn you.','Islands have beaches.']]],
+  opinion:[['Students should have longer recess.','Playing outside helps kids focus better in class.',['Recess is at 10 o\'clock.','Some kids like tag.','The playground is big.']],
+    ['Everyone should learn to swim.','Swimming keeps people safe near water.',['Pools can be indoors.','Some swimsuits are blue.','The ocean is salty.']],
+    ['Our school should plant a garden.','A garden would teach us how food grows.',['Carrots are orange.','Our school has 400 students.','Gardens need dirt.']],
+    ['Kids should help with chores at home.','Chores teach kids to be responsible.',['Dishes are in the kitchen.','My room is upstairs.','Brooms are made of straw.']]],
+  steps:[['Get a cup','Add hot water','Put in a tea bag','Wait and then drink'],['Put on your socks','Put on your shoes','Tie the laces','Go outside'],['Take out the bread','Spread the peanut butter','Put the slices together','Eat your sandwich'],['Dig a small hole','Drop in a seed','Cover it with soil','Water it every day'],['Open the book','Read the story','Close the book','Tell a friend about it']]
+};
+function genWrite(t){
+  if(t===0){const s=pick(WR.build),w=s.replace(/\.$/,' .').split(' ').filter(Boolean),items=[...new Set(w)].length===w.length?w:w;return {kind:'order',items,prompt:`Tap the words in order to build a <b>complete sentence</b>. Start with the capital letter. End with the period.`,hint:`The word with a capital letter goes first. Who or what is the sentence about? What did it do?`,explain:`The sentence is: <b>${s}</b>`}}
+  if(t===1){const [p,a,w]=pick(WR.topic);return {prompt:`<div class="passage"><p>___ ${p}</p></div>Which <b>topic sentence</b> should start this paragraph?`,...strChoices(a,w),long:true,render:c=>c,hint:`A topic sentence tells the big idea that ALL the other sentences explain.`,explain:`<b>${a}</b> The other sentences all tell about it.`}}
+  if(t===2){const [s,a,w]=pick(WR.trans);return {prompt:`Which word or phrase fits best?<br><i>"${s.replace('___','<u>&nbsp;?&nbsp;</u>')}"</i>`,...strChoices(a,w),long:true,render:c=>c,hint:`Transition words show order (first, next, then), a change (however), an example (for example) or an ending (in the end).`,explain:`"${s.replace('___','<b>'+a+'</b>')}"`}}
+  if(t===3){const [a,b,ok,w]=pick(WR.combine);return {prompt:`Combine the two sentences in the <b>best</b> way.<br><i>"${a}" "${b}"</i>`,...strChoices(ok,w),long:true,render:c=>c,hint:`<b>so</b> shows a result. <b>but</b> shows a surprise or difference. <b>and</b> adds more.`,explain:`<b>${ok}</b> The joining word matches how the two ideas connect.`}}
+  if(t===4){const [top,a,w]=pick(WR.detail);return {prompt:`Topic sentence: <b>"${top}"</b><br>Which detail <b>supports</b> it best?`,...strChoices(a,w),long:true,render:c=>c,hint:`A supporting detail explains WHY or HOW the topic sentence is true.`,explain:`<b>${a}</b> It explains the topic sentence.`}}
+  if(t===5){const [p,a,w]=pick(WR.concl);return {prompt:`<div class="passage"><p>${p} ___</p></div>Which sentence is the best <b>ending</b> for this paragraph?`,...strChoices(a,w),long:true,render:c=>c,hint:`A good ending sums up the big idea. It does not start a new topic.`,explain:`<b>${a}</b> It wraps up the whole paragraph.`}}
+  if(t===6){const [op,a,w]=pick(WR.opinion);return {prompt:`Opinion: <b>"${op}"</b><br>Which is the best <b>reason</b> for this opinion?`,...strChoices(a,w),long:true,render:c=>c,hint:`A reason answers "WHY do you think so?"`,explain:`<b>${a}</b> It tells why the writer has this opinion.`}}
+  const st=pick(WR.steps);return {kind:'order',items:st,prompt:`Put the steps of this how-to paragraph in order.`,hint:`What has to happen first? What can only happen at the very end?`,explain:`${st.map((x,i)=>`${['First','Next','Then','Finally'][i]}, ${x.toLowerCase()}.`).join(' ')}`}
+}
+/* ---------- Clock Cove grows up: clocks + calendars + 4th grade elapsed time and time units ---------- */
+const t12=m=>{m=((m%1440)+1440)%1440;const h=Math.floor(m/60),mm=m%60;return `${(h+11)%12+1}:${String(mm).padStart(2,'0')} ${h<12?'AM':'PM'}`};
+const dur=m=>`${Math.floor(m/60)?`${Math.floor(m/60)} hour${Math.floor(m/60)>1?'s':''}`:''}${Math.floor(m/60)&&m%60?' ':''}${m%60?`${m%60} minutes`:''}`;
+function genTimeTower(t){
+  if(t<5)return genTime(t);
+  if(t===5)return genWeek(2);
+  if(t===6)return genWeek(4);
+  if(t===7)return genSeason(3);
+  if(t===8){const s=R(28,40)*15+R(0,2)*5,d=R(Dv(4,5,6),Dv(9,14,22))*5,e=s+d;
+    return {prompt:`The movie starts at <b>${t12(s)}</b> and ends at <b>${t12(e)}</b>. How long is the movie?`,...strChoices(dur(d),[dur(d+60),dur(Math.abs(d-15))||'5 minutes',dur(d+10),dur(d-5)||'10 minutes']),
+      hint:`Count up from ${t12(s)}: jump to the next hour first, then add the rest.`,explain:`From ${t12(s)} to ${t12(e)} is <b>${dur(d)}</b>.`}}
+  if(t===9){const e=R(30,44)*15,d=R(Dv(3,5,6),Dv(8,12,18))*5,s=e-d;
+    return {prompt:`Soccer practice lasts <b>${dur(d)}</b> and ends at <b>${t12(e)}</b>. When did it <b>start</b>?`,...strChoices(t12(s),[t12(e+d),t12(s+60),t12(s-15),t12(s+10)]),
+      hint:`Count <b>back</b> from ${t12(e)}. Take away the hours first, then the minutes.`,explain:`${t12(e)} minus ${dur(d)} is <b>${t12(s)}</b>.`}}
+  if(t===10){const k=pick([['hours','minutes',60],['minutes','seconds',60],['days','hours',24],['weeks','days',7]]),n=R(2,Dv(4,6,9)),half=DIFF>1&&k[2]%2===0&&coin(),ans=n*k[2]+(half?k[2]/2:0);
+    return {prompt:`How many <b>${k[1]}</b> are in <b>${n}${half?' ½':''} ${k[0]}</b>?`,...numChoices(ans,[n*k[2],ans+k[2],n+k[2],ans*2]),hint:`1 ${k[0].slice(0,-1)} = ${k[2]} ${k[1]}. Multiply${half?', then add half of '+k[2]:''}.`,explain:`${n} × ${k[2]} = ${n*k[2]}${half?` and half of ${k[2]} is ${k[2]/2}, so ${ans}`:''}. That's <b>${ans} ${k[1]}</b>.`}}
+  const a=R(8,11)*60+R(0,3)*15,b=R(1,2)*60+R(1,3)*15,c=R(1,4)*15;
+  return {prompt:`Pip leaves home at <b>${t12(a)}</b>. He flies for <b>${dur(b)}</b>, then rests for <b>${dur(c)}</b>. What time is it now?`,...strChoices(t12(a+b+c),[t12(a+b),t12(a+b+c+60),t12(a+c),t12(a+b+c-15)]),
+    hint:`Add the times one at a time: first the flight, then the rest.`,explain:`${t12(a)} + ${dur(b)} = ${t12(a+b)}. Then + ${dur(c)} = <b>${t12(a+b+c)}</b>.`}
+}
 const ISLANDS=[
   {id:'daily',name:'Daily Challenge',topic:'8 mixed puzzles, new every day',color:'#ff9f43',lm:'daily',special:'daily',group:'ch'},
   {id:'review',name:'Fix-It Falls',topic:'Fix your old mistakes',color:'#5ec3d6',lm:'review',special:'review',group:'ch'},
@@ -2474,20 +2546,21 @@ const ISLANDS=[
   {id:'measure',name:'Measure Mine',topic:'Units & conversions',color:'#a8b45c',lm:'ruler',gen:genMeasure,types:5,group:'math'},
   {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:6,group:'math'},
   {id:'graph',name:'Graph Garden',topic:'Bar graphs & line plots',color:'#7ccf6b',lm:'graph',gen:genGraph,types:6,group:'math'},
-  {id:'time',name:'Clock Cove',topic:'Telling time',color:'#5ec3d6',lm:'clock',gen:genTime,types:5,group:'time'},
-  {id:'week',name:'Week Woods',topic:'Days & calendar',color:'#4caf6e',lm:'week',gen:genWeek,types:5,group:'time'},
-  {id:'season',name:'Season Summit',topic:'Months & seasons',color:'#a6c95a',lm:'season',gen:genSeason,types:6,group:'time'},
+  {id:'time',name:'Clock Cove',topic:'Clocks, calendars & elapsed time',color:'#5ec3d6',lm:'clock',gen:genTimeTower,types:12,group:'math'},
+  {id:'week',name:'Week Woods',topic:'Days & calendar',color:'#4caf6e',lm:'week',gen:genWeek,types:5,group:'time',retired:true},
+  {id:'season',name:'Season Summit',topic:'Months & seasons',color:'#a6c95a',lm:'season',gen:genSeason,types:6,group:'time',retired:true},
   {id:'riddle',name:'Riddle Reef',topic:'Logic & word problems',color:'#5ab8c4',lm:'riddle',gen:genRiddle,types:6,group:'world'},
   {id:'words',name:'Word Waterfall',topic:'Vocabulary & spelling',color:'#53bf91',lm:'words',gen:genWords,types:6,group:'world'},
   {id:'reading',name:'Bookworm Bay',topic:'Reading & understanding',color:'#e0b45a',lm:'book',gen:genReading,types:PASSAGES.length*3,round:readingRound,noDiff:true,group:'world'},
   {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:5,group:'world'},
   {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
+  {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:8,group:'world'},
   {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length,group:'world'},
   {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length,group:'world'}
 ];
-const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review');
+const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review'&&!i.retired);
 const MAX=STAR_ISLANDS.length*3,BOSS_NEED=20;
-const MIXABLE=ISLANDS.filter(i=>i.gen);
+const MIXABLE=ISLANDS.filter(i=>i.gen&&!i.retired);
 const byId=id=>ISLANDS.find(i=>i.id===id);
 function makeQ(isl,t,seed,d){
   const keepR=rand,keepD=DIFF;rand=seeded(seed);DIFF=d||diffFor(isl);let q;
@@ -2500,7 +2573,7 @@ const CHAPTERS=[
   {name:'The Torn Map',islands:['place','mult','div','frac','area'],boss:'grumble',
     intro:['Oh no! The Grumble Cloud blew right through my balloon and tore my treasure map into FOUR pieces!','The first piece is hidden near the Math Islands. Earn <b>2 stars</b> on each of these 5 islands, and the Grumble Cloud will have to show up.','Then we beat it and win the piece back. Ready, partner?'],
     outro:'We did it! The first map piece! Look, a dotted line points toward... a giant clock?'},
-  {name:'Clockwork Skies',islands:['time','week','season','measure','money'],boss:'twister',
+  {name:'Clockwork Skies',islands:['time','measure','money'],boss:'twister',
     intro:['The Tick-Tock Twister grabbed the second piece! It spins time all around and mixes up the calendar.','Master clocks, calendars, measuring and money, and it won\'t be able to trick us!'],
     outro:'Piece number two! The map shows mountains made of shapes... and a very foggy sky.'},
   {name:'Shape Storm',islands:['angle','shape','dec','pattern','graph'],boss:'phantom',
@@ -2511,7 +2584,7 @@ const CHAPTERS=[
     outro:'THE TREASURE MAP IS COMPLETE! X marks the spot... and the treasure is a mountain of coins and a golden sticker. The best treasure of all? A friend like YOU!'},
   /* ---- Book 2: The Starlight Compass. Chapters need the green bar (8 of 10 right lately), and a new one opens every 2 days ---- */
   {name:'The Compass Needle',book:2,islands:['addsub','mult','div'],boss:'hail',
-    intro:['Look what was hiding under the treasure: an old <b>Starlight Compass</b>! Legends say it points to the most wonderful place in the sky.','But it\'s broken into four parts, and the Hailstone Hopper just bounced away with the needle!','This time, stars are not enough. Get the <b>green bar</b> on each island (8 of 10 right lately). Then the Hopper can\'t hide!'],
+    intro:['Look what was hiding under the treasure: an old <b>Starlight Compass</b>! Legends say it points to the most wonderful place in the sky.','But it\'s broken into four parts, and the Hailstone Hopper just bounced away with the needle!','This time, stars are not enough. Get the <b>silver bar</b> on each island (7 of 10 right lately). Then the Hopper can\'t hide!'],
     outro:'We got the needle! It wiggles... and points east. Something sparkly is over there!'},
   {name:'Fraction Fjord',book:2,islands:['frac','dec','measure'],boss:'dust',
     intro:['The Dust Devil spins pieces of everything into a big mess: pizza slices, decimal points, rulers!','Fractions and decimals are friends. Show the Dust Devil you know how parts make a whole!'],
@@ -2521,8 +2594,29 @@ const CHAPTERS=[
     outro:'The library shines again! The south part clicks into the compass. One part to go!'},
   {name:'The Golden State',book:2,islands:['history','geo','science'],boss:'queen',
     intro:['The Thunder Queen rules the sky above California. She has the last part of the compass.','Remember the missions, the Gold Rush, maps and science. Our home state will help us win!'],
-    outro:'THE STARLIGHT COMPASS IS WHOLE! It points to... right here. The most wonderful place in the sky is wherever we fly together, partner!'}
+    outro:'THE STARLIGHT COMPASS IS WHOLE! It points to... right here. The most wonderful place in the sky is wherever we fly together, partner!'},
+  /* ---- Book 3: The Rainbow Bridge. Same rules as Book 2: silver bar on each island, one chapter every 2 days ---- */
+  {name:'The Silent Story',book:3,islands:['write','reading','grammar'],boss:'mumble',
+    intro:['The compass glowed one more time and showed us something new: a <b>Rainbow Bridge</b> between all the sky islands! But its colors are gone.','The Mumble Mist stole the red color. It mixes up words until nobody can tell a story!','Build sentences, write strong paragraphs and get the <b>silver bar</b> on each island. Then we can chase the Mist away!'],
+    outro:'RED is back on the bridge! The story pages flutter... toward an island of shapes and angles.'},
+  {name:'The Shaking Shapes',book:3,islands:['area','angle','shape'],boss:'quake',
+    intro:['The Shape Quake is shaking the bridge! Every corner wobbles and every fence falls down.','Measure angles, find areas and name the shapes. Strong math makes a strong bridge!'],
+    outro:'YELLOW shines on the bridge! Now the wind smells like coins and rulers...'},
+  {name:'The Tangled Market',book:3,islands:['money','measure','graph'],boss:'tangle',
+    intro:['The Tangle Wind blew through the Sky Market. Prices, rulers and charts are all mixed up!','Count the change, measure carefully and read the graphs. Untangle it all, partner!'],
+    outro:'GREEN glows on the bridge! Only one color left. The sky is getting dark...'},
+  {name:'The Last Light',book:3,islands:['time','pattern','place','riddle'],boss:'eclipse',
+    intro:['The Eclipse Dragon swallowed the last color and the sun! It wants the sky to stay dark forever.','Clocks, patterns, big numbers and riddles. Everything we learned together will light the way!'],
+    outro:'THE RAINBOW BRIDGE IS COMPLETE! The sun is back, and every island is connected. Thank you for being the best sky partner ever!'}
 ];
+const BOOKS={1:{title:"Pip's Lost Map",start:0,unit:'map piece',won:'Piece found!'},2:{title:'The Starlight Compass',start:4,unit:'compass part',won:'Compass part found!'},3:{title:'The Rainbow Bridge',start:8,unit:'bridge color',won:'Color restored!'}};
+const bookOf=i=>(CHAPTERS[Math.min(i,CHAPTERS.length-1)]||{}).book||1;
+function bookArt(b,n,fresh){return b===3?bridgeSVG3(n,fresh):b===2?compassSVG2(n,fresh):mapSVG(Math.min(n,4),fresh)}
+function bridgeSVG3(n,fresh){const cols=['#ff6b57','#ffc23d','#38b98a','#2f9fe0'],cx=158,cy=170;let o='';
+  for(let k=0;k<4;k++){const r=128-k*20,got=k<n,d=`M${cx-r} ${cy} A${r} ${r} 0 0 1 ${cx+r} ${cy}`;
+    o+=got?`<path class="${fresh&&k===n-1?'fresh':''}" d="${d}" fill="none" stroke="${cols[k]}" stroke-width="17" stroke-linecap="round"/>`:`<path d="${d}" fill="none" stroke="#dfe6ee" stroke-width="15" stroke-dasharray="7 6" stroke-linecap="round"/>`}
+  const cloud=(x,y)=>`<g fill="#fff"><circle cx="${x-16}" cy="${y}" r="14"/><circle cx="${x}" cy="${y-8}" r="18"/><circle cx="${x+16}" cy="${y}" r="14"/><rect x="${x-30}" y="${y}" width="60" height="14" rx="7"/></g>`;
+  return `<svg class="storymap" viewBox="0 0 316 216" role="img" aria-label="Rainbow Bridge with ${n} of 4 colors"><rect width="316" height="216" rx="18" fill="${n>=4?'#bfe8ff':'#c9d6e6'}"/>${n>=4?'<circle cx="270" cy="40" r="20" fill="#ffd56b"/>':''}${o}${cloud(36,176)}${cloud(280,176)}</svg>`}
 
 /* stickers */
 const STICKER_SETS=[['sky','Sky Friends','#dff3ff'],['space','Space Trip','#2c3266'],['yum','Yummy Treats','#fff1e0'],['gold','Treasure Chest','#fff5d6']];
@@ -2814,7 +2908,7 @@ function encodeSave(only){const r=only?{profiles:{[only]:ROOT.profiles[only]},cu
 function decodeSave(code){code=code.trim().replace(/\s+/g,'');if(!code.startsWith('PIP1:'))throw new Error('bad');const bin=atob(code.slice(5));const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));const r=JSON.parse(new TextDecoder().decode(bytes));if(!r||!r.profiles)throw new Error('bad');return r}
 const newKidId=()=>'k'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 function addKid(p){const id=newKidId();p=normalizeProfile(p);p._u=Date.now();ROOT.profiles[id]=p;persistLocal();if(CL.mode==='cloud'){CL.dirty[id]=1;cloudSchedule(500)}return id}
-const starTotal=()=>STAR_ISLANDS.reduce((s,i)=>s+(G.best[i.id]||0),0);
+const starTotal=()=>ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review').reduce((s,i)=>s+(G.best[i.id]||0),0);
 const dayKey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const addDays=(n,base=new Date())=>{const d=new Date(base);d.setDate(d.getDate()+n);return dayKey(d)};
 const yesterdayKey=()=>addDays(-1);
@@ -2845,7 +2939,7 @@ const BADGES=[
   ['daily7','Week Warrior','Finish the Daily Challenge 7 days in a row.','#ff6b57'],['shopper','Snappy Dresser','Buy something in Pip\'s Closet.','#e2558f'],['legend','Living Legend','Buy a Legendary item in Pip\'s Closet.','#ffc23d'],
   ['thunder','Lightning Brain','Answer 20 facts in Thunder Tower.','#7c8fb8'],['level5','Sky Scholar','Reach level 5.','#38b98a'],['rich','Treasure Keeper','Have 500 coins at once.','#e09a14'],
   ['hard','Hard Mode Hero','Get 3 stars on an island in Hard mode.','#ff6b57'],['fixer','Comeback Kid','Fix 10 old mistakes at Fix-It Falls.','#5ec3d6'],
-  ['learner','Quick Learner','Finish a lesson with Pip.','#2f9fe0'],['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
+  ['learner','Quick Learner','Finish a lesson with Pip.','#2f9fe0'],['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['story3','Bridge Builder','Bring back every color of the Rainbow Bridge.','#e2558f'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
   ['week','Personal Best','Beat last week\'s score.','#2f9fe0'],['builder','Home Builder','Build 5 things on your island.','#8fd16a'],['dream','Dream Island','Build everything on your island.','#ffc23d'],['popper','Balloon Popper','Pop 15 balloons in one bonus game.','#ff6b57'],['event','Event Champion','Win the top prize in a seasonal event.','#ff9f43'],['story','Map Master','Finish the whole Story Mode.','#6b5bd6']
 ];
 
@@ -3283,7 +3377,7 @@ function buildTips(){
   if(CUR_EV){const st=evState(CUR_EV),nx=EV_MILES.find(m=>st.pts<m[0]);t.push({text:`The <b>${CUR_EV.name}</b> is on until ${evEnd(CUR_EV)}!${nx?` Only <b>${nx[0]-st.pts} more points</b> to the next prize!`:' You won every prize. WOW!'}`,label:`Play ${CUR_EV.island}`,act:()=>start(eventIsland())})}
   if(!G.home||homeCount()<HOME.length+HOUSES.length)t.push({text:homeCount()?`Let's keep building <b>our island</b>! What should we add next?`:`Did you know we can build <b>our own island</b>? Let's start with a cozy tent!`,label:'Go to My Island',act:openHome});
   const due=reviewDue().length;if(due)t.push({text:`${n}<b>${due} old mistake${due>1?'s are':' is'}</b> waiting at Fix-It Falls. Fixing them makes your brain super strong!`,label:'Go to Fix-It Falls',act:()=>start(byId('review'))});
-  const ch=CHAPTERS[G.story.ch];if(ch&&!chapterWaiting(G.story.ch))t.push({text:ch.book===2?`Story time! The Starlight Compass needs part <b>${G.story.ch-3}</b>: "${ch.name}". Will you help me?`:`Story time! We still need to find <b>map piece ${G.story.ch+1}</b>: "${ch.name}". Will you help me?`,label:'Open Story Mode',act:openStory});
+  const ch=CHAPTERS[G.story.ch];if(ch&&!chapterWaiting(G.story.ch))t.push({text:(ch.book||1)>=2?`Story time! ${BOOKS[ch.book].title} needs ${BOOKS[ch.book].unit} <b>${G.story.ch-BOOKS[ch.book].start+1}</b>: "${ch.name}". Will you help me?`:`Story time! We still need to find <b>map piece ${G.story.ch+1}</b>: "${ch.name}". Will you help me?`,label:'Open Story Mode',act:openStory});
   const unv=STAR_ISLANDS.filter(i=>i.gen&&!G.visited[i.id]);
   if(unv.length){const i=pick(unv);t.push({text:`Psst... I've never been to <b>${i.name}</b>! Want to explore it with me?`,label:`Fly to ${i.name}`,act:()=>start(i)})}
   const almost=STAR_ISLANDS.filter(i=>i.gen&&G.best[i.id]>0&&G.best[i.id]<3);
@@ -3301,15 +3395,15 @@ function buildTips(){
 function showTip(){const tp=tips[tipI%tips.length];tipI++;say($('#maptext'),tp.text,true);const b=$('#mapact');if(tp.act){b.hidden=false;b.textContent=tp.label;b.onclick=()=>{tone([523,784]);tp.act()}}else b.hidden=true}
 function checkChest(){const c=G.chest;if(!c||!c.from||c.from>=dayKey()||c.from<=(G.chestOpened||''))return;G.chestOpened=c.from;G.coins+=REW.chest;save();
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Welcome back${nm()}!</div><h2>Your surprise chest</h2><svg viewBox="0 0 120 90" style="width:150px;align-self:center" aria-hidden="true"><rect x="14" y="40" width="92" height="44" rx="6" fill="#b5773f" stroke="#8c5a2c" stroke-width="3"/><path d="M14 44 Q14 14 60 14 Q106 14 106 44Z" fill="#c98a4c" stroke="#8c5a2c" stroke-width="3"/><rect x="52" y="36" width="16" height="18" rx="3" fill="#ffc23d" stroke="#e09a14" stroke-width="2"/><g fill="#ffd56b"><circle cx="34" cy="10" r="4"/><circle cx="86" cy="8" r="3"/><circle cx="60" cy="4" r="3"/></g></svg><p>You reached your goal yesterday and took a break. That's how brains grow! <b>+${REW.chest} coins</b>.</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Yay!</button>`,()=>{updateStats('#coinPill');sWin();burst(innerWidth/2,innerHeight/3,100)})}
-let mapTab=(()=>{try{return localStorage.getItem('pip-tab')||'math'}catch(e){return 'math'}})();
+let mapTab=(()=>{try{const t=localStorage.getItem('pip-tab');return t==='world'?'world':'math'}catch(e){return 'math'}})();
 function setTab(t){mapTab=t;try{localStorage.setItem('pip-tab',t)}catch(e){}document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('.tabp').forEach(p=>p.hidden=p.dataset.tabp!==t)}
 document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.onclick=()=>{setTab(b.dataset.tab);tone([523,659],.04)});
 function renderMap(){
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
   adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
   const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
-  for(const [g,sel] of Object.entries(groups))$(sel).innerHTML=ISLANDS.map((isl,i)=>isl.group===g?card(isl,i):'').join('');
-  $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'Compass fixed! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
+  for(const [g,sel] of Object.entries(groups))$(sel).innerHTML=ISLANDS.map((isl,i)=>isl.group===g&&!isl.retired?card(isl,i):'').join('');
+  $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'All 3 books done! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
   $('#albumSub').textContent=`${Object.keys(G.stickers).length} of ${STK.length} stickers`;
   document.querySelectorAll('.isle').forEach(b=>b.onclick=()=>{const isl=byId(b.dataset.id);
     if(isl.special==='boss'&&starTotal()<BOSS_NEED){say($('#maptext'),`Boss Island is locked! Collect <b>${BOSS_NEED-starTotal()} more stars</b> first. You can do it!`);$('#mapact').hidden=true;foxMove('wobble');sNo();scrollTo({top:0,behavior:'smooth'});return}
@@ -3556,7 +3650,7 @@ function loseHeart(){S.hearts--;$('#hearts').innerHTML=[0,1,2].map(k=>HEART(k<S.
 function finishBoss(win){
   const name=BOSSES[S.boss].name;
   if(win&&S.chapter==null)award('boss');
-  let extra='';if(win&&S.chapter!=null&&G.story.ch===S.chapter){G.story.ch++;G.story.at=Object.assign({},G.story.at||{},{[S.chapter]:dayKey()});extra=CHAPTERS[S.chapter].book===2?' You won a compass part!':' You won a map piece!';S.storyWin=S.chapter}
+  let extra='';if(win&&S.chapter!=null&&G.story.ch===S.chapter){G.story.ch++;G.story.at=Object.assign({},G.story.at||{},{[S.chapter]:dayKey()});extra=` You won a ${BOOKS[CHAPTERS[S.chapter].book||1].unit}!`;S.storyWin=S.chapter}
   done(win?S.hearts:0,win?`You beat the ${name} with ${S.hearts} heart${S.hearts>1?'s':''} left!${extra}`:`The ${name} escaped after ${S.hpMax-S.hp} hits. Practice on the islands and try again!`,{title:win?'Victory!':'So close!',sticker:win?(S.chapter!=null?'rare':1):0});
 }
 
@@ -3642,9 +3736,9 @@ function done(st,line,o={}){
   show('done');refreshFoxes();
   if(st>0){sWin();setTimeout(()=>burst(innerWidth/2,innerHeight/3,120),300)}
   setTimeout(()=>{foxMove(st>=2?'spin':st>0?'hop':'wobble');if(st===0)foxClass('sad',1500)},400);
-  if(S.storyWin!=null){const ch=CHAPTERS[S.storyWin],last=S.storyWin===3||S.storyWin===CHAPTERS.length-1,b2=ch.book===2;
-    if(last){G.coins+=REW.story;award(b2?'story2':'story');save();updateStats('#coinPill')}
-    setTimeout(()=>overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">${b2?`Compass part ${S.storyWin-3} of 4`:`Map piece ${S.storyWin+1} of 4`}</div>${b2?compassSVG2(G.story.ch-4,true):mapSVG(Math.min(G.story.ch,4),true)}<p>${ch.outro}${last?` <b>+${REW.story} coins!</b>`:''}</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Hooray!</button>`,()=>{burst(innerWidth/2,innerHeight/2,160);sWin()}),1200)}
+  if(S.storyWin!=null){const ch=CHAPTERS[S.storyWin],bk=ch.book||1,B=BOOKS[bk],last=S.storyWin===B.start+3,b2=bk>=2;
+    if(last){G.coins+=REW.story;award(bk===3?'story3':bk===2?'story2':'story');save();updateStats('#coinPill')}
+    setTimeout(()=>overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">${B.unit[0].toUpperCase()+B.unit.slice(1)} ${S.storyWin-B.start+1} of 4</div>${bookArt(bk,G.story.ch-B.start,true)}<p>${ch.outro}${last?` <b>+${REW.story} coins!</b>`:''}</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Hooray!</button>`,()=>{burst(innerWidth/2,innerHeight/2,160);sWin()}),1200)}
   if(levelOf(G.xp)>S.lv0)setTimeout(()=>showLevelUp(levelOf(G.xp)),1400);
 }
 function showLevelUp(lv){overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Level up!</div><h2>Level ${lv+1}</h2><p>You're now a <b>${TITLES[lv]}</b>! Keep flying to unlock the next title.</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Awesome!</button>`,()=>{sLevel();burst(innerWidth/2,innerHeight/2,160);setTimeout(()=>foxMove('spin'),200)})}
@@ -3762,9 +3856,9 @@ function mapSVG(pieces,fresh){
   });
   return `<svg class="storymap" viewBox="0 0 316 216" role="img" aria-label="Treasure map with ${pieces} of 4 pieces found"><defs>${defs}</defs>${body}</svg>`;
 }
-function chapterReady(i){const ch=CHAPTERS[i];return ch.book===2?ch.islands.every(id=>tierBest(id)>=2):ch.islands.every(id=>(G.best[id]||0)>=2)}
+function chapterReady(i){const ch=CHAPTERS[i];return (ch.book||1)>=2?ch.islands.every(id=>tierBest(id)>=2):ch.islands.every(id=>(G.best[id]||0)>=2)}
 /* Book 2 opens one chapter at a time: a new chapter can start 2 days after the one before it was won */
-function chapterOpensOn(i){if(!CHAPTERS[i]||CHAPTERS[i].book!==2||i===4)return '';const at=((G.story||{}).at||{})[i-1];if(!at)return '';const d=new Date(at+'T12:00:00');d.setDate(d.getDate()+2);return d.toISOString().slice(0,10)}
+function chapterOpensOn(i){if(!CHAPTERS[i]||(CHAPTERS[i].book||1)<2||i===4||i===8)return '';const at=((G.story||{}).at||{})[i-1];if(!at)return '';const d=new Date(at+'T12:00:00');d.setDate(d.getDate()+2);return d.toISOString().slice(0,10)}
 const chapterWaiting=i=>{const o=chapterOpensOn(i);return o&&dayKey()<o?o:''};
 function compassSVG2(n,fresh){const cx=158,cy=108,R1=92,R0=26,cols=['#2f9fe0','#ffc23d','#38b98a','#e2558f'],L=['N','E','S','W'];let o='';
   for(let k=0;k<4;k++){const a0=(-135+90*k)*Math.PI/180,a1=a0+Math.PI/2,P=(r,a)=>`${(cx+r*Math.cos(a)).toFixed(1)} ${(cy+r*Math.sin(a)).toFixed(1)}`,am=(a0+a1)/2;
@@ -3777,15 +3871,15 @@ function compassSVG2(n,fresh){const cx=158,cy=108,R1=92,R0=26,cols=['#2f9fe0','#
   return `<svg class="storymap" viewBox="0 0 316 216" role="img" aria-label="Starlight Compass with ${n} of 4 parts found"><rect width="316" height="216" rx="18" fill="#2c3266"/>${[[30,30],[280,40],[40,180],[270,190],[150,14]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.5" fill="#fff" opacity=".8"/>`).join('')}${o}</svg>`}
 function openStory(){
   stopTimers();show('story');refreshFoxes();
-  const book2=G.story.ch>=4;$('#storyMap').innerHTML=book2?compassSVG2(G.story.ch-4):mapSVG(Math.min(G.story.ch,4));
-  const st=$('#story .iname');if(st)st.textContent=book2?'The Starlight Compass':"Pip's Lost Map";const sq=$('#story .qnum');if(sq)sq.textContent=book2?'Get the silver bar (7 of 10 right lately) on every island in a chapter, then beat its boss.':'Earn 2 stars on every island in a chapter, then beat its boss to win a map piece.';
+  const bk=G.story.ch>=CHAPTERS.length?3:bookOf(G.story.ch),B=BOOKS[bk],book2=bk>=2;$('#storyMap').innerHTML=bookArt(bk,Math.min(G.story.ch,CHAPTERS.length)-B.start);
+  const st=$('#story .iname');if(st)st.textContent=B.title;const sq=$('#story .qnum');if(sq)sq.textContent=book2?'Get the silver bar (7 of 10 right lately) on every island in a chapter, then beat its boss.':'Earn 2 stars on every island in a chapter, then beat its boss to win a map piece.';
   const cur=CHAPTERS[G.story.ch],wait=cur?chapterWaiting(G.story.ch):'';
-  say($('#storysay'),!cur?`We fixed the Starlight Compass together${nm()}! You can replay any chapter boss for fun and stickers.`:wait?`What an adventure! The next chapter, <b>${cur.name}</b>, opens on <b>${new Date(wait+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}</b>. Practice its islands now so you're ready!`:chapterReady(G.story.ch)?`All islands are ready! Time to battle the <b>${BOSSES[cur.boss].name}</b>!`:`Chapter ${G.story.ch+1}: <b>${cur.name}</b>. ${cur.book===2?'Get the <b>silver bar</b> (7 of 10 right lately) on each island below':'Earn 2 stars on each island below'} to call out the boss.`);
-  const order=CHAPTERS.map((_,i)=>i).sort((x,y)=>book2?((x>=4?0:1)-(y>=4?0:1))||x-y:x-y);
+  say($('#storysay'),!cur?`We finished all three books together${nm()}! The Rainbow Bridge shines. You can replay any chapter boss for fun and stickers.`:wait?`What an adventure! The next chapter, <b>${cur.name}</b>, opens on <b>${new Date(wait+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}</b>. Practice its islands now so you're ready!`:chapterReady(G.story.ch)?`All islands are ready! Time to battle the <b>${BOSSES[cur.boss].name}</b>!`:`Chapter ${G.story.ch+1}: <b>${cur.name}</b>. ${(cur.book||1)>=2?'Get the <b>silver bar</b> (7 of 10 right lately) on each island below':'Earn 2 stars on each island below'} to call out the boss.`);
+  const order=CHAPTERS.map((_,i)=>i).sort((x,y)=>((bookOf(x)===bk?0:1)-(bookOf(y)===bk?0:1))||x-y);
   $('#chapters').innerHTML=order.map(i=>{const ch=CHAPTERS[i];const lock=i>G.story.ch,fin=i<G.story.ch,w=i===G.story.ch?chapterWaiting(i):'',ready=chapterReady(i)&&!w;
-    return `${i===4?'<h3 class="sectitle bookt">Book 2: The Starlight Compass</h3>':i===0?'<h3 class="sectitle bookt">Book 1: The Lost Map</h3>':''}<div class="chap${lock?' lock':''}${fin?' done':''}"><h4>${ch.name}<small>Chapter ${i+1} · ${fin?(ch.book===2?'Compass part found!':'Piece found!'):lock?'Locked':w?'Opens '+new Date(w+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'In progress'}</small></h4>
+    return `${i===8?'<h3 class="sectitle bookt">Book 3: The Rainbow Bridge</h3>':i===4?'<h3 class="sectitle bookt">Book 2: The Starlight Compass</h3>':i===0?'<h3 class="sectitle bookt">Book 1: The Lost Map</h3>':''}<div class="chap${lock?' lock':''}${fin?' done':''}"><h4>${ch.name}<small>Chapter ${i+1} · ${fin?BOOKS[ch.book||1].won:lock?'Locked':w?'Opens '+new Date(w+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'In progress'}</small></h4>
       <p>Boss: ${BOSSES[ch.boss].name}</p>
-      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=ch.book===2?tierBest(id)>=2:(G.best[id]||0)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(G.best[id]||0)}${ch.book===2&&!ok&&!lock?`<small class="tneed">${toTier(id,2)} more right for silver</small>`:''}</button>`}).join('')}</div>
+      <div class="clist">${ch.islands.map(id=>{const isl=byId(id),ok=(ch.book||1)>=2?tierBest(id)>=2:(G.best[id]||0)>=2;return `<button type="button" class="cisl${ok?' ok':''}" data-isl="${id}" ${lock?'disabled':''}>${ok?CHECK:''}${isl.name} ${'★'.repeat(G.best[id]||0)}${(ch.book||1)>=2&&!ok&&!lock?`<small class="tneed">${toTier(id,2)} more right for silver</small>`:''}</button>`}).join('')}</div>
       <div class="actrow" style="justify-content:flex-start">${lock?'':`<button type="button" class="go small alt" data-intro="${i}">Story</button><button type="button" class="go small${ready?'':' alt'}" data-boss="${i}" ${ready?'':'disabled'}>${fin?'Replay boss':'Battle boss'}</button>`}</div></div>`}).join('');
   document.querySelectorAll('[data-isl]').forEach(b=>b.onclick=()=>start(byId(b.dataset.isl)));
   document.querySelectorAll('[data-intro]').forEach(b=>b.onclick=()=>playDialog(CHAPTERS[+b.dataset.intro].intro));
@@ -3976,11 +4070,15 @@ function pinKey(k){
 }
 $('#parentBtn').onclick=openParent;
 function acc(id){const s=G.stats[id];return s&&s.a?Math.round(s.c/s.a*100):null}
+const CURRIC=[['Math','Place value, adding, multiplying, dividing','4.NBT',['place','addsub','mult','div']],['Math','Fractions and decimals','4.NF',['frac','dec']],['Math','Patterns, factors, word problems','4.OA',['pattern','riddle']],
+  ['Math','Measurement, money, time, area, angles, graphs','4.MD',['measure','money','time','area','angle','graph']],['Math','Shapes, lines, symmetry','4.G',['shape']],
+  ['English','Reading stories and information','RL.4 / RI.4',['reading']],['English','Vocabulary and grammar','L.4',['words','grammar']],['English','Writing','W.4',['write']],
+  ['Science','Earth, life and physical science','NGSS 4',['science']],['Social studies','California history and geography','HSS 4',['history','geo']]];
 function renderParent(){
   show('parent');
   const t=today(),last7=[...Array(7)].map((_,i)=>addDays(i-6)),mins=last7.map(k=>Math.round(((G.days[k]||{}).sec||0)/60)),maxM=Math.max(10,...mins);
   const allA=Object.values(G.stats).reduce((a,s)=>a+s.a,0),allC=Object.values(G.stats).reduce((a,s)=>a+s.c,0);
-  const rows=ISLANDS.filter(i=>i.gen).map(i=>({i,s:G.stats[i.id]||{a:0,c:0},p:acc(i.id)})).sort((a,b)=>(a.p==null)-(b.p==null)||(a.p??0)-(b.p??0));
+  const rows=ISLANDS.filter(i=>i.gen&&!i.retired).map(i=>({i,s:G.stats[i.id]||{a:0,c:0},p:acc(i.id)})).sort((a,b)=>(a.p==null)-(b.p==null)||(a.p??0)-(b.p??0));
   const weak=rows.filter(r=>r.s.a>=5&&r.p<70).slice(0,3);
   const gi=goalInfo();
   $('#pSub').textContent=`${G.name||'Player'} · Level ${levelOf(G.xp)+1} · ${starTotal()} stars · ${fmt(G.coins)} coins`;
@@ -3998,6 +4096,10 @@ function renderParent(){
     <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small></li>`).join('')}</ul><p>Tip: tap a topic below to play it together.</p>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
       <p>Waiting at Fix-It Falls: <b>${G.review.length}</b> puzzle${G.review.length===1?'':'s'} (${reviewDue().length} due today).</p></div>
     <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
+    <div class="pcard wide curmap"><h4>4th grade program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the California 4th grade program. Bars use the last 20 first tries on each island: bronze 60%, silver 70%, gold 80%.</p>
+      <div class="tscroll"><table class="topics cur"><thead><tr><th>Subject</th><th>Area</th><th>Standard</th><th>Islands</th></tr></thead><tbody>
+      ${CURRIC.map(([sub,area,code,ids])=>{const isl=ids.map(byId).filter(Boolean),done=isl.filter(i=>tierBest(i.id)>=2).length;return `<tr><td>${sub}</td><td>${area}<small class="cdone">${done} of ${isl.length} at silver or better</small></td><td><code>${code}</code></td><td>${isl.map(i=>{const tb=tierBest(i.id),st=(G.stats[i.id]||{}).a||0,lab=tb?TIERS[tb][1]:st?'Practicing':'Not started';return `<span class="cst s${tb||(st?'p':'n')}">${esc(i.name)} · ${lab}</span>`}).join(' ')}</td></tr>`}).join('')}
+      </tbody></table></div></div>
     <div class="pcard wide"><h4>Topics</h4><div class="tscroll"><table class="topics"><thead><tr><th>Island</th><th>Puzzles</th><th>First-try accuracy</th><th>Last 20</th><th>Level</th><th>Stars</th></tr></thead><tbody>
       ${rows.map(r=>`<tr><td><button type="button" class="cisl" data-play="${r.i.id}">${r.i.name}</button></td><td>${r.s.a}</td><td>${r.p==null?'–':`<div class="acc ${r.p<60?'low':r.p<80?'mid':''}"><div class="bar"><i style="width:${r.p}%"></i></div>${r.p}%</div>`}</td><td>${(()=>{const m=rollAcc(r.i.id);return m.n?`${Math.round(m.acc*100)}%${m.n>=12&&m.acc>=.8?' ✓':''}`:'–'})()}</td><td>${DIFF_NAME[diffFor(r.i)]}</td><td>${'★'.repeat(G.best[r.i.id]||0)||'–'}</td></tr>`).join('')}
     </tbody></table></div></div>
