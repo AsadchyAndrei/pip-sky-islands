@@ -977,6 +977,24 @@ body[data-screen=play] .sky *,body[data-screen=play] .isle svg.isl{animation-pla
 .intro .bubble{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;box-sizing:border-box}.intro .bubble br{display:none}.intro .bubble .mini{margin-top:8px}
 /* closet color circles: on phones the label sits on its own line, so all circles stay in one even row */
 @media (max-width:760px){.swatches{gap:8px 10px;margin-top:10px}.swatches>span{flex:1 1 100%}}
+/* event card on phones: small picture beside the title, quest and prizes in tidy rows, two buttons side by side */
+@media (max-width:760px){
+  #eventCard.evcard{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px 12px;align-items:center;padding:14px 14px 16px}
+  #eventCard .evart{grid-column:1;grid-row:1;display:block;align-self:center}
+  #eventCard .evart svg{width:56px!important;height:56px!important;display:block}
+  #eventCard .evbody{display:contents}
+  #eventCard .evtop{grid-column:2;grid-row:1;flex-direction:column;align-items:flex-start;gap:4px}
+  #eventCard .evtop b{font-size:22px;line-height:1.1}
+  #eventCard .evbody>p,#eventCard .evweek,#eventCard .evmeter,#eventCard .evmiles,#eventCard .actrow{grid-column:1/-1;margin:0}
+  #eventCard .evbody>p{font-size:15px;line-height:1.4}
+  #eventCard .evweek{font-size:14px;font-weight:600;line-height:1.35;padding:8px 10px;background:var(--pale-sun)}
+  #eventCard .evmeter{gap:8px;font-size:15px}#eventCard .evmeter .bar{height:12px}
+  #eventCard .evmiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  #eventCard .evmiles span{text-align:center;font-size:12.5px;line-height:1.2;padding:6px 4px 5px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+  #eventCard .actrow{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px}
+  #eventCard .actrow .go{width:100%;justify-content:center;text-align:center;padding-inline:8px;font-size:17px;white-space:nowrap}
+}
+@media (max-width:360px){#eventCard .actrow .go{font-size:15px;padding-inline:6px}#eventCard .evtop b{font-size:20px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
