@@ -35,6 +35,10 @@ for(const isl of ISLANDS.filter(i=>i.gen&&!i.retired)){
   const L=skillsOf(isl.id),cov={};L.forEach(s=>s.ts.forEach(t=>cov[t]=(cov[t]||0)+1));
   for(let t=0;t<isl.types;t++)if(cov[t]!==1)add('skill coverage',isl.id+'#'+t,'in '+(cov[t]||0)+' skills');
 }
+for(const L of LESSONS)for(let k=0;k<20;k++){let it;try{it=L.build()}catch(e){add('lesson crash',L.id,String(e).slice(0,100));break}
+  it.forEach((q,i)=>{if(!q.teach&&q.choices&&!q.choices.includes(q.answer))add('lesson answer missing',L.id+' #'+i,strip(q.prompt).slice(0,60))});
+  if(!byId(L.isl))add('lesson island',L.id,L.isl)}
+const noLesson=ISLANDS.filter(i=>i.gen&&!i.retired&&!LESSONS.some(L=>L.isl===i.id)).map(i=>i.id);if(noLesson.length)add('islands without a lesson','',noLesson.join(','));
 return JSON.stringify({total:Object.values(cnt).reduce((a,b)=>a+b,0),bad})}"""
 c = Check('questions')
 with sync_playwright() as p:

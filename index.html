@@ -370,7 +370,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .skd{display:inline-block;width:8px;height:8px;border-radius:50%;background:#dfe6ef;flex:none}.skd.s1{background:#ffc23d}.skd.s2{background:#38b98a}
 .skmeter{display:inline-block;width:64px;height:7px;border-radius:99px;background:#dfe6ef;overflow:hidden;vertical-align:middle}.skmeter i{display:block;height:100%;background:#38b98a;border-radius:99px}
 .ishead{display:flex;align-items:center;gap:14px;width:100%;text-align:left}.isico{width:110px;flex:none}.isico svg{width:100%;height:auto}.ishead h2{font-size:30px}
-.go.big{font-size:24px;padding:14px 40px;width:100%;max-width:340px}
+.go.big{font-size:24px;padding:14px 40px;width:100%;max-width:340px}.isbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}.isbtns .go.big{flex:1 1 200px}.isbtns .go.alt{flex:0 1 auto}
 .sklist{width:100%;display:grid;gap:6px;text-align:left;max-height:min(46vh,460px);overflow:auto;padding:2px}.skhead{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px}.skhead span{font-weight:700;color:var(--ink-soft);font-size:14px}
 .skrow{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:8px 10px}.skrow .skd{width:12px;height:12px}.skname{flex:1;min-width:0}.skname b{display:block;font-size:15px;line-height:1.25}.skname small{color:var(--ink-soft);font-weight:700;font-size:12px}.skrow.s2{background:var(--pale-leaf);border-color:#bfe8d1}.skrow .go.small{padding:7px 14px;font-size:16px;flex:none}
 .skgrp{margin:12px 0 4px;font-family:var(--display);font-weight:400;font-size:18px}.skdet{border:2px solid var(--line);border-radius:12px;margin:6px 0;background:#fff}.skdet summary{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;flex-wrap:wrap}.skdet summary span{color:var(--ink-soft);font-size:13px;font-weight:600;flex:1;min-width:120px}.skdet summary em{font-style:normal;font-weight:800}
@@ -4689,11 +4689,11 @@ function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone
   if(L.length<2||isl.flash)return start(isl);
   const third=b>=2&&!allSkills(isl.id)&&!(G.star3||{})[isl.id];
   overlay(`<div class="ishead"><span class="isico">${islandSVG(isl.color,LANDMARKS[isl.lm])}</span><div><div class="eyebrow" style="color:${isl.color}">${esc(isl.topic)}</div><h2>${esc(isl.name)}</h2><span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}</span></div></div>
-    <button type="button" class="go big" id="isPlay">Play</button>
+    <div class="isbtns"><button type="button" class="go big" id="isPlay">Play</button>${lessonsFor(isl.id).length?'<button type="button" class="go alt" id="isLearn">Learn the trick</button>':''}</div>
     <div class="sklist" role="list"><div class="skhead"><b>Skills</b><span>${d} of ${L.length} mastered</span></div>${L.map(s=>{const m=skStat(s.k);return `<div class="skrow s${m.st}" role="listitem">${SK_DOT(m.st)}<div class="skname"><b>${esc(s.name)}</b><small>${m.st===2?'Mastered':m.n?`${m.ok} of ${m.n} right lately`:'Not tried yet'}</small></div><button type="button" class="go small alt" data-sk="${s.i}" aria-label="Practice ${esc(s.name)}">Practice</button></div>`}).join('')}</div>
     ${third?`<p class="note">The <b>3rd star</b> shines when every skill here is mastered.</p>`:''}<div class="actrow"><button type="button" class="go alt" id="isClose">Back to map</button></div>`,()=>{
     $('#ocard').classList.add('wide');const close=()=>{$('#ocard').classList.remove('wide');closeOverlay()};
-    $('#isPlay').onclick=()=>{close();start(isl)};$('#isClose').onclick=close;$('#isPlay').focus({preventScroll:true});
+    $('#isPlay').onclick=()=>{close();start(isl)};if($('#isLearn'))$('#isLearn').onclick=()=>{close();start(lessonIsland(lessonFor(isl.id)))};$('#isClose').onclick=close;$('#isPlay').focus({preventScroll:true});
     $('#ocard').querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{close();tone([523,784]);startSkill(isl,L[+b.dataset.sk])})})}
 function pickPlay(P){const w=weakSkill(P.id);if(w&&skillsOf(P.id).length>1)startSkill(P,w);else start(P,{noOffer:true})}
 function skillsParentHTML(){const groups=[['Math',['place','addsub','mult','div','frac','dec','area','angle','shape','money','measure','pattern','graph','time','riddle']],['English',['reading','listen','words','grammar','write']],['Science and social studies',['science','geo','history']]];
@@ -4928,6 +4928,63 @@ const mastLabel=m=>m.gold?`3 stars on ${m.gold} islands`:`${m.tier} star${m.tier
 function grantMastery(quiet){for(const [k,id] of MASTERY){const it=SHOP[k].items()[id],L=SHOP[k].list();if(it&&!L.includes(id)&&mastDone(it.mast)){L.push(id);if(!quiet)toast(`Mastery prize: ${it.name}!`,`You earned it: ${mastLabel(it.mast)}. Find it in Pip's Closet!`,'#e09a14')}}}
 
 const LESSONS=[
+  /* ----- lessons for the Words & World islands ----- */
+  {id:'gram_runon',isl:'grammar',types:[],title:'Fixing run-on sentences',
+   build(){const i=R(0,GX.pair.length-1),[a,b]=GX.pair[i],c=GX.conj[i];return [
+    teachCard('Two ideas need a break',`<p>A <b>run-on</b> squishes two complete ideas together: <i>"The bell rang the kids ran outside."</i></p><p>Fix it 2 ways:</p><p>1. Make <b>two sentences</b>: <i>"The bell rang. The kids ran outside."</i></p><p>2. Join with a <b>comma + and / but / so</b>: <i>"The bell rang, so the kids ran outside."</i></p><p>A comma <b>alone</b> is not enough!</p>`,'Let\'s try one together!'),
+    guided(`Is this a run-on? <i>"${a} ${lowerFirst(b)}."</i>`,strChoices('Yes, it has two complete ideas with nothing between them',['No, it is a complete sentence','No, it is a question']),`Find the two "who did what" parts.`,`"${a}" and "${b}" are both complete ideas: it is a <b>run-on</b>.`),
+    guided(`Which word could join the two ideas with a comma?`,strChoices(c,['the','because of','very']),`Use and, but, or so.`,`Use a comma and <b>${c}</b>.`),
+    guided(`Which is fixed correctly?`,strChoices(`${a}, ${c} ${lowerFirst(b)}.`,[`${a}, ${lowerFirst(b)}.`,`${a} ${c}, ${lowerFirst(b)}.`]),`Comma first, then the joining word.`,`<b>${a}, ${c} ${lowerFirst(b)}.</b>`)]},
+   get practice(){const L=GRAMF.length;return [L+1,L+9,L+17]}},
+  {id:'gram_adj',isl:'grammar',types:[],title:'Adjective order',
+   build(){return [
+    teachCard('Opinion, size, age, shape, color, origin, material',`<p>When you use several adjectives, they go in a special order:</p><p class="lbig">opinion → size → age → shape → color → origin → material</p><p><i>a <b>lovely</b> <b>little</b> <b>old</b> <b>red</b> <b>wooden</b> box</i></p><p>Trick: say it out loud. The wrong order sounds funny ("a wooden red little box").</p>`,'Let\'s try one together!'),
+    guided(`Which comes first: a <b>size</b> word or a <b>color</b> word?`,strChoices('Size',['Color','It does not matter']),`Opinion, size, age, shape, color...`,`<b>Size</b> comes before color: "a big red ball".`),
+    guided(`Which sounds right?`,strChoices('a funny little dog',['a little funny dog','a dog funny little']),`Opinion before size.`,`<b>Funny</b> (opinion) comes before <b>little</b> (size).`),
+    guided(`Which sounds right?`,strChoices('a small blue plastic cup',['a plastic small blue cup','a blue plastic small cup']),`Size, color, material.`,`<b>small</b> (size) → <b>blue</b> (color) → <b>plastic</b> (material).`)]},
+   get practice(){const L=GRAMF.length;return [L+2,L+10,L+18]}},
+  {id:'write_para',isl:'write',types:[1,4,5],title:'The parts of a paragraph',
+   build(){return [
+    teachCard('Hamburger paragraph',`<p>A good paragraph is like a hamburger:</p><p>🍞 <b>Topic sentence</b> (top bun): the big idea.</p><p>🥬 <b>Details</b> (the middle): facts, reasons or examples that explain the big idea.</p><p>🍞 <b>Ending</b> (bottom bun): sums it up again in new words.</p>`,'Let\'s try one together!'),
+    guided(`Which sentence is the best <b>topic sentence</b>?`,strChoices('Dogs make great pets for many reasons.',['My dog is named Max.','Dogs have four legs.','Some dogs are brown.']),`The topic sentence tells the big idea of the whole paragraph.`,`"<b>Dogs make great pets for many reasons.</b>" gives the big idea.`),
+    guided(`Topic: <b>"Dogs make great pets."</b> Which detail supports it?`,strChoices('Dogs are loyal and love to play with their families.',['Cats like to sleep a lot.','My friend has a bike.','Dogs were around long ago.']),`A detail explains WHY the big idea is true.`,`Being <b>loyal and playful</b> is a reason dogs are great pets.`),
+    guided(`Which is the best <b>ending</b>?`,strChoices('That is why a dog can be a wonderful friend.',['Dogs have four legs.','Some dogs bark.','The end.']),`The ending sums up the big idea in new words.`,`"<b>That is why a dog can be a wonderful friend.</b>" wraps it up.`)]},
+   practice:[1,4,5]},
+  {id:'write_revise',isl:'write',types:[8,9],title:'Revising like a writer',
+   build(){return [
+    teachCard('Cut, swap and check',`<p>When you <b>revise</b>, you make your writing better:</p><p>✂️ <b>Cut</b> sentences that are not about the topic.</p><p>🔁 <b>Swap</b> weak words (good, nice, big, went) for precise ones (delicious, gentle, enormous, sprinted).</p><p>✅ <b>Check</b> that every sentence starts with a capital and ends with a mark.</p>`,'Let\'s try one together!'),
+    guided(`Topic: <b>Our trip to the beach.</b> Which sentence should be <b>cut</b>?`,strChoices('My cousin likes video games.',['We built a huge sandcastle.','The waves were cold and splashy.','We found three shells.']),`Which one is not about the beach trip?`,`"<b>My cousin likes video games.</b>" is not about the trip.`),
+    guided(`Swap the weak word: <i>"The cake was <u>good</u>."</i>`,strChoices('delicious',['okay','fine','nice']),`Which word tells exactly how good?`,`<b>Delicious</b> paints a clearer picture.`),
+    guided(`Swap the weak word: <i>"Max <u>went</u> to the door when the bell rang."</i>`,strChoices('raced',['moved','got','did']),`Which verb shows HOW he moved?`,`<b>Raced</b> shows he moved fast and excited.`)]},
+   practice:[8,9,8]},
+  {id:'sci_graph',isl:'science',types:[],title:'Reading a science experiment',
+   build(){return [
+    teachCard('What changed? What was measured?',`<p>In an experiment, scientists <b>change one thing</b> on purpose and <b>measure</b> what happens.</p><p>On a graph: the thing they <b>changed</b> is along the <b>bottom</b>. What they <b>measured</b> goes <b>up the side</b>.</p><p>Then look at the bars: do they go up, down or stay the same?</p>`,'Let\'s try one together!'),
+    guided(`Kids rolled a car down ramps of different heights and measured how far it went. What did they <b>change</b>?`,strChoices('The ramp height',['How far the car rolled','The color of the car']),`What did they set differently each time?`,`They changed the <b>ramp height</b>.`),
+    guided(`What did they <b>measure</b>?`,strChoices('How far the car rolled',['The ramp height','The day of the week']),`What did they write down after each try?`,`They measured <b>how far the car rolled</b>.`),
+    guided(`The bars get taller as the ramp gets higher. What does that show?`,strChoices('Higher ramps make the car roll farther',['Higher ramps make the car slower','Nothing changes']),`Taller bars = bigger results.`,`<b>Higher ramp → more energy → the car rolls farther.</b>`)]},
+   get practice(){const L=SCIENCE.length;return [L,L+11,L+22]}},
+  {id:'geo_latlong',isl:'geo',types:[5],title:'Latitude and longitude',
+   build(){return [
+    teachCard('Lines on the map',`<p><b>Latitude</b> lines go <b>across</b> (like the rungs of a ladder 🪜). They tell how far <b>north</b> you are: 32°N, 34°N...</p><p><b>Longitude</b> lines go <b>up and down</b>. They tell how far <b>west</b>: 118°W, 120°W...</p><p>Find a place: read the line across, then the line up and down.</p>`,'Let\'s try one together!'),
+    guided(`Which lines go <b>across</b> the map?`,strChoices('Latitude',['Longitude','The equator only']),`Ladder rungs go across.`,`<b>Latitude</b> lines go across.`),
+    guided(`A place is at <b>38°N</b>. Which kind of line is that?`,strChoices('Latitude (north)',['Longitude (west)','A road']),`N means north. North and south are measured with latitude.`,`<b>N</b> = north = <b>latitude</b>.`),
+    guided(`Los Angeles is near 34°N, 118°W. San Francisco is near 38°N, 122°W. Which city is farther <b>north</b>?`,strChoices('San Francisco',['Los Angeles','They are the same']),`A bigger °N number is farther north.`,`38°N is more than 34°N, so <b>San Francisco</b> is farther north.`)]},
+   practice:[5,5,5]},
+  {id:'hist_timeline',isl:'history',types:[],title:'California history in order',
+   build(){return [
+    teachCard('A timeline of California',`<p>🏹 <b>Long ago:</b> many Native tribes live all over California.</p><p>⛪ <b>1769:</b> the first Spanish mission is built in San Diego.</p><p>🇲🇽 <b>1821:</b> Mexico becomes free from Spain; California is part of Mexico.</p><p>⛏️ <b>1848:</b> gold is found at Sutter's Mill: the Gold Rush!</p><p>⭐ <b>1850:</b> California becomes the 31st state.</p><p>🚂 <b>1869:</b> the railroad connects California to the East.</p>`,'Let\'s try one together!'),
+    guided(`Which came <b>first</b>?`,strChoices('The first mission was built',['The Gold Rush started','The railroad was finished']),`Look at the years: 1769, 1848, 1869.`,`The first mission came first, in <b>1769</b>.`),
+    guided(`Gold was found in <b>1848</b>. What happened two years later, in <b>1850</b>?`,strChoices('California became a state',['The first mission was built','Mexico became free from Spain']),`Look at the timeline after 1848.`,`In <b>1850</b> California became the 31st state.`),
+    guided(`Who lived in California <b>before</b> the missions?`,strChoices('Many Native American tribes',['Nobody','Gold miners']),`Look at the very top of the timeline.`,`<b>Native tribes</b> lived all over California long before 1769.`)]},
+   practice:[3,15,30]},
+  {id:'listen_tips',isl:'listen',types:[],title:'How to listen carefully',
+   build(){const C=LISTEN[0];return [
+    teachCard('Listen like a detective',`<p>👂 <b>Before</b> you listen: read the title. What will it be about?</p><p>🔢 <b>While</b> you listen: catch the <b>topic</b>, <b>numbers</b>, <b>names</b> and words like <b>first, because, only</b>.</p><p>🔁 You can press <b>Listen again</b>. Good listeners listen twice!</p>`,'Let\'s try one together!'),
+    Object.assign(guided(`Press <b>Listen</b>. What is this talk mostly about?`,strChoices('Hummingbirds',['Penguins','Flowers']),`Listen for the topic in the first sentence.`,`It is about <b>hummingbirds</b>.`),{visual:listenCard(C),listen:C.txt}),
+    Object.assign(guided(`Listen again for a <b>number</b>. How many times a second can their wings beat?`,strChoices('up to 80',['up to 8','up to 800']),`Numbers are important clues!`,`Their wings beat <b>up to eighty times a second</b>.`),{visual:listenCard(C),listen:C.txt}),
+    Object.assign(guided(`Listen for the word <b>"only"</b>. What can only hummingbirds do?`,strChoices('fly backward',['sing','swim']),`"Only" tells you something special.`,`They are the only birds that can <b>fly backward</b>.`),{visual:listenCard(C),listen:C.txt})]},
+   practice:[3,6,9]},
   {id:'mult_break',isl:'mult',types:[0,2],title:'Break it apart!',
    build(){const a=R(2,4)*10+R(1,9),b=R(3,6),T=a-a%10,O=a%10;return [
     teachCard('Big multiplying = small multiplying, added up!',`<p>To find <b>3 × 24</b>, break 24 into <b>20 + 4</b>.</p>${multAnim(24,[20,4],3)}<p>3 × 20 = 60 and 3 × 4 = 12. Add them: <b>60 + 12 = 72</b>.</p>`),
