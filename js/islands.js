@@ -413,7 +413,7 @@ const GEN={
   dec:{gen:genDec,types:8},area:{gen:genArea,types:4},angle:{gen:genAngle,types:7},shape:{gen:genShape,types:8},money:{gen:genMoney,types:5},
   measure:{gen:genMeasure,types:8},pattern:{gen:genPattern,types:11},graph:{gen:genGraph,types:6},time:{gen:genTimeTower,types:12},
   week:{gen:genWeek,types:5},season:{gen:genSeason,types:6},riddle:{gen:genRiddle,types:22,round:riddleRound},words:{gen:genWords,types:8},
-  reading:{gen:genReading,types:PASSAGES.length*3+LQ.length+TSTRUCT.length,round:readingRound,noDiff:true},
+  reading:{gen:genReading,types:PASSAGES.length*3+LQ.length+TSTRUCT.length+MEDIA_Q.length,round:readingRound,noDiff:true},
   listen:{gen:genListen,types:LISTEN_Q.length,round:listenRound,noDiff:true},geo:{gen:genGeo,types:8},history:{gen:genHistory,types:CAHIST.length},
   write:{gen:genWrite,types:16},grammar:{gen:genGrammar,types:GRAMF.length+32},science:{gen:genScience,types:SCIENCE.length+66}
 };

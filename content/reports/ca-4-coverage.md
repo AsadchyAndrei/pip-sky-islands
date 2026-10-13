@@ -7,10 +7,10 @@ A standard counts as covered when at least one skill on this pack's islands prac
 | Subject | Covered | Total | Coverage |
 | --- | --- | --- | --- |
 | Math | 30 | 30 | 100% |
-| English language arts | 31 | 32 | 97% |
+| English language arts | 32 | 32 | 100% |
 | Science | 17 | 17 | 100% |
 | History–social science | 5 | 5 | 100% |
-| **All** | **83** | **84** | **99%** |
+| **All** | **84** | **84** | **100%** |
 
 ## Math
 
@@ -59,7 +59,7 @@ A standard counts as covered when at least one skill on this pack's islands prac
 | RL.4.4 | Figure out what words and phrases mean, including words from mythology. | covered | reading: Short passages; reading: Main idea, theme and word meaning |
 | RL.4.5 | Explain differences between poems, plays and prose (verse, rhythm, cast of characters, stage directions). | covered | reading: Short passages; reading: Main idea, theme and word meaning; reading: Find the sentence in the text |
 | RL.4.6 | Compare points of view, including first- and third-person narration. | covered | reading: Short passages; reading: Main idea, theme and word meaning |
-| RL.4.7 | Connect the text of a story to a visual or spoken version of it. | **not covered** | — |
+| RL.4.7 | Connect the text of a story to a visual or spoken version of it. | covered | reading: Story vs. picture or performance |
 | RL.4.9 | Compare similar themes and topics in stories from different cultures. | covered | reading: Main idea, theme and word meaning; reading: Choose two answers |
 | RL.4.10 | Read and understand grade 4–5 literature by the end of the year (reading range over the whole year). | not checked in the game | — |
 | RI.4.1 | Use details and examples from an informational text to explain what it says and what you can infer. | covered | reading: Short passages; reading: Evidence: Part A + Part B; reading: Choose two answers; reading: Find the sentence in the text |

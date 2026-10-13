@@ -288,6 +288,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .seq{font-family:var(--display);font-size:clamp(32px,7vw,48px);letter-spacing:1px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .seq span{background:var(--pale-sky);border-radius:14px;padding:4px 14px 0}
 .seq .q{background:var(--sun)}
+.mfig{margin:0 auto 12px;width:100%;max-width:420px;flex:1 1 100%;text-align:center}.mfig svg{width:100%;height:auto;border-radius:14px;display:block}.mfig figcaption{font-size:.85em;color:var(--ink-soft);margin-top:4px;font-style:italic}
 .passage .pfig{margin:12px auto 0;max-width:420px;text-align:center}.passage .pfig svg{width:100%;height:auto;background:#fff;border-radius:12px}.passage .pfig figcaption{font-size:.85em;color:#506686;margin-top:4px;font-style:italic}
 .passage .ptwo{display:grid;grid-template-columns:1fr 1fr;gap:12px}.passage .ptwo>div{background:rgba(255,255,255,.6);border-radius:12px;padding:8px 12px}.passage h5{margin:0 0 4px;font-size:.9em;color:#8c5a2c}
 @media (max-width:760px){.passage .ptwo{grid-template-columns:1fr}}

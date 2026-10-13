@@ -160,7 +160,8 @@ const rng=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
 const SKILL_SEL={
   'reading.short':isl=>rng(0,PASSAGES.length*3-1),
   'reading.long':(isl,k)=>{const P3=PASSAGES.length*3;return LQ.map((x,i)=>LONGP[x[0]].q[x[1]][0]===k?P3+i:-1).filter(i=>i>=0)},
-  'reading.struct':isl=>rng(PASSAGES.length*3+LQ.length,isl.types-1),
+  'reading.struct':isl=>rng(PASSAGES.length*3+LQ.length,PASSAGES.length*3+LQ.length+TSTRUCT.length-1),
+  'reading.media':isl=>rng(PASSAGES.length*3+LQ.length+TSTRUCT.length,isl.types-1),
   all:isl=>rng(0,isl.types-1),
   bank:(isl,b)=>rng(0,SKILL_BANKS[b].length-1),
   mod:(isl,a)=>{const L=SKILL_BANKS[a.base].length;return rng(0,isl.types-L-1).filter(x=>x%a.m===a.j).map(x=>L+x)},
@@ -219,7 +220,11 @@ function skillsParentHTML(){const groups=[['Math',['place','addsub','mult','div'
     return `<details class="skdet"><summary><b>${esc(byId(id).name)}</b><span>${esc(byId(id).topic)}</span><em>${d}/${L.length}</em><span class="skmeter"><i style="width:${Math.round(d/L.length*100)}%"></i></span></summary><ul>${L.map(s=>{const m=skStat(s.k);return `<li class="s${m.st}">${SK_DOT(m.st)}<span>${esc(s.name)}</span><small>${esc(s.std)}</small><em>${m.st===2?'Mastered':m.n?`${m.ok}/${m.n} lately`:'Not tried'}</em></li>`}).join('')}</ul></details>`}).join('')}`).join('');
   return `<div class="pcard wide"><h4>Skills checklist</h4><p class="note">Every island is a topic made of skills. A skill is <b>mastered</b> at 8 of 10 right on the first try (at least 5 tries). Mastered: <b>${done} of ${all}</b> skills. Tap an island to see its skills and standards.</p><div class="sklegend">${SK_DOT(2)} mastered ${SK_DOT(1)} practicing ${SK_DOT(0)} not tried</div>${body}</div>`}
 const starRaw=id=>Math.max(G.best[id]||0,typeof tierBest==='function'?tierBest(id):0);
-const starFor=id=>{const r=starRaw(id);if(r<3)return r;if(!G.skMig)skMigrate();return (G.star3||{})[id]||allSkills(id)?3:2};
+/* a 3rd star, once earned, stays: new skills added to an island later never take it away */
+const starFor=id=>{const r=starRaw(id);if(r<3)return r;if(!G.skMig)skMigrate();if(G.skMig<2)skMigrate2();if((G.star3||{})[id])return 3;if(allSkills(id)){G.star3=Object.assign({},G.star3,{[id]:1});return 3}return 2};
+/* islands whose skills were all mastered before skills were added to them (skills without a legacy key are new) keep their 3rd star */
+function skMigrate2(){G.skMig=2;G.star3=Object.assign({},G.star3);for(const i of ISLANDS){if(!i.gen||starRaw(i.id)<3||G.star3[i.id])continue;
+  const old=skillsOf(i.id).filter(s=>CONTENT.skills[s.k]&&CONTENT.skills[s.k].legacy);if(old.length&&old.every(s=>skStat(s.k).st===2))G.star3[i.id]=1}}
 const starTotal=()=>ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review').reduce((s,i)=>s+starFor(i.id),0);
 const dayKey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const addDays=(n,base=new Date())=>{const d=new Date(base);d.setDate(d.getDate()+n);return dayKey(d)};

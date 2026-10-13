@@ -979,9 +979,90 @@ function fluencyParentHTML(){const L=G.flu||[];return `<div class="pcard wide"><
 /* RL.4.9: two folktales from different cultures with the same theme */
 function passageHTML(P){if(P.p2)return `<div class="passage two"><h4>${P.t}</h4><div class="ptwo"><div><h5>${P.t1}</h5><p>${P.p.join(' ')}</p></div><div><h5>${P.p2.t}</h5><p>${P.p2.p.join(' ')}</p></div></div></div>`;
   return `<div class="passage${P.lines?' lines':''}"><h4>${P.t}</h4>${P.lines?`<div class="plines">${P.p.map(l=>l?`<span class="ln">${l}</span>`:'<span class="ln gap"></span>').join('')}</div>`:`<p>${P.p.join(' ')}</p>`}${P.fig||''}</div>`}
-function genReading(t){if(t>=PASSAGES.length*3+LQ.length)return genStruct(t-PASSAGES.length*3-LQ.length);if(t>=PASSAGES.length*3){const [pi,qi]=LQ[(t-PASSAGES.length*3)%LQ.length];return genLong(pi,qi)}
+/* RL.4.7: connect a story or play to a picture of it or a performance of it. Each item has the text, plus a picture (fig)
+   or an audio version (perf) that Pip reads aloud. Questions: where the two versions match, what one adds or leaves out. */
+const MEDIA_FIG={
+ kite:`<svg viewBox="0 0 320 180" role="img" aria-label="Two children on a green hill. A red fish kite with a long blue tail is stuck in a big oak tree. A small bird sits on a branch.">
+<rect width="320" height="180" fill="#cdeeff"/><path d="M0 150 Q90 100 200 128 T320 120 V180 H0z" fill="#8fd16a"/>
+<rect x="232" y="88" width="16" height="62" rx="4" fill="#8a5a33"/><circle cx="240" cy="70" r="42" fill="#3f9b4f"/><circle cx="212" cy="86" r="22" fill="#3f9b4f"/><circle cx="268" cy="88" r="22" fill="#3f9b4f"/>
+<g transform="translate(222 56) rotate(-12)"><ellipse cx="0" cy="0" rx="17" ry="10" fill="#e5383b"/><path d="M15 0 L28 -9 L28 9z" fill="#e5383b"/><circle cx="-8" cy="-2" r="2.2" fill="#fff"/><circle cx="-8" cy="-2" r="1" fill="#222"/></g>
+<path d="M248 52 q8 14 0 26 q-8 14 2 28 q8 14 0 22" fill="none" stroke="#2b6fd6" stroke-width="3"/>
+<path d="M262 84 L312 76" stroke="#8a5a33" stroke-width="4" stroke-linecap="round"/><g transform="translate(298 66)"><ellipse cx="0" cy="0" rx="11" ry="8" fill="#f5a623"/><circle cx="8" cy="-7" r="6" fill="#f5a623"/><circle cx="10" cy="-8" r="1.6" fill="#222"/><path d="M13 -7 l6 2 l-6 2z" fill="#e67e22"/><path d="M-10 -2 l-8 -3 l2 6z" fill="#e08e0b"/><path d="M-2 7 v5 M3 7 v5" stroke="#555" stroke-width="1.5"/></g>
+<g fill="#5b3a29"><circle cx="70" cy="104" r="8"/></g><path d="M70 112 v20 M70 118 l-9 8 M70 118 l9 -6 M70 132 l-6 12 M70 132 l6 12" stroke="#c0392b" stroke-width="4" stroke-linecap="round"/>
+<circle cx="104" cy="114" r="7" fill="#7a4a2c"/><path d="M104 121 v15 M104 126 l8 -5 M104 126 l-7 6 M104 136 l-5 10 M104 136 l5 10" stroke="#2e86de" stroke-width="4" stroke-linecap="round"/>
+<path d="M113 120 Q180 70 214 60" fill="none" stroke="#555" stroke-width="1"/></svg>`,
+ snowman:`<svg viewBox="0 0 320 180" role="img" aria-label="A stage with falling snow. A snowman wears a red and white striped scarf and holds a red mitten on one stick arm. A boy points at the snowman. A girl wears one red mitten.">
+<rect width="320" height="180" fill="#dfe9f5"/><rect y="146" width="320" height="34" fill="#fff"/><path d="M0 146 H320" stroke="#b8c7d9" stroke-width="2"/>
+<g fill="#fff" stroke="#b8c7d9" stroke-width=".6"><circle cx="20" cy="20" r="3"/><circle cx="70" cy="40" r="3"/><circle cx="130" cy="15" r="3"/><circle cx="190" cy="35" r="3"/><circle cx="250" cy="18" r="3"/><circle cx="300" cy="45" r="3"/><circle cx="40" cy="80" r="3"/><circle cx="290" cy="95" r="3"/><circle cx="160" cy="70" r="3"/></g>
+<circle cx="160" cy="124" r="28" fill="#fff" stroke="#9fb3c8" stroke-width="2"/><circle cx="160" cy="80" r="20" fill="#fff" stroke="#9fb3c8" stroke-width="2"/>
+<circle cx="153" cy="76" r="2.4" fill="#333"/><circle cx="167" cy="76" r="2.4" fill="#333"/><path d="M160 82 l10 3 l-10 2z" fill="#f08a24"/>
+<g><rect x="138" y="96" width="44" height="9" rx="4" fill="#fff" stroke="#c0392b" stroke-width="1.5"/><rect x="141" y="96" width="6" height="9" fill="#e5383b"/><rect x="153" y="96" width="6" height="9" fill="#e5383b"/><rect x="165" y="96" width="6" height="9" fill="#e5383b"/><rect x="177" y="96" width="4" height="9" fill="#e5383b"/><rect x="172" y="103" width="9" height="20" fill="#e5383b"/><rect x="172" y="108" width="9" height="5" fill="#fff"/></g>
+<path d="M134 118 L104 98 M110 102 l-6 -8" stroke="#6b4423" stroke-width="3" stroke-linecap="round"/><path d="M186 118 L216 100" stroke="#6b4423" stroke-width="3" stroke-linecap="round"/>
+<path d="M214 92 h12 v10 a6 6 0 0 1 -12 0z" fill="#e5383b"/><rect x="224" y="94" width="5" height="6" rx="2" fill="#e5383b"/>
+<circle cx="262" cy="96" r="9" fill="#a0673f"/><path d="M262 105 v24 M262 112 l12 6 M262 112 l-10 8 M262 129 l-7 14 M262 129 l7 14" stroke="#7d3cbd" stroke-width="5" stroke-linecap="round"/><path d="M272 117 l6 3" stroke="#e5383b" stroke-width="5" stroke-linecap="round"/>
+<circle cx="60" cy="100" r="8" fill="#6b4226"/><path d="M60 108 v22 M60 114 l14 -8 M60 114 l-10 10 M60 130 l-6 14 M60 130 l6 14" stroke="#2e86de" stroke-width="5" stroke-linecap="round"/></svg>`,
+ pond:`<svg viewBox="0 0 320 180" role="img" aria-label="A pond at night under a big round full moon and stars. A green frog sits on a lily pad. Three ducks sleep with their heads tucked in. Yellow fireflies glow above the cattails.">
+<rect width="320" height="180" fill="#1d2b5c"/><circle cx="252" cy="38" r="22" fill="#fff6c9"/>
+<g fill="#fff"><circle cx="40" cy="24" r="1.6"/><circle cx="96" cy="14" r="1.6"/><circle cx="150" cy="30" r="1.6"/><circle cx="200" cy="12" r="1.6"/><circle cx="296" cy="70" r="1.6"/><circle cx="70" cy="56" r="1.6"/></g>
+<ellipse cx="160" cy="140" rx="170" ry="44" fill="#2f5d8a"/>
+<g stroke="#4d8a3a" stroke-width="3"><path d="M24 150 V86"/><path d="M36 150 V78"/><path d="M48 150 V92"/></g><g fill="#7a4b2a"><rect x="21" y="86" width="6" height="18" rx="3"/><rect x="33" y="78" width="6" height="18" rx="3"/><rect x="45" y="92" width="6" height="16" rx="3"/></g>
+<g fill="#ffe14d"><circle cx="30" cy="66" r="2.6"/><circle cx="58" cy="74" r="2.6"/><circle cx="14" cy="78" r="2.6"/><circle cx="66" cy="58" r="2.6"/></g>
+<ellipse cx="120" cy="134" rx="26" ry="8" fill="#3fa34d"/><ellipse cx="120" cy="124" rx="14" ry="9" fill="#5cc84a"/><circle cx="113" cy="116" r="4" fill="#5cc84a"/><circle cx="127" cy="116" r="4" fill="#5cc84a"/><circle cx="113" cy="116" r="1.6" fill="#111"/><circle cx="127" cy="116" r="1.6" fill="#111"/>
+<g fill="#f2e6c9" stroke="#8a7a5a" stroke-width="1"><path d="M186 136 l-8 -6 l3 9z"/><path d="M222 144 l-8 -6 l3 9z"/><path d="M258 134 l-8 -6 l3 9z"/></g><g fill="#f2e6c9" stroke="#8a7a5a" stroke-width="1"><ellipse cx="200" cy="138" rx="15" ry="8"/><ellipse cx="236" cy="146" rx="15" ry="8"/><ellipse cx="272" cy="136" rx="15" ry="8"/></g>
+<g fill="#f2e6c9" stroke="#8a7a5a" stroke-width="1"><circle cx="210" cy="133" r="6"/><circle cx="246" cy="141" r="6"/><circle cx="282" cy="131" r="6"/></g></svg>`};
+const MEDIA=[
+ {t:'The Fish Kite',k:'Story',fig:'kite',p:[
+  'Rosa and her little brother Ben climbed the windy hill behind their house. Rosa carried her new kite. It looked like a red fish with a long blue tail.',
+  'Grandpa sat on a bench at the bottom of the hill and waved. Ben held the spool of string while Rosa ran.',
+  'Up, up went the fish kite! Then a strong gust pushed it sideways, and the kite got caught in the branches of a big oak tree. Rosa sighed. How would they ever get it back?'],
+  q:[['hl','Look at the picture. Tap the sentence that tells what is happening to the kite in the picture.','the kite got caught in the branches','Find the kite in the picture. Where is it?','The picture shows the kite stuck in a tree, just like the sentence: <b>the kite got caught in the branches of a big oak tree</b>.'],
+     ['mc','What does the picture show that the story does <b>not</b> tell about?','A bird sitting on a branch',['A kite that looks like a red fish','Two children on a hill','A kite stuck in a tree'],'Check each detail: is it in the words, the picture, or both?','The story never mentions a bird. The illustrator <b>added a bird on a branch</b>. The other details are in both versions.'],
+     ['mc','Which detail from the story is <b>missing</b> from the picture?','Grandpa sitting on a bench',['The kite\'s long blue tail','Ben holding the string','The big oak tree'],'Read paragraph 2. Can you find everyone in the picture?','Paragraph 2 says <b>Grandpa sat on a bench</b>, but the picture does not show him.']]},
+ {t:'The Snowman\'s Surprise (a play)',k:'Drama',fig:'snowman',p:[
+  '(Snow is falling. A snowman with a striped scarf stands in the yard. MIA wears one red mitten.)',
+  'MIA: I lost my other mitten. Have you seen it, Leo?',
+  'LEO: (pointing at the snowman) Look! The snowman is holding it!',
+  '(MIA laughs and pulls the mitten off the snowman\'s stick arm.)'],
+  q:[['mc','Which stage direction is <b>not</b> shown in the picture?','(MIA laughs and pulls the mitten off the snowman\'s stick arm.)',['(Snow is falling.)','(pointing at the snowman)','A snowman with a striped scarf stands in the yard.'],'The picture shows one moment. Which direction happens later?','The picture shows Leo pointing while the mitten is still on the stick arm. <b>Mia pulling the mitten off</b> happens later, so it is not shown.'],
+     ['mc','How does the picture show the snowman the way the script describes it?','It wears a striped scarf.',['It wears a tall black hat.','It has a carrot in its hand.','It is melting in the sun.'],'Read the first stage direction.','The script says <b>a snowman with a striped scarf</b>, and the picture shows a red and white striped scarf.'],
+     ['mc','Leo says, "The snowman is holding it!" Where is the mitten in the picture?','On the snowman\'s stick arm',['On Leo\'s hand','Under the snow','In Mia\'s pocket'],'Look at the snowman\'s arms.','The red mitten hangs <b>on the snowman\'s stick arm</b>. The picture matches Leo\'s words.']]},
+ {t:'Night at the Pond',k:'Story',fig:'pond',p:[
+  'It was a quiet summer night at the pond. A thin crescent moon hung over the water.',
+  'A green frog sat on a lily pad and sang, "Ribbit, ribbit!" Three ducks slept with their heads tucked under their wings.',
+  'Tiny fireflies blinked on and off above the cattails.'],
+  q:[['mc','How is the picture <b>different</b> from the story?','The story says the moon is a thin crescent, but the picture shows a full moon.',['The story has three ducks, but the picture shows two.','The story says the frog is green, but the picture shows a red frog.','The story has fireflies, but the picture has none.'],'Compare the moon in paragraph 1 with the moon in the picture.','A crescent moon is a thin curved sliver. The picture shows a <b>big round full moon</b>, so it does not match the words.'],
+     ['mc','What does the picture add that the story does <b>not</b> describe?','Stars in the sky',['Fireflies above the cattails','A frog on a lily pad','Ducks sleeping on the water'],'Which detail is only in the picture?','The story never mentions stars. The illustrator <b>added stars</b>. The other details are in the words too.'],
+     ['mc','Why does the picture show the ducks with their heads tucked in?','To show they are sleeping, as the story says',['To show they are eating','To show they are hiding from the frog','To show they are swimming fast'],'Reread the sentence about the ducks.','The story says the ducks <b>slept with their heads tucked under their wings</b>, and the picture shows exactly that.']]},
+ {t:'The Lost Puppy (a play)',k:'Drama',perf:'Our class radio play: The Lost Puppy. Zoe, gasping for breath: Dad! Pepper got out of the yard! Dad: Don\'t worry. We will find her together. Ding-dong! Ding-dong! Mr. Lee: Is this little explorer yours? I found her in my garden, eating my tomatoes! Zoe, hugging the puppy: Pepper! Thank you, Mr. Lee!',p:[
+  '(ZOE runs into the kitchen, out of breath.)',
+  'ZOE: Dad! Pepper got out of the yard!',
+  'DAD: (puts down his coffee) Don\'t worry. We will find her together.',
+  '(A doorbell rings twice.)',
+  'MR. LEE: (holding a small brown puppy) Is this little explorer yours?',
+  'ZOE: (hugs the puppy) Pepper! Thank you, Mr. Lee!'],
+  q:[['mc','Read the script, then listen to the radio play. Which sound in the radio play matches the stage direction "(A doorbell rings twice.)"?','Ding-dong! Ding-dong!',['Knock, knock, knock!','A dog barking','A phone ringing'],'Listen for the sound right after Dad speaks.','The radio play uses <b>"Ding-dong! Ding-dong!"</b> to show the doorbell ringing twice.'],
+     ['mc','What did the radio play <b>add</b> that is not in the script?','Mr. Lee found Pepper in his garden, eating tomatoes.',['Pepper got out of the yard.','Dad said they would find her together.','Zoe thanked Mr. Lee.'],'Compare Mr. Lee\'s lines in both versions.','In the radio play, Mr. Lee also says <b>"I found her in my garden, eating my tomatoes!"</b> That line is not in the script.'],
+     ['mc','Which stage direction can a listener <b>not</b> hear in the radio play?','(puts down his coffee)',['(A doorbell rings twice.)','(ZOE runs into the kitchen, out of breath.)','(hugs the puppy)'],'The radio play turns some directions into words or sounds. Which one did it skip?','The radio play says Zoe is gasping for breath and hugging the puppy, and it plays the doorbell. Nothing tells the listener that Dad <b>puts down his coffee</b>.']]},
+ {t:'The Cracked Bucket',k:'Folktale',perf:'Long ago, a girl named Lin lived by a river. Every evening, she carried two buckets of water home. One bucket had a small crack, and water dripped out all along the path. Lin felt sad about that crack. But when spring came, bright yellow flowers bloomed along one side of the path. Her grandmother smiled and said, "You see? Even something imperfect can make the world more beautiful."',p:[
+  'Long ago, a girl named Lin lived by a river. Every evening she carried two buckets of water up a steep hill to her home.',
+  'One bucket had a small crack, so water dripped out along the path. Lin felt sad about the crack.',
+  'But in spring, a line of yellow flowers grew along one side of the path. "The cracked bucket watered them," her grandmother said. "Even something imperfect can help."'],
+  q:[['mc','Read the story, then listen to the storyteller. Which detail from the written story is <b>missing</b> from the storyteller\'s version?','The hill was steep.',['Lin carried two buckets.','One bucket had a crack.','Yellow flowers grew by the path.'],'Listen for where Lin carried the water.','The written story says Lin carried water <b>up a steep hill</b>. The storyteller only says she carried it home.'],
+     ['mc','How are Grandmother\'s words different in the storyteller\'s version?','She says something imperfect can make the world more beautiful.',['She tells Lin to fix the bucket.','She says nothing at all.','She tells Lin to buy a new bucket.'],'Listen closely to the last sentence.','In the written story she says it <b>"can help."</b> The storyteller has her say it <b>"can make the world more beautiful."</b>'],
+     ['mc','Which part is the <b>same</b> in both versions?','Flowers grow along one side of the path.',['Lin lives by the ocean.','Grandmother fixes the bucket.','Lin carries only one bucket.'],'Think about what happens in spring in both versions.','In both versions, <b>yellow flowers grow along one side of the path</b> where the water dripped.']]}
+];
+const MEDIA_Q=MEDIA.flatMap((M,mi)=>M.q.map((_,qi)=>[mi,qi]));
+function genMedia(t){const [mi,qi]=MEDIA_Q[t%MEDIA_Q.length],M=MEDIA[mi],Q=M.q[qi];
+  const top=M.fig?`<figure class="mfig">${MEDIA_FIG[M.fig]}<figcaption>The illustration</figcaption></figure>`:listenCard({t:M.k==='Drama'?'The radio play':'The storyteller\'s version',txt:M.perf});
+  const base={visual:top+longHTML(M),wide:true,longp:true,speak:`${M.t}. ${M.p.join(' ')}`};
+  if(M.perf)base.listen=M.perf;
+  if(Q[0]==='hl'){const [,pr,sub,h,e]=Q,hit=lpSentences(M).flat().filter(x=>x.s.includes(sub)).map(x=>x.i);return {...base,kind:'hilite',prompt:pr,hl:hit,sentText:sub,hint:h,explain:e}}
+  const [,pr,a,w,h,e]=Q;return {...base,prompt:pr,...strChoices(a,shuffle(w.slice())),hint:h,explain:e,long:true,render:c=>esc(c),speak:base.speak+' Question: '+pr.replace(/<[^>]+>/g,'')}}
+function genReading(t){if(t>=PASSAGES.length*3+LQ.length+TSTRUCT.length)return genMedia(t-PASSAGES.length*3-LQ.length-TSTRUCT.length);if(t>=PASSAGES.length*3+LQ.length)return genStruct(t-PASSAGES.length*3-LQ.length);if(t>=PASSAGES.length*3){const [pi,qi]=LQ[(t-PASSAGES.length*3)%LQ.length];return genLong(pi,qi)}
   const P=PASSAGES[Math.floor(t/3)%PASSAGES.length],Q=P.q[t%3];
   return {prompt:Q[0],visual:passageHTML(P),...strChoices(Q[1],shuffle([...Q[2]])),hint:Q[3],explain:Q[4],speak:`${P.t}. ${P.t1?P.t1+'. ':''}${P.p.join(' ')} ${P.p2?P.p2.t+'. '+P.p2.p.join(' '):''} Question: ${Q[0]}`.replace(/<[^>]+>/g,''),wide:true,long:[Q[1],...Q[2]].some(c=>c.length>34)};}
 function readingRound(isl){G.readLong=!G.readLong;if(G.readLong){const pi=dealTypes('reading_long',LONGP.length,1)[0],off=PASSAGES.length*3+LQ.findIndex(x=>x[0]===pi);return LONGP[pi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9)))}
+  if(rand()<.3){const p=dealTypes('reading_p',PASSAGES.length,1)[0],mi=dealTypes('reading_m',MEDIA.length,1)[0],off=PASSAGES.length*3+LQ.length+TSTRUCT.length+MEDIA_Q.findIndex(x=>x[0]===mi);
+    return [0,1,2].map(k=>makeQ(isl,p*3+k,R(1,2e9))).concat(MEDIA[mi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9))))}
   const ps=dealTypes('reading_p',PASSAGES.length,2);return ps.flatMap(p=>[0,1,2].map(k=>makeQ(isl,p*3+k,R(1,2e9))))}
 

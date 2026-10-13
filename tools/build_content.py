@@ -19,7 +19,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 C = ROOT / 'content'
 OUT_JS = ROOT / 'js' / 'content.js'
 SUBJECTS = {'math': 'Math', 'ela': 'English language arts', 'science': 'Science', 'social': 'History–social science'}
-SELECTORS = {'reading.short', 'reading.long', 'reading.struct', 'all', 'bank', 'mod', 'gram.cat'}
+SELECTORS = {'reading.short', 'reading.long', 'reading.struct', 'reading.media', 'all', 'bank', 'mod', 'gram.cat'}
 
 errors = []
 def err(msg): errors.append(msg)

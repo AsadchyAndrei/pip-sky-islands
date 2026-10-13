@@ -13,6 +13,7 @@
   {"id": "ela.reading.choose-two-answers", "name": "Choose two answers", "grade": 4, "std": ["RL.4.1", "RI.4.1", "RL.4.3", "RI.4.8", "RL.4.9"], "src": {"gen": "reading", "sel": "reading.long", "arg": "two"}, "legacy": "reading:3"},
   {"id": "ela.reading.find-the-sentence-in-the-text", "name": "Find the sentence in the text", "grade": 4, "std": ["RL.4.1", "RI.4.1", "RL.4.5"], "src": {"gen": "reading", "sel": "reading.long", "arg": "hl"}, "legacy": "reading:4"},
   {"id": "ela.reading.text-structure", "name": "Text structure", "grade": 4, "std": ["RI.4.5", "RI.4.3"], "src": {"gen": "reading", "sel": "reading.struct"}, "legacy": "reading:5"},
+  {"id": "ela.reading.text-and-picture-or-performance", "name": "Story vs. picture or performance", "grade": 4, "std": ["RL.4.7"], "src": {"gen": "reading", "sel": "reading.media"}},
   {"id": "ela.listen.listening-for-details", "name": "Listening for details", "grade": 4, "std": ["SL.4.2", "SL.4.3"], "src": {"gen": "listen", "sel": "all"}, "legacy": "listen:0"},
   {"id": "ela.write.building-sentences", "name": "Building sentences", "grade": 4, "std": ["L.4.1"], "src": {"gen": "write", "types": [0]}, "legacy": "write:0"},
   {"id": "ela.write.topic-sentences", "name": "Topic sentences", "grade": 4, "std": ["W.4.2"], "src": {"gen": "write", "types": [1]}, "legacy": "write:1"},
