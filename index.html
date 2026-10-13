@@ -317,6 +317,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .seq{font-family:var(--display);font-size:clamp(32px,7vw,48px);letter-spacing:1px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .seq span{background:var(--pale-sky);border-radius:14px;padding:4px 14px 0}
 .seq .q{background:var(--sun)}
+.seq.cmpseq{font-size:clamp(22px,5vw,34px);align-items:center}
 .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .choices.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .choices.one{grid-template-columns:1fr;justify-items:center}
@@ -2169,6 +2170,7 @@ const ADD_STORIES=[
   [(a,b)=>`Pip has saved <b>${fmt(a)}</b> coins. He spends <b>${fmt(b)}</b> coins on a castle. How many coins are <b>left</b>?`,'-']
 ];
 function genAddSub(t){
+  if(t>=5)return genAddSubX(t);
   const len=Dv(3,4,R(5,6));
   if(t===0){const [a,b]=addPair(len,Dv(1,2,2)),ans=a+b;
     return {how:['addsub0',a,b],prompt:`${fmt(a)} + ${fmt(b)} = ?`,visual:colSVG(a,b,'+','problem'),...numChoices(ans,[noCarrySum(a,b),ans+10,ans-100,ans+1000,ans-10]),anim:colSVG(a,b,'+'),
@@ -2215,6 +2217,189 @@ Object.assign(HOW,{
       mine:[`Round <b>${fmt(a)}</b> to the nearest ${pname}: ${BLANK}`,`Round <b>${fmt(b)}</b> to the nearest ${pname}: ${BLANK}`,`Then ${op==='+'?'add':'subtract'} the rounded numbers.`]}}
 });
 
+/* ================= More 4th grade standards: place value x10, number words, compare signs, letter equations,
+   fraction & measurement word problems, remainders, composite numbers, rays & segments, triangles, angle addition, area model ================= */
+const W_ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],
+  W_TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+function words3(n){const s=[],h=Math.floor(n/100),r=n%100;if(h)s.push(W_ONES[h]+' hundred');if(r)s.push(r<20?W_ONES[r]:W_TENS[Math.floor(r/10)]+(r%10?'-'+W_ONES[r%10]:''));return s.join(' ')}
+function numWords(n){if(!n)return 'zero';const th=Math.floor(n/1000),r=n%1000,p=[];if(th)p.push(words3(th)+' thousand');if(r)p.push(words3(r));return p.join(', ')}
+const expanded=n=>{const s=String(n);return [...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0)};
+function genPlaceX(t){
+  if(t===4){
+    if(coin()){const L=Dv(4,5,6),gaps=Dv([1],[1,1,2],[1,2,3]);let a,d,p1,p2,g=0;
+      do{const gap=pick(gaps);d=R(1,9);p1=R(gap,L-1);p2=p1-gap;a=Array.from({length:L},()=>R(0,9));a[L-1-p1]=d;a[L-1-p2]=d}while((a[0]===0||a.filter(x=>x===d).length!==2)&&g++<200);
+      const n=+a.join(''),gap=p1-p2,ans=10**gap,str=String(n);
+      let vis='<div class="bignum">';for(let i=0;i<L;i++){vis+=(i===L-1-p1||i===L-1-p2)?`<span class="hl">${str[i]}</span>`:str[i];if((L-1-i)%3===0&&i<L-1)vis+=','}vis+='</div>';
+      return {prompt:`The ${d} in the <b>${PLACE[p1]}</b> place is worth how many times as much as the ${d} in the <b>${PLACE[p2]}</b> place?`,visual:vis,...numChoices(ans,[10,100,1000,2,10000].filter(x=>x!==ans)),
+        hint:`Find what each ${d} is worth. Each move one place to the left makes a digit worth 10 times more.`,
+        explain:`The first ${d} is worth ${fmt(d*10**p1)}. The second ${d} is worth ${fmt(d*10**p2)}. ${fmt(d*10**p1)} ÷ ${fmt(d*10**p2)} = <b>${fmt(ans)}</b>.${gap>1?` (${Array(gap).fill('10').join(' × ')} = ${fmt(ans)}.)`:''}`}}
+    const x=R(Dv(2,11,101),Dv(99,999,9999));
+    if(coin())return {prompt:`What is <b>10 times</b> ${fmt(x)}?`,...numChoices(x*10,[x*100,x+10,x*10+10,x*10-10]),
+      hint:`10 times a number moves every digit one place to the left. Add a 0 at the end.`,explain:`Each digit moves one place left: ${fmt(x)} × 10 = <b>${fmt(x*10)}</b>.`};
+    return {prompt:`<b>${fmt(x*10)}</b> is 10 times what number?`,...numChoices(x,[x*100,x*10+10,x+10,x*10-10]),
+      hint:`Think backwards: what number times 10 makes ${fmt(x*10)}? Each digit moves one place to the right.`,explain:`${fmt(x)} × 10 = ${fmt(x*10)}. So the answer is <b>${fmt(x)}</b>.`};
+  }
+  if(t===5){const L=Dv(4,5,6);let n,zi,g=0;
+    do{const s=[...String(R(10**(L-1),10**L-1))];zi=R(1,L-1);s[zi]='0';n=+s.join('')}while((n%1000===0||n%100===0)&&g++<50);
+    const s=[...String(n)];const sw=[...s];const j=zi<L-1?zi+1:zi-1;[sw[zi],sw[j]]=[sw[j],sw[zi]];
+    const drop=+s.filter((_,i)=>i!==zi).join(''),plus=n+10**(L-1-zi)*R(1,4),swap=+sw.join('');
+    if(coin())return {prompt:`Which number is <b>${numWords(n)}</b>?`,...numChoices(n,[swap,drop,plus,n*10]),
+      hint:`Write the thousands part first, then the rest. A place with no number gets a 0.`,explain:`${numWords(n)[0].toUpperCase()+numWords(n).slice(1)} = <b>${fmt(n)}</b>.`};
+    return {prompt:`How do you write <b>${fmt(n)}</b> in words?`,...strChoices(numWords(n),[swap,drop,plus,n+10**(L-1-zi)*R(5,9),n<1e5?n*10:Math.floor(n/10)].filter(v=>v!==n&&v>=1000&&v<1e6).map(numWords)),long:true,
+      hint:`Read the part before the comma, say "thousand", then read the rest.`,explain:`${fmt(n)} = <b>${numWords(n)}</b>.`};
+  }
+  const L=Dv(4,5,6),a=R(10**(L-1),10**L-1),k=R(0,3);let b=a;
+  if(k>0){const s=[...String(a)];const i=R(k===1?0:1,L-1);let nd;do{nd=R(0,9)}while(nd===+s[i]||(i===0&&nd===0));s[i]=nd;b=+s.join('')}
+  const exp=k===0||coin(),A=exp?expanded(a).map(fmt).join(' + '):fmt(a),sign=a>b?'>':a<b?'<':'=';
+  const sa=String(a),sb=String(b);let i=0;while(i<sa.length&&sa[i]===sb[i])i++;
+  return {prompt:`Which sign makes this true?`,visual:`<div class="seq cmpseq"><span>${A}</span><span class="q">?</span><span>${fmt(b)}</span></div>`,choices:['<','=','>'],answer:sign,render:esc,
+    hint:`${exp?'Add up the parts first to get one number. Then c':'C'}ompare digits from left to right. &gt; means greater than, &lt; means less than.`,
+    explain:`${exp?`${A} = ${fmt(a)}. `:''}${sign==='='?`They are the same number, so <b>=</b>.`:`Look at the ${PLACE[sa.length-1-i]} place: ${sa[i]} ${esc(sign)} ${sb[i]}. So ${fmt(a)} <b>${esc(sign)}</b> ${fmt(b)}.`} (The open side of &lt; or &gt; faces the bigger number.)`};
+}
+function genAddSubX(t){
+  if(t===5){const k=R(0,Dv(2,3,4)),L=pick(['n','m','p','x','y']);
+    if(k===0){const b=R(Dv(12,120,1200),Dv(99,900,9000)),a=R(Dv(12,120,1200),Dv(99,900,9000)),c=a+b;
+      return {prompt:`What is <b>${L}</b>? <b>${L} + ${fmt(b)} = ${fmt(c)}</b>`,...numChoices(a,[c+b,a+10,a-10,a+100]),hint:`${L} is a missing part. Total − known part.`,explain:`${L} = ${fmt(c)} − ${fmt(b)} = <b>${fmt(a)}</b>. Check: ${fmt(a)} + ${fmt(b)} = ${fmt(c)}.`}}
+    if(k===1){const b=R(Dv(12,120,1200),Dv(99,900,9000)),a=R(Dv(12,120,1200),Dv(99,900,9000)),c=a+b;
+      return {prompt:`What is <b>${L}</b>? <b>${L} − ${fmt(b)} = ${fmt(a)}</b>`,...numChoices(c,[a>b?a-b:b-a,c+10,c-100,c+100]),hint:`${L} is the starting number. Undo the subtraction: add ${fmt(b)} back.`,explain:`${L} = ${fmt(a)} + ${fmt(b)} = <b>${fmt(c)}</b>. Check: ${fmt(c)} − ${fmt(b)} = ${fmt(a)}.`}}
+    if(k===2){const b=R(3,9),a=R(Dv(3,6,12),Dv(9,12,40));
+      return {prompt:`What is <b>${L}</b>? <b>${b} × ${L} = ${b*a}</b>`,...numChoices(a,[b*a-b,a+1,a-1,b*a+b]),hint:`What number times ${b} makes ${b*a}? Divide: ${b*a} ÷ ${b}.`,explain:`${b*a} ÷ ${b} = <b>${a}</b>. Check: ${b} × ${a} = ${b*a}.`}}
+    const b=R(3,9),a=R(Dv(3,6,8),Dv(9,12,25));
+    return {prompt:`What is <b>${L}</b>? <b>${L} ÷ ${b} = ${a}</b>`,...numChoices(a*b,[a+b,a*b+b,a*b-b,a]),hint:`${L} was split into ${b} equal groups of ${a}. Multiply to undo it.`,explain:`${L} = ${a} × ${b} = <b>${a*b}</b>. Check: ${a*b} ÷ ${b} = ${a}.`};
+  }
+  const k=R(0,2);
+  if(k===0){const g=R(3,8),c=R(Dv(6,12,24),Dv(12,24,48)),e=R(2,9),tot=g*c+e;
+    return {prompt:`Mia has <b>${g} boxes</b> of <b>${c} crayons</b> and <b>${e}</b> loose crayons. Which equation finds <b>t</b>, the total number of crayons?`,
+      ...strChoices(`t = ${g} × ${c} + ${e}`,[`t = ${g} + ${c} + ${e}`,`t = ${g} × (${c} + ${e})`,`t = ${c} × ${e} + ${g}`]),long:true,
+      hint:`First find how many crayons are in the boxes (equal groups). Then add the loose ones.`,explain:`Boxes: ${g} × ${c} = ${g*c}. Plus ${e} loose: <b>t = ${g} × ${c} + ${e}</b> = ${tot} crayons.`}}
+  if(k===1){const n=R(2,6),p=R(Dv(5,12,25),Dv(12,30,60)),a=n*p+R(Dv(10,20,50),Dv(50,150,400));
+    return {prompt:`Pip has <b>${a} coins</b>. He buys <b>${n} toys</b> that cost <b>${p} coins</b> each. Which equation finds <b>m</b>, the coins he has left?`,
+      ...strChoices(`m = ${a} − ${n} × ${p}`,[`m = ${a} − ${n} − ${p}`,`m = ${a} + ${n} × ${p}`,`m = (${a} − ${n}) × ${p}`]),long:true,
+      hint:`First find the cost of all the toys (equal groups). Then take that away from what Pip has.`,explain:`Toys cost ${n} × ${p} = ${n*p}. Left: <b>m = ${a} − ${n} × ${p}</b> = ${a-n*p} coins.`}}
+  const kk=R(3,8),tot=kk*R(Dv(6,10,20),Dv(12,30,60)),a=R(Math.floor(tot*.3),Math.floor(tot*.7)),b=tot-a;
+  return {prompt:`The class picked <b>${a}</b> apples on Monday and <b>${b}</b> on Tuesday. They put them in bags of <b>${kk}</b>. Which equation finds <b>g</b>, the number of bags?`,
+    ...strChoices(`g = (${a} + ${b}) ÷ ${kk}`,[`g = ${a} + ${b} ÷ ${kk}`,`g = (${a} + ${b}) × ${kk}`,`g = ${a} × ${b} ÷ ${kk}`]),long:true,
+    hint:`First find all the apples together. Then share them into bags. The ( ) show what to do first.`,explain:`All apples: ${a} + ${b} = ${tot}. Bags: ${tot} ÷ ${kk} = ${tot/kk}. So <b>g = (${a} + ${b}) ÷ ${kk}</b>.`};
+}
+function areaModelSVG(cols,rows,vals,miss){
+  const W=300,H=Dv(150,150,170),cw=cols.map(c=>c),ch=rows.map(r=>r),sx=cw.reduce((a,b)=>a+b,0),sy=ch.reduce((a,b)=>a+b,0);
+  const ws=cw.map(c=>Math.max(64,c/sx*W)),tw=ws.reduce((a,b)=>a+b,0),hs=ch.map(r=>Math.max(56,r/sy*H)),th=hs.reduce((a,b)=>a+b,0);
+  const fills=['#ffd56b','#9be0bd','#8fd3f7','#ffb3c7'];let s='',y=30;
+  rows.forEach((r,ri)=>{let x=44;cols.forEach((c,ci)=>{const k=ri*cols.length+ci;s+=`<rect x="${x}" y="${y}" width="${ws[ci]}" height="${hs[ri]}" fill="${fills[k%4]}" stroke="#1f3557" stroke-width="2.5"/><text x="${x+ws[ci]/2}" y="${y+hs[ri]/2+7}" text-anchor="middle" ${FONT} font-size="${k===miss?24:19}" fill="#1f3557">${k===miss?'?':fmt(vals[k])}</text>`;
+    if(ri===0)s+=`<text x="${x+ws[ci]/2}" y="20" text-anchor="middle" ${FONT} font-size="18" fill="#1f3557">${fmt(c)}</text>`;x+=ws[ci]});
+    s+=`<text x="34" y="${y+hs[ri]/2+6}" text-anchor="end" ${FONT} font-size="18" fill="#1f3557">${fmt(r)}</text>`;y+=hs[ri]});
+  return `<svg viewBox="0 0 ${tw+60} ${th+40}" style="width:${Math.min(380,tw+60)}px;max-width:100%" role="img" aria-label="Area model">${s}</svg>`;
+}
+function genMultX(t){
+  const two=DIFF===3&&coin(),a=R(Dv(12,13,21),Dv(29,89,89)),b=two?R(12,39):R(3,9);
+  const ap=[a-a%10,a%10].filter(x=>x>0),bp=two?[b-b%10,b%10].filter(x=>x>0):[b],vals=[];bp.forEach(r=>ap.forEach(c=>vals.push(r*c)));const ans=a*b;
+  if(coin()&&vals.length>1){const miss=R(0,vals.length-1),mv=vals[miss],mr=bp[Math.floor(miss/ap.length)],mc=ap[miss%ap.length];
+    return {prompt:`This area model shows <b>${a} × ${b}</b>. What number goes in the <b>?</b> box?`,visual:areaModelSVG(ap,bp,vals,miss),...numChoices(mv,[mv*10,mv+mc,mr+mc,mv/10,mv+10].filter(Number.isInteger)),
+      hint:`Each box is a small rectangle: its side across the top times its side on the left.`,explain:`The ? box is ${fmt(mc)} by ${fmt(mr)}: ${fmt(mc)} × ${fmt(mr)} = <b>${fmt(mv)}</b>.`}}
+  return {prompt:`Use the area model. What is <b>${a} × ${b}</b>?`,visual:areaModelSVG(ap,bp,vals,-1),...numChoices(ans,[vals.reduce((x,y)=>x+y,0)+10,ans-vals[vals.length-1],ap.reduce((x,y)=>x+y,0)+bp.reduce((x,y)=>x+y,0),ans+100,ans-10]),
+    hint:`Find the area of each small box, then add them all up.`,explain:`${vals.map(fmt).join(' + ')} = <b>${fmt(ans)}</b>. So ${a} × ${b} = ${fmt(ans)}.`};
+}
+function genDivX(t){
+  const d=R(3,9),q=R(Dv(3,5,12),Dv(9,15,60)),r=R(1,d-1),n=q*d+r;
+  if(coin()){const it=pick([['crayons','kids'],['marbles','bags'],['stickers','friends'],['seeds','pots'],['cards','players']]);
+    return {prompt:`<b>${n}</b> ${it[0]} are shared equally among <b>${d}</b> ${it[1]}. How many ${it[0]} are <b>left over</b>?`,...numChoices(r,[q,d-r,r+1,q+1]),
+      hint:`Divide ${n} by ${d}. This time the question asks for the leftover (the remainder), not the answer of the division.`,explain:`${n} ÷ ${d} = ${q} R ${r}. Each gets ${q}, and <b>${r}</b> ${r===1?'is':'are'} left over.`}}
+  return {prompt:`What number goes in the box? <b>□ ÷ ${d} = ${q} R ${r}</b>`,...numChoices(n,[q*d,n+d,q*(d+r),q+d+r]),
+    hint:`Work backwards: multiply ${q} × ${d}, then add the leftover ${r}.`,explain:`${q} × ${d} = ${q*d}. Add the remainder: ${q*d} + ${r} = <b>${n}</b>. Check: ${n} ÷ ${d} = ${q} R ${r}.`};
+}
+function genFracX(t){
+  const den=pick(Dv([4,5,6,8],[6,8,10,12],[8,10,12]));
+  if(t===10){const sub=coin();let a,b;do{a=R(1,den-1);b=R(1,den-1)}while(a===b||(sub&&a<b)||(!sub&&DIFF===1&&a+b>den));if(sub&&a<b)[a,b]=[b,a];
+    const n=sub?a-b:a+b,show=n===den?'1':n>den?mixedStr(n,den):`${n}/${den}`;
+    const S=sub?pick([[`A ribbon is ${frac(a,den)} yard long. Pip cuts off ${frac(b,den)} yard. How much ribbon is left?`,'yard'],[`The jug had ${frac(a,den)} gallon of juice. The kids drank ${frac(b,den)} gallon. How much juice is left?`,'gallon'],[`Mia's plant is ${frac(a,den)} foot tall. Leo's plant is ${frac(b,den)} foot tall. How much taller is Mia's plant?`,'foot']])
+      :pick([[`Pip hiked ${frac(a,den)} mile in the morning and ${frac(b,den)} mile after lunch. How far did he hike in all?`,'miles'],[`Mia drank ${frac(a,den)} liter of water before soccer and ${frac(b,den)} liter after. How much did she drink in all?`,'liters'],[`A recipe uses ${frac(a,den)} cup of sugar and ${frac(b,den)} cup of honey. How many cups is that together?`,'cups']]);
+    return {prompt:S[0],...strChoices(show,[`${n}/${den*2}`,`${sub?a+b:Math.abs(a-b)}/${den}`,`${n+1}/${den}`,n>1?`${n-1}/${den}`:`${n}/${den+1}`]),render:fracText,
+      hint:`${sub?'Taking away, or how much more':'Putting together'} means ${sub?'subtract':'add'}. The bottom number stays ${den}: only the top numbers change.`,
+      explain:`${frac(a,den)} ${sub?'−':'+'} ${frac(b,den)} = ${frac(n,den)}${show!==`${n}/${den}`?` = ${fracText(show)}`:''} ${S[1]}. The pieces are the same size (${den}ths), so ${sub?'subtract':'add'} only the tops.`}}
+  let a,n,g=0;do{a=R(2,den-1);n=R(2,Dv(4,6,8))}while((n*a)%den===0&&g++<40);const tot=n*a,lo=Math.floor(tot/den);
+  const S=pick([[`Each pizza needs ${frac(a,den)} cup of cheese. Pip makes <b>${n} pizzas</b>.`,'cups of cheese','How much cheese is that? It'],[`Each lap around the pond is ${frac(a,den)} mile. Mia walks <b>${n} laps</b>.`,'miles','How far does she walk? It'],[`Pip feeds his puppy ${frac(a,den)} pound of food each day. He does this for <b>${n} days</b>.`,'pounds of food','How much food is that? It']]);
+  return {prompt:`${S[0]} ${S[2]} is between which two whole numbers?`,...strChoices(`${lo} and ${lo+1}`,[`${lo+1} and ${lo+2}`,lo>0?`${lo-1} and ${lo}`:`${lo+2} and ${lo+3}`,`${n} and ${n+1}`,`${lo+2} and ${lo+3}`,`${a} and ${a+1}`]),
+    hint:`Multiply first: ${n} × ${frac(a,den)}. Then see how many wholes (${den}/${den}) fit inside.`,
+    explain:`${n} × ${frac(a,den)} = ${frac(tot,den)} = ${fracText(mixedStr(tot,den))}. That is more than ${lo} but less than ${lo+1}: between <b>${lo} and ${lo+1}</b> ${S[1]}.`};
+}
+function genDecX(t){
+  if(coin()){const a=R(1,8),b=R(11,Math.min(99-a*10,89));if(b%10===0)return genDecX(t);const sum=a*10+b,ans=dec(sum);
+    const S=pick([[`Pip runs <b>${(a/10).toFixed(1)} km</b>, rests, then runs <b>${dec(b)} km</b> more. How far does he run in all?`,'km'],[`A cup holds <b>${(a/10).toFixed(1)} liter</b> of milk. Mia adds <b>${dec(b)} liter</b> more. How much milk is there now?`,'liter']]);
+    return {prompt:S[0],...strChoices(ans,[dec(a+b),((a+Math.floor(b/10))/10).toFixed(1),(sum/10).toFixed(1),dec(Math.abs(b-a*10))]),
+      hint:`Line up the decimal points. ${(a/10).toFixed(1)} is the same as ${(a/10).toFixed(1)}0.`,explain:`${(a/10).toFixed(1)} = ${dec(a*10)}. Then ${dec(a*10)} + ${dec(b)} = <b>${ans}</b> ${S[1]}.`}}
+  const [p,q]=shuffle([...NAMES]).slice(0,2),x=R(2,8);let y;do{y=(x-1)*10+R(1,9)+(coin()?10:0)}while(y===x*10);const B=dec(y),win=x*10>y?p:q;
+  return {prompt:`${p} jumps <b>${(x/10).toFixed(1)} meter</b>. ${q} jumps <b>${B} meter</b>. Who jumps <b>farther</b>?`,choices:shuffle([p,q]),answer:win,
+    hint:`Give both numbers two places: ${(x/10).toFixed(1)} = ${dec(x*10)}. Then compare.`,explain:`${(x/10).toFixed(1)} = ${dec(x*10)}. ${dec(x*10)} ${x*10>y?'&gt;':'&lt;'} ${B}, so <b>${win}</b> jumps farther.`};
+}
+function genMeasureX(t){
+  if(t===5){const k=R(0,2);
+    if(k===0){const L=R(1,3),g=pick([150,200,250,300]),n=R(2,Math.min(5,Math.floor(L*1000/g)-1)),ans=L*1000-n*g;
+      return {prompt:`A jug holds <b>${L} liter${L>1?'s':''}</b> of juice. Pip pours <b>${n} glasses</b> of <b>${g} mL</b> each. How many milliliters are left in the jug?`,unit:'mL',...numChoices(ans,[L*1000+n*g,L*1000-g,n*g,L*100-n*g>0?L*100-n*g:ans+100]),
+        hint:`1 liter = 1,000 mL. Change the liters first. Then find how much was poured: ${n} × ${g}.`,explain:`${L} L = ${fmt(L*1000)} mL. Poured: ${n} × ${g} = ${fmt(n*g)} mL. Left: ${fmt(L*1000)} − ${fmt(n*g)} = <b>${fmt(ans)} mL</b>.`}}
+    if(k===1){const K=R(2,4),u1=R(2,6)*50,u2=R(2,6)*50,ans=K*1000-u1-u2;
+      return {prompt:`A bag of flour weighs <b>${K} kg</b>. Pip uses <b>${u1} g</b> for bread and <b>${u2} g</b> for muffins. How many grams are left?`,unit:'g',...numChoices(ans,[K*1000-u1,K*100-u1-u2>0?K*100-u1-u2:ans+50,u1+u2,ans+100]),
+        hint:`1 kg = 1,000 g. Change kilograms to grams, then subtract both amounts.`,explain:`${K} kg = ${fmt(K*1000)} g. ${fmt(K*1000)} − ${u1} − ${u2} = <b>${fmt(ans)} g</b>.`}}
+    const M=R(2,6),pc=pick([20,25,50]),ans=M*100/pc;
+    return {prompt:`A rope is <b>${M} meters</b> long. Pip cuts it into pieces that are <b>${pc} cm</b> long. How many pieces does he get?`,...numChoices(ans,[M*pc,ans/2,ans+M,M*10/pc>0&&Number.isInteger(M*10/pc)?M*10/pc:ans-1]),
+      hint:`1 meter = 100 cm. Change ${M} meters into centimeters, then divide by ${pc}.`,explain:`${M} m = ${M*100} cm. ${M*100} ÷ ${pc} = <b>${ans} pieces</b>.`}}
+  const w=R(1,Dv(3,5,9)),c=pick([['hours','minutes',60,1,2],['hours','minutes',60,1,4],['hours','minutes',60,3,4],['feet','inches',12,1,2],['feet','inches',12,1,4],['pounds','ounces',16,1,2],['pounds','ounces',16,1,4],['gallons','quarts',4,1,2],['yards','feet',3,1,3],['yards','feet',3,2,3]]);
+  const [big,small,f,nu,de]=c,part=f*nu/de,ans=w*f+part;
+  return {prompt:`How many <b>${small}</b> are in <b>${mixedHTML(w,nu,de)} ${big}</b>?`,unit:small,...numChoices(ans,[w*f,w*f+f,w*10+part,w*f+nu,ans+part]),
+    hint:`1 ${big.replace(/s$/,'').replace(/feet/,'foot')} = ${f} ${small}. Change the ${w} whole ${big} first, then find ${frac(nu,de)} of ${f}.`,
+    explain:`${w} × ${f} = ${w*f} ${small}. ${frac(nu,de)} of ${f} is ${f} ÷ ${de}${nu>1?` × ${nu}`:''} = ${part}. Together: ${w*f} + ${part} = <b>${ans} ${small}</b>.`};
+}
+function genPatternX(t){
+  if(t===6){if(coin()){const n=pick(rand()<.08?[1]:coin()?PRIMES.slice(0,12):COMPS),ans=n===1?'Neither':PRIMES.includes(n)?'Prime':'Composite';const fs=[];for(let f=1;f<=n;f++)if(n%f===0)fs.push(f);
+      return {prompt:`Is <b>${n}</b> prime or composite?`,choices:['Prime','Composite','Neither'],answer:ans,
+        hint:`List the factors of ${n}. Exactly two factors (1 and itself) = prime. More than two = composite.`,
+        explain:n===1?`1 has only one factor, so it is <b>neither</b> prime nor composite.`:`The factors of ${n} are ${fs.join(', ')}. That is ${fs.length===2?'exactly two':fs.length+' factors'}, so ${n} is <b>${ans.toLowerCase()}</b>.`}}
+    const c=pick(COMPS),ps=shuffle(PRIMES.slice(0,12)).slice(0,3);let f=2;while(c%f)f++;
+    return {prompt:`Which number is <b>composite</b>?`,...numChoices(c,ps),hint:`A composite number has more than two factors. Try dividing by 2, 3 or 5.`,explain:`<b>${c}</b> = ${f} × ${c/f}, so it has more than two factors. The others are prime.`}}
+  const n=pick([12,16,18,20,24,28,30,36,40,42,48]),pairs=[];for(let f=1;f*f<=n;f++)if(n%f===0)pairs.push([f,n/f]);
+  if(coin()){const cnt=pairs.length;return {prompt:`How many <b>factor pairs</b> does <b>${n}</b> have? (Count 1 × ${n} too.)`,...numChoices(cnt,[cnt+1,cnt-1,cnt*2,cnt+2]),
+    hint:`Start with 1 × ${n}, then try 2, 3, 4... Stop when the pairs start to repeat.`,explain:`${pairs.map(p=>`${p[0]} × ${p[1]}`).join(', ')}: <b>${cnt}</b> pairs.`}}
+  const pr=pick(pairs),wrong=[];for(const [x,y] of shuffle(pairs.slice()))for(const d of [1,-1,2]){const w=`${x} × ${y+d}`;if(x*(y+d)!==n&&y+d>1&&!wrong.includes(w))wrong.push(w)}
+  return {prompt:`Which is a <b>factor pair</b> of <b>${n}</b>?`,...strChoices(`${pr[0]} × ${pr[1]}`,shuffle(wrong)),
+    hint:`A factor pair is two numbers that multiply to make exactly ${n}.`,explain:`${pr[0]} × ${pr[1]} = ${n}. All the factor pairs of ${n}: ${pairs.map(p=>`${p[0]} × ${p[1]}`).join(', ')}.`};
+}
+function lineFigSVG(k){const dot=(x)=>`<circle cx="${x}" cy="50" r="7" fill="#1f3557"/>`,arr=(x,dir)=>`<path d="M${x} 50 l${-dir*16} -11 M${x} 50 l${-dir*16} 11" stroke="#1f3557" stroke-width="5" stroke-linecap="round" fill="none"/>`,lab=(x,L)=>`<text x="${x}" y="88" text-anchor="middle" ${FONT} font-size="20" fill="#1f3557">${L}</text>`;
+  const ln=(x1,x2)=>`<line x1="${x1}" y1="50" x2="${x2}" y2="50" stroke="#1f3557" stroke-width="5" stroke-linecap="round"/>`;
+  const g={Point:dot(150)+lab(150,'A'),Line:ln(20,280)+arr(280,1)+arr(20,-1)+dot(100)+dot(200)+lab(100,'A')+lab(200,'B'),Ray:ln(70,280)+arr(280,1)+dot(70)+dot(190)+lab(70,'A')+lab(190,'B'),'Line segment':ln(70,230)+dot(70)+dot(230)+lab(70,'A')+lab(230,'B')}[k];
+  return `<svg viewBox="0 0 300 100" style="width:330px;max-width:100%" role="img" aria-label="A figure to name">${g}</svg>`}
+function triSVG(A,B,label){const r=Math.PI/180,C=180-A-B,c=1,b=Math.sin(B*r)/Math.sin(C*r)*c;const P=[[0,0],[c,0],[b*Math.cos(A*r),b*Math.sin(A*r)]];
+  const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),mnx=Math.min(...xs),mxx=Math.max(...xs),mxy=Math.max(...ys),sc=Math.min(240/(mxx-mnx),150/mxy);
+  const Q=P.map(([x,y])=>[30+(x-mnx)*sc,175-y*sc]),angs=[A,B,C];let marks='';
+  Q.forEach((p,i)=>{const ang=angs[i];if(ang===90){const u=Q[(i+1)%3],v=Q[(i+2)%3],n=q=>{const dx=q[0]-p[0],dy=q[1]-p[1],l=Math.hypot(dx,dy);return [dx/l*16,dy/l*16]},a1=n(u),a2=n(v);
+      marks+=`<path d="M${p[0]+a1[0]} ${p[1]+a1[1]} L${p[0]+a1[0]+a2[0]} ${p[1]+a1[1]+a2[1]} L${p[0]+a2[0]} ${p[1]+a2[1]}" fill="none" stroke="#ff6b57" stroke-width="3"/>`}
+    if(label){const cx=(Q[0][0]+Q[1][0]+Q[2][0])/3,cy=(Q[0][1]+Q[1][1]+Q[2][1])/3,dx=cx-p[0],dy=cy-p[1],l=Math.hypot(dx,dy),dd=Math.min(34,l*.55);marks+=`<text x="${(p[0]+dx/l*dd).toFixed(1)}" y="${(p[1]+dy/l*dd+5).toFixed(1)}" text-anchor="middle" ${FONT} font-size="14" fill="#1f3557">${ang}°</text>`}});
+  return `<svg viewBox="0 0 300 190" style="width:320px;max-width:100%" role="img" aria-label="A triangle"><polygon points="${Q.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="${pick(SHAPE_COLS)}" stroke="#1f3557" stroke-width="3" stroke-linejoin="round"/>${marks}</svg>`}
+function genShapeX(t){
+  if(t===5){const k=pick(['Point','Line','Ray','Line segment']);
+    return {prompt:`What is this called?`,visual:lineFigSVG(k),choices:shuffle(['Point','Line','Ray','Line segment']),answer:k,
+      hint:`Look at the ends. An arrow means it keeps going forever. A dot means it stops there.`,
+      explain:{Point:`Just one dot, an exact spot: a <b>point</b> (point A).`,Line:`Arrows on both ends: it goes on forever both ways. That is a <b>line</b> (line AB).`,Ray:`It starts at a point (A) and goes on forever one way: a <b>ray</b> (ray AB).`,'Line segment':`It has two endpoints and stops at both: a <b>line segment</b> (segment AB).`}[k]}}
+  const ty=pick(['Right','Acute','Obtuse']);let A,B;
+  if(ty==='Right'){const o=R(3,6)*10;[A,B]=shuffle([90,o])}else if(ty==='Acute'){do{A=R(10,15)*5;B=R(10,15)*5}while(180-A-B>75||180-A-B<50)}else{const big=R(22,27)*5,s=R(5,Math.max(5,(180-big)/5-4))*5;[A,B]=coin()?[big,s]:[s,big]}
+  const ans=`${ty} triangle`;
+  return {prompt:`What kind of triangle is this?`,visual:triSVG(A,B,DIFF===1||ty!=='Right'&&DIFF===2),choices:['Right triangle','Acute triangle','Obtuse triangle'],answer:ans,
+    hint:`Look at the biggest angle. A square corner (90°) = right. Wider than a square corner = obtuse. All smaller = acute.`,
+    explain:{Right:`It has a square corner (90°): a <b>right triangle</b>.`,Acute:`All three angles are smaller than a square corner: an <b>acute triangle</b>.`,Obtuse:`One angle is wider than a square corner (more than 90°): an <b>obtuse triangle</b>.`}[ty]};
+}
+function adjAngSVG(parts,miss){const cx=150,cy=150,r=110,cols=['#ff6b57','#2f9fe0','#38b98a'];let s='',a0=0;const full=parts.reduce((x,y)=>x+y,0)>=360;
+  const pt=(a,rr)=>[(cx+rr*Math.cos(a*Math.PI/180)).toFixed(1),(cy-rr*Math.sin(a*Math.PI/180)).toFixed(1)];
+  parts.forEach((p,i)=>{const a1=a0+p,rr=34+i*10,[x0,y0]=pt(a0,rr),[x1,y1]=pt(a1,rr),[tx,ty]=pt(a0+p/2,rr+30);
+    s+=`<path d="M${x0} ${y0} A${rr} ${rr} 0 ${p>180?1:0} 0 ${x1} ${y1}" fill="none" stroke="${cols[i]}" stroke-width="4"/><text x="${tx}" y="${+ty+6}" text-anchor="middle" ${FONT} font-size="17" fill="${cols[i]}">${i===miss?'?':p+'°'}</text>`;a0=a1});
+  let rays='',a=0;for(let i=0;i<=parts.length;i++){if(i===parts.length&&full)break;const [x,y]=pt(a,r);rays+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#1f3557" stroke-width="4" stroke-linecap="round"/>`;a+=parts[i]||0}
+  return `<svg viewBox="0 0 300 300" style="width:300px;max-width:100%" role="img" aria-label="Angles that share a point">${rays}${s}<circle cx="${cx}" cy="${cy}" r="5" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/></svg>`}
+function genAngleX(t){
+  if(coin()){const a=R(Dv(8,10,10),Dv(17,22,26))*5,b=R(Dv(8,10,10),Dv(14,20,25))*5;if(a+b>320||a+b<=180&&DIFF>1)return genAngleX(t);const ans=a+b;
+    return {prompt:`Two angles share a side. What is the angle <b>all together</b>?`,visual:adjAngSVG([a,b],-1),unit:'°',...numChoices(ans,[ans-10,ans+10,Math.abs(a-b),360-ans]),
+      hint:`Angles that sit side by side add up. ${a} + ${b}.`,explain:`${a}° + ${b}° = <b>${ans}°</b>.${ans>180?' That is more than a straight angle (180°)!':''}`}}
+  const a=R(14,30)*5,b=R(12,Math.min(30,(360-a)/5-10))*5,c=360-a-b,miss=R(0,2),parts=[a,b,c],ans=parts[miss],known=parts.filter((_,i)=>i!==miss);
+  return {prompt:`These angles go <b>all the way around</b> the point (a full turn). What is the missing angle?`,visual:adjAngSVG(parts,miss),unit:'°',...numChoices(ans,[180-known[0]>0?180-known[0]:ans+20,ans+10,ans-10,known[0]+known[1]]),
+    hint:`A full turn is 360°. Subtract the angles you know.`,explain:`360 − ${known[0]} − ${known[1]} = <b>${ans}°</b>.`};
+}
+
 /* ================= Pie Peak, part 2: subtract, mixed numbers, decompose, fraction x whole (4.NF.3-4) ================= */
 const fracText=c=>esc(c).replace(/(\d+) (\d+)\/(\d+)/g,(m,w,n,d)=>`${w}${frac(n,d)}`).replace(/(^|[^\d>])(\d+)\/(\d+)/g,(m,p,n,d)=>p+frac(n,d));
 const mixedStr=(n,d)=>{const w=Math.floor(n/d),r=n%d;return w?(r?`${w} ${r}/${d}`:`${w}`):`${r}/${d}`};
@@ -2225,6 +2410,7 @@ function piesRow(fill,den,o={}){const per=den,whole=Math.ceil(Math.max(fill,o.to
   return s}
 function barsRow(n,a,d){let s='';const W=Math.min(46,260/d);for(let g=0;g<n;g++){s+=`<svg viewBox="0 0 ${d*W+4} 34" style="width:${d*W+4}px;max-width:100%">`;for(let i=0;i<d;i++)s+=`<rect x="${2+i*W}" y="4" width="${W-2}" height="26" rx="3" fill="${i<a?['#ffd56b','#8fd3f7','#9be0bd','#ffb3c7','#c7b6ff'][g%5]:'#eef2f7'}" stroke="#1f3557" stroke-width="1.5" class="fadein" style="animation-delay:${g*.4}s"/>`;s+=`</svg>`}return `<div style="display:flex;flex-direction:column;gap:4px;align-items:center">${s}</div>`}
 function genFrac(t){
+  if(t>=10)return genFracX(t);
   if(t<4)return genFracBase(t);
   if(t===4){const den=pick(Dv([4,5,6],[5,6,8,10],[8,10,12])),a=R(3,den),b=R(1,a-1);
     return {how:['frac4',a,b,den],prompt:`${frac(a,den)} − ${frac(b,den)} = ?`,visual:`<svg class="vis-pie" viewBox="0 0 160 160" role="img" aria-label="${a} of ${den} parts shaded">${pieSVG(80,80,72,a,den)}</svg>`,
@@ -2317,6 +2503,7 @@ function coinsAnim(c){return `<div class="coins">${greedy(c).map((v,i)=>`<span c
 /* ================= question generators: math ================= */
 const PLACE=['ones','tens','hundreds','thousands','ten thousands','hundred thousands'];
 function genPlace(t){
+  if(t>=4)return genPlaceX(t);
   if(t===0){
     const lo=Dv(1000,10000,100000),hi=Dv(9999,99999,999999);
     let n,str,pos,d;do{n=R(lo,hi);str=String(n);pos=R(0,str.length-1);d=+str[pos]}while(d===0);
@@ -2350,6 +2537,7 @@ function genPlace(t){
     explain:`Read from the left. <b>${fmt(ans)}</b> has the biggest digit at the first place where the numbers are different.`};
 }
 function genMult(t){
+  if(t>=6)return genMultX(t);
   if(t>=4)return genMultCmp(t);
   if(t===0){const a=R(Dv(12,120,1000),Dv(99,899,4999)),b=R(3,9),ans=a*b;const s=String(a),parts=[...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0);
     return {how:['mult0',a,b],prompt:`${fmt(a)} × ${b} = ?`,...numChoices(ans,[ans+10,ans-10,a*(b-1),ans+100,a*(b+1)]),anim:multAnim(a,parts,b),
@@ -2365,6 +2553,7 @@ function genMult(t){
   return {how:['mult3',a,c,z],prompt:`${a} × ${fmt(b)} = ?`,...numChoices(ans,[ans*10,ans/10,a*c,ans+b]),hint:`Do ${a} × ${c} first, then think about the zeros.`,explain:`${a} × ${c} = ${a*c}. Then add ${zeros} zero${zeros>1?'s':''}: <b>${fmt(ans)}</b>.`};
 }
 function genDiv(t){
+  if(t>=4)return genDivX(t);
   if(t===0){const d=R(Dv(2,3,4),Dv(6,9,9)),q=R(Dv(4,12,100),Dv(12,99,450)),n=q*d;
     return {how:['div0',n,d],prompt:`${fmt(n)} ÷ ${d} = ?`,...numChoices(q,[q+1,q-1,q+10,q-10]),anim:divAnim(n,d),hint:`Ask yourself: ${d} times what number equals ${fmt(n)}?`,explain:`${d} × ${fmt(q)} = ${fmt(n)}. So ${fmt(n)} ÷ ${d} = <b>${fmt(q)}</b>.`};}
   if(t===1){const d=R(3,Dv(5,8,9)),q=R(Dv(3,4,15),Dv(9,15,60)),r=R(1,d-1),n=q*d+r;
@@ -2424,6 +2613,7 @@ function protractorSVG(id,d){
 }
 const angleType=d=>d===90?'Right':d===180?'Straight':d<90?'Acute':'Obtuse';
 function genAngle(t){
+  if(t>=5)return genAngleX(t);
   if(t===0){const d=pick([R(2,8)*10,90,R(10,17)*10,180,R(3,8)*10,R(11,16)*10]),ans=angleType(d);
     return {prompt:`What kind of angle is this?`,visual:angleSVG(d),choices:shuffle(['Acute','Right','Obtuse','Straight']),answer:ans,
       hint:`Compare it to a square corner (90°). Smaller = acute. Exactly = right. Bigger = obtuse. A flat line = straight.`,
@@ -2461,6 +2651,7 @@ const SHAPES={
 const SHAPE_COLS=['#ffc23d','#8fd16a','#7fd0f5','#ff9fb7','#ffb07a','#c7b6ff'];
 function shapeSVG(k,col,extra=''){return `<svg viewBox="0 0 100 100" role="img" aria-label="shape"><polygon points="${SHAPES[k].pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="${col||pick(SHAPE_COLS)}" stroke="#1f3557" stroke-width="3" stroke-linejoin="round"/>${extra}</svg>`}
 function genShape(t){
+  if(t>=5)return genShapeX(t);
   if(t===0){const v=coin()?'right':'par';let keys;
     do{keys=shuffle(Object.keys(SHAPES)).slice(0,6)}while(!keys.some(k=>SHAPES[k][v])||keys.every(k=>SHAPES[k][v]));
     const correct=keys.filter(k=>SHAPES[k][v]);
@@ -2525,6 +2716,7 @@ function gridVis(n){let s='';for(let i=0;i<100;i++){const x=(i%10)*14,y=Math.flo
   return `<svg viewBox="0 0 141 141" style="width:250px" role="img" aria-label="Hundred grid">${s}</svg>`}
 const dec=n=>(n/100).toFixed(2);
 function genDec(t){
+  if(t>=6)return genDecX(t);
   if(t===0){if(DIFF===1||coin()){const n=R(1,9);return {prompt:`Write ${frac(n,10)} as a decimal.`,...strChoices(`0.${n}`,[`0.0${n}`,`${n}.0`,`0.${n}${n}`,`${n}.10`]),hint:`Tenths go in the first place right after the decimal point.`,explain:`${n} tenths = <b>0.${n}</b>.`}}
     let n;do{n=R(11,99)}while(n%10===0);const rev=+String(n).split('').reverse().join('');
     return {prompt:`Write ${frac(n,100)} as a decimal.`,...strChoices(dec(n),[(n/10).toFixed(1),String(n),dec(rev),`0.0${n}`]),hint:`Hundredths need two places after the decimal point.`,explain:`${n} hundredths = <b>${dec(n)}</b>.`};}
@@ -2551,6 +2743,7 @@ const UNITQ=[['the length of a pencil','inches','length'],['the distance between
   ['the weight of an apple','ounces','weight'],['the weight of a dog','pounds','weight'],['the weight of a school bus','tons','weight'],['the milk in a glass','cups','capacity'],['the water in a bathtub','gallons','capacity'],
   ['the time to brush your teeth','minutes','time'],['the time to blink','seconds','time'],['the time of a long road trip','hours','time'],['the time of summer vacation','days','time']];
 function genMeasure(t){
+  if(t>=5)return genMeasureX(t);
   const c=pick(DIFF===1?CONV.filter(x=>x.f<=24):CONV);
   if(t===0){const n=R(2,Dv(5,9,15)),ans=n*c.f;return {prompt:`1 ${c.big} = ${fmt(c.f)} ${c.small}. How many ${c.small} are in <b>${n} ${c.bigs}</b>?`,...numChoices(ans,[ans+c.f,ans-c.f,n+c.f,n*10]),
     hint:`Each ${c.big} is ${fmt(c.f)} ${c.small}. Multiply ${n} × ${fmt(c.f)}.`,explain:`${n} × ${fmt(c.f)} = <b>${fmt(ans)} ${c.small}</b>.`};}
@@ -2575,6 +2768,7 @@ const SHAPE_ICON={circle:['#ff6b57','<circle cx="20" cy="20" r="15"/>'],triangle
   star:['#ffc23d','<path d="M20 3l5 10.5 11.5 1.6-8.3 8 2 11.4L20 29l-10.2 5.5 2-11.4-8.3-8 11.5-1.6z"/>'],heart:['#e2558f','<path d="M20 35s-15-9-15-19a7.5 7.5 0 0 1 15-3 7.5 7.5 0 0 1 15 3c0 10-15 19-15 19z"/>']};
 const shapeIcon=(n,s=40)=>`<svg viewBox="0 0 40 40" style="width:${s}px;height:${s}px" fill="${SHAPE_ICON[n][0]}" stroke="#1f3557" stroke-width="2" aria-label="${n}">${SHAPE_ICON[n][1]}</svg>`;
 function genPattern(t){
+  if(t>=6)return genPatternX(t);
   if(t===0){if(DIFF===1||coin()){const a=R(1,30),s=R(Dv(2,3,7),Dv(5,12,25)),seq=[0,1,2,3].map(k=>a+k*s),ans=a+4*s;
       return {prompt:`What number comes next?`,visual:`<div class="seq">${seq.map(x=>`<span>${x}</span>`).join('')}<span class="q">?</span></div>`,...numChoices(ans,[ans+1,ans-1,ans+s,a+3*s+s-1]),
         hint:`How much does it grow each time? Look at the jump between neighbors.`,explain:`Each number is <b>${s} more</b> than the one before. ${a+3*s} + ${s} = <b>${ans}</b>.`}}
@@ -3361,18 +3555,18 @@ const ISLANDS=[
   {id:'review',name:'Fix-It Falls',topic:'Fix your old mistakes',color:'#5ec3d6',lm:'review',special:'review',group:'ch'},
   {id:'flash',name:'Thunder Tower',topic:'60-second fact storm',color:'#7c8fb8',lm:'storm',flash:true,group:'ch'},
   {id:'boss',name:'Boss Island',topic:'Defeat the Grumble Cloud',color:'#6b6f9e',lm:'boss',special:'boss',group:'ch'},
-  {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:4,group:'math'},
-  {id:'addsub',name:'Carry Canyon',topic:'Adding & subtracting',color:'#4fb87a',lm:'canyon',gen:genAddSub,types:5,group:'math'},
-  {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:6,group:'math'},
-  {id:'div',name:'Sharing Shore',topic:'Division & leftovers',color:'#3fb8b5',lm:'shore',gen:genDiv,types:4,group:'math'},
-  {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:10,group:'math'},
-  {id:'dec',name:'Decimal Dock',topic:'Tenths & hundredths',color:'#4fbfd0',lm:'dock',gen:genDec,types:6,group:'math'},
+  {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:7,group:'math'},
+  {id:'addsub',name:'Carry Canyon',topic:'Adding & subtracting',color:'#4fb87a',lm:'canyon',gen:genAddSub,types:7,group:'math'},
+  {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:7,group:'math'},
+  {id:'div',name:'Sharing Shore',topic:'Division & leftovers',color:'#3fb8b5',lm:'shore',gen:genDiv,types:5,group:'math'},
+  {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:12,group:'math'},
+  {id:'dec',name:'Decimal Dock',topic:'Tenths & hundredths',color:'#4fbfd0',lm:'dock',gen:genDec,types:7,group:'math'},
   {id:'area',name:'Fence Farm',topic:'Area & perimeter',color:'#8fcf4f',lm:'farm',gen:genArea,types:4,group:'math'},
-  {id:'angle',name:'Angle Arch',topic:'Angles & protractors',color:'#6cc3a0',lm:'angle',gen:genAngle,types:5,group:'math'},
-  {id:'shape',name:'Shape Shipyard',topic:'Shapes, lines & symmetry',color:'#4bb3c9',lm:'ship',gen:genShape,types:5,group:'math'},
+  {id:'angle',name:'Angle Arch',topic:'Angles & protractors',color:'#6cc3a0',lm:'angle',gen:genAngle,types:6,group:'math'},
+  {id:'shape',name:'Shape Shipyard',topic:'Shapes, lines & symmetry',color:'#4bb3c9',lm:'ship',gen:genShape,types:7,group:'math'},
   {id:'money',name:'Money Market',topic:'Coins, change & prices',color:'#9bd15a',lm:'money',gen:genMoney,types:5,group:'math'},
-  {id:'measure',name:'Measure Mine',topic:'Units & conversions',color:'#a8b45c',lm:'ruler',gen:genMeasure,types:5,group:'math'},
-  {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:6,group:'math'},
+  {id:'measure',name:'Measure Mine',topic:'Units & conversions',color:'#a8b45c',lm:'ruler',gen:genMeasure,types:7,group:'math'},
+  {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:8,group:'math'},
   {id:'graph',name:'Graph Garden',topic:'Bar graphs & line plots',color:'#7ccf6b',lm:'graph',gen:genGraph,types:6,group:'math'},
   {id:'time',name:'Clock Cove',topic:'Clocks, calendars & elapsed time',color:'#5ec3d6',lm:'clock',gen:genTimeTower,types:12,group:'math'},
   {id:'week',name:'Week Woods',topic:'Days & calendar',color:'#4caf6e',lm:'week',gen:genWeek,types:5,group:'time',retired:true},
@@ -3397,7 +3591,7 @@ function makeQ(isl,t,seed,d){
   return q;
 }
 /* calculation types whose answers are fractions, decimals, money or remainders: typed on the keypad too ('strict' = the answer must be in the asked form) */
-const CALC={frac:{3:1,4:1,5:1,6:'mixed',7:1},dec:{0:'decimal',4:1},money:{2:1,3:1,4:1},div:{1:1}};
+const CALC={frac:{3:1,4:1,5:1,6:'mixed',7:1,10:1},dec:{0:'decimal',4:1},money:{2:1,3:1,4:1},div:{1:1}};
 function mixedQ(pool){const i=pick(pool||MIXABLE);const q=makeQ(i,R(0,i.types-1),R(1,2e9));q.from=i.name;return q}
 
 const CHAPTERS=[
