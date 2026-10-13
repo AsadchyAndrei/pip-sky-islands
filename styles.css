@@ -781,7 +781,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
   .lvl{order:4;flex:1 1 100%;padding:5px 12px 6px}
   .lvltop span{white-space:normal;overflow:visible}
   .lvl small{display:none}
-  #playerBtn{order:5;height:44px;padding:0 14px;max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #playerBtn{order:5;height:44px;padding:0 12px}
   #coinPill{order:6}#starPill{order:7}
   .pill{font-size:18px;padding:5px 11px 3px;min-height:40px}
   .pill svg{width:20px;height:20px}
@@ -1508,18 +1508,6 @@ header.top .pill{white-space:nowrap}
 .rwbody>.rwoff{display:none!important}
 #goalPill{display:none!important}
 @media (min-width:1100px){
-  header.top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px}
-  header.top .row1{display:contents}
-  header.top .logo{grid-column:1;grid-row:1}
-  header.top .tools{grid-column:3;grid-row:1}
-  header.top .stats{grid-column:2;grid-row:1;flex-wrap:nowrap;gap:8px;justify-content:center}
-  header.top .lvl{flex:0 1 300px;padding:5px 12px}
-  header.top .lvl small{display:none}
-  header.top .lvl{min-width:200px}header.top .lvltop{white-space:nowrap;overflow:hidden}header.top #lvname{overflow:hidden;text-overflow:ellipsis}html body.big header.top .lvltop span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  header.top .pill{font-size:19px;padding:4px 12px 2px;min-height:44px}
-  header.top .pill small{display:none}
-  #syncBadge .tlabel,#syncBadge>span:not(:first-child){display:none}
-  #syncBadge{padding:0;width:44px;justify-content:center}
   .nextup{margin-top:14px}
   .mapR .chbox{padding-bottom:8px}
   #g-ch .isle svg.isl{max-height:120px}
@@ -1532,7 +1520,6 @@ header.top .pill{white-space:nowrap}
   .nextup #mapsay{font-size:15px}
   .rwtabs button{padding:6px 10px 4px;font-size:13px}
 }
-@media (min-width:1100px) and (max-width:1279px){header.top .tools .tbtn>span:not(.ico):not(.tval):last-child{display:none}header.top .tools .tbtn{padding-inline:10px}#playerBtn{max-width:110px;overflow:hidden;text-overflow:ellipsis}}
 .keys.xkeys{display:flex;gap:10px;justify-content:center}.keys.xkeys button{min-width:64px;padding:0 14px;font-size:22px;background:var(--pale-sun)}
 .entry small.pre{margin-right:4px}
 .nlwrap{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
@@ -1595,3 +1582,34 @@ table.heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabu
 }
 
 .grchip{margin-left:7px;padding:1px 7px;border-radius:999px;background:var(--pale-sun);font-size:12px;font-weight:800;color:var(--ink-soft);vertical-align:1px}
+
+/* ===== header: two rows that never overlap (logo + buttons / level + coins + stars), any name length ===== */
+#playerBtn{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:240px;white-space:nowrap}
+#playerBtn .pname{overflow:hidden;text-overflow:ellipsis;min-width:0}
+#playerBtn .grchip{margin:0;flex:none}
+@media (min-width:761px){
+  header.top{display:flex;flex-direction:column;gap:10px}
+  header.top .row1{flex-wrap:nowrap;min-width:0}
+  header.top .logo{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  header.top .tools{flex:0 1 auto;flex-wrap:nowrap;min-width:0;justify-content:flex-end}
+  header.top .tools>*{flex:none}
+  header.top .tools #playerBtn{flex:0 1 auto}
+  header.top .stats{flex-wrap:nowrap;gap:10px}
+  header.top .lvl{flex:1 1 220px;min-width:0}
+  header.top .lvltop{white-space:nowrap;overflow:hidden}header.top #lvname{overflow:hidden;text-overflow:ellipsis}
+  header.top .pill{flex:none}
+}
+@media (min-width:761px) and (max-width:1023px){
+  #syncBadge>span:not(:first-child),#gearBtn .tlabel{display:none}
+  #syncBadge,#gearBtn{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0}
+  #playerBtn{max-width:200px;height:42px}header.top .lvl small{display:none}
+}
+@media (min-width:761px) and (max-width:880px){#streakPill small{display:none}#parentBtn>span:last-child{display:none}#parentBtn{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0}}
+@media (max-width:760px){
+  /* player + coins + stars share one line: the name gives way (ellipsis) instead of pushing the stars down */
+  #playerBtn{flex:1 1 0;max-width:max-content;overflow:hidden}
+  #coinPill,#starPill{flex:none}
+  .grchip .grw{display:none}
+}
+@media (max-width:359px){#playerBtn{padding:0 10px}.grchip{padding:1px 5px}}
+@media (max-width:374px){header.top #coinPill,header.top #starPill{font-size:16px;padding:4px 8px 2px;gap:4px;min-height:38px}header.top #coinPill svg,header.top #starPill svg{width:17px;height:17px}#playerBtn{height:40px}}

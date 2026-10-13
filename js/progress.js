@@ -386,7 +386,7 @@ function updateStats(bump){
   $('#streakPill').innerHTML=`${FLAME}<span>${curStreak()}</span><small>day streak</small>`;
   const gi=goalInfo(),gp=$('#goalPill');
   if(gi){gp.hidden=false;const met=gi.cur>=gi.max;gp.classList.toggle('met',met);gp.innerHTML=`<small>${met?'Goal done!':'Today'} · ${gi.label}</small><div class="bar warm"><i style="width:${Math.min(100,gi.cur/gi.max*100)}%"></i></div>`}else gp.hidden=true;
-  $('#playerBtn').innerHTML=`${esc(G.name||'Player')}<small class="grchip">${PACK.grade===0?'K':'Grade '+PACK.grade}</small>`;
+  $('#playerBtn').innerHTML=`<span class="pname">${esc(G.name||'Player')}</span><small class="grchip">${PACK.grade===0?'K':`${['','1st','2nd','3rd','4th','5th'][PACK.grade]}<span class="grw"> grade</span>`}</small>`;$('#playerBtn').title=`${G.name||'Player'}, ${GRADE_WORD(PACK.grade).toLowerCase()}. Switch player`;
   if(bump){const p=$(bump);p.classList.remove('bump');void p.offsetWidth;p.classList.add('bump')}
 }
 function award(id){
