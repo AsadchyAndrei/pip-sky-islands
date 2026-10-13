@@ -3483,7 +3483,58 @@ const GRAM=[
   ]}
 ];
 const GRAMF=GRAM.flatMap(g=>g.items.map(f=>({f,long:g.long,cat:g.name})));
-function genGrammar(t){const x=GRAMF[t%GRAMF.length],f=x.f;return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:x.long,render:c=>c}}
+/* ---------- Grammar Grove, generated: fix the sentence, run-ons, adjective order, prepositional phrases, confused words, where/when/why (L.4.1-2) ---------- */
+const GX={
+  who:['Maya','Leo','Sofia','Ethan','Grandma Rosa','Mr. Chen','Aunt Lily','Coach Diaz'],
+  place:['Sacramento','San Diego','Lake Tahoe','Los Angeles','Fresno','Yosemite','Monterey','Oakland'],
+  day:['Saturday','Monday','Friday','Sunday','Tuesday'],
+  month:['July','October','March','December','May'],
+  verb:['visited','drove to','took a train to','flew to','went camping near'],
+  list:[['apples','grapes','cheese'],['pencils','paper','glue'],['a tent','a map','a flashlight'],['hats','scarves','mittens'],['shells','rocks','feathers']],
+  pair:[['The rain stopped','we went outside'],['Pip was hungry','he ate a big sandwich'],['The bell rang','the kids lined up'],['My sister likes soccer','I like swimming'],['The puppy barked','the mail carrier waved'],['It was cold','we wore our coats'],['The movie ended','everyone clapped']],
+  conj:{0:'so',1:'so',2:'and',3:'but',4:'and',5:'so',6:'and'},
+};
+const ADJ_ORDER=[['opinion',['beautiful','funny','tasty','lovely','silly','nice']],['size',['big','tiny','huge','small','little','tall']],['age',['old','new','young','ancient']],['shape',['round','square','flat','long']],['color',['red','blue','green','yellow','purple','brown']],['origin',['Mexican','Italian','Japanese','French']],['material',['wooden','wool','metal','glass','paper','cotton']]];
+const ADJ_NOUN=['box','hat','kite','bowl','bag','boat','blanket','vase'];
+const PREP=[['The cat slept','under the old porch','.'],['Pip flew his balloon','over the tall mountains','.'],['We ate lunch','beside the quiet river','.'],['A squirrel ran','up the oak tree','.'],['Mia found her shoes','behind the green door','.'],['The class walked','across the busy street','.'],['My dog hid','inside the cardboard box','.'],['The ducks swam','toward the little island','.'],['Leo put the book','on the top shelf','.'],['The kite floated','above the sandy beach','.']];
+const CONF=[
+  ['Pip has ___ balloons.','two',['to','too'],'"Two" is the number 2.'],['We walked ___ the park.','to',['two','too'],'"To" shows where you go.'],['That box is ___ heavy to lift.','too',['to','two'],'"Too" means "very" or "also".'],['Can I come ___?','too',['to','two'],'"Too" here means "also".'],
+  ['The kids put on ___ coats.','their',['there','they\'re'],'"Their" means it belongs to them.'],['Look over ___!','there',['their','they\'re'],'"There" tells a place.'],['___ going to the beach today.','They\'re',['Their','There'],'"They\'re" is short for "they are".'],
+  ['The dog wagged ___ tail.','its',['it\'s','its\''],'"Its" (no apostrophe) means belonging to it.'],['___ raining again!','It\'s',['Its','Its\''],'"It\'s" is short for "it is".'],
+  ['Is this ___ backpack?','your',['you\'re','yore'],'"Your" means it belongs to you.'],['___ my best friend.','You\'re',['Your','Yore'],'"You\'re" is short for "you are".'],
+  ['Pip ___ the race yesterday.','won',['one','own'],'"Won" is the past of "win". "One" is the number.'],['I ate ___ cookie.','one',['won','own'],'"One" is the number 1.'],
+  ['Can you ___ the bell?','hear',['here','hair'],'You hear with your ears.'],['Put the box ___.','here',['hear','hair'],'"Here" is a place.'],
+  ['The wind ___ the leaves away.','blew',['blue','blow'],'"Blew" is the past of "blow". "Blue" is a color.'],['We ___ the answer.','knew',['new','know'],'"Knew" is the past of "know". "New" means not old.'],
+];
+const REL=[['I remember the day ___ we moved here.','when'],['This is the park ___ we play soccer.','where'],['Tell me the reason ___ you are late.','why'],['Summer is the season ___ we swim the most.','when'],['That is the store ___ Mom buys bread.','where'],['Nobody knows the reason ___ the cat hides.','why'],['Morning is the time ___ birds sing loudest.','when'],['This is the town ___ my grandpa grew up.','where']];
+const lowerFirst=s=>/^I\b/.test(s)?s:s[0].toLowerCase()+s.slice(1),upFirst=s=>s[0].toUpperCase()+s.slice(1);
+function gramX(k){
+  if(k===0){const w=pick(GX.who),p=pick(GX.place),d=pick(GX.day),v=pick(GX.verb),L=pick(GX.list);const ok=`On ${d}, ${w} ${v} ${p} with ${L[0]}, ${L[1]}, and ${L[2]}.`;
+    const errs=shuffle([[`On ${lowerFirst(d)}, ${w} ${v} ${p} with ${L[0]}, ${L[1]}, and ${L[2]}.`,`Days of the week start with a capital letter: <b>${d}</b>.`],
+      [`On ${d}, ${w} ${v} ${lowerFirst(p)} with ${L[0]}, ${L[1]}, and ${L[2]}.`,`Names of places start with a capital letter: <b>${p}</b>.`],
+      [`On ${d} ${w} ${v} ${p} with ${L[0]}, ${L[1]}, and ${L[2]}.`,`Put a comma after an opening phrase: <b>On ${d},</b>`],
+      [`On ${d}, ${w} ${v} ${p} with ${L[0]} ${L[1]} and ${L[2]}.`,`Use commas to separate things in a list: <b>${L[0]}, ${L[1]}, and ${L[2]}</b>.`],
+      [`on ${d}, ${w} ${v} ${p} with ${L[0]}, ${L[1]}, and ${L[2]}.`,`Every sentence starts with a capital letter.`]]).slice(0,3);
+    return {prompt:`Which sentence is written <b>correctly</b>?`,...strChoices(ok,errs.map(e=>e[0])),long:true,render:esc,hint:`Check capital letters (names, places, days) and commas (after an opening phrase, in a list).`,
+      explain:`<b>${esc(ok)}</b><br>What the other sentences got wrong: ${errs.map(e=>e[1]).join(' ')}`}}
+  if(k===1){const i=R(0,GX.pair.length-1),[a,b]=GX.pair[i],c=GX.conj[i],ok=`${a}, ${c} ${lowerFirst(b)}.`;
+    return {prompt:`This is a <b>run-on sentence</b>:<br><i>"${a} ${lowerFirst(b)}."</i><br>Which is the best way to fix it?`,...strChoices(ok,[`${a}, ${lowerFirst(b)}.`,`${a} ${c}, ${lowerFirst(b)}.`,`${a}. ${lowerFirst(b)}.`]),long:true,render:esc,
+      hint:`Join two complete ideas with a comma <b>and</b> a joining word (and, but, so). A comma alone is not enough.`,
+      explain:`<b>${esc(ok)}</b> A comma plus "${c}" joins the two ideas. (You could also make two sentences: "${a}. ${upFirst(b)}.")`}}
+  if(k===2){const cats=shuffle(ADJ_ORDER.map((c,i)=>i)).slice(0,3).sort((x,y)=>x-y),words=cats.map(i=>pick(ADJ_ORDER[i][1])),n=pick(ADJ_NOUN),art=/^[aeiou]/i.test(words[0])?'an':'a';
+    const mk=w=>{const a=/^[aeiou]/i.test(w[0])?'an':'a';return `${a} ${w.join(' ')} ${n}`},ok=mk(words);
+    const perms=[[1,0,2],[2,1,0],[0,2,1],[2,0,1],[1,2,0]].map(p=>mk(p.map(i=>words[i])));
+    return {prompt:`Which sounds <b>right</b>?`,...strChoices(ok,shuffle(perms)),long:true,hint:`Adjective order: how it looks to you (opinion) → size → age → shape → color → where it is from → what it is made of.`,
+      explain:`<b>${ok}</b>: ${cats.map((i,j)=>`${words[j]} (${ADJ_ORDER[i][0]})`).join(', ')}. Opinion, size, age, shape, color, origin, material.`}}
+  if(k===3){const [s,pp,end]=pick(PREP),sw=s.split(' '),cut=sw.length>2?sw.slice(-2).join(' '):sw.join(' '),ppw=pp.split(' ');
+    return {prompt:`Which words are the <b>prepositional phrase</b>?<br><i>"${s} ${pp}${end}"</i>`,...strChoices(pp,[s,cut,ppw.slice(1).join(' '),ppw.slice(0,2).join(' ')]),long:true,
+      hint:`A prepositional phrase starts with a word like under, over, beside, on, behind, across and ends with a noun.`,
+      explain:`<b>${pp}</b> starts with the preposition <b>${ppw[0]}</b> and tells where.`}}
+  if(k===4){const [s,a,w,why]=pick(CONF);return {prompt:`Which word fits?<br><i>"${s.replace('___','<u>&nbsp;?&nbsp;</u>')}"</i>`,...strChoices(a,w),render:esc,hint:`Say the sentence with each word. Which one has the right meaning?`,explain:`<b>${esc(a)}</b>. ${esc(why)}`}}
+  const [s,a]=pick(REL);return {prompt:`Which word fits?<br><i>"${s.replace('___','<u>&nbsp;?&nbsp;</u>')}"</i>`,...strChoices(a,['where','when','why'].filter(x=>x!==a)),
+    hint:`<b>when</b> = a time, <b>where</b> = a place, <b>why</b> = a reason.`,explain:`The sentence talks about ${{when:'a time',where:'a place',why:'a reason'}[a]}, so use <b>${a}</b>.`};
+}
+function genGrammar(t){if(t>=GRAMF.length)return gramX((t-GRAMF.length)%6);const x=GRAMF[t%GRAMF.length],f=x.f;return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:x.long,render:c=>c}}
 /* ---------- Story Studio: 4th grade writing (sentences, paragraphs, transitions, opinions) ---------- */
 const WR={
   build:['The brave kitten climbed the tall tree.','My little brother loves green apples.','We planted bright flowers in the garden.','After lunch, the class read a funny story.','Pip flew his red balloon over the ocean.','Our team won the soccer game on Saturday.','The hungry bear found a jar of honey.','Grandma baked warm cookies for everyone.'],
@@ -3577,7 +3628,7 @@ const ISLANDS=[
   {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:5,group:'world'},
   {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
   {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:8,group:'world'},
-  {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length,group:'world'},
+  {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length+24,group:'world'},
   {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length,group:'world'}
 ];
 const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review'&&!i.retired);
