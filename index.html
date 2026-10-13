@@ -1445,6 +1445,18 @@ html body.big .pzcard small,html body.big .pztag{font-size:16px}html body.big .p
 .nextup #pickCard{margin:0;box-shadow:none;border:0;border-radius:0;outline:0}
 #g-ch .isle.inplan{display:none}
 #g-ch.islands.four{grid-template-columns:repeat(3,minmax(0,1fr))}
+#g-ch .isle svg.isl{max-width:150px}
+@media (max-width:760px){
+  #g-ch.islands.four{gap:8px}
+  #g-ch .isle{padding:2px 0 4px}
+  #g-ch .isle svg.isl{max-width:76px}
+  #g-ch .isle .plaque{padding:6px 4px 6px;width:100%}
+  #g-ch .isle .plaque b{font-size:15px;line-height:1.1}
+  #g-ch .isle .plaque small{display:none}
+  #g-ch .isle .status{font-size:11.5px;padding:2px 6px 1px;white-space:normal;line-height:1.2}
+  #g-ch .isle .stars .st{width:14px;height:14px}
+  html body.big #g-ch .isle .plaque b{font-size:16px}html body.big #g-ch .isle .status{font-size:12.5px}
+}
 header.top .pill{white-space:nowrap}
 .rewards{background:var(--card);border-radius:24px;box-shadow:0 6px 0 var(--line);padding:14px 16px 16px;margin-top:16px;order:20}
 .rwhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
@@ -1463,6 +1475,7 @@ header.top .pill{white-space:nowrap}
   header.top .stats{grid-column:2;grid-row:1;flex-wrap:nowrap;gap:8px;justify-content:center}
   header.top .lvl{flex:0 1 300px;padding:5px 12px}
   header.top .lvl small{display:none}
+  header.top .lvl{min-width:200px}header.top .lvltop{white-space:nowrap;overflow:hidden}header.top #lvname{overflow:hidden;text-overflow:ellipsis}html body.big header.top .lvltop span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   header.top .pill{font-size:19px;padding:4px 12px 2px;min-height:44px}
   header.top .pill small{display:none}
   #syncBadge .tlabel,#syncBadge>span:not(:first-child){display:none}
@@ -1479,6 +1492,7 @@ header.top .pill{white-space:nowrap}
   .nextup #mapsay{font-size:15px}
   .rwtabs button{padding:6px 10px 4px;font-size:13px}
 }
+@media (min-width:1100px) and (max-width:1279px){header.top .tools .tbtn>span:not(.ico):not(.tval):last-child{display:none}header.top .tools .tbtn{padding-inline:10px}#playerBtn{max-width:110px;overflow:hidden;text-overflow:ellipsis}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
