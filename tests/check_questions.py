@@ -34,7 +34,9 @@ for(const isl of ISLANDS.filter(i=>i.gen&&!i.retired)){
   }
   const L=skillsOf(isl.id),cov={};L.forEach(s=>s.ts.forEach(t=>cov[t]=(cov[t]||0)+1));
   for(let t=0;t<isl.types;t++)if(cov[t]!==1)add('skill coverage',isl.id+'#'+t,'in '+(cov[t]||0)+' skills');
+  L.forEach(s=>{if(!s.ts.length)add('skill with no questions',s.k,'');if(s.ts.some(t=>t<0||t>=isl.types))add('skill question type out of range',s.k,'')});
 }
+for(const P of Object.values(CONTENT.packs))for(const r of P.islands)if((r.skills||[]).length&&!GEN[r.id])add('pack island without a question generator',P.id+'/'+r.id,'');
 for(const L of LESSONS)for(let k=0;k<20;k++){let it;try{it=L.build()}catch(e){add('lesson crash',L.id,String(e).slice(0,100));break}
   it.forEach((q,i)=>{if(!q.teach&&q.choices&&!q.choices.includes(q.answer))add('lesson answer missing',L.id+' #'+i,strip(q.prompt).slice(0,60))});
   if(!byId(L.isl))add('lesson island',L.id,L.isl)}

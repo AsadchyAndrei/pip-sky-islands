@@ -1,0 +1,11 @@
+{"subject": "social",
+ "skills": [
+  {"id": "social.geo.compass-directions", "name": "Compass directions", "grade": 4, "std": ["HSS.4.1"], "src": {"gen": "geo", "types": [0, 2]}, "legacy": "geo:0"},
+  {"id": "social.geo.map-grids", "name": "Map grids", "grade": 4, "std": ["HSS.4.1"], "src": {"gen": "geo", "types": [1]}, "legacy": "geo:1"},
+  {"id": "social.geo.california-facts", "name": "California facts", "grade": 4, "std": ["HSS.4.1"], "src": {"gen": "geo", "types": [3]}, "legacy": "geo:2"},
+  {"id": "social.geo.u-s-and-world", "name": "U.S. and world", "grade": 4, "std": ["HSS.4.1"], "src": {"gen": "geo", "types": [4]}, "legacy": "geo:3"},
+  {"id": "social.geo.latitude-and-longitude", "name": "Latitude and longitude", "grade": 4, "std": ["HSS.4.1"], "src": {"gen": "geo", "types": [5]}, "legacy": "geo:4"},
+  {"id": "social.geo.california-regions", "name": "California regions", "grade": 4, "std": ["HSS.4.1"], "src": {"gen": "geo", "types": [6]}, "legacy": "geo:5"},
+  {"id": "social.geo.government", "name": "Government", "grade": 4, "std": ["HSS.4.5"], "src": {"gen": "geo", "types": [7]}, "legacy": "geo:6"},
+  {"id": "social.history.california-history", "name": "California history", "grade": 4, "std": ["HSS.4.2", "HSS.4.3", "HSS.4.4", "RI.4.3"], "src": {"gen": "history", "sel": "all"}, "legacy": "history:0"}
+ ]}

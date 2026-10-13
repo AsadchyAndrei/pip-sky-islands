@@ -417,6 +417,7 @@ function renderParent(){
     ${(()=>{const P=(G.home&&G.home.inside&&G.home.inside.pz)||{n:0,by:{},att:{},first:{},done:{},day:''};const att=P.att||{},fst=P.first||{},by=P.by||{},today=P.day===dayKey()?P.done||{}:{};
       const next=INSIDE.filter(it=>it.prize&&it.prize>(P.n||0)).sort((a,b)=>a.prize-b.prize)[0];
       return `<div class="pcard wide"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
+    ${packParentHTML()}
     ${nowParentHTML()}
     ${skillsParentHTML()}
     ${testParentHTML()}
@@ -469,6 +470,7 @@ function renderParent(){
   </div>`;
   setSync();$('#codeOut').value=encodeSave(ROOT.current);if(CL.mode==='cloud')loadBackups();
   document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>start(byId(b.dataset.play)));
+  const sS=$('#setState'),sG=$('#setGrade');if(sS&&sG){sS.onchange=()=>setPack(sS.value,+sG.value);sG.onchange=()=>setPack(sS.value,+sG.value)}
   document.querySelectorAll('[data-now]').forEach(b=>b.onclick=()=>{const id=b.dataset.now,L=G.settings.now=(G.settings.now||[]).slice(),k=L.indexOf(id);if(k>=0)L.splice(k,1);else{if(L.length>=4)L.shift();L.push(id)}save();renderParent();const c=[...document.querySelectorAll('.pcard h4')].find(h=>h.textContent==='In class right now');c&&c.scrollIntoView({block:'center'})});
   if($('#pDesk'))$('#pDesk').onclick=()=>openDesk();if($('#pFlu'))$('#pFlu').onclick=()=>openFluency();
   if($('#pInstall'))$('#pInstall').onclick=async()=>{const e=installEvt;if(!e)return;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderParent()};

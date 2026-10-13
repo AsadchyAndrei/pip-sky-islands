@@ -406,38 +406,20 @@ function genTimeTower(t){
   return {prompt:`Pip leaves home at <b>${t12(a)}</b>. He flies for <b>${dur(b)}</b>, then rests for <b>${dur(c)}</b>. What time is it now?`,...strChoices(t12(a+b+c),[t12(a+b),t12(a+b+c+60),t12(a+c),t12(a+b+c-15)]),
     hint:`Add the times one at a time: first the flight, then the rest.`,explain:`${t12(a)} + ${dur(b)} = ${t12(a+b)}. Then + ${dur(c)} = <b>${t12(a+b+c)}</b>.`}
 }
-const ISLANDS=[
-  {id:'daily',name:'Daily Challenge',topic:'8 mixed puzzles, new every day',color:'#ff9f43',lm:'daily',special:'daily',group:'ch'},
-  {id:'review',name:'Fix-It Falls',topic:'Fix your old mistakes',color:'#5ec3d6',lm:'review',special:'review',group:'ch'},
-  {id:'ptest',name:'Test Practice',topic:'12 questions like the spring test',color:'#7b6cf0',lm:'test',special:'ptest',group:'ch'},
-  {id:'flash',name:'Thunder Tower',topic:'60-second fact storm',color:'#7c8fb8',lm:'storm',flash:true,group:'ch'},
-  {id:'boss',name:'Boss Island',topic:'Defeat the Grumble Cloud',color:'#6b6f9e',lm:'boss',special:'boss',group:'ch'},
-  {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:8,group:'math'},
-  {id:'addsub',name:'Carry Canyon',topic:'Adding & subtracting',color:'#4fb87a',lm:'canyon',gen:genAddSub,types:7,group:'math'},
-  {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:9,group:'math'},
-  {id:'div',name:'Sharing Shore',topic:'Division & leftovers',color:'#3fb8b5',lm:'shore',gen:genDiv,types:5,group:'math'},
-  {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:16,group:'math'},
-  {id:'dec',name:'Decimal Dock',topic:'Tenths & hundredths',color:'#4fbfd0',lm:'dock',gen:genDec,types:8,group:'math'},
-  {id:'area',name:'Fence Farm',topic:'Area & perimeter',color:'#8fcf4f',lm:'farm',gen:genArea,types:4,group:'math'},
-  {id:'angle',name:'Angle Arch',topic:'Angles & protractors',color:'#6cc3a0',lm:'angle',gen:genAngle,types:7,group:'math'},
-  {id:'shape',name:'Shape Shipyard',topic:'Shapes, lines & symmetry',color:'#4bb3c9',lm:'ship',gen:genShape,types:8,group:'math'},
-  {id:'money',name:'Money Market',topic:'Coins, change & prices',color:'#9bd15a',lm:'money',gen:genMoney,types:5,group:'math'},
-  {id:'measure',name:'Measure Mine',topic:'Units & conversions',color:'#a8b45c',lm:'ruler',gen:genMeasure,types:8,group:'math'},
-  {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:11,group:'math'},
-  {id:'graph',name:'Graph Garden',topic:'Bar graphs & line plots',color:'#7ccf6b',lm:'graph',gen:genGraph,types:6,group:'math'},
-  {id:'time',name:'Clock Cove',topic:'Clocks, calendars & elapsed time',color:'#5ec3d6',lm:'clock',gen:genTimeTower,types:12,group:'math'},
-  {id:'week',name:'Week Woods',topic:'Days & calendar',color:'#4caf6e',lm:'week',gen:genWeek,types:5,group:'time',retired:true},
-  {id:'season',name:'Season Summit',topic:'Months & seasons',color:'#a6c95a',lm:'season',gen:genSeason,types:6,group:'time',retired:true},
-  {id:'riddle',name:'Riddle Reef',topic:'Logic & word problems',color:'#5ab8c4',lm:'riddle',gen:genRiddle,types:22,round:riddleRound,group:'world'},
-  {id:'words',name:'Word Waterfall',topic:'Vocabulary & spelling',color:'#53bf91',lm:'words',gen:genWords,types:8,group:'world'},
-  {id:'reading',name:'Bookworm Bay',topic:'Reading & understanding',color:'#e0b45a',lm:'book',gen:genReading,types:PASSAGES.length*3+LQ.length+TSTRUCT.length,round:readingRound,noDiff:true,group:'world'},
-  {id:'listen',name:'Listening Lagoon',topic:'Listen and answer',color:'#5bb6e8',lm:'ear',gen:genListen,types:LISTEN_Q.length,round:listenRound,noDiff:true,group:'world'},
-  {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:8,group:'world'},
-  {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
-  {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:16,group:'world'},
-  {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length+32,group:'world'},
-  {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length+66,group:'world'}
-];
+/* The islands come from the content pack for the child's state and grade (content/packs, built into js/content.js).
+   The pack says which islands, in what order, with which skills; GEN says how each island makes its questions. */
+const GEN={
+  place:{gen:genPlace,types:8},addsub:{gen:genAddSub,types:7},mult:{gen:genMult,types:9},div:{gen:genDiv,types:5},frac:{gen:genFrac,types:16},
+  dec:{gen:genDec,types:8},area:{gen:genArea,types:4},angle:{gen:genAngle,types:7},shape:{gen:genShape,types:8},money:{gen:genMoney,types:5},
+  measure:{gen:genMeasure,types:8},pattern:{gen:genPattern,types:11},graph:{gen:genGraph,types:6},time:{gen:genTimeTower,types:12},
+  week:{gen:genWeek,types:5},season:{gen:genSeason,types:6},riddle:{gen:genRiddle,types:22,round:riddleRound},words:{gen:genWords,types:8},
+  reading:{gen:genReading,types:PASSAGES.length*3+LQ.length+TSTRUCT.length,round:readingRound,noDiff:true},
+  listen:{gen:genListen,types:LISTEN_Q.length,round:listenRound,noDiff:true},geo:{gen:genGeo,types:8},history:{gen:genHistory,types:CAHIST.length},
+  write:{gen:genWrite,types:16},grammar:{gen:genGrammar,types:GRAMF.length+32},science:{gen:genScience,types:SCIENCE.length+66}
+};
+const PACK_DEFAULT='ca-4';
+const PACK=(()=>{let id='';try{id=localStorage.getItem('pip-pack')||''}catch(e){}return CONTENT.packs[id]||CONTENT.packs[PACK_DEFAULT]})();
+const ISLANDS=PACK.islands.map(r=>Object.assign({},r,GEN[r.id]||{}));
 const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review'&&i.id!=='ptest'&&!i.retired);
 const MAX=STAR_ISLANDS.length*3,BOSS_NEED=20;
 const MIXABLE=ISLANDS.filter(i=>i.gen&&!i.retired);

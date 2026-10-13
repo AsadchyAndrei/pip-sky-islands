@@ -1,0 +1,15 @@
+{"subject": "science",
+ "skills": [
+  {"id": "science.science.science-facts", "name": "Science facts", "grade": 4, "std": ["4-PS3-1", "4-PS3-2", "4-PS3-4", "4-PS4-1", "4-PS4-2", "4-PS4-3", "4-LS1-1", "4-LS1-2", "4-ESS1-1", "4-ESS2-1", "4-ESS2-2", "4-ESS3-1", "4-ESS3-2"], "src": {"gen": "science", "sel": "bank", "arg": "SCIENCE"}, "legacy": "science:0"},
+  {"id": "science.science.reading-experiment-graphs", "name": "Reading experiment graphs", "grade": 4, "std": ["3-5-ETS1-3"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 0}}, "legacy": "science:1"},
+  {"id": "science.science.waves-and-sound", "name": "Waves and sound", "grade": 4, "std": ["4-PS4-1"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 1}}, "legacy": "science:2"},
+  {"id": "science.science.earthquakes-and-rock-layers", "name": "Earthquakes and rock layers", "grade": 4, "std": ["4-ESS1-1", "4-ESS2-2"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 2}}, "legacy": "science:3"},
+  {"id": "science.science.how-we-see", "name": "How we see", "grade": 4, "std": ["4-PS4-2", "4-LS1-2"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 3}}, "legacy": "science:4"},
+  {"id": "science.science.energy-sources", "name": "Energy sources", "grade": 4, "std": ["4-ESS3-1", "4-PS3-4"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 4}}, "legacy": "science:5"},
+  {"id": "science.science.parts-of-a-plant", "name": "Parts of a plant", "grade": 4, "std": ["4-LS1-1"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 5}}, "legacy": "science:6"},
+  {"id": "science.science.the-water-cycle", "name": "The water cycle", "grade": 4, "std": ["5-ESS2-1"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 6}}, "legacy": "science:7"},
+  {"id": "science.science.coded-messages", "name": "Coded messages", "grade": 4, "std": ["4-PS4-3"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 7}}, "legacy": "science:8"},
+  {"id": "science.science.weathering-and-erosion", "name": "Weathering and erosion", "grade": 4, "std": ["4-ESS2-1"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 8}}, "legacy": "science:9"},
+  {"id": "science.science.hazards-and-engineering", "name": "Hazards and engineering", "grade": 4, "std": ["4-ESS3-2", "3-5-ETS1-1", "3-5-ETS1-2"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 9}}, "legacy": "science:10"},
+  {"id": "science.science.collisions-and-energy", "name": "Collisions and energy", "grade": 4, "std": ["4-PS3-3", "4-PS3-1"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 10}}, "legacy": "science:11"}
+ ]}

@@ -30,7 +30,11 @@ function normalizeProfile(p){
   g.story=Object.assign({ch:0,seen:{}},g.story||{});if(g.placed==null&&(g.xp||0)>0)g.placed=1;g.home=Object.assign({house:0,items:{},pos:{},hidden:{}},g.home||{});
   for(const k of ['review','wrongLog','fixedSeeds','badges'])if(!Array.isArray(g[k]))g[k]=[];
   g.review=trimReview(g.review);
+  if(g.sk)g.sk=skLegacy(g.sk);
   return attachCoins(g)}
+/* skill progress used to be saved under "island:number" keys; now under the skill's id from the library */
+const SK_LEGACY=Object.fromEntries(Object.values(CONTENT.skills).filter(s=>s.legacy).map(s=>[s.legacy,s.id]));
+function skLegacy(sk){let o=null;for(const k in sk){const n=SK_LEGACY[k];if(!n)continue;o=o||Object.assign({},sk);if(!(n in o)||String(sk[k]).length>String(o[n]).length)o[n]=sk[k];delete o[k]}return o||sk}
 const freshProfile=()=>normalizeProfile(null);
 /* stable string (sorted keys and arrays) to compare two profiles */
 function stable(o){if(Array.isArray(o))return '['+o.map(stable).sort().join(',')+']';if(o&&typeof o==='object')return '{'+Object.keys(o).sort().map(k=>JSON.stringify(k)+':'+stable(o[k])).join(',')+'}';return JSON.stringify(o)}
@@ -151,35 +155,21 @@ function addKid(p){const id=newKidId();p=normalizeProfile(p);p._u=Date.now();ROO
    (7 of 10 right lately = 2 stars, 8 of 10 = 3). Stars never go down. */
 /* ===== Skills: every island is a topic, every question type belongs to a skill. A skill is mastered at 80% of the last 10 first tries (at least 5). ===== */
 const rng=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
-const SKILL_DEF={
-  place:[['Value of a digit','4.NBT.2',[0]],['Rounding','4.NBT.3',[1]],['Expanded form','4.NBT.2',[2]],['Comparing and ordering numbers','4.NBT.2',[3,6,7]],['Each place is 10 times bigger','4.NBT.1',[4]],['Numbers in words','4.NBT.2',[5]]],
-  addsub:[['Adding with regrouping','4.NBT.4',[0]],['Subtracting with borrowing','4.NBT.4',[1]],['Add and subtract word problems','4.OA.3',[2]],['Missing numbers','4.OA.3',[3]],['Estimating','4.OA.3',[4]],['Equations with a letter','4.OA.3',[5,6]]],
-  mult:[['Multi-digit × 1-digit','4.NBT.5',[0]],['2-digit × 2-digit','4.NBT.5',[1]],['Multiplication word problems','4.OA.3',[2]],['Multiplying by 10s and 100s','4.NBT.5',[3]],['"Times as many" problems','4.OA.1-2',[4,5]],['Area model','4.NBT.5',[6]],['Equal expressions (Yes/No)','4.OA.1',[7]],['"Times as many" or "more than"?','4.OA.2',[8]]],
-  div:[['Dividing','4.NBT.6',[0,2]],['Remainders','4.NBT.6',[1,4]],['What to do with the leftover','4.OA.3',[3]]],
-  frac:[['Naming fractions','4.NF.1',[0]],['Equivalent fractions','4.NF.1',[1,9,12,15]],['Comparing fractions','4.NF.2',[2,13,14]],['Adding and subtracting fractions','4.NF.3',[3,4]],['Mixed numbers','4.NF.3',[5,6]],['Fraction × whole number','4.NF.4',[7,11]],['Fractions on a number line','4.NF.2',[8]],['Fraction word problems','4.NF.3',[10]]],
-  dec:[['Tenths and hundredths','4.NF.6',[0,1,3]],['Comparing decimals','4.NF.7',[2,7]],['Adding tenths and hundredths','4.NF.5',[4,6]],['Decimals on a number line','4.NF.6',[5]]],
-  area:[['Area','4.MD.3',[0]],['Perimeter','4.MD.3',[1]],['Finding a missing side','4.MD.3',[2,3]]],
-  angle:[['Kinds of angles','4.G.1',[0,6]],['Measuring with a protractor','4.MD.6',[1,2]],['Adding angles','4.MD.7',[3,5]],['Turns and degrees','4.MD.5',[4]]],
-  shape:[['Right angles and parallel sides','4.G.2',[0]],['Lines of symmetry','4.G.3',[1,4]],['Parallel and perpendicular lines','4.G.1',[2]],['Naming quadrilaterals','4.G.2',[3]],['Points, lines, rays, segments','4.G.1',[5]],['Kinds of triangles','4.G.2',[6,7]]],
-  money:[['Counting and paying exact amounts','4.MD.2',[0,1]],['Making change','4.MD.2',[2]],['Adding prices','4.MD.2',[3]],['Multiplying money','4.MD.2',[4]]],
-  measure:[['Converting units','4.MD.1',[0,1,4]],['Measurement word problems','4.MD.2',[2,5]],['Choosing the right unit','4.MD.1',[3]],['Fractions of a unit','4.MD.2',[6]],['Measurement on a number line','4.MD.2',[7]]],
-  pattern:[['Number patterns and rules','4.OA.5',[0,1,10]],['Factors and factor pairs','4.OA.4',[2,7,8]],['Prime and composite','4.OA.4',[3,6,9]],['Multiples','4.OA.4',[4]],['Shape patterns','4.OA.5',[5]]],
-  graph:[['Reading bar graphs','3.MD.3',[0,1,2]],['Picture graphs','3.MD.3',[3]],['Line plots','4.MD.4',[4,5]]],
-  time:[['Telling time','3.MD.1',[0,1,2,4]],['Elapsed time','4.MD.2',[3,8,9,11]],['Calendar','4.MD.1',[5,6,7]],['Time units','4.MD.1',[10]]],
-  riddle:[['Logic puzzles','4.OA.3',[0,1,2,4,5]],['Multi-step word problems','4.OA.3',[3]],['Find the mistake','Math reasoning',[6,8]],['Explain your thinking','Math reasoning',[7,9]],['Big tasks (4 steps)','Problem solving',rng(10,21)]],
-  words:[['Synonyms','L.4.5',[0]],['Antonyms','L.4.5',[1]],['Prefixes','L.4.4',[2]],['Suffixes','L.4.4',[3]],['Spelling','L.4.2',[4]],['Words in context','L.4.4',[5]],['Using a dictionary','L.4.4c',[6,7]]],
-  geo:[['Compass directions','HSS 4.1',[0,2]],['Map grids','HSS 4.1',[1]],['California facts','HSS 4.1',[3]],['U.S. and world','HSS 4.1',[4]],['Latitude and longitude','HSS 4.1',[5]],['California regions','HSS 4.1',[6]],['Government','HSS 4.5',[7]]],
-  write:[['Building sentences','L.4.1',[0]],['Topic sentences','W.4.2',[1]],['Transition words','W.4.2',[2]],['Combining sentences','L.4.3',[3]],['Supporting details','W.4.2',[4]],['Endings','W.4.3',[5]],['Opinions and reasons','W.4.1',[6]],['Putting steps in order','W.4.2',[7]],['Revising: what does not belong','W.4.5',[8]],['Precise words','L.4.3',[9]],['Research: choosing sources','W.4.8',[10,12]],['Research: using evidence','W.4.9',[11]],['Formal and informal English','L.4.3c',[13]],['Punctuation for effect','L.4.3b',[14]],['Dialogue and showing feelings','W.4.3b',[15]]],
-};
-function skillsOf(id){const c=skillsOf.c||(skillsOf.c={});if(c[id])return c[id];const isl=byId(id);if(!isl||!isl.gen||isl.retired)return c[id]=[];let d=SKILL_DEF[id];
-  if(id==='reading'){const P3=PASSAGES.length*3,k=n=>LQ.map((x,i)=>LONGP[x[0]].q[x[1]][0]===n?P3+i:-1).filter(i=>i>=0);
-    d=[['Short passages','RL.4.1 / RI.4.1',rng(0,P3-1)],['Main idea, theme and word meaning','RL.4.2 / RI.4.2 / RL.4.4',k('mc')],['Evidence: Part A + Part B','RL.4.1 / RI.4.1',k('ab')],['Choose two answers','RL.4.1 / RI.4.1',k('two')],['Find the sentence in the text','RL.4.1 / RI.4.1',k('hl')],['Text structure','RI.4.5',rng(P3+LQ.length,isl.types-1)]]}
-  if(id==='grammar'){const L=GRAMF.length;d=GRAM.map(g=>[g.name,'L.4.1-5',GRAMF.map((x,i)=>x.cat===g.name?i:-1).filter(i=>i>=0)]).concat(['Fixing sentences','Run-on sentences','Adjective order','Prepositional phrases','Confusing words (their/there...)','Where, when, why','Finding prepositions','Nouns, verbs, adjectives'].map((n,j)=>[n,'L.4.1-2',rng(0,isl.types-L-1).filter(x=>x%8===j).map(x=>L+x)]))}
-  if(id==='science'){const L=SCIENCE.length;d=[['Science facts','NGSS 4',rng(0,L-1)]].concat(['Reading experiment graphs','Waves and sound','Earthquakes and rock layers','How we see','Energy sources','Parts of a plant','The water cycle','Coded messages','Weathering and erosion','Hazards and engineering','Collisions and energy'].map((n,j)=>[n,'NGSS 4',rng(0,isl.types-L-1).filter(x=>x%11===j).map(x=>L+x)]))}
-  if(id==='listen')d=[['Listening for details','SL.4.2',rng(0,isl.types-1)]];
-  if(id==='history')d=[['California history','HSS 4.2-4.4',rng(0,isl.types-1)]];
-  if(!d)d=[['All puzzles','',rng(0,isl.types-1)]];
-  return c[id]=d.map(([name,std,ts],i)=>({k:id+':'+i,id,i,name,std,ts}))}
+/* Skills come from the skill library (content/skills, built into js/content.js). A skill lists its question types,
+   or names a selector below for islands whose question types depend on the size of a question bank. */
+const SKILL_SEL={
+  'reading.short':isl=>rng(0,PASSAGES.length*3-1),
+  'reading.long':(isl,k)=>{const P3=PASSAGES.length*3;return LQ.map((x,i)=>LONGP[x[0]].q[x[1]][0]===k?P3+i:-1).filter(i=>i>=0)},
+  'reading.struct':isl=>rng(PASSAGES.length*3+LQ.length,isl.types-1),
+  all:isl=>rng(0,isl.types-1),
+  bank:(isl,b)=>rng(0,SKILL_BANKS[b].length-1),
+  mod:(isl,a)=>{const L=SKILL_BANKS[a.base].length;return rng(0,isl.types-L-1).filter(x=>x%a.m===a.j).map(x=>L+x)},
+  'gram.cat':(isl,name)=>GRAMF.map((x,i)=>x.cat===name?i:-1).filter(i=>i>=0)};
+const SKILL_BANKS={SCIENCE,GRAMF};
+function skillsOf(id){const c=skillsOf.c||(skillsOf.c={});if(c[id])return c[id];const isl=byId(id);if(!isl||!isl.gen||isl.retired)return c[id]=[];
+  const L=(isl.skills||[]).map(k=>CONTENT.skills[k]).filter(Boolean);
+  if(!L.length)return c[id]=[{k:id+':0',id,i:0,name:'All puzzles',std:'',codes:[],ts:rng(0,isl.types-1)}];
+  return c[id]=L.map((S,i)=>({k:S.id,id,i,name:S.name,std:S.std.join(' / '),codes:S.std,ts:S.src.types?S.src.types.slice():SKILL_SEL[S.src.sel](isl,S.src.arg)}))}
 const skillOf=(id,t)=>skillsOf(id).find(s=>s.ts.includes(t));
 function skAdd(id,t,ok){const s=skillOf(id,t);if(!s)return;G.sk=Object.assign({},G.sk||{});const before=skStat(s.k).st;G.sk[s.k]=(((G.sk[s.k]||'')+(ok?'1':'0')).slice(-10));
   if(before<2&&skStat(s.k).st===2&&S&&S.mode!=='boss')toast(`Skill mastered: ${s.name}!`,`${byId(id).name}: ${skillsDone(id)} of ${skillsOf(id).length} skills mastered.`,'#38b98a')}
@@ -212,6 +202,18 @@ function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone
 function pickPlay(P){const w=weakSkill(P.id);if(w&&skillsOf(P.id).length>1)startSkill(P,w);else start(P,{noOffer:true})}
 function nowParentHTML(){const sel=G.settings.now||[],groups=[['Math',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='math')],['English and more',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='world')]];
   return `<div class="pcard wide"><h4>In class right now</h4><p class="note">Tap the topics ${esc(G.name||'your child')} is learning at school this month (up to 4). Pip's Pick will practice these first, starting with the skills not mastered yet.</p>${groups.map(([g,L])=>`<div class="nowgrp"><b>${g}</b><div class="nowchips">${L.map(i=>`<button type="button" class="nowchip${sel.includes(i.id)?' on':''}" data-now="${i.id}" aria-pressed="${sel.includes(i.id)}">${esc(i.topic)}</button>`).join('')}</div></div>`).join('')}${sel.length?`<p class="note">Now practicing first: <b>${sel.map(id=>esc(byId(id).name)).join(', ')}</b>.</p>`:''}</div>`}
+/* School program: the state and grade decide which islands and skills the child gets (a content pack per state and grade) */
+const US_STATES=[['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],['DC','District of Columbia'],['FL','Florida'],['GA','Georgia'],['HI','Hawaii'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming']];
+const GRADES=[[0,'Kindergarten'],[1,'Grade 1'],[2,'Grade 2'],[3,'Grade 3'],[4,'Grade 4'],[5,'Grade 5']];
+const packKey=(st,gr)=>`${String(st).toLowerCase()}-${gr}`;
+function packParentHTML(){const st=G.settings.state||PACK.state,gr=G.settings.grade!=null?+G.settings.grade:PACK.grade,ready=!!CONTENT.packs[packKey(st,gr)];
+  const opt=(v,t,on)=>`<option value="${v}"${on?' selected':''}>${esc(t)}</option>`;
+  return `<div class="pcard wide"><h4>School program</h4><p class="note">Choose the state and grade of ${esc(G.name||'your child')}'s school. The islands and skills follow that state's standards for that grade.</p>
+    <div class="setrow"><label for="setState">State</label><select id="setState">${US_STATES.map(([c,n])=>opt(c,n+(Object.values(CONTENT.packs).some(P=>P.state===c)?'':' (coming soon)'),c===st)).join('')}</select></div>
+    <div class="setrow"><label for="setGrade">Grade</label><select id="setGrade">${GRADES.map(([g,n])=>opt(g,n+(CONTENT.packs[packKey(st,g)]?'':' (coming soon)'),g===gr)).join('')}</select></div>
+    <p class="note${ready?' ok':''}" id="packNote">${ready?`Playing: <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>.`:`${esc((US_STATES.find(x=>x[0]===st)||['',st])[1])}, ${esc(GRADES.find(x=>x[0]===gr)[1].toLowerCase())} is coming soon. Until then the islands follow <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>; most math and English skills are the same from state to state.`}</p></div>`}
+function setPack(st,gr){G.settings.state=st;G.settings.grade=gr;save();const id=packKey(st,gr);
+  if(CONTENT.packs[id]&&id!==PACK.id){try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return}renderParent()}
 function skillsParentHTML(){const groups=[['Math',['place','addsub','mult','div','frac','dec','area','angle','shape','money','measure','pattern','graph','time','riddle']],['English',['reading','listen','words','grammar','write']],['Science and social studies',['science','geo','history']]];
   let all=0,done=0;const body=groups.map(([g,ids])=>`<h5 class="skgrp">${g}</h5>${ids.filter(id=>byId(id)&&skillsOf(id).length).map(id=>{const L=skillsOf(id),d=skillsDone(id);all+=L.length;done+=d;
     return `<details class="skdet"><summary><b>${esc(byId(id).name)}</b><span>${esc(byId(id).topic)}</span><em>${d}/${L.length}</em><span class="skmeter"><i style="width:${Math.round(d/L.length*100)}%"></i></span></summary><ul>${L.map(s=>{const m=skStat(s.k);return `<li class="s${m.st}">${SK_DOT(m.st)}<span>${esc(s.name)}</span><small>${esc(s.std)}</small><em>${m.st===2?'Mastered':m.n?`${m.ok}/${m.n} lately`:'Not tried'}</em></li>`}).join('')}</ul></details>`}).join('')}`).join('');
