@@ -1593,3 +1593,5 @@ table.heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabu
   .lcpics{display:flex;gap:24px}.lcpics>div{display:flex;flex-direction:column;align-items:center;font-size:12px}.lcpics>div>span{font-weight:800}
   .lcpics .ppic{width:1.1in;height:1.1in}.lcard p{margin:0;font-size:13px}
 }
+
+.grchip{margin-left:7px;padding:1px 7px;border-radius:999px;background:var(--pale-sun);font-size:12px;font-weight:800;color:var(--ink-soft);vertical-align:1px}

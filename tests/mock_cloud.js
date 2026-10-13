@@ -42,7 +42,7 @@
       else { if (old.owner !== me() || old.removed || (nd.code || '') !== (old.code || '')) throw deny(); }
       if (String(nd.name || '').length > 16 || (nd.sum && nd.sum.length > 60000)) throw deny();
       put(path, nd); },
-    async leaveClass(cid, kid) { const path = `classes/${cid}/members/${me()}_${kid}`, m = get(path); if (m && (m.owner !== me() || m.removed)) throw deny(); put(path); },
+    async leaveClass(cid, kid) { const path = `classes/${cid}/members/${me()}_${kid}`, m = get(path); if (m && m.owner !== me()) throw deny(); put(path); },
     async removeMember(cid, mid) { const c = get(`classes/${cid}`); if (!c || c.owner !== me()) throw deny(); const m = get(`classes/${cid}/members/${mid}`); if (m) put(`classes/${cid}/members/${mid}`, { ...m, removed: true }); },
     async exportAll() { return {}; },
   };

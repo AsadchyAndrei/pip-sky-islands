@@ -71,11 +71,13 @@ async function classCheck(force){if(CL.mode!=='cloud'||!G.cls)return;const cid=G
   if(!force&&c0&&Date.now()-(c0._at||0)<10*60000)return;
   let c=null,m=null;try{c=await CL.api.getClass(cid);m=await CL.api.getMember(cid,CL.uid+'_'+id)}catch(e){return}
   if(ROOT.current!==id||!G.cls||G.cls.cid!==cid)return;
-  if(!c||(m&&m.removed)){const nm=G.cls.name;touchKid(id,p=>{delete p.cls});try{localStorage.removeItem('pip-class-'+cid)}catch(e){}
+  if(!c||(m&&m.removed)){const nm=G.cls.name;if(m)CL.api.leaveClass(cid,id).catch(()=>{});touchKid(id,p=>{delete p.cls});try{localStorage.removeItem('pip-class-'+cid)}catch(e){}
     if(!G.roster)toast('Class left',`${esc(nm||'The class')} is no longer linked to ${esc(G.name||'this player')}.`,'#2f9fe0');return}
   c._at=Date.now();lsSet('pip-class-'+cid,JSON.stringify(c));
   if(c.name!==G.cls.name||c.teacher!==G.cls.teacher)touchKid(id,p=>{p.cls=Object.assign({},p.cls,{name:c.name,teacher:c.teacher})});
   if(!m)classPush(true);
+  if(c.pack&&c.pack!==G.pack&&CONTENT.packs[c.pack]&&canAdopt()){packSwitch(c.pack);save();try{localStorage.setItem('pip-pack',c.pack)}catch(e){}
+    toast(`Now in ${GRADE_WORD(CONTENT.packs[c.pack].grade).toLowerCase()}!`,`${esc(c.teacher||'The teacher')} moved the class. Last year's stars are kept safe.`,'#38b98a');setTimeout(()=>location.reload(),1800);return}
   if(curScreen==='map')renderClassCard()}
 const classDoc=()=>G.cls?clsCache(G.cls.cid):null;
 const myMid=()=>CL.uid+'_'+ROOT.current;
@@ -178,7 +180,7 @@ function kidsTabHTML(c){const R=rosterOf(c.cid),H=homeMembers(c);
 function bindKidsTab(c){const n=$('#addNote');
   $('#addGo').onclick=()=>{const names=[...new Set($('#addNames').value.split(/\n|,/).map(s=>s.trim().replace(/\s+/g,' ').slice(0,16)).filter(Boolean))];if(!names.length){n.className='note bad';n.textContent='Type at least one name.';return}
     const R=rosterOf(c.cid);if(R.length+names.length>40){n.className='note bad';n.textContent='A class can have up to 40 students on classroom devices.';return}
-    for(const name of names){const p=freshProfile();p.name=name;p.roster=1;p.pic=newPics();p.pack=c.pack;p.cls={cid:c.cid,code:'',name:c.name,teacher:c.teacher||''};
+    for(const name of names){const p=freshProfile();p.name=name;p.roster=1;p.pic=newPics();p.pack=c.pack;p.packSince=Date.now();p.cls={cid:c.cid,code:'',name:c.name,teacher:c.teacher||''};
       const P=CONTENT.packs[c.pack];p.settings.state=P.state;p.settings.grade=P.grade;p.greeted='';const id=addKid(p);
       CL.api.saveMember(c.cid,id,{name,pack:c.pack,ts:Date.now()}).catch(()=>{})}
     toast(`${names.length} student${names.length>1?'s':''} added`,'Print the login cards next.','#38b98a');renderTeach()};
@@ -261,9 +263,11 @@ function setTabHTML(c){return `<div class="pcard wide"><h4>Class</h4>
     <div class="setrow"><label for="csName">Class name</label><input type="text" id="csName" maxlength="40" value="${esc(c.name)}"></div>
     <div class="setrow"><label for="csTeacher">Your name for students</label><input type="text" id="csTeacher" maxlength="40" value="${esc(c.teacher||'')}"></div>
     <p>Grade: <b>${esc(packLabel(c.pack))}</b></p><div class="btnrow"><button type="button" class="go small" id="csSave">Save</button></div><p class="note" id="csNote" role="status"></p></div>
+  ${(()=>{const P=CONTENT.packs[c.pack],nx=P&&CONTENT.packs[packKey(P.state,P.grade+1)];return nx&&packReady(nx)?`<div class="pcard wide"><h4>New school year</h4><p class="note">Move the whole class to <b>${esc(packLabel(nx.id))}</b>. Every student gets the ${GRADE_WORD(nx.grade).toLowerCase()} islands; last year's stars stay saved in each student's progress. Tasks and "in class now" topics are cleared. You may want to rename the class too.</p><div class="btnrow"><button type="button" class="go small leaf" id="csUp">Move to ${GRADE_WORD(nx.grade).toLowerCase()}</button></div><p class="note" id="csUpNote" role="status"></p></div>`:''})()}
   <div class="pcard"><h4>Class code: <span class="ccode">${esc(c.code)}</span></h4><p class="note">Families use it to join from home. A new code stops new joins with the old one; students already in the class stay.</p><div class="btnrow"><button type="button" class="go small alt" id="csCode">Make a new code</button></div></div>
   <div class="pcard"><h4>Delete the class</h4><p class="note">Removes the class, its tasks, and the progress summaries families shared. Students on classroom devices are removed with all their progress.</p><div class="btnrow"><button type="button" class="go small alt bad" id="csDel">Delete the class</button></div><p class="note" id="csDelNote" role="status"></p></div>`}
-function bindSetTab(c){$('#csSave').onclick=async()=>{const name=$('#csName').value.trim()||c.name,teacher=$('#csTeacher').value.trim();if(await saveClass(c,{name,teacher},$('#csNote'))){
+function bindSetTab(c){if($('#csUp'))$('#csUp').onclick=e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to move the class';return}b.disabled=true;moveClassUp(c,$('#csUpNote'))};
+  $('#csSave').onclick=async()=>{const name=$('#csName').value.trim()||c.name,teacher=$('#csTeacher').value.trim();if(await saveClass(c,{name,teacher},$('#csNote'))){
     for(const [id] of rosterOf(c.cid))touchKid(id,p=>{p.cls=Object.assign({},p.cls,{name,teacher})});renderTeach();toast('Saved','','#38b98a')}};
   $('#csCode').onclick=async e=>{const b=e.currentTarget;b.disabled=true;try{const code=await CL.api.newClassCode(c.cid,c.code);c.code=code;lsSet('pip-classes-'+CL.uid,JSON.stringify(TC.classes));renderTeach()}catch(err){b.disabled=false}};
   $('#csDel').onclick=async e=>{const b=e.currentTarget,n=$('#csDelNote');if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent=`Tap again to delete ${c.name}`;return}
@@ -272,3 +276,23 @@ function bindSetTab(c){$('#csSave').onclick=async()=>{const name=$('#csName').va
       await CL.api.deleteClass(c.cid,c.code)}catch(err){b.disabled=false;n.className='note bad';n.textContent='Could not delete right now. Check the internet and try again.';return}
     persistLocal();if(classDevice()===c.cid)try{localStorage.removeItem('pip-classdev-'+CL.uid)}catch(x){}
     TC.classes=TC.classes.filter(x=>x.cid!==c.cid);TC.cur='';lsSet('pip-classes-'+CL.uid,JSON.stringify(TC.classes));renderTeach()}}
+
+/* ---------- a new school year (August and September): offer the next grade ---------- */
+function yearOffer(now=new Date()){if(G.cls||!ROOT.current)return null;const m=now.getMonth(),yr=now.getFullYear();if(m<7||m>8||G.yearAsk===yr)return null;
+  const aug1=new Date(yr,7,1).getTime();let since=G.packSince||0;
+  if(!since){const k=Object.keys(G.days||{}).filter(d=>(G.days[d].q||0)>0).sort()[0];if(!k)return null;since=new Date(k+'T12:00').getTime()}
+  if(since>=aug1)return null;const next=CONTENT.packs[packKey(PACK.state,PACK.grade+1)];if(!next||!packReady(next))return null;return {next,yr}}
+let yearShown=false;
+function maybeYearOffer(){if(yearShown||curScreen!=='map'||ovOpen)return;const o=yearOffer();if(!o)return;yearShown=true;const g=GRADE_WORD(o.next.grade).toLowerCase(),nm=esc(G.name||'you');
+  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">A new school year!</div><h2>Is ${nm} in ${g} now?</h2><p>A grown-up can move ${nm} up to the ${esc(o.next.stateName)} ${g} islands. Stars from ${GRADE_WORD(PACK.grade).toLowerCase()} stay safe, and coins, Pip and the home island come along.</p>
+    <div class="btnrow"><button class="go" type="button" id="yrYes">Yes, move up</button><button class="go alt" type="button" id="yrNo">Not yet</button></div><button class="linkbtn" type="button" id="yrLater">Ask me later</button>`,()=>{
+    $('#yrLater').onclick=closeOverlay;$('#yrNo').onclick=()=>{G.yearAsk=o.yr;save();closeOverlay()};
+    $('#yrYes').onclick=()=>{closeOverlay();teacherGate(()=>{packSwitch(o.next.id);G.yearAsk=o.yr;save();try{localStorage.setItem('pip-pack',o.next.id)}catch(e){}location.reload()})}})}
+
+/* ---------- teacher: move the whole class to the next grade (a new school year) ---------- */
+async function moveClassUp(c,note){const P=CONTENT.packs[c.pack],next=P&&CONTENT.packs[packKey(P.state,P.grade+1)];if(!next||!packReady(next))return;
+  if(!await saveClass(c,{pack:next.id,now:[],tasks:[]},note))return;
+  for(const [id] of rosterOf(c.cid))touchKid(id,p=>{packSwitch(next.id,p);p.cls=Object.assign({},p.cls)});
+  for(const [id,p] of rosterOf(c.cid))CL.api.saveMember(c.cid,id,{name:(p.name||'Player').slice(0,16),pack:next.id,ts:Date.now()}).catch(()=>{});
+  TC.mem[c.cid]=(TC.mem[c.cid]||[]).map(m=>Object.assign({},m,{sum:''}));
+  toast(`${esc(c.name)}: ${GRADE_WORD(next.grade).toLowerCase()}`,'Students keep last year\'s stars. Families\' devices switch on their next visit.','#38b98a');renderTeach()}

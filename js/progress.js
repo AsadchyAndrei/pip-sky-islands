@@ -221,20 +221,23 @@ const packKey=(st,gr)=>`${String(st).toLowerCase()}-${gr}`;
 /* Progress tied to islands is kept per grade: changing grade (a new school year) starts that grade's islands fresh
    and keeps the old grade's stars safe in G.grades. Coins, purchases, Pip, the home island and the story are shared. */
 const GRADE_FIELDS=['best','diff','hardMaster','stats','roll','star3','tierBest','review','wrongLog','deck','lessonOffer','skMig','placed'];
-function packSwitch(to){if(!G.pack)G.pack=PACK_DEFAULT;if(G.pack===to)return;G.grades=Object.assign({},G.grades);
-  const keep={};for(const f of GRADE_FIELDS)if(G[f]!==undefined)keep[f]=clone(G[f]);G.grades[G.pack]=keep;
-  const back=G.grades[to]||{};for(const f of GRADE_FIELDS){if(back[f]!==undefined)G[f]=clone(back[f]);else if(DEF[f]!==undefined)G[f]=clone(DEF[f]);else delete G[f]}
-  G.pack=to}
+function packSwitch(to,P=G){if(!P.pack)P.pack=PACK_DEFAULT;if(P.pack===to)return;P.grades=Object.assign({},P.grades);
+  const keep={};for(const f of GRADE_FIELDS)if(P[f]!==undefined)keep[f]=clone(P[f]);P.grades[P.pack]=keep;
+  const back=P.grades[to]||{};for(const f of GRADE_FIELDS){if(back[f]!==undefined)P[f]=clone(back[f]);else if(DEF[f]!==undefined)P[f]=clone(DEF[f]);else delete P[f]}
+  const N=CONTENT.packs[to];if(N){P.settings=Object.assign({},P.settings,{state:N.state,grade:N.grade})}
+  P.pack=to;P.packSince=Date.now()}
 const packReady=P=>P&&(P.status!=='draft'||(()=>{try{return localStorage.getItem('pip-dev-packs')==='1'}catch(e){return false}})());
 /* the page runs one pack at a time: if this player's pack is another one, reload with it */
 function ensurePack(){const id=G.pack||PACK_DEFAULT;if(id!==PACK.id&&CONTENT.packs[id]){try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return true}return false}
-function packParentHTML(){const st=G.settings.state||PACK.state,gr=G.settings.grade!=null?+G.settings.grade:PACK.grade,ready=packReady(CONTENT.packs[packKey(st,gr)]);
+function packParentHTML(){
+  if(G.cls)return `<div class="pcard wide"><h4>School program</h4><p>${esc(G.name||'Your child')} plays <b>${esc(PACK.stateName)}, ${GRADE_WORD(PACK.grade).toLowerCase()}</b>, the grade of ${G.roster?'the class':`${esc(G.cls.teacher||'the teacher')}'s class <b>${esc(G.cls.name||'')}</b>`}.</p><p class="note">${G.roster?'The teacher sets the grade for the whole class.':'The class decides the grade, so the teacher sees the right skills. To choose another grade, leave the class first (below).'}</p></div>`;
+  const st=G.settings.state||PACK.state,gr=G.settings.grade!=null?+G.settings.grade:PACK.grade,ready=packReady(CONTENT.packs[packKey(st,gr)]);
   const opt=(v,t,on)=>`<option value="${v}"${on?' selected':''}>${esc(t)}</option>`;
   return `<div class="pcard wide"><h4>School program</h4><p class="note">Choose the state and grade of ${esc(G.name||'your child')}'s school. The islands and skills follow that state's standards for that grade.</p>
     <div class="setrow"><label for="setState">State</label><select id="setState">${US_STATES.map(([c,n])=>opt(c,n+(Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P))?'':' (coming soon)'),c===st)).join('')}</select></div>
     <div class="setrow"><label for="setGrade">Grade</label><select id="setGrade">${GRADES.map(([g,n])=>opt(g,n+(packReady(CONTENT.packs[packKey(st,g)])?'':' (coming soon)'),g===gr)).join('')}</select></div>
     <p class="note${ready?' ok':''}" id="packNote">${ready?`Playing: <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>.`:`${esc((US_STATES.find(x=>x[0]===st)||['',st])[1])}, ${esc(GRADES.find(x=>x[0]===gr)[1].toLowerCase())} is coming soon. Until then the islands follow <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>; most math and English skills are the same from state to state.`}</p></div>`}
-function setPack(st,gr){G.settings.state=st;G.settings.grade=gr;const id=packKey(st,gr);
+function setPack(st,gr){if(G.cls)return renderParent();G.settings.state=st;G.settings.grade=gr;const id=packKey(st,gr);
   if(packReady(CONTENT.packs[id])&&id!==PACK.id){packSwitch(id);save();try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return}save();renderParent()}
 const SUBJ_NAMES={math:'Math',ela:'English',science:'Science',social:'Social studies'};
 const islandSubject=i=>{const k=(i.skills||[])[0];return k&&CONTENT.skills[k]?CONTENT.skills[k].subject:''};
@@ -383,7 +386,7 @@ function updateStats(bump){
   $('#streakPill').innerHTML=`${FLAME}<span>${curStreak()}</span><small>day streak</small>`;
   const gi=goalInfo(),gp=$('#goalPill');
   if(gi){gp.hidden=false;const met=gi.cur>=gi.max;gp.classList.toggle('met',met);gp.innerHTML=`<small>${met?'Goal done!':'Today'} · ${gi.label}</small><div class="bar warm"><i style="width:${Math.min(100,gi.cur/gi.max*100)}%"></i></div>`}else gp.hidden=true;
-  $('#playerBtn').textContent=G.name?G.name:'Player';
+  $('#playerBtn').innerHTML=`${esc(G.name||'Player')}<small class="grchip">${PACK.grade===0?'K':'Grade '+PACK.grade}</small>`;
   if(bump){const p=$(bump);p.classList.remove('bump');void p.offsetWidth;p.classList.add('bump')}
 }
 function award(id){

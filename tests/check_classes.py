@@ -131,5 +131,37 @@ with sync_playwright() as p:
     until(pg, "!!document.querySelector('[data-kid=\"kx\"]')"); pg.click('[data-kid="kx"]'); until(pg, "curScreen==='map'")
     pg.evaluate("classCheck(true)"); pg.wait_for_timeout(400)
     c.ok(not pg.evaluate("G.cls"), 'removed child is no longer in the class')
+    # a new school year offer: August/September only, when the grade was chosen before August, once a year
+    yo = pg.evaluate("(()=>{G.packSince=new Date(2026,2,1).getTime();const a=yearOffer(new Date(2027,7,15)),b=yearOffer(new Date(2027,10,1));G.yearAsk=2027;const d=yearOffer(new Date(2027,7,20));delete G.yearAsk;G.packSince=new Date(2027,7,5).getTime();const e=yearOffer(new Date(2027,8,1));return [a&&a.next.id,b,d,e]})()")
+    c.ok(yo == ['ca-5', None, None, None], f'school year offer: {yo}')
+    # the family can join again; while in a class the grade is the class's
+    pg.evaluate("CL.unlockUntil=Date.now()+60000;renderParent()")
+    pg.fill('#clsCode', code); pg.click('#clsJoin'); until(pg, "!!document.querySelector('#clsYes')"); pg.click('#clsYes'); pg.wait_for_timeout(500)
+    c.ok(pg.evaluate("G.cls&&G.cls.cid") == cid, 'joined again after being removed')
+    pg.evaluate("renderParent()")
+    c.ok(pg.locator('#setGrade').count() == 0 and 'leave the class first' in pg.text_content('#parentBody'), 'grade locked while in a class')
+    c.ok('Grade 4' in pg.text_content('#playerBtn'), 'grade shown next to the name')
+    pg.evaluate("cloudFlush()"); pg.wait_for_timeout(300)
+    store = json.loads(pg.evaluate("localStorage.getItem('mock-store')"))
+    c.ok(not errs, f'parent page errors: {errs[:3]}')
+    ctx.close()
+
+    # a new school year: the teacher moves the class to grade 5
+    ctx, pg, errs = cloud_page(b, T, store)
+    pg.click('#kTeach'); until(pg, "curScreen==='teach' && !!document.querySelector('[data-cls]')")
+    pg.click('[data-cls]'); until(pg, "!!document.querySelector('[data-tt=\"set\"]')"); pg.click('[data-tt="set"]')
+    until(pg, "!!document.querySelector('#csUp')"); pg.click('#csUp'); pg.click('#csUp'); pg.wait_for_timeout(500)
+    r = pg.evaluate("[curClass().pack,rosterOf(TC.cur).map(([,p])=>[p.pack,!!(p.grades&&p.grades['ca-4'])])]")
+    c.ok(r[0] == 'ca-5' and all(x == ['ca-5', True] for x in r[1]), f'class and roster moved, last year kept: {r}')
+    pg.evaluate("cloudFlush()"); pg.wait_for_timeout(300)
+    store = json.loads(pg.evaluate("localStorage.getItem('mock-store')"))
+    c.ok(not errs, f'teacher page errors: {errs[:3]}')
+    ctx.close()
+
+    # the family's device follows the class to grade 5
+    ctx, pg, errs = cloud_page(b, P, store, 800)
+    until(pg, "!!document.querySelector('[data-kid=\"kx\"]')"); pg.click('[data-kid="kx"]')
+    pg.wait_for_function("localStorage.getItem('pip-pack')==='ca-5'", timeout=8000); pg.wait_for_timeout(2500)
+    c.ok(pg.evaluate("PACK.id") == 'ca-5', 'family device switched to the class grade')
     c.ok(not errs, f'parent page errors: {errs[:3]}')
 c.done()

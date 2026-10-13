@@ -65,8 +65,8 @@ service cloud.firestore {
         allow update: if signedIn() && classOwner(cid) == request.auth.uid
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['removed'])
           && request.resource.data.removed == true;
-        allow delete: if signedIn() && (classOwner(cid) == request.auth.uid
-          || (resource.data.owner == request.auth.uid && resource.data.get('removed', false) == false));
+        // the grown-up may always delete the child's own summary (also after a removal, so the child can join again)
+        allow delete: if signedIn() && (classOwner(cid) == request.auth.uid || resource.data.owner == request.auth.uid);
       }
     }
 
