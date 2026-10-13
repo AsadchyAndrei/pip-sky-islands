@@ -21,5 +21,19 @@
   {"id": "science.science3.fossils", "name": "Fossils", "grade": 3, "std": ["3-LS4-1"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "fossils"}}},
   {"id": "science.science3.weather-and-climate", "name": "Weather and climate", "grade": 3, "std": ["3-ESS2-1", "3-ESS2-2"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "weather"}}},
   {"id": "science.science3.weather-hazards", "name": "Weather hazards", "grade": 3, "std": ["3-ESS3-1"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "hazards"}}},
-  {"id": "science.science3.engineering-design", "name": "Engineering design", "grade": 3, "std": ["3-5-ETS1-1", "3-5-ETS1-2", "3-5-ETS1-3"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "design"}}}
+  {"id": "science.science3.engineering-design", "name": "Engineering design", "grade": 3, "std": ["3-5-ETS1-1", "3-5-ETS1-2", "3-5-ETS1-3"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "design"}}},
+  {"id": "science.science5.particles-of-matter", "name": "Particles of matter", "grade": 5, "std": ["5-PS1-1"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "matter"}}},
+  {"id": "science.science5.conservation-of-matter", "name": "Conservation of matter", "grade": 5, "std": ["5-PS1-2"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "conserve"}}},
+  {"id": "science.science5.properties-of-materials", "name": "Properties of materials", "grade": 5, "std": ["5-PS1-3"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "props"}}},
+  {"id": "science.science5.mixing-and-new-substances", "name": "Mixing and new substances", "grade": 5, "std": ["5-PS1-4"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "mixing"}}},
+  {"id": "science.science5.gravity", "name": "Gravity", "grade": 5, "std": ["5-PS2-1"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "gravity"}}},
+  {"id": "science.science5.energy-from-the-sun-in-food", "name": "Energy from the sun in food", "grade": 5, "std": ["5-PS3-1"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "energyfood"}}},
+  {"id": "science.science5.what-plants-need-to-grow", "name": "What plants need to grow", "grade": 5, "std": ["5-LS1-1"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "plantsair"}}},
+  {"id": "science.science5.food-webs-and-decomposers", "name": "Food webs and decomposers", "grade": 5, "std": ["5-LS2-1"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "foodweb"}}},
+  {"id": "science.science5.stars-and-brightness", "name": "Stars and brightness", "grade": 5, "std": ["5-ESS1-1"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "stars"}}},
+  {"id": "science.science5.shadows-days-and-seasons", "name": "Shadows, days and seasons", "grade": 5, "std": ["5-ESS1-2"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "patterns"}}},
+  {"id": "science.science5.earth-s-spheres", "name": "Earth's spheres", "grade": 5, "std": ["5-ESS2-1"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "spheres"}}},
+  {"id": "science.science5.earth-s-water", "name": "Earth's water", "grade": 5, "std": ["5-ESS2-2"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "water"}}},
+  {"id": "science.science5.protecting-resources", "name": "Protecting resources", "grade": 5, "std": ["5-ESS3-1"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "protect"}}},
+  {"id": "science.science5.engineering-design", "name": "Engineering design", "grade": 5, "std": ["3-5-ETS1-1", "3-5-ETS1-2", "3-5-ETS1-3"], "src": {"gen": "science5", "sel": "tag", "arg": {"bank": "science5", "tag": "design5"}}}
  ]}

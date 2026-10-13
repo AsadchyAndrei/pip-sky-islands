@@ -438,7 +438,17 @@ const GEN={
   listen3:{gen:genListen3,types:LISTEN3_Q.length,round:listenRound3,noDiff:true},
   words3:{gen:bankGen('words3'),types:BANK3.words3.length,noDiff:true},grammar3:{gen:bankGen('grammar3'),types:BANK3.grammar3.length,noDiff:true},
   write3:{gen:bankGen('write3'),types:BANK3.write3.length,noDiff:true},science3:{gen:bankGen('science3'),types:BANK3.science3.length,noDiff:true},
-  geo3:{gen:bankGen('geo3'),types:BANK3.geo3.length,noDiff:true},history3:{gen:bankGen('history3'),types:BANK3.history3.length,noDiff:true}
+  geo3:{gen:bankGen('geo3'),types:BANK3.geo3.length,noDiff:true},history3:{gen:bankGen('history3'),types:BANK3.history3.length,noDiff:true},
+  /* 5th grade (js/math5.js, js/english5.js) */
+  place5:{gen:genPlace5,types:7},expr5:{gen:genExpr5,types:5},mult5:{gen:genMult5,types:5},div5:{gen:genDiv5,types:7},dec5:{gen:genDec5,types:7},
+  frac5:{gen:genFrac5,types:8},vol5:{gen:genVol5,types:6},shape5:{gen:genShape5,types:4},graph5:{gen:genGraph5,types:5},pattern5:{gen:genPattern5,types:4},
+  measure5:{gen:genMeasure5,types:5},riddle5:{gen:genRiddle5,types:5},
+  reading5:{gen:genReading5,types:PASS5Q.length+LONG5Q.length+BANK3.feat5.length+MEDIA_Q.length,round:readingRound5,noDiff:true,
+    test:isl=>{const pi=dealTypes('test_long5',LONG5.length,1)[0],off=PASS5Q.length+LONG5Q.findIndex(x=>x[0]===pi);return LONG5[pi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9)))}},
+  listen5:{gen:genListen5,types:LISTEN5_Q.length,round:listenRound5,noDiff:true},
+  words5:{gen:bankGen('words5'),types:BANK3.words5.length,noDiff:true},grammar5:{gen:bankGen('grammar5'),types:BANK3.grammar5.length,noDiff:true},
+  write5:{gen:bankGen('write5'),types:BANK3.write5.length,noDiff:true},science5:{gen:bankGen('science5'),types:BANK3.science5.length,noDiff:true},
+  geo5:{gen:bankGen('geo5'),types:BANK3.geo5.length,noDiff:true},history5:{gen:bankGen('history5'),types:BANK3.history5.length,noDiff:true}
 };
 const PACK_DEFAULT='ca-4';
 const PACK=(()=>{let id='';try{id=localStorage.getItem('pip-pack')||''}catch(e){}return CONTENT.packs[id]||CONTENT.packs[PACK_DEFAULT]})();

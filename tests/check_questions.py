@@ -6,7 +6,7 @@ import json
 from serve import *
 JS = r"""()=>{
 const strip=h=>String(h==null?'':h).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-const num=s=>{s=strip(s).replace(/[$,¢ ]/g,'');let m;if(m=s.match(/^(-?\d+) (\d+)\/(\d+)$/))return +m[1]+m[2]/m[3];if(m=s.match(/^(\d+)\/(\d+)$/))return m[1]/m[2];if(/^-?\d*\.?\d+$/.test(s))return +s;return null};
+const num=s=>{s=strip(s).replace(/[$,¢]/g,'').trim();let m;if(m=s.match(/^(-?\d+) (\d+)\/(\d+)$/))return +m[1]+m[2]/m[3];if(m=s.match(/^(\d+)\/(\d+)$/))return m[1]/m[2];if(/^-?\d*\.?\d+$/.test(s))return +s;return null};
 const bad=[],cnt={};const add=(k,key,ex)=>{if(bad.length<200)bad.push(k+' '+key+': '+ex)};
 for(const isl of ISLANDS.filter(i=>i.gen&&!i.retired)){
   const N=isl.types>20?3:120;

@@ -15,5 +15,14 @@
   {"id": "social.history3.how-communities-change", "name": "How communities change", "grade": 3, "std": ["HSS.3.3"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "change"}}},
   {"id": "social.history3.rules-laws-and-government", "name": "Rules, laws and government", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "govt"}}},
   {"id": "social.history3.american-symbols-and-landmarks", "name": "American symbols and landmarks", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "symbols"}}},
-  {"id": "social.history3.american-heroes", "name": "American heroes", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "heroes"}}}
+  {"id": "social.history3.american-heroes", "name": "American heroes", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "heroes"}}},
+  {"id": "social.geo5.native-nations", "name": "Native nations", "grade": 5, "std": ["HSS.5.1"], "src": {"gen": "geo5", "sel": "tag", "arg": {"bank": "geo5", "tag": "native5"}}},
+  {"id": "social.geo5.european-exploration", "name": "European exploration", "grade": 5, "std": ["HSS.5.2"], "src": {"gen": "geo5", "sel": "tag", "arg": {"bank": "geo5", "tag": "explore"}}},
+  {"id": "social.geo5.states-and-capitals", "name": "States and capitals", "grade": 5, "std": ["HSS.5.9"], "src": {"gen": "geo5", "sel": "tag", "arg": {"bank": "geo5", "tag": "states"}}},
+  {"id": "social.history5.the-thirteen-colonies", "name": "The thirteen colonies", "grade": 5, "std": ["HSS.5.4"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "colonies"}}},
+  {"id": "social.history5.colonists-and-native-nations", "name": "Colonists and Native nations", "grade": 5, "std": ["HSS.5.3"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "conflict"}}},
+  {"id": "social.history5.causes-of-the-revolution", "name": "Causes of the Revolution", "grade": 5, "std": ["HSS.5.5"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "revcause"}}},
+  {"id": "social.history5.the-revolutionary-war", "name": "The Revolutionary War", "grade": 5, "std": ["HSS.5.6"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "revwar"}}},
+  {"id": "social.history5.the-constitution", "name": "The Constitution", "grade": 5, "std": ["HSS.5.7"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "constitution"}}},
+  {"id": "social.history5.moving-west", "name": "Moving west", "grade": 5, "std": ["HSS.5.8"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "westward"}}}
  ]}

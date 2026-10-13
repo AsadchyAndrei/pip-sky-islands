@@ -172,7 +172,11 @@ const SKILL_SEL={
   'r3.short':isl=>rng(0,PASS3Q.length-1),
   'r3.long':(isl,k)=>LONG3Q.map((x,i)=>LONG3[x[0]].q[x[1]][0]===k?PASS3Q.length+i:-1).filter(i=>i>=0),
   'r3.feat':isl=>rng(PASS3Q.length+LONG3Q.length,PASS3Q.length+LONG3Q.length+BANK3.feat3.length-1),
-  'r3.media':isl=>rng(PASS3Q.length+LONG3Q.length+BANK3.feat3.length,isl.types-1)};
+  'r3.media':isl=>rng(PASS3Q.length+LONG3Q.length+BANK3.feat3.length,isl.types-1),
+  'r5.short':isl=>rng(0,PASS5Q.length-1),
+  'r5.long':(isl,k)=>LONG5Q.map((x,i)=>LONG5[x[0]].q[x[1]][0]===k?PASS5Q.length+i:-1).filter(i=>i>=0),
+  'r5.feat':isl=>rng(PASS5Q.length+LONG5Q.length,PASS5Q.length+LONG5Q.length+BANK3.feat5.length-1),
+  'r5.media':isl=>rng(PASS5Q.length+LONG5Q.length+BANK3.feat5.length,isl.types-1)};
 const SKILL_BANKS={SCIENCE,GRAMF};
 function skillsOf(id){const c=skillsOf.c||(skillsOf.c={});if(c[id])return c[id];const isl=byId(id);if(!isl||!isl.gen||isl.retired)return c[id]=[];
   const L=(isl.skills||[]).map(k=>CONTENT.skills[k]).filter(Boolean);
@@ -751,7 +755,7 @@ const LESSONS=[
    practice:[8,9,8]}
 
 ];
-LESSONS.push(...LESSONS3,...LESSONS3E);
+LESSONS.push(...LESSONS3,...LESSONS3E,...LESSONS5,...LESSONS5E);
 /* lessons belong to a question generator (L.gen, or the island id for 4th grade lessons), so each grade gets its own */
 const lessonsFor=id=>{const k=(byId(id)||{}).genKey||id;return LESSONS.filter(L=>(L.gen||L.isl)===k)};
 function lessonFor(id){const ls=lessonsFor(id);if(!ls.length)return null;const miss=t=>G.review.filter(r=>r.i===id&&t.includes(r.t)).length,done=L=>((G.lessons||{})[L.id]||'');
