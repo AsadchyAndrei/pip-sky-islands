@@ -3143,6 +3143,7 @@ const MAPICONS={
   Flag:(x,y)=>`<line x1="${x-6}" y1="${y+14}" x2="${x-6}" y2="${y-14}" stroke="#1f3557" stroke-width="2.5"/><path d="M${x-6} ${y-14} L${x+12} ${y-8} L${x-6} ${y-2}Z" fill="#e2558f"/>`
 };
 function genGeo(t){
+  if(t>=5)return geoX(t);
   if(t===0){const i=DIFF===1?R(0,3)*2:R(0,7),ans=DIRS[i];return {prompt:`Which direction is the <b>yellow arrow</b> pointing?`,visual:compassSVG(i),...strChoices(ans,[DIRS[(i+4)%8],DIRS[(i+1)%8],DIRS[(i+7)%8],DIRS[(i+2)%8]]),
     hint:`N is at the top. Going clockwise: North, East, South, West (Never Eat Soggy Waffles!). In between are NE, SE, SW and NW.`,explain:`The arrow points <b>${ans}</b>.`};}
   if(t===1){const N=5,C=44,O=8;let sx,sy,dy,dx,tx,ty;
@@ -3162,6 +3163,51 @@ function genGeo(t){
     return {prompt:`Which direction is <b>halfway between ${a} and ${b}</b>?`,...strChoices(ans,shuffle(DIRS.filter(d=>d.length>5))),hint:`Put the two names together. North or South always comes first!`,explain:`Halfway between ${a} and ${b} is <b>${ans}</b>.`};}
   const f=pick(t===3?CA_FACTS:WORLD_FACTS);
   return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4]};
+}
+/* ---- HSS 4.1 and 4.5: latitude and longitude on a California map, the four regions, how government works ---- */
+const CA_OUT=[[42,-124.2],[42,-120],[39,-120],[35,-114.6],[34.3,-114.2],[32.7,-114.7],[32.5,-117.1],[33.7,-118.3],[34,-118.8],[34.4,-119.7],[34.5,-120.6],[35.6,-121.3],[36.6,-121.9],[37.2,-122.4],[37.8,-122.5],[38.3,-123.1],[39.4,-123.8],[40.4,-124.4],[41.8,-124.2]];
+const LL_CITIES=[['San Diego',32.7,-117.2],['Los Angeles',34.1,-118.2],['Sacramento',38.6,-121.5],['San Francisco',37.8,-122.4],['Fresno',36.7,-119.8],['Redding',40.6,-122.4],['Palm Springs',33.8,-116.5],['Eureka',40.8,-124.2],['Bakersfield',35.4,-119.0],['Lake Tahoe',39.1,-120.0]];
+function llMap(cities,mark){const X=lo=>64+(lo+125)*28,Y=la=>18+(42.5-la)*28;let g='';
+  for(let la=32;la<=42;la+=2)g+=`<line x1="64" y1="${Y(la)}" x2="${X(-113.5)}" y2="${Y(la)}" stroke="#9fb6cc" stroke-width="1" stroke-dasharray="3 3"/><text x="${X(-113.5)+4}" y="${Y(la)+4}" font-family="Baloo 2,sans-serif" font-weight="700" font-size="13" fill="#506686">${la}°N</text>`;
+  for(let lo=124;lo>=114;lo-=2)g+=`<line x1="${X(-lo)}" y1="10" x2="${X(-lo)}" y2="${Y(31.8)}" stroke="#9fb6cc" stroke-width="1" stroke-dasharray="3 3"/><text x="${X(-lo)}" y="${Y(31.8)+14}" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="700" font-size="13" fill="#506686">${lo}°W</text>`;
+  const out=CA_OUT.map(([la,lo])=>`${X(lo).toFixed(1)},${Y(la).toFixed(1)}`).join(' ');
+  const dots=cities.map(([n,la,lo],i)=>`<circle cx="${X(lo)}" cy="${Y(la)}" r="5" fill="${n===mark?'#ff6b57':'#2f9fe0'}" stroke="#1f3557" stroke-width="1.5"/><text x="${X(lo)+(lo<-121?-7:7)}" y="${Y(la)+4}" text-anchor="${lo<-121?'end':'start'}" font-family="Baloo 2,sans-serif" font-weight="800" font-size="14" fill="#1f3557">${n===mark||!mark?n:''}</text>`).join('');
+  return `<svg viewBox="0 0 420 340" style="width:430px;max-width:100%" role="img" aria-label="Map of California with latitude and longitude lines"><rect x="0" y="0" width="420" height="340" rx="14" fill="#eaf6ff"/>${g}<polygon points="${out}" fill="#f6e1b8" stroke="#8c5a2c" stroke-width="2" stroke-linejoin="round"/>${dots}</svg>`}
+const near2=v=>Math.round(v/2)*2;
+const CA_REGIONS=[
+  ['California has four main regions. Which list names them?','Coast, Central Valley, Mountains, Desert',['North, South, East, West','Forest, Beach, City, Farm','Islands, Lakes, Rivers, Bays'],'Think about land shapes: by the ocean, a flat middle, high places, and dry places.','The four regions are the <b>coast, the Central Valley, the mountains and the desert</b>.'],
+  ['Which region grows a huge share of America\'s fruits, nuts and vegetables?','The Central Valley',['The desert','The coast','The mountains'],'It is a long, flat valley with rich soil in the middle of the state.','The flat, rich soil of the <b>Central Valley</b> makes it one of the best farming places in the world.'],
+  ['Which region has the Mojave Desert and Death Valley?','The desert region',['The coast region','The Central Valley','The mountain region'],'It is in the southeast, and it is very hot and dry.','Death Valley and the Mojave are in the <b>desert region</b>.'],
+  ['Which region has the Sierra Nevada and Mount Whitney, the tallest peak in the lower 48 states?','The mountain region',['The desert region','The coast region','The Central Valley'],'Snow falls on the high peaks in winter.','The Sierra Nevada is in the <b>mountain region</b>.'],
+  ['Which region has mild weather, beaches, and big cities like San Francisco and Los Angeles?','The coast region',['The desert region','The mountain region','The Central Valley'],'The ocean keeps it from getting too hot or too cold.','The Pacific Ocean gives the <b>coast</b> mild weather, and many big cities grew there by the harbors.'],
+  ['Snow melting in the Sierra Nevada flows into rivers. Why is that important for the Central Valley?','Farmers use the water for crops',['It makes the valley a desert','It stops earthquakes','It makes the ocean salty'],'The valley gets little rain in summer.','Melting snow fills rivers and reservoirs, and <b>farmers water their crops</b> with it.'],
+  ['Why did many early towns grow up near the coast and the bays?','Ships could bring goods and people',['It was the only place with snow','There were no mountains','The desert was too cold'],'Think about how people traveled before trains and cars.','Ships could land in bays and harbors, so <b>trade and travel</b> made coastal towns grow.'],
+];
+const CA_GOV=[
+  ['What document is the highest law of the United States?','The U.S. Constitution',['The Declaration of Independence','The Bill of Rights only','The California Constitution'],'It was written in 1787 and starts with "We the People".','The <b>U.S. Constitution</b> is the highest law of the country.'],
+  ['Government has three branches. Which branch <b>makes</b> the laws?','Legislative',['Executive','Judicial','Military'],'Legislators write and vote on bills.','The <b>legislative</b> branch makes laws. In California, that is the State Legislature.'],
+  ['Which branch <b>carries out</b> the laws? (In California, the governor leads it.)','Executive',['Legislative','Judicial','Local'],'The governor and the President lead this branch.','The <b>executive</b> branch carries out the laws. The governor leads it in California.'],
+  ['Which branch decides what laws mean, using courts and judges?','Judicial',['Executive','Legislative','Local'],'Judge and judicial sound alike.','Courts and judges are the <b>judicial</b> branch.'],
+  ['Who is the leader of California\'s executive branch?','The governor',['The mayor','The President','The chief justice'],'Every state has one, elected by the people of the state.','The <b>governor</b> leads California\'s executive branch.'],
+  ['The California State Legislature has two parts. What are they?','The Senate and the Assembly',['The House and the Court','The Mayor and the Council','The Senate and the Cabinet'],'One part has 40 members and the other has 80.','California has a <b>State Senate</b> (40 members) and a <b>State Assembly</b> (80 members).'],
+  ['Who usually runs a city government?','A mayor and a city council',['The governor','The President','A judge'],'This is the local level of government.','Cities have a <b>mayor and a city council</b>.'],
+  ['What are the three levels of government?','Local, state and federal (national)',['Big, medium and small','Schools, parks and roads','Mayor, judge and police'],'From your town, to California, to the whole country.','<b>Local</b> (city, county), <b>state</b> (California) and <b>federal</b> (the United States).'],
+  ['Where does California\'s state government meet?','In the State Capitol in Sacramento',['In the White House','In Los Angeles City Hall','In San Francisco'],'It is in the state capital city.','The Legislature and governor work in the <b>State Capitol in Sacramento</b>.'],
+  ['Why do we have three branches of government?','So no one part gets too much power',['So laws are made faster','So there are more jobs','Because there are three cities'],'Each branch can check the others.','Each branch checks the others, so <b>no one part gets too much power</b>.'],
+];
+function geoX(t){
+  if(t===5){const pool=shuffle(LL_CITIES.slice()).slice(0,4),c=pool[0],k=R(0,2);
+    if(k===0){const la=near2(c[1]),lo=near2(-c[2]);const by=pool.slice().sort((a,b)=>a[0].localeCompare(b[0]));
+      const dd=x=>Math.hypot(x[1]-la,-x[2]-lo),dc=dd(c);if(dc>1.1||pool.some(x=>x!==c&&dd(x)<dc+1.2))return geoX(t);
+      return {prompt:`Which city is closest to <b>${la}°N, ${lo}°W</b>?`,visual:llMap(by,null),...strChoices(c[0],by.slice(1).map(x=>x[0]).concat(by.map(x=>x[0]))),
+        hint:`Find the ${la}°N line (going across). Then find the ${lo}°W line (going up and down). Where do they cross?`,explain:`${la}°N and ${lo}°W cross right near <b>${c[0]}</b>.`}}
+    if(k===1){const la=near2(c[1]);if(Math.abs(c[1]-la)>.45)return geoX(t);
+      return {prompt:`About what <b>latitude</b> is <b>${c[0]}</b>?`,visual:llMap(pool,c[0]),...strChoices(`${la}°N`,[`${la+2}°N`,`${la-2}°N`,`${la+4}°N`,`${la-4}°N`].filter(x=>parseInt(x)>=32&&parseInt(x)<=42).concat([`${near2(-c[2])}°W`])),
+        hint:`Latitude lines go <b>across</b>, like the rungs of a ladder. Their numbers are on the right side and end in N.`,explain:`${c[0]} sits near the <b>${la}°N</b> line. Latitude tells how far north of the equator a place is.`}}
+    const lo=near2(-c[2]);if(Math.abs(-c[2]-lo)>.45)return geoX(t);
+    return {prompt:`About what <b>longitude</b> is <b>${c[0]}</b>?`,visual:llMap(pool,c[0]),...strChoices(`${lo}°W`,[`${lo+2}°W`,`${lo-2}°W`,`${lo+4}°W`,`${lo-4}°W`].filter(x=>parseInt(x)>=114&&parseInt(x)<=124).concat([`${near2(c[1])}°N`,`${lo-6}°W`])),
+      hint:`Longitude lines run <b>up and down</b> (north to south). Their numbers are at the bottom and end in W.`,explain:`${c[0]} sits near the <b>${lo}°W</b> line. Longitude tells how far west (or east) a place is.`}}
+  const f=pick(t===6?CA_REGIONS:CA_GOV);return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:[f[1],...f[2]].some(c=>c.length>30)};
 }
 const CA_FACTS=[
   ['What is the <b>capital</b> of California?','Sacramento',['Los Angeles','San Francisco','San Diego'],'It\'s not the biggest city! It\'s in the Central Valley.','The capital of California is <b>Sacramento</b>.'],
@@ -3688,7 +3734,7 @@ const ISLANDS=[
   {id:'riddle',name:'Riddle Reef',topic:'Logic & word problems',color:'#5ab8c4',lm:'riddle',gen:genRiddle,types:6,group:'world'},
   {id:'words',name:'Word Waterfall',topic:'Vocabulary & spelling',color:'#53bf91',lm:'words',gen:genWords,types:6,group:'world'},
   {id:'reading',name:'Bookworm Bay',topic:'Reading & understanding',color:'#e0b45a',lm:'book',gen:genReading,types:PASSAGES.length*3,round:readingRound,noDiff:true,group:'world'},
-  {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:5,group:'world'},
+  {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:8,group:'world'},
   {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
   {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:8,group:'world'},
   {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length+24,group:'world'},
