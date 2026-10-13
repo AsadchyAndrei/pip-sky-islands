@@ -2805,10 +2805,10 @@ function genRiddle(t){
   if(t===3){const b=R(3,6),p=R(6,Dv(9,12,25)),g=R(3,9),ans=b*p-g;
     return {prompt:`Pip has <b>${b} bags</b> with <b>${p} acorns</b> in each bag. He gives <b>${g}</b> acorns to a squirrel. How many acorns are left?`,...numChoices(ans,[b*p,b*p+g,b+p-g,ans-1]),
       hint:`Two steps! First multiply to find all the acorns, then subtract.`,explain:`${b} × ${p} = ${b*p}. ${b*p} − ${g} = <b>${ans}</b>.`};}
-  if(t===4){if(coin()){const ev=shuffle([...Array(20)].map((_,i)=>(i+6)*2)).slice(0,3),odd=R(5,24)*2+1;
+  if(t===4){if(coin()){const ev=shuffle([...Array(20)].map((_,i)=>(i+6)*2).filter(n=>n%10!==0)).slice(0,3),odd=R(5,24)*2+1;
       return {prompt:`Which number does <b>not belong</b>?`,visual:`<div class="seq">${shuffle([...ev,odd]).map(x=>`<span>${x}</span>`).join('')}</div>`,...numChoices(odd,ev),
         hint:`Look at the ones digits. What do most of them have in common?`,explain:`${ev.join(', ')} are all <b>even</b>. ${odd} is odd. So <b>${odd}</b> doesn't belong.`}}
-    const fives=shuffle([...Array(18)].map((_,i)=>(i+2)*5)).slice(0,3);let odd;do{odd=R(11,99)}while(odd%5===0);
+    /* two multiples of 10 and one odd multiple of 5, with an odd outsider: only the 'multiple of 5' rule picks one number */const fives=shuffle([...shuffle([...Array(9)].map((_,i)=>(i+1)*10)).slice(0,2),pick([15,25,35,45,55,65,75,85,95])]);let odd;do{odd=R(11,99)}while(odd%5===0||odd%2===0);
     return {prompt:`Which number does <b>not belong</b>?`,visual:`<div class="seq">${shuffle([...fives,odd]).map(x=>`<span>${x}</span>`).join('')}</div>`,...numChoices(odd,fives),
       hint:`Look at the ones digits. Do you see a 0 or 5 pattern?`,explain:`${fives.join(', ')} are all <b>multiples of 5</b> (they end in 0 or 5). <b>${odd}</b> is not.`};}
   const tn=R(1,7),d=R(1,2),on=tn+d,ans=tn*10+on;
@@ -2849,7 +2849,7 @@ const ANT=[['hot','cold'],['early','late'],['empty','full'],['ancient','modern']
   ["dark", "bright"]];
 const PREF=[['unhappy','un','happy'],['unkind','un','kind'],['unfair','un','fair'],['dislike','dis','like'],['disagree','dis','agree'],['reread','re','read'],['rebuild','re','build'],['retell','re','tell'],['replay','re','play'],['preheat','pre','heat'],['preview','pre','view'],['misspell','mis','spell'],['misread','mis','read']];
 const PMEAN={un:b=>`not ${b}`,dis:b=>`not ${b}`,re:b=>`${b} again`,pre:b=>`${b} before`,mis:b=>`${b} wrongly`};
-const SUFF=[['care','ful'],['care','less'],['fear','less'],['hope','ful'],['help','ful'],['joy','ful'],['pain','less'],['cloud','less'],['use','ful'],['use','less'],['color','ful'],['thank','ful']];
+const SUFF=[['care','ful'],['care','less'],['fear','less','fear'],['hope','ful'],['help','ful'],['joy','ful'],['pain','less'],['cloud','less','clouds'],['use','ful'],['use','less'],['color','ful','color'],['thank','ful','thanks']];
 const SPELL=[['because',['becuase','becase','beacause']],['friend',['freind','frend','friand']],['believe',['beleive','belive','beleeve']],['different',['diffrent','diferent','differant']],['Wednesday',['Wensday','Wednsday','Wendesday']],
   ['February',['Febuary','Februery','Febrary']],['beautiful',['beutiful','beautifull','butiful']],['tomorrow',['tommorow','tomorow','tommorrow']],['library',['libary','librery','liberry']],['separate',['seperate','separete','seprate']],
   ['probably',['probly','probabley','probaly']],['surprise',['suprise','surprize','serprise']],['caught',['cought','caugt','cawght']],['enough',['enuf','enogh','enouf']],['thought',['thougt','thot','thougth']],
@@ -2895,8 +2895,8 @@ function genWords(t){
   if(t===2){const [w,p,b]=pick(PREF),ans=PMEAN[p](b),others=Object.keys(PMEAN).filter(k=>PMEAN[k](b)!==ans).map(k=>PMEAN[k](b));
     return {prompt:`What does <b>"${w}"</b> mean?`,...strChoices(ans,shuffle([...new Set(others)])),hint:`Find the prefix at the start: <b>${p}-</b>. What does it add to "${b}"?`,
       explain:`The prefix <b>${p}-</b> means "${{un:'not',dis:'not',re:'again',pre:'before',mis:'wrongly'}[p]}". So "${w}" means <b>${ans}</b>.`};}
-  if(t===3){const [b,s]=pick(SUFF),w=b+s,ans=s==='ful'?`full of ${b}`:`without ${b}`;
-    return {prompt:`What does <b>"${w}"</b> mean?`,...strChoices(ans,[s==='ful'?`without ${b}`:`full of ${b}`,`${b} again`,`not enough ${b}`]),hint:`Look at the ending: <b>-${s}</b>.`,
+  if(t===3){const [r,s,nn]=pick(SUFF),b=nn||r,w=r+s,ans=s==='ful'?`full of ${b}`:`without ${b}`;
+    return {prompt:`What does <b>"${w}"</b> mean?`,...strChoices(ans,[s==='ful'?`without ${b}`:`full of ${b}`,`a little ${b}`,`${w==='thankful'?'saying sorry':'too much '+b}`]),hint:`Look at the ending: <b>-${s}</b>.`,
       explain:`The suffix <b>-${s}</b> means "${s==='ful'?'full of':'without'}". So "${w}" means <b>${ans}</b>.`};}
   if(t===4){const [w,bad]=pick(SPELL);return {prompt:`Which word is spelled <b>correctly</b>?`,...strChoices(w,bad),hint:`Sound it out slowly, and picture the word in a book.`,explain:`The correct spelling is <b>${w}</b>.`};}
   const [s,a,w]=pick(HOMO);
