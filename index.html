@@ -329,6 +329,28 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .dkcheck{list-style:none;margin:4px 0 0;padding:0;width:100%;text-align:left;display:grid;gap:4px;font-weight:700;color:var(--ink-soft);font-size:15px}.dkcheck li{display:flex;align-items:center;gap:8px}.dkcheck li svg{width:20px;height:20px;flex:none}.dkcheck li.ok{color:#2b8a62}.dkcheck .dot{width:14px;height:14px;border-radius:50%;border:3px solid var(--line);flex:none;margin:0 3px}
 .dkdone{background:#fff7e3;border-radius:16px;padding:12px 14px;text-align:left;width:100%}.dkdone p{font-weight:600;color:var(--ink);margin:6px 0}.dkdone small{color:var(--ink-soft);font-weight:700}
 .dklist{list-style:none;padding:0;margin:8px 0;display:grid;gap:10px}.dklist li{background:#fff7e3;border-radius:14px;padding:10px 12px}.dklist li small{display:block;color:var(--ink-soft);font-weight:700}.dklist li p{margin:6px 0 0;font-weight:500;line-height:1.45}
+.tile.txt{align-items:center;min-height:66px}.tile .ttx{font-family:var(--display);font-size:26px;color:var(--ink);line-height:1.1}
+.dnote{font-size:14px;color:var(--ink-soft);font-weight:700;margin:0 0 8px;text-align:center}
+.sbins{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));width:min(560px,80vw)}.sbins.sb3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.sbin{border:3px dashed #b9c9dc;border-radius:18px;background:rgba(255,255,255,.75);min-height:130px;padding:8px;display:flex;flex-direction:column;gap:6px;transition:border-color .15s,background .15s}
+.sbl{font-family:var(--display);font-size:20px;text-align:center;color:var(--ink)}
+.sbin-in{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-content:flex-start;flex:1}
+.sbin.armed,.stray.armed{border-color:var(--ocean)}.sbin.over,.stray.over{border-color:var(--ocean);border-style:solid;background:var(--pale-sky)}
+.stray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:66px;padding:10px;border-radius:18px;border:3px dashed transparent;background:rgba(31,53,87,.04)}
+.schip,.rcard{border:3px solid var(--line);background:#fff;border-radius:14px;padding:8px 14px;font-weight:800;font-size:18px;color:var(--ink);box-shadow:0 4px 0 var(--line);cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+.schip.pic{padding:4px}.schip.pic svg{width:92px;height:auto;display:block}
+.schip.picked,.rcard.picked{border-color:var(--ocean);box-shadow:0 4px 0 var(--ocean);transform:translateY(-3px)}
+.schip.dragging,.rcard.dragging{opacity:.3}
+.dghost{box-shadow:0 14px 28px rgba(31,53,87,.28)!important;transform:rotate(-3deg) scale(1.06);opacity:.95}
+.schip.bad{border-color:var(--coral);background:var(--pale-coral);box-shadow:0 4px 0 var(--coral)}
+.schip.ok,.rcard.ok{border-color:#239068;background:var(--pale-leaf);box-shadow:0 4px 0 #239068}
+.lblwrap{position:relative;width:min(380px,100%);margin:0 auto}.lblwrap>svg{width:100%;height:auto;display:block;border-radius:16px;background:#eaf6ff}
+.sbin.spot{position:absolute;width:32%;min-height:40px;padding:3px;border-radius:12px;background:rgba(255,255,255,.88);justify-content:center}
+.sbin.spot .sbin-in{flex:none}.sbin.spot .schip{padding:4px 8px;font-size:14px;box-shadow:none}
+.rankend{display:flex;justify-content:space-between;width:100%;max-width:520px;margin-left:auto!important;margin-right:auto!important;font-weight:800;color:var(--ink-soft);font-size:14px;margin:0 4px 6px}.rankend span:first-child::before{content:"← "}.rankend span:last-child::after{content:" →"}
+.rank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.rcard{min-width:88px;font-family:var(--display);font-weight:400;font-size:26px;padding:10px 16px}
+.schip{flex-shrink:0}.sbin .schip.pic svg{width:64px}.stray{min-height:44px;align-items:center}.stray:not(:has(.schip))::before{content:"All cards placed. Press Check!";color:var(--ink-soft);font-weight:700;font-size:14px}
+@media (max-width:760px){.sbin .schip.pic{padding:2px}.sbin .schip.pic svg{width:40px}.rcard{min-width:64px;font-size:22px;padding:8px 10px}.rank{gap:6px}.sbins.sb3{gap:6px}.sbin{min-height:110px;padding:6px}.schip.pic svg{width:74px}.sbl{font-size:17px}.schip{font-size:16px;padding:7px 10px}}
 .seq.cmpseq{font-size:clamp(22px,5vw,34px);align-items:center}
 .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .choices.three{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -2422,6 +2444,7 @@ function piesRow(fill,den,o={}){const per=den,whole=Math.ceil(Math.max(fill,o.to
   return s}
 function barsRow(n,a,d){let s='';const W=Math.min(46,260/d);for(let g=0;g<n;g++){s+=`<svg viewBox="0 0 ${d*W+4} 34" style="width:${d*W+4}px;max-width:100%">`;for(let i=0;i<d;i++)s+=`<rect x="${2+i*W}" y="4" width="${W-2}" height="26" rx="3" fill="${i<a?['#ffd56b','#8fd3f7','#9be0bd','#ffb3c7','#c7b6ff'][g%5]:'#eef2f7'}" stroke="#1f3557" stroke-width="1.5" class="fadein" style="animation-delay:${g*.4}s"/>`;s+=`</svg>`}return `<div style="display:flex;flex-direction:column;gap:4px;align-items:center">${s}</div>`}
 function genFrac(t){
+  if(t>=12)return dragFrac(t);
   if(t>=10)return genFracX(t);
   if(t<4)return genFracBase(t);
   if(t===4){const den=pick(Dv([4,5,6],[5,6,8,10],[8,10,12])),a=R(3,den),b=R(1,a-1);
@@ -2515,6 +2538,7 @@ function coinsAnim(c){return `<div class="coins">${greedy(c).map((v,i)=>`<span c
 /* ================= question generators: math ================= */
 const PLACE=['ones','tens','hundreds','thousands','ten thousands','hundred thousands'];
 function genPlace(t){
+  if(t===7)return dragPlace();
   if(t>=4)return genPlaceX(t);
   if(t===0){
     const lo=Dv(1000,10000,100000),hi=Dv(9999,99999,999999);
@@ -2625,6 +2649,7 @@ function protractorSVG(id,d){
 }
 const angleType=d=>d===90?'Right':d===180?'Straight':d<90?'Acute':'Obtuse';
 function genAngle(t){
+  if(t===6)return dragAngle();
   if(t>=5)return genAngleX(t);
   if(t===0){const d=pick([R(2,8)*10,90,R(10,17)*10,180,R(3,8)*10,R(11,16)*10]),ans=angleType(d);
     return {prompt:`What kind of angle is this?`,visual:angleSVG(d),choices:shuffle(['Acute','Right','Obtuse','Straight']),answer:ans,
@@ -2663,6 +2688,7 @@ const SHAPES={
 const SHAPE_COLS=['#ffc23d','#8fd16a','#7fd0f5','#ff9fb7','#ffb07a','#c7b6ff'];
 function shapeSVG(k,col,extra=''){return `<svg viewBox="0 0 100 100" role="img" aria-label="shape"><polygon points="${SHAPES[k].pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="${col||pick(SHAPE_COLS)}" stroke="#1f3557" stroke-width="3" stroke-linejoin="round"/>${extra}</svg>`}
 function genShape(t){
+  if(t===7)return dragShape();
   if(t>=5)return genShapeX(t);
   if(t===0){const v=coin()?'right':'par';let keys;
     do{keys=shuffle(Object.keys(SHAPES)).slice(0,6)}while(!keys.some(k=>SHAPES[k][v])||keys.every(k=>SHAPES[k][v]));
@@ -2728,6 +2754,7 @@ function gridVis(n){let s='';for(let i=0;i<100;i++){const x=(i%10)*14,y=Math.flo
   return `<svg viewBox="0 0 141 141" style="width:250px" role="img" aria-label="Hundred grid">${s}</svg>`}
 const dec=n=>(n/100).toFixed(2);
 function genDec(t){
+  if(t===7)return dragDec();
   if(t>=6)return genDecX(t);
   if(t===0){if(DIFF===1||coin()){const n=R(1,9);return {prompt:`Write ${frac(n,10)} as a decimal.`,...strChoices(`0.${n}`,[`0.0${n}`,`${n}.0`,`0.${n}${n}`,`${n}.10`]),hint:`Tenths go in the first place right after the decimal point.`,explain:`${n} tenths = <b>0.${n}</b>.`}}
     let n;do{n=R(11,99)}while(n%10===0);const rev=+String(n).split('').reverse().join('');
@@ -2780,6 +2807,7 @@ const SHAPE_ICON={circle:['#ff6b57','<circle cx="20" cy="20" r="15"/>'],triangle
   star:['#ffc23d','<path d="M20 3l5 10.5 11.5 1.6-8.3 8 2 11.4L20 29l-10.2 5.5 2-11.4-8.3-8 11.5-1.6z"/>'],heart:['#e2558f','<path d="M20 35s-15-9-15-19a7.5 7.5 0 0 1 15-3 7.5 7.5 0 0 1 15 3c0 10-15 19-15 19z"/>']};
 const shapeIcon=(n,s=40)=>`<svg viewBox="0 0 40 40" style="width:${s}px;height:${s}px" fill="${SHAPE_ICON[n][0]}" stroke="#1f3557" stroke-width="2" aria-label="${n}">${SHAPE_ICON[n][1]}</svg>`;
 function genPattern(t){
+  if(t>=8)return dragPattern(t);
   if(t>=6)return genPatternX(t);
   if(t===0){if(DIFF===1||coin()){const a=R(1,30),s=R(Dv(2,3,7),Dv(5,12,25)),seq=[0,1,2,3].map(k=>a+k*s),ans=a+4*s;
       return {prompt:`What number comes next?`,visual:`<div class="seq">${seq.map(x=>`<span>${x}</span>`).join('')}<span class="q">?</span></div>`,...numChoices(ans,[ans+1,ans-1,ans+s,a+3*s+s-1]),
@@ -3323,6 +3351,7 @@ function quakeMap(){const fault='M70 20 C95 70 120 110 150 150 S210 215 250 250'
   return `<svg viewBox="0 0 300 280" style="width:300px;max-width:100%" role="img" aria-label="Map of earthquakes"><rect width="300" height="280" rx="14" fill="#8fd3f7"/><path d="M40 0 H300 V280 H230 C200 250 150 210 110 170 C80 140 50 80 40 0Z" fill="#f6e1b8" stroke="#8c5a2c" stroke-width="2"/><path d="${fault}" fill="none" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="8 5"/>${dots}<text x="200" y="60" ${SF} font-size="14" fill="#1f3557">LAND</text><text x="16" y="250" ${SF} font-size="14" fill="#1f3557">OCEAN</text><g transform="translate(176 100)"><circle r="6" fill="#ff6b57" stroke="#1f3557"/><text x="10" y="5" ${SF} font-size="12" fill="#1f3557">= earthquake</text><path d="M-6 22 h18" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="6 4"/><text x="16" y="27" ${SF} font-size="12" fill="#1f3557">= fault</text></g></svg>`}
 function layersSVG(lay){const H=34;return `<svg viewBox="0 0 300 ${lay.length*H+20}" style="width:360px;max-width:100%" role="img" aria-label="Rock layers">${lay.map((l,i)=>`<rect x="20" y="${10+i*H}" width="260" height="${H}" fill="${l[1]}" stroke="#1f3557" stroke-width="1.5"/><text x="34" y="${10+i*H+22}" ${SF} font-size="15" fill="#1f3557">${l[0]}</text>${l[2]?`<text x="270" y="${10+i*H+22}" text-anchor="end" font-size="13" ${SF} fill="#1f3557">${l[2]}</text>`:''}`).join('')}</svg>`}
 function sciX(k){
+  if(k>=4)return dragSci(k);
   if(k===0){const e=pick([['ramp',['10 cm','20 cm','30 cm','40 cm'],'Ramp height','Distance rolled (cm)','the car rolled','the ramp height','higher the ramp, the farther the car rolls','#ff9f43'],
       ['ball',['1 m','2 m','3 m','4 m'],'Drop height','Bounce height (cm)','the ball bounced','the drop height','higher you drop the ball, the higher it bounces','#2f9fe0'],
       ['wind',['Slow','Medium','Fast','Very fast'],'Fan speed','Turns in 10 seconds','the windmill turned','the fan speed','faster the wind, the faster the windmill turns','#38b98a']]);
@@ -3351,7 +3380,7 @@ function sciX(k){
     ...strChoices(order[1],[order[0],order[2],order[3]]),long:true,hint:`Follow the arrows from the sun.`,explain:`${order.map((o,i)=>`${i+1}. ${o}`).join('. ')}. So second: <b>light bounces off the apple</b>.`};
   return {kind:'order',items:order,prompt:`Put the steps in order: how do we <b>see</b> things?`,hint:`Start with where light comes from. End with your brain.`,explain:`${order.map((o,i)=>`${i+1}. ${o}`).join('. ')}.`};
 }
-function genScience(t){if(t>=SCIENCE.length)return sciX((t-SCIENCE.length)%4);const f=SCIENCE[t%SCIENCE.length];return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4]}}
+function genScience(t){if(t>=SCIENCE.length)return sciX((t-SCIENCE.length)%7);const f=SCIENCE[t%SCIENCE.length];return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4]}}
 
 /* ================= reading ================= */
 const PASSAGES=[
@@ -3658,6 +3687,7 @@ const CONF=[
 const REL=[['I remember the day ___ we moved here.','when'],['This is the park ___ we play soccer.','where'],['Tell me the reason ___ you are late.','why'],['Summer is the season ___ we swim the most.','when'],['That is the store ___ Mom buys bread.','where'],['Nobody knows the reason ___ the cat hides.','why'],['Morning is the time ___ birds sing loudest.','when'],['This is the town ___ my grandpa grew up.','where']];
 const lowerFirst=s=>/^I\b/.test(s)?s:s[0].toLowerCase()+s.slice(1),upFirst=s=>s[0].toUpperCase()+s.slice(1);
 function gramX(k){
+  if(k>=6)return dragGram(k);
   if(k===0){const w=pick(GX.who),p=pick(GX.place),d=pick(GX.day),v=pick(GX.verb),L=pick(GX.list);const ok=`On ${d}, ${w} ${v} ${p} with ${L[0]}, ${L[1]}, and ${L[2]}.`;
     const errs=shuffle([[`On ${lowerFirst(d)}, ${w} ${v} ${p} with ${L[0]}, ${L[1]}, and ${L[2]}.`,`Days of the week start with a capital letter: <b>${d}</b>.`],
       [`On ${d}, ${w} ${v} ${lowerFirst(p)} with ${L[0]}, ${L[1]}, and ${L[2]}.`,`Names of places start with a capital letter: <b>${p}</b>.`],
@@ -3683,7 +3713,7 @@ function gramX(k){
   const [s,a]=pick(REL);return {prompt:`Which word fits?<br><i>"${s.replace('___','<u>&nbsp;?&nbsp;</u>')}"</i>`,...strChoices(a,['where','when','why'].filter(x=>x!==a)),
     hint:`<b>when</b> = a time, <b>where</b> = a place, <b>why</b> = a reason.`,explain:`The sentence talks about ${{when:'a time',where:'a place',why:'a reason'}[a]}, so use <b>${a}</b>.`};
 }
-function genGrammar(t){if(t>=GRAMF.length)return gramX((t-GRAMF.length)%6);const x=GRAMF[t%GRAMF.length],f=x.f;return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:x.long,render:c=>c}}
+function genGrammar(t){if(t>=GRAMF.length)return gramX((t-GRAMF.length)%8);const x=GRAMF[t%GRAMF.length],f=x.f;return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4],long:x.long,render:c=>c}}
 /* ---------- Story Studio: 4th grade writing (sentences, paragraphs, transitions, opinions) ---------- */
 const WR={
   build:['The brave kitten climbed the tall tree.','My little brother loves green apples.','We planted bright flowers in the garden.','After lunch, the class read a funny story.','Pip flew his red balloon over the ocean.','Our team won the soccer game on Saturday.','The hungry bear found a jar of honey.','Grandma baked warm cookies for everyone.'],
@@ -3755,18 +3785,18 @@ const ISLANDS=[
   {id:'review',name:'Fix-It Falls',topic:'Fix your old mistakes',color:'#5ec3d6',lm:'review',special:'review',group:'ch'},
   {id:'flash',name:'Thunder Tower',topic:'60-second fact storm',color:'#7c8fb8',lm:'storm',flash:true,group:'ch'},
   {id:'boss',name:'Boss Island',topic:'Defeat the Grumble Cloud',color:'#6b6f9e',lm:'boss',special:'boss',group:'ch'},
-  {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:7,group:'math'},
+  {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:8,group:'math'},
   {id:'addsub',name:'Carry Canyon',topic:'Adding & subtracting',color:'#4fb87a',lm:'canyon',gen:genAddSub,types:7,group:'math'},
   {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:7,group:'math'},
   {id:'div',name:'Sharing Shore',topic:'Division & leftovers',color:'#3fb8b5',lm:'shore',gen:genDiv,types:5,group:'math'},
-  {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:12,group:'math'},
-  {id:'dec',name:'Decimal Dock',topic:'Tenths & hundredths',color:'#4fbfd0',lm:'dock',gen:genDec,types:7,group:'math'},
+  {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:15,group:'math'},
+  {id:'dec',name:'Decimal Dock',topic:'Tenths & hundredths',color:'#4fbfd0',lm:'dock',gen:genDec,types:8,group:'math'},
   {id:'area',name:'Fence Farm',topic:'Area & perimeter',color:'#8fcf4f',lm:'farm',gen:genArea,types:4,group:'math'},
-  {id:'angle',name:'Angle Arch',topic:'Angles & protractors',color:'#6cc3a0',lm:'angle',gen:genAngle,types:6,group:'math'},
-  {id:'shape',name:'Shape Shipyard',topic:'Shapes, lines & symmetry',color:'#4bb3c9',lm:'ship',gen:genShape,types:7,group:'math'},
+  {id:'angle',name:'Angle Arch',topic:'Angles & protractors',color:'#6cc3a0',lm:'angle',gen:genAngle,types:7,group:'math'},
+  {id:'shape',name:'Shape Shipyard',topic:'Shapes, lines & symmetry',color:'#4bb3c9',lm:'ship',gen:genShape,types:8,group:'math'},
   {id:'money',name:'Money Market',topic:'Coins, change & prices',color:'#9bd15a',lm:'money',gen:genMoney,types:5,group:'math'},
   {id:'measure',name:'Measure Mine',topic:'Units & conversions',color:'#a8b45c',lm:'ruler',gen:genMeasure,types:7,group:'math'},
-  {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:8,group:'math'},
+  {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:10,group:'math'},
   {id:'graph',name:'Graph Garden',topic:'Bar graphs & line plots',color:'#7ccf6b',lm:'graph',gen:genGraph,types:6,group:'math'},
   {id:'time',name:'Clock Cove',topic:'Clocks, calendars & elapsed time',color:'#5ec3d6',lm:'clock',gen:genTimeTower,types:12,group:'math'},
   {id:'week',name:'Week Woods',topic:'Days & calendar',color:'#4caf6e',lm:'week',gen:genWeek,types:5,group:'time',retired:true},
@@ -3777,8 +3807,8 @@ const ISLANDS=[
   {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:8,group:'world'},
   {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
   {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:8,group:'world'},
-  {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length+24,group:'world'},
-  {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length+24,group:'world'}
+  {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length+32,group:'world'},
+  {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length+42,group:'world'}
 ];
 const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review'&&!i.retired);
 const MAX=STAR_ISLANDS.length*3,BOSS_NEED=20;
@@ -4290,7 +4320,7 @@ function track(q,first,correct){
   if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss'){const t0=tierOf(id);rollAdd(id,correct);const t1=tierOf(id);if(t1>t0&&byId(id)){G.tierBest=Object.assign({},G.tierBest||{});if(t1>(G.tierBest[id]||0)){const before=starFor(id);G.tierBest[id]=t1;if(starFor(id)>before)toast(`${starsMini(starFor(id))} ${byId(id).name}!`,`${Math.round(rollAcc(id).acc*100)}% right lately. A new star!`,'#e09a14');grantMastery()}}}const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
   const t=today();t.q++;if(first&&correct){t.c++;thisWeek().c++}
   if(!(first&&correct)){
-    G.wrongLog.unshift({p:htmlToSpeech(q.prompt).slice(0,140),a:String(q.answer!=null?q.answer:q.kind==='order'?q.items.join(', '):q.kind==='multi'?q.correct.map(k=>SHAPES[k].name).join(', '):q.kind==='money'?fmtM(q.target):q.kind==='angle'?q.target+'°':q.target&&q.target.h?tf(q.target.h,q.target.m):''),i:id,d:dayKey()});G.wrongLog=G.wrongLog.slice(0,30);
+    G.wrongLog.unshift({p:htmlToSpeech(q.prompt).slice(0,140),a:String(q.answer!=null?q.answer:q.kind==='order'?q.items.join(', '):q.kind==='multi'?q.correct.map(k=>{const it=q.items.find(i=>i.id===k);return it&&it.name||(SHAPES[k]||{}).name||k}).join(', '):q.kind==='sort'||q.kind==='rank'?dragAnswer(q):q.kind==='money'?fmtM(q.target):q.kind==='angle'?q.target+'°':q.target&&q.target.h?tf(q.target.h,q.target.m):''),i:id,d:dayKey()});G.wrongLog=G.wrongLog.slice(0,30);
     if(S&&S.mode!=='review'&&id!=='ev'&&!G.review.some(r=>r.s===q.meta.s)&&G.review.filter(r=>r.i===id&&r.t===q.meta.t).length<3){G.review.push({...q.meta,box:0,due:addDays(1)});if(G.review.length>200)G.review.shift()}
   }
   checkWeek();
@@ -4801,6 +4831,7 @@ function drawChoices(q,handler){
     b.style.setProperty('--c','var(--ans)');b.onclick=()=>handler(b);box.appendChild(b)});
 }
 function showQ(){
+  document.querySelectorAll('.dghost').forEach(g=>g.remove());
   const q=S.qs[S.i];S.tries=0;S.locked=false;
   const c=$('#card');c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
@@ -4816,6 +4847,8 @@ function showQ(){
   if(q.kind==='order')return setupOrder(q);
   if(q.kind==='angle')return setupAngle(q);
   if(q.kind==='multi')return setupMulti(q);
+  if(q.kind==='sort')return setupSort(q);
+  if(q.kind==='rank')return setupRank(q);
   if(q.kind==='money')return setupMoney(q);
   if(q.kind==='numline')return setupNumline(q);
   if(q.kind==='shade')return setupShade(q);
@@ -4926,9 +4959,133 @@ function setupAngle(q){
   box.appendChild(checkBtn('Check my angle',b=>judge(S.av===q.target,b)));
 }
 function setAV(a){const n=Math.max(0,Math.min(180,a));if(n!==S.av)tone([300+n*4],.04,'sine');S.av=n;$('#prray').style.transform=`rotate(${-n}deg)`}
+/* ===== drag and drop: sort into groups ('sort'), label a picture ('sort' + q.pic), put in order ('rank'). Tap-tap works too (tap a card, then tap where it goes). ===== */
+function dragGhost(el,e){const r=el.getBoundingClientRect(),g=el.cloneNode(true);g.classList.add('dghost');g.style.cssText=`position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;margin:0;z-index:999;pointer-events:none`;document.body.appendChild(g);
+  return {g,dx:e.clientX-r.left,dy:e.clientY-r.top,move(ev){g.style.left=(ev.clientX-this.dx)+'px';g.style.top=(ev.clientY-this.dy)+'px'},end(){g.remove()}}}
+function dragify(el,{onTap,onMove,onDrop}){let st=null;
+  const mv=e=>{if(!st||e.pointerId!==st.id)return;if(!st.drag&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>7){st.drag=dragGhost(el,e);el.classList.add('dragging');tone([520],.03)}if(st.drag){e.preventDefault();st.drag.move(e);onMove&&onMove(e)}};
+  const up=e=>{if(!st||e.pointerId!==st.id)return;const s=st;st=null;removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);
+    if(s.drag){el._tapped=Date.now();s.drag.end();el.classList.remove('dragging');if(e.type==='pointerup'){const t=document.elementFromPoint(e.clientX,e.clientY);onDrop&&onDrop(t,e)}else onDrop&&onDrop(null,e)}else if(e.type==='pointerup'){el._tapped=Date.now();onTap&&onTap()}};
+  el.addEventListener('pointerdown',e=>{if(S.locked||(e.button&&e.button!==0)||st)return;st={x:e.clientX,y:e.clientY,drag:null,id:e.pointerId};addEventListener('pointermove',mv,{passive:false});addEventListener('pointerup',up);addEventListener('pointercancel',up)});
+  el.addEventListener('click',e=>{if(Date.now()-(el._tapped||0)<500)return;if(!S.locked)onTap&&onTap()});/* keyboard Enter/Space */
+  el.style.touchAction='none'}
+function setupSort(q){
+  S.pick=null;const v=$('#visual');v.hidden=false;
+  const binHTML=b=>`<div class="sbin${q.pic?' spot':''}" data-bin="${b.id}" role="button" tabindex="0" aria-label="${esc(b.aria||b.label||'Drop here')}" ${q.pic?`style="left:${b.x}%;top:${b.y}%"`:''}>${b.label?`<span class="sbl">${b.label}</span>`:''}<div class="sbin-in"></div></div>`;
+  v.innerHTML=q.pic?`<div class="lblwrap">${q.pic}${q.bins.map(binHTML).join('')}</div>`:`<div class="sbins sb${q.bins.length}">${q.bins.map(binHTML).join('')}</div>`;
+  const box=$('#choices');box.className='choices one';box.innerHTML=`<p class="dnote">Drag each card to where it belongs (or tap a card, then tap the place).</p><div class="stray" data-bin="" role="button" tabindex="0" aria-label="Cards">${shuffle(q.items.slice()).map(it=>`<button type="button" class="schip${it.pic?' pic':''}" data-id="${it.id}" aria-label="${esc(it.name||it.id)}">${it.html}</button>`).join('')}</div>`;
+  const row=document.createElement('div');row.className='actrow';box.appendChild(row);
+  const place=(chip,zone)=>{if(!chip||!zone||S.locked)return;const inner=zone.dataset.bin?zone.querySelector('.sbin-in'):zone;
+    if(q.pic&&zone.dataset.bin){const old=inner.querySelector('.schip');if(old&&old!==chip)$('#choices .stray').appendChild(old)}
+    inner.appendChild(chip);chip.classList.remove('picked','bad');S.pick=null;document.querySelectorAll('.sbin,.stray').forEach(z=>z.classList.remove('armed'));tone([440+80*document.querySelectorAll('.sbin .schip').length],.05);
+    $('#check').disabled=!!document.querySelector('#choices .stray .schip')};
+  const zoneAt=t=>t&&t.closest&&t.closest('[data-bin]');
+  document.querySelectorAll('#visual .schip,#choices .schip').forEach(chip=>dragify(chip,{
+    onTap(){if(S.pick===chip){chip.classList.remove('picked');S.pick=null;document.querySelectorAll('.sbin,.stray').forEach(z=>z.classList.remove('armed'));return}
+      document.querySelectorAll('.schip.picked').forEach(c=>c.classList.remove('picked'));S.pick=chip;chip.classList.add('picked');document.querySelectorAll('.sbin,.stray').forEach(z=>z.classList.add('armed'));tone([660],.04)},
+    onMove(e){const z=zoneAt(document.elementFromPoint(e.clientX,e.clientY));document.querySelectorAll('.sbin,.stray').forEach(x=>x.classList.toggle('over',x===z))},
+    onDrop(t){document.querySelectorAll('.over').forEach(x=>x.classList.remove('over'));const z=zoneAt(t);if(z)place(chip,z)}}));
+  document.querySelectorAll('.sbin,.stray').forEach(z=>{const go=e=>{if(S.pick&&!e.target.closest('.schip'))place(S.pick,z)};z.addEventListener('click',go);z.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&S.pick&&e.target===z){e.preventDefault();place(S.pick,z)}})});
+  row.appendChild(checkBtn('Check',b=>{const wrong=[...document.querySelectorAll('.sbin .schip')].filter(c=>{const it=q.items.find(i=>i.id===c.dataset.id);return it.bin!==c.closest('.sbin').dataset.bin});
+    if(wrong.length){wrong.forEach(c=>c.classList.add('bad'));setTimeout(()=>{if(!S.locked)wrong.forEach(c=>{c.classList.remove('bad');$('#choices .stray').appendChild(c)});if($('#check'))$('#check').disabled=!!document.querySelector('#choices .stray .schip')},900)}
+    judge(!wrong.length,b)}));$('#check').disabled=true;
+}
+function revealSort(q){q.items.forEach(it=>{const c=document.querySelector(`.schip[data-id="${it.id}"]`),z=document.querySelector(`.sbin[data-bin="${it.bin}"] .sbin-in`);if(c&&z){z.appendChild(c);c.classList.remove('bad','picked');c.classList.add('ok')}})}
+function setupRank(q){
+  S.pick=null;const box=$('#choices');box.className='choices one';
+  box.innerHTML=`<p class="dnote">Drag the cards into order (or tap two cards to swap them).</p><div class="rankend"><span>${q.lo||'least'}</span><span>${q.hi||'greatest'}</span></div><div class="rank">${shuffleUntil(q.items.map(i=>i.id),q.order).map(id=>{const it=q.items.find(i=>i.id===id);return `<button type="button" class="rcard" data-id="${id}" aria-label="${esc(it.name||id)}">${it.html}</button>`}).join('')}</div>`;
+  const list=box.querySelector('.rank');
+  const slotAt=(x,y)=>{for(const c of list.querySelectorAll('.rcard:not(.dragging)')){const r=c.getBoundingClientRect();if(y<r.top||(y<=r.bottom&&x<r.left+r.width/2))return c}return null};
+  list.querySelectorAll('.rcard').forEach(card=>dragify(card,{
+    onTap(){if(!S.pick){S.pick=card;card.classList.add('picked');tone([660],.04);return}if(S.pick===card){card.classList.remove('picked');S.pick=null;return}
+      const a=S.pick,b=card,n=a.nextSibling===b?a:a.nextSibling;list.insertBefore(a,b);list.insertBefore(b,n);a.classList.remove('picked');S.pick=null;tone([520,660],.04)},
+    onMove(e){const t=slotAt(e.clientX,e.clientY);if(t!==card.nextSibling&&t!==card)list.insertBefore(card,t)},
+    onDrop(){tone([600],.04)}}));
+  const row=document.createElement('div');row.className='actrow';box.appendChild(row);
+  row.appendChild(checkBtn('Check',b=>{const now=[...list.querySelectorAll('.rcard')].map(c=>c.dataset.id);judge(now.join('|')===q.order.join('|'),b)}));
+}
+function shuffleUntil(a,bad){let s,g=0;do{s=shuffle(a.slice())}while(s.join('|')===bad.join('|')&&g++<20);return s}
+function revealRank(q){const list=$('#choices .rank');if(!list)return;q.order.forEach(id=>{const c=list.querySelector(`[data-id="${id}"]`);list.appendChild(c);c.classList.add('ok')})}
+const dragAnswer=q=>q.kind==='sort'?q.bins.map(b=>`${(b.label||b.aria||'').replace(/<[^>]+>/g,'')}: ${q.items.filter(i=>i.bin===b.id).map(i=>i.name||i.id).join(', ')}`).join('; '):q.kind==='rank'?q.order.map(id=>{const it=q.items.find(i=>i.id===id);return it.name||id}).join(', '):'';
+/* ---- question types that use: choose ALL correct ('multi'), sort into groups / label a picture ('sort'), put in order ('rank') ---- */
+const txtTile=(id,html,name)=>({id:String(id),html:`<span class="ttx">${html}</span>`,name:name||String(id),txt:true});
+const FR_NICE=[[1,10],[1,8],[1,6],[1,5],[1,4],[1,3],[3,8],[2,5],[1,2],[3,5],[5,8],[2,3],[7,10],[3,4],[4,5],[5,6],[7,8],[9,10]];
+function dragPattern(t){
+  if(t===8){const n=pick([12,16,18,20,24,30,36]);let nums,g=0;do{nums=shuffle([2,3,4,5,6,7,8,9,10,11,12].filter(x=>x<n)).slice(0,6)}while((nums.filter(x=>n%x===0).length<2||nums.filter(x=>n%x).length<2)&&g++<50);
+    const correct=nums.filter(x=>n%x===0).map(String);
+    return {kind:'multi',items:nums.sort((a,b)=>a-b).map(x=>txtTile(x,x)),correct,prompt:`Tap <b>every</b> number that is a <b>factor of ${n}</b>. Then press Check.`,
+      hint:`A factor divides ${n} with nothing left over. Try ${n} ÷ each number.`,explain:`Factors of ${n} here: <b>${correct.join(', ')}</b>. ${correct.map(x=>`${n} ÷ ${x} = ${n/x}`).join('. ')}.`}}
+  const ps=shuffle(PRIMES.slice(0,12)).slice(0,3),cs=shuffle(COMPS.slice()).slice(0,3);
+  return {kind:'sort',bins:[{id:'p',label:'Prime'},{id:'c',label:'Composite'}],items:[...ps.map(x=>({id:String(x),html:`<b>${x}</b>`,bin:'p',name:String(x)})),...cs.map(x=>({id:String(x),html:`<b>${x}</b>`,bin:'c',name:String(x)}))],
+    prompt:`Sort the numbers: <b>prime</b> or <b>composite</b>?`,hint:`Prime: only 1 and itself are factors. Composite: it has more factors. Try dividing by 2, 3 and 5.`,
+    explain:`Prime: <b>${ps.slice().sort((a,b)=>a-b).join(', ')}</b>. Composite: <b>${cs.slice().sort((a,b)=>a-b).map(c=>{let f=2;while(c%f)f++;return `${c} (${f} × ${c/f})`}).join(', ')}</b>.`};
+}
+function dragFrac(t){
+  if(t===12){const k=R(0,2);
+    const sets=[['1/2',[[2,4],[3,6],[4,8],[5,10],[6,12]],[[2,3],[3,4],[1,3],[3,8],[5,8],[4,6],[2,5],[6,10]],'equal to '+frac(1,2),'Equal to 1/2 means the top is exactly half of the bottom.'],
+      ['1',[[3,3],[4,4],[6,6],[8,8],[5,5]],[[3,4],[5,6],[7,8],[4,3],[2,5],[6,5]],'equal to <b>1 whole</b>','A fraction equals 1 when the top and bottom are the same.'],
+      ['>1',[[5,4],[7,6],[4,3],[9,8],[3,2],[6,5]],[[3,4],[5,6],[2,3],[7,8],[4,4],[1,2]],'<b>greater than 1</b>','A fraction is more than 1 when the top is bigger than the bottom.']][k];
+    const yes=shuffle(sets[1].slice()).slice(0,R(2,3)),no=shuffle(sets[2].slice()).slice(0,6-yes.length),all=shuffle([...yes,...no]);
+    return {kind:'multi',items:all.map(([a,b])=>txtTile(`${a}/${b}`,frac(a,b))),correct:yes.map(([a,b])=>`${a}/${b}`),prompt:`Tap <b>every</b> fraction ${sets[3]}. Then press Check.`,
+      hint:sets[4],explain:`${sets[4]} The right ones: <b>${yes.map(([a,b])=>`${a}/${b}`).join(', ')}</b>.`}}
+  if(t===13){let fs,g=0;do{fs=shuffle(FR_NICE.filter(f=>f[0]*2!==f[1]).slice()).slice(0,6)}while((fs.filter(f=>f[0]/f[1]<.5).length<2||fs.filter(f=>f[0]/f[1]>.5).length<2)&&g++<50);
+    return {kind:'sort',bins:[{id:'lo',label:`Less than ${frac(1,2)}`,aria:'Less than one half'},{id:'hi',label:`More than ${frac(1,2)}`,aria:'More than one half'}],items:fs.map(([a,b])=>({id:`${a}/${b}`,html:frac(a,b),bin:a/b<.5?'lo':'hi',name:`${a}/${b}`})),
+      prompt:`Sort the fractions: less than ${frac(1,2)} or more than ${frac(1,2)}?`,hint:`Half of the bottom number is the middle. Is the top number less or more than that?`,
+      explain:fs.map(([a,b])=>`${frac(a,b)}: half of ${b} is ${b/2}, and ${a} is ${a<b/2?'less':'more'}`).join('. ')+'.'}}
+  let fs,g=0;do{fs=shuffle(FR_NICE.slice()).slice(0,4).sort((x,y)=>x[0]/x[1]-y[0]/y[1])}while(fs.some((f,i)=>i&&f[0]/f[1]-fs[i-1][0]/fs[i-1][1]<.06)&&g++<80);
+  return {kind:'rank',items:fs.map(([a,b])=>({id:`${a}/${b}`,html:frac(a,b),name:`${a}/${b}`})),order:fs.map(([a,b])=>`${a}/${b}`),lo:'least',hi:'greatest',
+    prompt:`Put the fractions in order from <b>least</b> to <b>greatest</b>.`,hint:`Compare each one to ${frac(1,2)}. Fractions with the same top: a bigger bottom means smaller pieces.`,
+    explain:`${fs.map(([a,b])=>frac(a,b)).join(' &lt; ')}. In decimals: ${fs.map(([a,b])=>(a/b).toFixed(2)).join(' &lt; ')}.`};
+}
+function dragDec(){let v,g=0;do{v=[R(1,9)*10,R(1,9)*10,R(11,99),R(1,9)];v[2]=v[2]%10?v[2]:v[2]+1}while(new Set(v).size<4&&g++<50);
+  const show=n=>n%10===0?(n/10).toFixed(1):dec(n),o=v.slice().sort((a,b)=>a-b);
+  return {kind:'rank',items:v.map(n=>({id:show(n),html:`<b>${show(n)}</b>`,name:show(n)})),order:o.map(show),lo:'least',hi:'greatest',prompt:`Put the decimals in order from <b>least</b> to <b>greatest</b>.`,
+    hint:`Give every number two places after the point: 0.4 = 0.40. Then compare.`,explain:`${o.map(n=>dec(n)).join(' &lt; ')}, so: <b>${o.map(show).join(', ')}</b>.`}}
+function dragPlace(){const L=Dv(4,5,6),base=String(R(10**(L-1),10**L-1));const set=new Set([+base]);let g=0;
+  while(set.size<4&&g++<60){const a=[...base];const i=R(1,L-1),j=R(0,L-1);[a[i],a[j]]=[a[j],a[i]];if(a[0]!=='0')set.add(+a.join(''))}while(set.size<4)set.add(+base+R(1,999));
+  const nums=[...set],o=nums.slice().sort((a,b)=>a-b);
+  return {kind:'rank',items:nums.map(n=>({id:String(n),html:`<b>${fmt(n)}</b>`,name:fmt(n)})),order:o.map(String),lo:'least',hi:'greatest',prompt:`Put the numbers in order from <b>least</b> to <b>greatest</b>.`,
+    hint:`Compare digits from the left. The first place where they are different decides.`,explain:`<b>${o.map(fmt).join(' &lt; ')}</b>.`}}
+function dragAngle(){const want=pick(['Acute','Obtuse']);let ds,g=0;do{ds=shuffle([20,30,40,50,60,70,80,100,110,120,130,140,150,160,90]).slice(0,6)}while((ds.filter(d=>angleType(d)===want).length<2||ds.filter(d=>angleType(d)!==want).length<2)&&g++<50);
+  const correct=ds.filter(d=>angleType(d)===want).map(String);
+  return {kind:'multi',items:ds.map(d=>({id:String(d),html:angleSVG(d).replace(/style="[^"]*"/,''),name:d+'°'})),correct,prompt:`Tap <b>every ${want.toLowerCase()}</b> angle. Then press Check.`,
+    hint:want==='Acute'?`Acute angles are smaller than a square corner (90°).`:`Obtuse angles are wider than a square corner (90°), but not a flat line.`,
+    explain:`${want} angles here: <b>${correct.map(d=>d+'°').join(', ')}</b>. ${ds.includes(90)?'The square corner (90°) is a right angle, not acute or obtuse.':''}`}}
+function triAngles(ty){if(ty==='r'){const o=R(3,6)*10;return shuffle([90,o])}if(ty==='a'){let A,B;do{A=R(10,15)*5;B=R(10,15)*5}while(180-A-B>75||180-A-B<50);return [A,B]}const big=R(22,27)*5,s=R(5,Math.max(5,(180-big)/5-4))*5;return coin()?[big,s]:[s,big]}
+function dragShape(){const tys=shuffle(['r','r','a','a','o','o']);
+  return {kind:'sort',bins:[{id:'r',label:'Right'},{id:'a',label:'Acute'},{id:'o',label:'Obtuse'}],items:tys.map((ty,i)=>{const [A,B]=triAngles(ty);return {id:'t'+i,html:triSVG(A,B,false).replace(/style="[^"]*"/,''),bin:ty,pic:1,name:{r:'right',a:'acute',o:'obtuse'}[ty]+' triangle'}}),
+    prompt:`Sort the triangles: <b>right</b>, <b>acute</b> or <b>obtuse</b>?`,hint:`Find the biggest angle. Square corner = right. Wider than a square corner = obtuse. All smaller = acute.`,
+    explain:`A <b>right</b> triangle has a square corner. An <b>obtuse</b> triangle has one angle wider than a square corner. In an <b>acute</b> triangle every angle is smaller than a square corner.`}}
+const POS_WORDS={n:['puppy','river','teacher','pencil','island','garden','cloud','sandwich'],v:['jump','swim','laugh','build','whisper','climb','paint','race'],a:['shiny','tiny','brave','noisy','soft','purple','gentle','sticky']};
+const PREP_W=['under','over','beside','behind','across','through','between','during','above','near'],NOTPREP_W=['quickly','jump','happy','apple','loudly','sing','green','they','sleepy','run'];
+function dragGram(k){
+  if(k===6){const ps=shuffle(PREP_W.slice()).slice(0,R(3,4)),ns=shuffle(NOTPREP_W.slice()).slice(0,8-ps.length),all=shuffle([...ps,...ns]);
+    return {kind:'multi',items:all.map(w=>txtTile(w,w)),correct:ps,prompt:`Tap <b>every preposition</b>. Then press Check.`,
+      hint:`A preposition tells where or when: try "The cat sat ___ the box." Does the word fit?`,explain:`Prepositions: <b>${ps.join(', ')}</b>. They tell where or when ("${ps[0]} the box").`}}
+  const ws=[...shuffle(POS_WORDS.n.slice()).slice(0,2).map(w=>[w,'n']),...shuffle(POS_WORDS.v.slice()).slice(0,2).map(w=>[w,'v']),...shuffle(POS_WORDS.a.slice()).slice(0,2).map(w=>[w,'a'])];
+  return {kind:'sort',bins:[{id:'n',label:'Noun'},{id:'v',label:'Verb'},{id:'a',label:'Adjective'}],items:ws.map(([w,b])=>({id:w,html:w,bin:b,name:w})),prompt:`Sort the words: <b>noun</b>, <b>verb</b> or <b>adjective</b>?`,
+    hint:`Noun = a person, place or thing. Verb = an action (you can do it). Adjective = describes a noun (what kind?).`,
+    explain:`Nouns: <b>${ws.filter(x=>x[1]==='n').map(x=>x[0]).join(', ')}</b>. Verbs: <b>${ws.filter(x=>x[1]==='v').map(x=>x[0]).join(', ')}</b>. Adjectives: <b>${ws.filter(x=>x[1]==='a').map(x=>x[0]).join(', ')}</b>.`}}
+const ENERGY={r:['Sunlight (solar)','Wind','Moving water','Heat from inside Earth'],n:['Coal','Oil','Natural gas','Gasoline']};
+const PLANT_PIC=`<svg viewBox="0 0 300 300" role="img" aria-label="A plant"><rect x="0" y="210" width="300" height="90" fill="#c99a6b"/><path d="M150 210 C148 160 152 120 150 80" stroke="#38b98a" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M150 150 C120 130 95 140 80 152 C100 168 130 166 150 150Z" fill="#7cc95a" stroke="#1f3557" stroke-width="2"/><path d="M151 120 C180 100 205 108 220 120 C200 136 172 136 151 120Z" fill="#7cc95a" stroke="#1f3557" stroke-width="2"/><g transform="translate(150 66)">${[0,72,144,216,288].map(a=>`<ellipse rx="13" ry="22" cy="-20" fill="#ff9fb7" stroke="#1f3557" stroke-width="2" transform="rotate(${a})"/>`).join('')}<circle r="11" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/></g><path d="M150 210 C146 235 130 250 116 268 M150 214 C156 240 172 252 186 272 M150 220 C150 245 150 262 148 286" stroke="#8c5a2c" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+const WC_PIC=`<svg viewBox="0 0 300 200" role="img" aria-label="The water cycle"><rect x="0" y="150" width="300" height="50" fill="#8fd3f7"/><circle cx="34" cy="30" r="20" fill="#ffd56b" stroke="#e09a14" stroke-width="2"/><path d="M188 48a16 16 0 0 1 30-8a14 14 0 0 1 26 6a12 12 0 0 1-4 24h-50a12 12 0 0 1-2-22z" fill="#fff" stroke="#1f3557" stroke-width="2"/><path d="M80 146 C74 110 110 70 172 56" fill="none" stroke="#e2558f" stroke-width="3" stroke-dasharray="6 4"/><path d="M200 80 l-6 14 M214 80 l-6 14 M228 80 l-6 14 M242 80 l-6 14" stroke="#2f9fe0" stroke-width="3" stroke-linecap="round"/><path d="M252 96 C268 112 274 126 278 144" fill="none" stroke="#1f3557" stroke-width="2.5"/></svg>`;
+function dragSci(k){
+  if(k===4){const r=shuffle(ENERGY.r.slice()).slice(0,3),n=shuffle(ENERGY.n.slice()).slice(0,3);
+    return {kind:'sort',bins:[{id:'r',label:'Renewable'},{id:'n',label:'Nonrenewable'}],items:[...r.map(x=>({id:x,html:x,bin:'r',name:x})),...n.map(x=>({id:x,html:x,bin:'n',name:x}))],
+      prompt:`Sort the energy sources: <b>renewable</b> (never runs out) or <b>nonrenewable</b> (will run out)?`,hint:`Fossil fuels (coal, oil, gas) took millions of years to form. Sun, wind and water keep coming back.`,
+      explain:`Renewable: <b>${r.join(', ')}</b>. Nonrenewable: <b>${n.join(', ')}</b> (fossil fuels, they will run out).`}}
+  if(k===5)return {kind:'sort',pic:PLANT_PIC,bins:[{id:'f',x:66,y:16,aria:'Top of the plant'},{id:'l',x:3,y:42,aria:'Side of the stem'},{id:'s',x:62,y:52,aria:'Middle of the plant'},{id:'r',x:66,y:82,aria:'Under the ground'}],
+    items:[{id:'Flower',html:'Flower',bin:'f'},{id:'Leaf',html:'Leaf',bin:'l'},{id:'Stem',html:'Stem',bin:'s'},{id:'Roots',html:'Roots',bin:'r'}],
+    prompt:`Label the parts of the plant. Drag each word to its box.`,hint:`Roots are under the ground. The flower is at the top. Leaves stick out from the stem.`,
+    explain:`<b>Roots</b> take in water. The <b>stem</b> holds the plant up and carries water. <b>Leaves</b> make food from sunlight. The <b>flower</b> makes seeds.`};
+  return {kind:'sort',pic:WC_PIC,bins:[{id:'e',x:2,y:44,aria:'Arrow going up from the water'},{id:'c',x:66,y:2,aria:'The cloud'},{id:'p',x:46,y:52,aria:'Drops falling from the cloud'},{id:'o',x:30,y:80,aria:'The ocean'}],
+    items:[{id:'Evaporation',html:'Evaporation',bin:'e'},{id:'Condensation',html:'Condensation',bin:'c'},{id:'Precipitation',html:'Precipitation',bin:'p'},{id:'Collection',html:'Collection',bin:'o'}],
+    prompt:`Label the water cycle. Drag each word to its box.`,hint:`Evaporation goes UP from the water. Condensation makes clouds. Precipitation falls DOWN.`,
+    explain:`<b>Evaporation</b>: the sun turns water into vapor that rises. <b>Condensation</b>: vapor cools into cloud drops. <b>Precipitation</b>: rain or snow falls. <b>Collection</b>: water gathers in oceans and lakes.`};
+}
 function setupMulti(q){
   S.sel=new Set();const box=$('#choices');box.className='tiles';box.innerHTML='';
-  q.items.forEach(it=>{const b=document.createElement('button');b.type='button';b.className='tile';b.dataset.id=it.id;b.innerHTML=it.html;b.setAttribute('aria-pressed','false');
+  q.items.forEach(it=>{const b=document.createElement('button');b.type='button';b.className='tile'+(it.txt?' txt':'');b.dataset.id=it.id;b.innerHTML=it.html;b.setAttribute('aria-pressed','false');
     b.onclick=()=>{if(S.locked)return;S.sel.has(it.id)?S.sel.delete(it.id):S.sel.add(it.id);b.classList.toggle('sel');b.setAttribute('aria-pressed',S.sel.has(it.id));tone([S.sel.has(it.id)?660:440],.05)};box.appendChild(b)});
   const row=document.createElement('div');row.className='actrow';row.style.gridColumn='1/-1';
   row.appendChild(checkBtn('Check',b=>judge(S.sel.size===q.correct.length&&q.correct.every(k=>S.sel.has(k)),b)));box.appendChild(row);
@@ -4952,6 +5109,8 @@ function reveal(q){
   else if(q.kind==='order'){q.items.forEach((it,k)=>{const sl=$('#sl'+k);sl.textContent=it;sl.classList.add('filled')});[...$('#choices').children].forEach(b=>{b.disabled=true;b.classList.add('used')})}
   else if(q.kind==='angle')setAV(q.target);
   else if(q.kind==='multi')document.querySelectorAll('.tile').forEach(t=>{if(q.correct.includes(t.dataset.id))t.classList.add('right');else if(t.classList.contains('sel'))t.classList.add('wrongsel')});
+  else if(q.kind==='sort')revealSort(q);
+  else if(q.kind==='rank')revealRank(q);
   else if(q.kind==='money'){S.pay=greedy(q.target);renderTray()}
   else if(q.kind==='numline'){S.nl=q.target;drawNumline(q,true)}
   else if(q.kind==='shade'){S.shade=new Set([...Array(q.need).keys()]);drawShade(q,true)}
