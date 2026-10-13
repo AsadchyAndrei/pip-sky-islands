@@ -305,7 +305,7 @@ $('#playerBtn').onclick=pickPlayer;
 
 /* ================= grown-ups ================= */
 let pinBuf='',pinStage='',pinFirst='';
-/* ===== Writing Desk: Alisa writes her own paragraph or story with a frame; it is saved for grown-ups (W.4.1-3, W.4.5) ===== */
+/* ===== Writing Desk: the child writes their own paragraph or story with a frame; it is saved for grown-ups (W.4.1-3, W.4.5) ===== */
 const DESK={
   opinion:{name:'Opinion',sub:'Tell what you think and why',color:'#e2558f',
     prompts:['What is the best season of the year?','Should kids have homework?','What is the best pet to have?','Should every school have a garden?','What is the best place to visit in California?','Is it better to read a book or watch the movie?'],
