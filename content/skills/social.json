@@ -7,5 +7,13 @@
   {"id": "social.geo.latitude-and-longitude", "name": "Latitude and longitude", "grade": 4, "std": ["HSS.4.1"], "src": {"gen": "geo", "types": [5]}, "legacy": "geo:4"},
   {"id": "social.geo.california-regions", "name": "California regions", "grade": 4, "std": ["HSS.4.1"], "src": {"gen": "geo", "types": [6]}, "legacy": "geo:5"},
   {"id": "social.geo.government", "name": "Government", "grade": 4, "std": ["HSS.4.5"], "src": {"gen": "geo", "types": [7]}, "legacy": "geo:6"},
-  {"id": "social.history.california-history", "name": "California history", "grade": 4, "std": ["HSS.4.2", "HSS.4.3", "HSS.4.4", "RI.4.3"], "src": {"gen": "history", "sel": "all"}, "legacy": "history:0"}
+  {"id": "social.history.california-history", "name": "California history", "grade": 4, "std": ["HSS.4.2", "HSS.4.3", "HSS.4.4", "RI.4.3"], "src": {"gen": "history", "sel": "all"}, "legacy": "history:0"},
+  {"id": "social.geo3.maps-and-directions", "name": "Maps and directions", "grade": 3, "std": ["HSS.3.1"], "src": {"gen": "geo3", "sel": "tag", "arg": {"bank": "geo3", "tag": "maps"}}},
+  {"id": "social.geo3.land-and-water", "name": "Land and water", "grade": 3, "std": ["HSS.3.1"], "src": {"gen": "geo3", "sel": "tag", "arg": {"bank": "geo3", "tag": "land"}}},
+  {"id": "social.geo3.our-local-economy", "name": "Our local economy", "grade": 3, "std": ["HSS.3.5"], "src": {"gen": "geo3", "sel": "tag", "arg": {"bank": "geo3", "tag": "econ"}}},
+  {"id": "social.history3.american-indians-of-california", "name": "American Indians of California", "grade": 3, "std": ["HSS.3.2"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "native"}}},
+  {"id": "social.history3.how-communities-change", "name": "How communities change", "grade": 3, "std": ["HSS.3.3"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "change"}}},
+  {"id": "social.history3.rules-laws-and-government", "name": "Rules, laws and government", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "govt"}}},
+  {"id": "social.history3.american-symbols-and-landmarks", "name": "American symbols and landmarks", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "symbols"}}},
+  {"id": "social.history3.american-heroes", "name": "American heroes", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "heroes"}}}
  ]}

@@ -166,7 +166,13 @@ const SKILL_SEL={
   all:isl=>rng(0,isl.types-1),
   bank:(isl,b)=>rng(0,SKILL_BANKS[b].length-1),
   mod:(isl,a)=>{const L=SKILL_BANKS[a.base].length;return rng(0,isl.types-L-1).filter(x=>x%a.m===a.j).map(x=>L+x)},
-  'gram.cat':(isl,name)=>GRAMF.map((x,i)=>x.cat===name?i:-1).filter(i=>i>=0)};
+  'gram.cat':(isl,name)=>GRAMF.map((x,i)=>x.cat===name?i:-1).filter(i=>i>=0),
+  /* grade 3 and later: question banks with skill tags, and grade 3 reading */
+  tag:(isl,a)=>BANK3[a.bank].map((x,i)=>x[0]===a.tag?i:-1).filter(i=>i>=0),
+  'r3.short':isl=>rng(0,PASS3Q.length-1),
+  'r3.long':(isl,k)=>LONG3Q.map((x,i)=>LONG3[x[0]].q[x[1]][0]===k?PASS3Q.length+i:-1).filter(i=>i>=0),
+  'r3.feat':isl=>rng(PASS3Q.length+LONG3Q.length,PASS3Q.length+LONG3Q.length+BANK3.feat3.length-1),
+  'r3.media':isl=>rng(PASS3Q.length+LONG3Q.length+BANK3.feat3.length,isl.types-1)};
 const SKILL_BANKS={SCIENCE,GRAMF};
 function skillsOf(id){const c=skillsOf.c||(skillsOf.c={});if(c[id])return c[id];const isl=byId(id);if(!isl||!isl.gen||isl.retired)return c[id]=[];
   const L=(isl.skills||[]).map(k=>CONTENT.skills[k]).filter(Boolean);
@@ -182,9 +188,9 @@ const allSkills=id=>{const L=skillsOf(id);return !L.length||L.every(s=>skStat(s.
 function skMigrate(){if(G.skMig)return;G.skMig=1;G.star3={};for(const i of ISLANDS)if(i.gen&&starRaw(i.id)>=3)G.star3[i.id]=1}
 function weakSkill(id){const L=skillsOf(id).map(s=>({s,m:skStat(s.k)}));const tried=L.filter(x=>x.m.n>=3&&x.m.st<2).sort((a,b)=>a.m.acc-b.m.acc);if(tried.length)return tried[0].s;const fresh=L.filter(x=>x.m.n===0);return fresh.length?fresh[0].s:null}
 function skillQs(isl,s){
-  if(s.ts.some(t=>t>=10)&&isl.id==='riddle'){const seed=R(1,2e9),sc=R(0,2);return [0,1,2,3].map(k=>makeQ(isl,10+sc*4+k,seed)).concat([0,1].map(()=>makeQ(isl,pick(s.ts),R(1,2e9))))}
-  if(isl.id==='reading'&&s.i===0)return readingRound(isl);
-  if(isl.id==='listen')return listenRound(isl);
+  if(s.ts.some(t=>t>=10)&&isl.genKey==='riddle'){const seed=R(1,2e9),sc=R(0,2);return [0,1,2,3].map(k=>makeQ(isl,10+sc*4+k,seed)).concat([0,1].map(()=>makeQ(isl,pick(s.ts),R(1,2e9))))}
+  if(isl.id==='reading'&&s.i===0&&isl.round)return isl.round(isl);
+  if(isl.id==='listen'&&isl.round)return isl.round(isl);
   const ts=shuffle(s.ts.slice());return Array.from({length:6},(_,k)=>makeQ(isl,ts[k%ts.length],R(1,2e9)))}
 function startSkill(isl,s){if(limitGate(()=>startSkill(isl,s)))return;beginRound(isl,'island',skillQs(isl,s));S.skill=s.k;
   const nm2=$('#iname');const sp=document.createElement('span');sp.className='idiff';sp.textContent=` · ${s.name}`;nm2.appendChild(sp);say($('#say'),`Let's practice <b>${esc(s.name)}</b>${nm()}! Six puzzles, all on this one skill.`)}
@@ -745,7 +751,7 @@ const LESSONS=[
    practice:[8,9,8]}
 
 ];
-LESSONS.push(...LESSONS3);
+LESSONS.push(...LESSONS3,...LESSONS3E);
 /* lessons belong to a question generator (L.gen, or the island id for 4th grade lessons), so each grade gets its own */
 const lessonsFor=id=>{const k=(byId(id)||{}).genKey||id;return LESSONS.filter(L=>(L.gen||L.isl)===k)};
 function lessonFor(id){const ls=lessonsFor(id);if(!ls.length)return null;const miss=t=>G.review.filter(r=>r.i===id&&t.includes(r.t)).length,done=L=>((G.lessons||{})[L.id]||'');

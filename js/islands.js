@@ -350,6 +350,7 @@ const TEST_SECTIONS={
   ela:{name:'English',parts:[['Reading',['reading'],5],['Listening',['listen'],3],['Writing and research',['write'],2],['Language and vocabulary',['grammar','words'],2]]}};
 const TEST_LEVELS=[[.85,'Standard exceeded'],[.7,'Standard met'],[.5,'Standard nearly met'],[0,'Not met yet']];
 function testQs(sec){const isl=id=>byId(id),qs=[];
+  if(PACK.grade!==4)return testQsAny(sec);
   if(sec==='math'){for(const [claim,ids,n] of TEST_SECTIONS.math.parts){
       if(claim.startsWith('Reasoning')){const r=isl('riddle');[pick([6,8]),pick([7,9]),10+R(0,11)].forEach(t=>{const q=makeQ(r,t,R(1,2e9));q.claim=claim;qs.push(q)});
         if(coin()){const q=coin()?makeQ(isl('frac'),15,R(1,2e9)):makeQ(isl('mult'),7,R(1,2e9));q.claim=claim;qs[qs.length-1]=q}continue}
@@ -360,6 +361,17 @@ function testQs(sec){const isl=id=>byId(id),qs=[];
     const w=isl('write');shuffle([8,9,10,11,12,2,4]).slice(0,2).forEach(t=>{const q=makeQ(w,t,R(1,2e9));q.claim='Writing and research';qs.push(q)});
     [isl('grammar'),isl('words')].forEach(I=>{const q=makeQ(I,R(0,I.types-1),R(1,2e9));q.claim='Language and vocabulary';qs.push(q)})}
   qs.forEach(q=>q.from=null);return qs}
+/* Test Practice for any grade: math from the pack's math islands plus reasoning from Riddle Reef;
+   English from one long passage, one listening clip, writing and language */
+function testQsAny(sec){const qs=[],add=(I,t,claim)=>{if(!I)return;const q=makeQ(I,t==null?R(0,I.types-1):t,R(1,2e9));q.claim=claim;q.from=null;qs.push(q)};
+  const live=ISLANDS.filter(i=>i.gen&&!i.retired),subj=sj=>live.filter(i=>islandSubject(i)===sj);
+  if(sec==='math'){const m=subj('math').filter(i=>i.id!=='riddle'),groups=[['Numbers and operations',['place','addsub','mult','div']],['Fractions and decimals',['frac','dec']],['Measurement, data and geometry',['measure','area','angle','shape','graph','time','money','pattern']]];
+    for(const [claim,ids] of groups){const pool=m.filter(i=>ids.includes(i.id));for(let k=0;k<3;k++)add(pick(pool.length?pool:m),null,claim)}
+    for(let k=0;k<3;k++)add(byId('riddle'),null,'Reasoning and problem solving');return qs}
+  const rd=byId('reading');if(rd&&rd.test)rd.test(rd).forEach(q=>{q.claim='Reading';q.from=null;qs.push(q)});
+  const li=byId('listen');if(li&&li.round)li.round(li).slice(0,3).forEach(q=>{q.claim='Listening';q.from=null;qs.push(q)});
+  for(let k=0;k<2;k++)add(byId('write'),null,'Writing and research');
+  add(byId('grammar'),null,'Language and vocabulary');add(byId('words'),null,'Language and vocabulary');return qs}
 function openTest(isl){const L=(G.tests||[]);
   overlay(`<div class="eyebrow">Test Practice</div><h2>Practice like the real test</h2><p>12 questions in the same style as the spring test. <b>No hints and one try</b>, just like the real thing. At the end you get a report.</p>
     <div class="deskkinds">${Object.entries(TEST_SECTIONS).map(([k,T])=>`<button type="button" class="deskkind" data-sec="${k}" style="--dc:${k==='math'?'#2f9fe0':'#e2558f'}"><b>${T.name}</b><small>${T.parts.map(p=>p[0]).join(' · ')}</small></button>`).join('')}</div>
@@ -419,7 +431,14 @@ const GEN={
   /* 3rd grade (js/math3.js) */
   place3:{gen:genPlace3,types:6},addsub3:{gen:genAddSub3,types:5},mult3:{gen:genMult3,types:8},div3:{gen:genDiv3,types:7},frac3:{gen:genFrac3,types:8},
   area3:{gen:genArea3,types:7},time3:{gen:genTime3,types:6},measure3:{gen:genMeasure3,types:6},graph3:{gen:genGraph3,types:6},shape3:{gen:genShape3,types:5},
-  pattern3:{gen:genPattern3,types:5},riddle3:{gen:genRiddle3,types:5}
+  pattern3:{gen:genPattern3,types:5},riddle3:{gen:genRiddle3,types:5},
+  /* 3rd grade English, science and social studies (js/english3.js) */
+  reading3:{gen:genReading3,types:PASS3Q.length+LONG3Q.length+BANK3.feat3.length+MEDIA_Q.length,round:readingRound3,noDiff:true,
+    test:isl=>{const pi=dealTypes('test_long3',LONG3.length,1)[0],off=PASS3Q.length+LONG3Q.findIndex(x=>x[0]===pi);return LONG3[pi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9)))}},
+  listen3:{gen:genListen3,types:LISTEN3_Q.length,round:listenRound3,noDiff:true},
+  words3:{gen:bankGen('words3'),types:BANK3.words3.length,noDiff:true},grammar3:{gen:bankGen('grammar3'),types:BANK3.grammar3.length,noDiff:true},
+  write3:{gen:bankGen('write3'),types:BANK3.write3.length,noDiff:true},science3:{gen:bankGen('science3'),types:BANK3.science3.length,noDiff:true},
+  geo3:{gen:bankGen('geo3'),types:BANK3.geo3.length,noDiff:true},history3:{gen:bankGen('history3'),types:BANK3.history3.length,noDiff:true}
 };
 const PACK_DEFAULT='ca-4';
 const PACK=(()=>{let id='';try{id=localStorage.getItem('pip-pack')||''}catch(e){}return CONTENT.packs[id]||CONTENT.packs[PACK_DEFAULT]})();

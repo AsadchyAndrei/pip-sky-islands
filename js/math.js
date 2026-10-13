@@ -589,7 +589,7 @@ function genArea(t){
   if(t===2)return {how:['area2',A,w],prompt:`The patch has an area of <b>${A} square feet</b>. One side is ${w} feet. How long is the other side?`,visual:rectVis(l,w,`? ft`,`${w} ft`),unit:'ft',...numChoices(l,[A-w,l+1,l-1,A/w+2]),hint:`Area = length × width. What times ${w} equals ${A}?`,explain:`${A} ÷ ${w} = <b>${l} feet</b>, because ${l} × ${w} = ${A}.`};
   return {how:['area3',P,w],prompt:`The fence around the patch is <b>${P} feet</b> long. The short side is ${w} feet. How long is the long side?`,visual:rectVis(l,w,`? ft`,`${w} ft`),unit:'ft',...numChoices(l,[P-w,P/2,l+2,P-2*w]),anim:periAnim(l,w),hint:`Two short sides use ${2*w} feet. The rest is split between the two long sides.`,explain:`${P} − ${w} − ${w} = ${P-2*w}. Split in half: ${P-2*w} ÷ 2 = <b>${l} feet</b>.`};
 }
-function genFlash(){const a=R(2,Dv(9,12,15)),b=R(2,Dv(9,12,12));if(rand()<.7)return {prompt:`${a} × ${b}`,...numChoices(a*b,[a*b+a,a*b-b,a*b+b,(a+1)*(b+1)])};return {prompt:`${a*b} ÷ ${b}`,...numChoices(a,[a+1,a-1,b===a?a+2:b,a+2])}}
+function genFlash(){const g3=typeof PACK!=='undefined'&&PACK.grade<=3,a=R(2,g3?Dv(5,9,10):Dv(9,12,15)),b=R(2,g3?Dv(5,9,10):Dv(9,12,12));if(rand()<.7)return {prompt:`${a} × ${b}`,...numChoices(a*b,[a*b+a,a*b-b,a*b+b,(a+1)*(b+1)])};return {prompt:`${a*b} ÷ ${b}`,...numChoices(a,[a+1,a-1,b===a?a+2:b,a+2])}}
 
 /* angles */
 function angleSVG(d){

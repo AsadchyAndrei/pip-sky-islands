@@ -11,5 +11,15 @@
   {"id": "science.science.coded-messages", "name": "Coded messages", "grade": 4, "std": ["4-PS4-3"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 7}}, "legacy": "science:8"},
   {"id": "science.science.weathering-and-erosion", "name": "Weathering and erosion", "grade": 4, "std": ["4-ESS2-1"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 8}}, "legacy": "science:9"},
   {"id": "science.science.hazards-and-engineering", "name": "Hazards and engineering", "grade": 4, "std": ["4-ESS3-2", "3-5-ETS1-1", "3-5-ETS1-2"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 9}}, "legacy": "science:10"},
-  {"id": "science.science.collisions-and-energy", "name": "Collisions and energy", "grade": 4, "std": ["4-PS3-3", "4-PS3-1"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 10}}, "legacy": "science:11"}
+  {"id": "science.science.collisions-and-energy", "name": "Collisions and energy", "grade": 4, "std": ["4-PS3-3", "4-PS3-1"], "src": {"gen": "science", "sel": "mod", "arg": {"base": "SCIENCE", "m": 11, "j": 10}}, "legacy": "science:11"},
+  {"id": "science.science3.forces-and-motion", "name": "Forces and motion", "grade": 3, "std": ["3-PS2-1", "3-PS2-2"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "forces"}}},
+  {"id": "science.science3.magnets-and-static-electricity", "name": "Magnets and static electricity", "grade": 3, "std": ["3-PS2-3", "3-PS2-4"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "magnets"}}},
+  {"id": "science.science3.life-cycles", "name": "Life cycles", "grade": 3, "std": ["3-LS1-1"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "life"}}},
+  {"id": "science.science3.living-in-groups", "name": "Living in groups", "grade": 3, "std": ["3-LS2-1"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "groups"}}},
+  {"id": "science.science3.inherited-traits", "name": "Inherited traits", "grade": 3, "std": ["3-LS3-1", "3-LS3-2", "3-LS4-2"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "traits"}}},
+  {"id": "science.science3.adaptations-and-habitats", "name": "Adaptations and habitats", "grade": 3, "std": ["3-LS4-2", "3-LS4-3", "3-LS4-4"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "adapt"}}},
+  {"id": "science.science3.fossils", "name": "Fossils", "grade": 3, "std": ["3-LS4-1"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "fossils"}}},
+  {"id": "science.science3.weather-and-climate", "name": "Weather and climate", "grade": 3, "std": ["3-ESS2-1", "3-ESS2-2"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "weather"}}},
+  {"id": "science.science3.weather-hazards", "name": "Weather hazards", "grade": 3, "std": ["3-ESS3-1"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "hazards"}}},
+  {"id": "science.science3.engineering-design", "name": "Engineering design", "grade": 3, "std": ["3-5-ETS1-1", "3-5-ETS1-2", "3-5-ETS1-3"], "src": {"gen": "science3", "sel": "tag", "arg": {"bank": "science3", "tag": "design"}}}
  ]}
