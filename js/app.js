@@ -1087,8 +1087,8 @@ let rwTab='';
 function homeLayout(){
   const L=document.querySelector('.mapL'),pc=$('#pickCard');if(!L||!pc)return;
   let nu=$('#nextUp');
-  if(!nu){nu=document.createElement('div');nu.id='nextUp';nu.className='nextup';nu.innerHTML='<div class="nuhead"><div class="pipmini" data-fox></div></div>';
-    pc.parentNode.insertBefore(nu,pc);nu.querySelector('.nuhead').appendChild($('#mapsay'));nu.appendChild(pc);refreshFoxes()}
+  /* Pip's speech stays in its own bubble above the plan, so changing tips never move the flight plan */
+  if(!nu){nu=document.createElement('div');nu.id='nextUp';nu.className='nextup';pc.parentNode.insertBefore(nu,pc);nu.appendChild(pc)}
   let rw=$('#rewards');
   if(!rw){rw=document.createElement('div');rw.id='rewards';rw.className='rewards';rw.innerHTML='<div class="rwhead"><b>Rewards</b><div class="rwtabs" role="tablist" aria-label="Rewards"></div></div><div class="rwbody"></div>';
     const ev=$('#eventCard');ev.parentNode.insertBefore(rw,ev);const body=rw.querySelector('.rwbody');['eventCard','goalCard','weekCard'].forEach(id=>{const e=$('#'+id);if(e)body.appendChild(e)})}

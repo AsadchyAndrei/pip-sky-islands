@@ -1513,7 +1513,6 @@ header.top .pill{white-space:nowrap}
   #g-ch .isle svg.isl{max-height:120px}
 }
 @media (max-width:760px){
-  #map .intro{display:none}
   .nextup{margin-top:12px}
   .nextup .pipmini{display:block}
   .nextup .nuhead{padding:10px 12px}
