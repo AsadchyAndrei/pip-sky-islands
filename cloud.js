@@ -4,11 +4,17 @@
 //   users/{uid}                          email, consentAt, consentVersion, pin
 //   users/{uid}/kids/{kidId}             data (JSON text), name, ts, v   | or {deleted:true} after removal
 //   users/{uid}/kids/{kidId}/backups/{id}  daily copies, newest 30 kept
+//   classes/{cid}                        a teacher's class: owner, name, teacher, pack, code, now, tasks (no student data)
+//   classes/{cid}/members/{uid_kidId}    one child's progress summary for the teacher, written by the child's grown-up
+//   codes/{code}                         class code -> class id (read one at a time, never listed)
 const VERSION = '12.19.0';
 const BASE = `https://www.gstatic.com/firebasejs/${VERSION}/`;
 const cfg = window.PIP_FIREBASE_CONFIG;
 const api = { configured: false };
 const announce = () => { window.PipCloud = api; window.dispatchEvent(new Event('pipcloud')); };
+// class codes: 6 letters and digits that are easy to read aloud (no 0/O, 1/I/L)
+const CODE_ABC = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const classCode = () => { const a = new Uint32Array(6); crypto.getRandomValues(a); return [...a].map((x) => CODE_ABC[x % CODE_ABC.length]).join(''); };
 const wanted = !!(cfg && cfg.apiKey && !/PASTE|YOUR_/i.test(cfg.apiKey));
 
 if (window.PipCloud) {
@@ -92,6 +98,58 @@ if (window.PipCloud) {
         const list = await api.listBackups(id);
         await Promise.all(list.slice(keep).map((b) => FS.deleteDoc(FS.doc(bkCol(id), b.id))));
       },
+      // ---- classes (teachers) ----
+      async myClasses() {
+        const s = await FS.getDocs(FS.query(FS.collection(db, 'classes'), FS.where('owner', '==', me())));
+        return s.docs.map((d) => ({ cid: d.id, ...d.data() }));
+      },
+      async createClass(d) {
+        for (let k = 0; k < 6; k++) {
+          const code = classCode(), ref = FS.doc(FS.collection(db, 'classes'));
+          const cls = { ...d, owner: me(), code, ts: Date.now() };
+          const b = FS.writeBatch(db);
+          b.set(ref, cls);
+          b.set(FS.doc(db, 'codes', code), { cid: ref.id, owner: me() });
+          try { await b.commit(); return { cid: ref.id, ...cls }; }
+          catch (e) { if (e.code !== 'permission-denied' || k === 5) throw e; } // code already taken: try another
+        }
+      },
+      updateClass: (cid, patch) => FS.updateDoc(FS.doc(db, 'classes', cid), patch),
+      async newClassCode(cid, old) {
+        for (let k = 0; k < 6; k++) {
+          const code = classCode(), b = FS.writeBatch(db);
+          b.update(FS.doc(db, 'classes', cid), { code });
+          b.set(FS.doc(db, 'codes', code), { cid, owner: me() });
+          if (old) b.delete(FS.doc(db, 'codes', old));
+          try { await b.commit(); return code; } catch (e) { if (e.code !== 'permission-denied' || k === 5) throw e; }
+        }
+      },
+      async deleteClass(cid, code) {
+        for (const m of (await FS.getDocs(FS.collection(db, 'classes', cid, 'members'))).docs) await FS.deleteDoc(m.ref);
+        if (code) await FS.deleteDoc(FS.doc(db, 'codes', code)).catch(() => {});
+        await FS.deleteDoc(FS.doc(db, 'classes', cid));
+      },
+      async getClass(cid) {
+        const s = await FS.getDoc(FS.doc(db, 'classes', cid));
+        return s.exists() ? { cid, ...s.data() } : null;
+      },
+      async classByCode(code) {
+        const s = await FS.getDoc(FS.doc(db, 'codes', String(code).toUpperCase()));
+        if (!s.exists()) return null;
+        return api.getClass(s.data().cid);
+      },
+      async members(cid) {
+        const s = await FS.getDocs(FS.collection(db, 'classes', cid, 'members'));
+        return s.docs.map((d) => ({ mid: d.id, ...d.data() }));
+      },
+      async getMember(cid, mid) {
+        const s = await FS.getDoc(FS.doc(db, 'classes', cid, 'members', mid));
+        return s.exists() ? s.data() : null;
+      },
+      // a child's own grown-up (or the teacher, for children on the teacher's roster) writes the summary
+      saveMember: (cid, kid, d) => FS.setDoc(FS.doc(db, 'classes', cid, 'members', me() + '_' + kid), { ...d, owner: me(), kid }),
+      leaveClass: (cid, kid) => FS.deleteDoc(FS.doc(db, 'classes', cid, 'members', me() + '_' + kid)),
+      removeMember: (cid, mid) => FS.updateDoc(FS.doc(db, 'classes', cid, 'members', mid), { removed: true }),
       async exportAll() {
         const u = auth.currentUser;
         const user = (await FS.getDoc(userRef())).data() || {};
@@ -104,13 +162,16 @@ if (window.PipCloud) {
           const backups = (await api.listBackups(k.id)).map((b) => ({ id: b.id, savedAt: new Date(b.ts).toISOString() }));
           kids.push({ id: k.id, name: d.name, savedAt: new Date(d.ts).toISOString(), progress, backups });
         }
-        return { exportedAt: new Date().toISOString(), account: { email: u.email, ...user }, players: kids };
+        const classes = [];
+        for (const c of await api.myClasses()) classes.push({ ...c, members: await api.members(c.cid) });
+        return { exportedAt: new Date().toISOString(), account: { email: u.email, ...user }, players: kids, classes };
       },
       async deleteAccount(password) {
         const u = auth.currentUser;
         // confirm identity first, so we never wipe data and then fail to delete the login
         if (password != null) await AU.reauthenticateWithCredential(u, AU.EmailAuthProvider.credential(u.email, password));
         else await AU.reauthenticateWithPopup(u, new AU.GoogleAuthProvider());
+        for (const c of await api.myClasses()) await api.deleteClass(c.cid, c.code);
         for (const k of (await FS.getDocs(kidsCol())).docs) {
           await api.pruneBackups(k.id, 0);
           await FS.deleteDoc(k.ref);

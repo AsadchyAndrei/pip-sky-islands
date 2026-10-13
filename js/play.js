@@ -1,9 +1,9 @@
 /* Pip's Sky Islands: Screens and the question player, including drag and drop, Part A/B, Yes/No and math reasoning. Loaded in order by index.html; all files share one global scope. */
 /* ================= screens ================= */
 let S=null,tipTimer=0,tips=[],tipI=0;
-const SCREENS=['gate','kids','map','play','done','closet','albumS','story','parent','home','inside'];
+const SCREENS=['gate','kids','map','play','done','closet','albumS','story','parent','home','inside','teach'];
 let curScreen='';
-function show(id){curScreen=id;document.body.classList.toggle('nogame',id==='gate'||id==='kids');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);document.body.dataset.screen=id;scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
+function show(id){curScreen=id;document.body.classList.toggle('nogame',id==='gate'||id==='kids'||id==='teach');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);document.body.dataset.screen=id;scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
 let EXPLORE=new Set();
 function pickExplore(){EXPLORE=new Set();for(const g of ['math','world'])ISLANDS.filter(i=>i.group===g&&i.gen&&!i.retired&&!G.visited[i.id]).slice(0,2).forEach(i=>EXPLORE.add(i.id))}
 function card(isl,i){
@@ -67,9 +67,9 @@ function fitSpacer(y=scrollY){const sp=$('#mapSpacer');if(!sp)return;const H=doc
 addEventListener('scroll',()=>{const sp=$('#mapSpacer');if(sp&&sp.offsetHeight)fitSpacer()},{passive:true});
 function setTab(t){const y=scrollY,sp=$('#mapSpacer');if(sp)sp.style.height=(y+innerHeight)+'px';mapTab=t;try{localStorage.setItem('pip-tab',t)}catch(e){}document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('.tabp').forEach(p=>{p.hidden=p.dataset.tabp!==t});fitSpacer(y)}
 document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.onclick=()=>{setTab(b.dataset.tab);tone([523,659],.04)});
-function renderMap(){setTimeout(homeLayout,0);{const sp=$('#mapSpacer');if(sp)sp.style.height=''}
+function renderMap(){setTimeout(homeLayout,0);{const f=$('#mapFoot');if(f)f.textContent=`${PACK.stateName}, ${GRADE_WORD(PACK.grade).toLowerCase()}: `+ISLANDS.filter(i=>i.gen&&!i.retired).map(i=>i.topic.toLowerCase()).join(', ')+'.'}{const sp=$('#mapSpacer');if(sp)sp.style.height=''}
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
-  adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
+  adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();renderClassCard();if(G.cls)classCheck();CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
   pickExplore();const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
   for(const [g,sel] of Object.entries(groups))$(sel).innerHTML=ISLANDS.map((isl,i)=>isl.group===g&&!isl.retired?card(isl,i):'').join('');
   $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'All 3 books done! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
@@ -494,15 +494,16 @@ function judge(ok,btn){
     comboUI();
     $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback';fb.innerHTML=explainHTML(q,true);fb.hidden=false;finishQ();
   }else{
+    const given=btn&&!q.kind?btn.textContent.trim():q.kind==='keypad'?String(S.entry||''):'';
     S.tries++;sNo();foxMove('wobble');foxClass('sad',1400);S.streak=0;comboUI();
     if(btn){if(!q.kind){btn.classList.add('wrong');btn.disabled=true}else{btn.classList.remove('nope');void btn.offsetWidth;btn.classList.add('nope')}}
     if(q.kind==='money')renderTray();
     if(q.kind==='keypad'){S.entry='';const t=$('#entryTxt');if(t)t.textContent=''}
-    if(S.mode==='boss'){S.locked=true;track(q,true,false);loseHeart();reveal(q);say($('#say'),S.hearts>0?`Ouch! The ${BOSSES[S.boss].name} zapped a heart! Shake it off!`:`Oh no, no hearts left! It got away this time...`);
+    if(S.mode==='boss'){S.locked=true;track(q,true,false,given);loseHeart();reveal(q);say($('#say'),S.hearts>0?`Ouch! The ${BOSSES[S.boss].name} zapped a heart! Shake it off!`:`Oh no, no hearts left! It got away this time...`);
       const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ();return}
-    if(S.mode==='test'&&S.tries===1){track(q,true,false);S.tries=2}
+    if(S.mode==='test'&&S.tries===1){track(q,true,false,given);S.tries=2}
     if(S.tries===1&&S.mode==='island'&&q.meta&&q.meta.t!=null&&!q.rv&&byId(q.meta.i)&&byId(q.meta.i).gen){const k=q.meta.i+'|'+q.meta.t;S.missRun=S.missRun||{};S.helped=S.helped||{};S.missRun[k]=(S.missRun[k]||0)+1;if(S.missRun[k]>=2&&!S.helped[k]){S.helped[k]=1;S.helpQ=q}}
-    if(S.tries===1){track(q,true,false);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge()}
+    if(S.tries===1){track(q,true,false,given);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge()}
     else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review'||q.rv)reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
       $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ()}
   }
@@ -583,6 +584,7 @@ function nextFlash(){
 function finishRound(){
   if(S.mode==='lesson')return finishLesson();
   if(S.mode==='test')return finishTest();
+  if(G.cls)classRoundDone(S);
   const n=S.qs.length,s=S.score;let st=s===n?3:s>=Math.ceil(n*.66)?2:s>=1?1:0;let extra='',stick=st>=3?.6:st===2?.4:st===1?.2:0;
   if(S.mode==='daily'){
     if(!dailyDone()){G.dstreak=G.lastDaily===yesterdayKey()?G.dstreak+1:1;G.lastDaily=dayKey();gain(REW.daily,5,$('#prompt'));extra=` Daily bonus: +${REW.daily} coins! Streak: ${G.dstreak} day${G.dstreak>1?'s':''}!`;stick=1;

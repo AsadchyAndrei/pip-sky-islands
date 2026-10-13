@@ -212,7 +212,7 @@ function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone
     $('#isPlay').onclick=()=>{close();start(isl)};if($('#isLearn'))$('#isLearn').onclick=()=>{close();start(lessonIsland(lessonFor(isl.id)))};$('#isClose').onclick=close;$('#isPlay').focus({preventScroll:true});
     $('#ocard').querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{close();tone([523,784]);startSkill(isl,L[+b.dataset.sk])})})}
 function pickPlay(P){const w=weakSkill(P.id);if(w&&skillsOf(P.id).length>1)startSkill(P,w);else start(P,{noOffer:true})}
-function nowParentHTML(){const sel=G.settings.now||[],groups=[['Math',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='math')],['English and more',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='world')]];
+function nowParentHTML(){const cd=classDoc();if(cd&&(cd.now||[]).length)return `<div class="pcard wide"><h4>In class right now</h4><p class="note">Set by ${esc(cd.teacher||'the teacher')}: <b>${cd.now.map(byId).filter(Boolean).map(i=>esc(i.topic)).join(', ')}</b>. Pip's Pick practices these first.</p></div>`;const sel=G.settings.now||[],groups=[['Math',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='math')],['English and more',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='world')]];
   return `<div class="pcard wide"><h4>In class right now</h4><p class="note">Tap the topics ${esc(G.name||'your child')} is learning at school this month (up to 4). Pip's Pick will practice these first, starting with the skills not mastered yet.</p>${groups.map(([g,L])=>`<div class="nowgrp"><b>${g}</b><div class="nowchips">${L.map(i=>`<button type="button" class="nowchip${sel.includes(i.id)?' on':''}" data-now="${i.id}" aria-pressed="${sel.includes(i.id)}">${esc(i.topic)}</button>`).join('')}</div></div>`).join('')}${sel.length?`<p class="note">Now practicing first: <b>${sel.map(id=>esc(byId(id).name)).join(', ')}</b>.</p>`:''}</div>`}
 /* School program: the state and grade decide which islands and skills the child gets (a content pack per state and grade) */
 const US_STATES=[['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],['DC','District of Columbia'],['FL','Florida'],['GA','Georgia'],['HI','Hawaii'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming']];
@@ -397,11 +397,11 @@ function gain(c,x,el){
   const lv=levelOf(G.xp);if(S&&lv>S.lvNow){S.lvNow=lv;toast(`Level ${lv+1}!`,`You're now a ${TITLES[lv]}!`,'#38b98a');sLevel()}
   if(lv>=4)award('level5');if(G.coins>=500)award('rich');save();
 }
-function track(q,first,correct){
+function track(q,first,correct,given){
   if(!q||!q.meta)return;const id=q.meta.i;if(first&&S&&S.mode!=='boss'){skAdd(id,q.meta.t,correct);const t0=tierOf(id);rollAdd(id,correct);const t1=tierOf(id);if(t1>t0&&byId(id)){G.tierBest=Object.assign({},G.tierBest||{});if(t1>(G.tierBest[id]||0)){const before=starFor(id);G.tierBest[id]=t1;if(starFor(id)>before)toast(`${starsMini(starFor(id))} ${byId(id).name}!`,`${Math.round(rollAcc(id).acc*100)}% right lately. A new star!`,'#e09a14');grantMastery()}}}const s=G.stats[id]||(G.stats[id]={a:0,c:0});s.a++;if(first&&correct)s.c++;
   const t=today();t.q++;if(first&&correct){t.c++;thisWeek().c++}
   if(!(first&&correct)){
-    G.wrongLog.unshift({p:htmlToSpeech(q.prompt).slice(0,140),a:String(q.answer!=null?q.answer:q.kind==='order'?q.items.join(', '):q.kind==='multi'?q.correct.map(k=>{const it=q.items.find(i=>i.id===k);return it&&it.name||(SHAPES[k]||{}).name||k}).join(', '):q.kind==='sort'||q.kind==='rank'?dragAnswer(q):q.kind==='partab'||q.kind==='hilite'||q.kind==='yesno'?kindAnswer(q):q.kind==='money'?fmtM(q.target):q.kind==='angle'?q.target+'°':q.target&&q.target.h?tf(q.target.h,q.target.m):''),i:id,d:dayKey()});G.wrongLog=G.wrongLog.slice(0,30);
+    G.wrongLog.unshift({p:htmlToSpeech(q.prompt).slice(0,140),a:String(q.answer!=null?q.answer:q.kind==='order'?q.items.join(', '):q.kind==='multi'?q.correct.map(k=>{const it=q.items.find(i=>i.id===k);return it&&it.name||(SHAPES[k]||{}).name||k}).join(', '):q.kind==='sort'||q.kind==='rank'?dragAnswer(q):q.kind==='partab'||q.kind==='hilite'||q.kind==='yesno'?kindAnswer(q):q.kind==='money'?fmtM(q.target):q.kind==='angle'?q.target+'°':q.target&&q.target.h?tf(q.target.h,q.target.m):''),i:id,d:dayKey(),...(given?{g:String(given).slice(0,40)}:{}),...(q.meta.t!=null?{t:q.meta.t}:{})});G.wrongLog=G.wrongLog.slice(0,30);
     if(S&&S.mode!=='review'&&id!=='ev'&&!G.review.some(r=>r.s===q.meta.s)&&G.review.filter(r=>r.i===id&&r.t===q.meta.t).length<3){G.review.push({...q.meta,box:0,due:addDays(1)});if(G.review.length>200)G.review.shift()}
   }
   checkWeek();
@@ -791,11 +791,11 @@ function tierOf(id){const m=rollAcc(id);let t=0;for(let k=1;k<4;k++)if(m.acc>=TI
 function toTier(id,k){const r=(G.roll||{})[id]||'',need=k===1?10:MASTER_N;for(let x=0;x<=40;x++){const w=(r+'1'.repeat(x)).slice(-20),a=w.split('').filter(c=>c==='1').length/(w.length||1);if(w.length>=need&&a>=TIERS[k][0])return x}return 40}
 const tierBest=id=>Math.max(tierOf(id),(G.tierBest||{})[id]||0);
 /* ---------- Pip's Pick: the trickiest topic pays double today ---------- */
-const pickToday=()=>((G.settings.now||[]).length||Object.values(G.stats||{}).some(x=>x&&x.a>=6))?pipPick():null;
+const pickToday=()=>(nowList().length||Object.values(G.stats||{}).some(x=>x&&x.a>=6))?pipPick():null;
 function pipPick(){
   const pool=ISLANDS.filter(i=>i.gen&&['math','time','world'].includes(i.group)&&!i.special&&!i.flash&&STAR_ISLANDS.includes(i));
   const accOf=i=>{const m=rollAcc(i.id);if(m.n>=8)return m.acc;const st=G.stats[i.id];return st&&st.a>=6?st.c/st.a:null};
-  const now=(G.settings.now||[]).map(byId).filter(i=>i&&pool.includes(i));
+  const now=nowList().map(byId).filter(i=>i&&pool.includes(i));
   /* topics the grown-up marked as "in class right now" come first; inside them, the ones with skills still to master */
   let weak=now.length?now.slice().sort((a,b)=>(allSkills(a.id)-allSkills(b.id))||((accOf(a)??-1)-(accOf(b)??-1))).slice(0,3):pool.filter(i=>accOf(i)!==null&&accOf(i)<.8).sort((a,b)=>accOf(a)-accOf(b)).slice(0,3);
   if(!weak.length)weak=pool.filter(i=>i.group==='math').sort((a,b)=>(G.best[a.id]||0)-(G.best[b.id]||0)||((G.stats[a.id]||{}).a||0)-((G.stats[b.id]||{}).a||0)).slice(0,3);

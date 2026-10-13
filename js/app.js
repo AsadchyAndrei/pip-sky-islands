@@ -213,7 +213,7 @@ function gateOffline(){gateShell(`<div class="gcard"><h3>Can't reach the sign-in
   $('#gRetry').onclick=()=>location.reload();$('#gGuest').onclick=()=>startGuest()}
 function showGate(){
   if(!(CL.api&&CL.api.configured))return startGuest();
-  gateShell(`<p class="gsub">Math, time, reading and world puzzles for 4th graders.</p>
+  gateShell(`<p class="gsub">Math, reading, science and social studies puzzles for grades 3 to 5.</p>
   <div class="gcard"><h3>Grown-ups: sign in once</h3><p>Then kids just tap their name. Progress is saved in the cloud and follows you to any device.</p>
     <button class="gbtn" type="button" id="gGoogle">${G_ICON}<span>Continue with Google</span></button>
     <div class="or"><span>or with email</span></div>
@@ -251,16 +251,18 @@ function showConsent(){
 function openKids(){stopTimers();stopSpeak();if(ROOT.current){ROOT.profiles[ROOT.current]=G;cloudFlush()}show('kids');renderKids()}
 function renderKids(){
   const el=$('#kids');if(!el)return;
-  const ids=Object.keys(ROOT.profiles).sort((a,b)=>(ROOT.profiles[a].name||'').localeCompare(ROOT.profiles[b].name||''));
+  const cdev=classDevice(),cdevCls=cdev&&(lsJSON('pip-classes-'+CL.uid)||[]).find(c=>c.cid===cdev);
+  const ids=Object.keys(ROOT.profiles).filter(id=>{const p=ROOT.profiles[id];return cdev?p.roster&&p.cls&&p.cls.cid===cdev:!p.roster}).sort((a,b)=>(ROOT.profiles[a].name||'').localeCompare(ROOT.profiles[b].name||''));
+  if(cdev)return renderClassKids(el,ids,cdevCls);
   const guest=CL.mode==='cloud'?importable():[];
   const acct=CL.mode==='cloud'?`<span>Signed in as <b>${esc(CL.email||'grown-up')}</b></span><button class="linkbtn" type="button" id="kOut">Sign out</button>`
     :CL.mode==='offline'?`<span>Offline: saved on this device, uploads next time</span>`
     :CL.api&&CL.api.configured?`<span>Not signed in: progress is saved on this device only.</span><button class="linkbtn" type="button" id="kIn">Grown-up sign in</button>`:`<span>Progress is saved on this device.</span>`;
-  el.innerHTML=`<div class="kidshead"><div class="kfox" data-fox></div><div><div class="eyebrow">Who's playing?</div><h2>${ids.length?'Tap your name!':'Add the first player!'}</h2></div>${ROOT.current&&ROOT.profiles[ROOT.current]?'<button class="go small alt" type="button" id="kBack">Back to the game</button>':''}</div>
+  el.innerHTML=`<div class="kidshead"><div class="kfox" data-fox></div><div><div class="eyebrow">Who's playing?</div><h2>${ids.length?'Tap your name!':'Add the first player!'}</h2></div>${ROOT.current&&ROOT.profiles[ROOT.current]&&!ROOT.profiles[ROOT.current].roster?'<button class="go small alt" type="button" id="kBack">Back to the game</button>':''}${isTeacher()?`<button class="go small leaf" type="button" id="kTeach">${BOARD_ICO}<span>Teacher desk</span></button>`:''}</div>
     <div class="kidgrid">${ids.map(id=>{const p=ROOT.profiles[id],stars=STAR_ISLANDS.reduce((s,i)=>s+(p.best[i.id]||0),0);
       return `<button type="button" class="kid${id===ROOT.current?' cur':''}" data-kid="${id}"><span class="kav">${kidAvatar(p)}</span><b>${esc(p.name||'Player')}${p.kidPin?` <i class="klock" title="Has a PIN">${LOCK}</i>`:''}</b><small>Level ${levelOf(p.xp)+1} · ${stars} ${starsMini(1)}</small></button>`}).join('')}
       <button type="button" class="kid add" id="kAdd"><span class="plus">+</span><b>Add a player</b><small>Just a first name or nickname</small></button></div>
-    ${ids.length?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for 4th graders, built on California's grade 4 standards: math, reading, grammar, science and California history. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A grown-up can sign in to save progress and see what to practice</li></ul></div>`}
+    ${ids.length?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for grades 3 to 5, built on each grade's California standards: math, reading, grammar, science and social studies. A grown-up picks the grade. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A grown-up can sign in to save progress and see what to practice</li></ul></div>`}
     ${guest.length?`<div class="kimport"><p>This device has progress from before you signed in: <b>${guest.map(([,p])=>esc(p.name||'Player')).join(', ')}</b>. Keep it safe in your account?</p><button class="go small leaf" type="button" id="kImp">Add to my account</button></div>`:''}
     <div class="kidfoot">${acct}${isStandalone()?'':'<button class="linkbtn" type="button" id="kInst">Install app</button>'}<a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy</a></div>`;
   if($('#kInst'))$('#kInst').onclick=async()=>{if(installEvt){const e=installEvt;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderKids();return}
@@ -269,16 +271,30 @@ function renderKids(){
   el.querySelectorAll('[data-kid]').forEach(b=>b.onclick=()=>{const id=b.dataset.kid,p=ROOT.profiles[id];tone([523,784]);if(p.kidPin&&id!==ROOT.current)kidPinPrompt(p,()=>selectKid(id));else selectKid(id)});
   $('#kAdd').onclick=()=>newPlayer(id=>selectKid(id));
   if($('#kBack'))$('#kBack').onclick=()=>renderMap();
+  if($('#kTeach'))$('#kTeach').onclick=()=>teacherGate(()=>openTeach());
   if($('#kOut'))$('#kOut').onclick=signOutNow;
   if($('#kIn'))$('#kIn').onclick=()=>{CL.wantGuest=false;showGate()};
   if($('#kImp'))$('#kImp').onclick=()=>{const done=JSON.parse(lsGet('pip-imported-'+CL.uid)||'[]');for(const [gid,p] of importable()){addKid(p);done.push(gid)}lsSet('pip-imported-'+CL.uid,JSON.stringify(done));toast('Progress saved!','It is now in your account and safe in the cloud.','#38b98a');renderKids()};
 }
+/* a classroom device: only this class's students, each with a picture password; leaving needs the grown-up PIN */
+function renderClassKids(el,ids,c){
+  el.innerHTML=`<div class="kidshead"><div class="kfox" data-fox></div><div><div class="eyebrow">${esc(c?c.name:'Class')}${c&&c.teacher?' · '+esc(c.teacher):''}</div><h2>${ids.length?'Tap your name!':'No students yet'}</h2></div></div>
+    <div class="kidgrid">${ids.map(id=>{const p=ROOT.profiles[id],stars=STAR_ISLANDS.reduce((s,i)=>s+(p.best[i.id]||0),0);
+      return `<button type="button" class="kid" data-kid="${id}"><span class="kav">${kidAvatar(p)}</span><b>${esc(p.name||'Player')}</b><small>Level ${levelOf(p.xp)+1} · ${stars} ${starsMini(1)}</small></button>`}).join('')}</div>
+    <div class="kidfoot"><span>Classroom device</span><button class="linkbtn" type="button" id="kTeach">Teacher</button></div>`;
+  refreshFoxes();
+  el.querySelectorAll('[data-kid]').forEach(b=>b.onclick=()=>{const id=b.dataset.kid,p=ROOT.profiles[id];tone([523,784]);if(p.pic&&p.pic.length===2)picLogin(p,()=>selectKid(id));else selectKid(id)});
+  $('#kTeach').onclick=()=>teacherGate(()=>overlay(`<div class="eyebrow">Teacher</div><h2>Classroom device</h2><p>This device shows only ${esc(c?c.name:'the class')}'s students.</p>
+    <div class="btnrow"><button class="go" type="button" id="cdDesk">Teacher desk</button><button class="go alt" type="button" id="cdOff">Stop class mode</button></div><button class="linkbtn" type="button" id="cdClose">Close</button>`,()=>{
+    $('#cdDesk').onclick=()=>{closeOverlay();CL.unlockUntil=Date.now()+5*60000;openTeach(c&&c.cid)};$('#cdClose').onclick=closeOverlay;
+    $('#cdOff').onclick=()=>{try{localStorage.removeItem('pip-classdev-'+CL.uid)}catch(e){}if(ROOT.current&&(ROOT.profiles[ROOT.current]||{}).roster){ROOT.current='';G=freshProfile()}closeOverlay();renderKids()}}))}
 function importable(){const done=JSON.parse(lsGet('pip-imported-'+CL.uid)||'[]');const r=readGuestRoot();return Object.entries(r.profiles).filter(([id,p])=>hasProgress(p)&&!done.includes(id))}
 function selectKid(id){
   if(!ROOT.profiles[id])return;ROOT.current=id;G=ROOT.profiles[id];
   const r=CL.remote[id];if(r&&r.p){G=mergeProfiles(G,r.p);ROOT.profiles[id]=G;r.fresh=false}
   persistLocal();if(ensurePack())return;
   persistLocal();applySettings();renderMap();if(!G.name)askName(true);
+  if(G.cls){classCheck();classPush()}
 }
 function newPlayer(then){
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New player</div><h2>What's the player's name?</h2><p>A first name or nickname is perfect.</p>
@@ -369,22 +385,28 @@ function pinKey(k){
   if(pinBuf.length===4){
     if(pinStage==='enter'){if(pinBuf===ROOT.pin){closeOverlay();if(pinThen){const f=pinThen;pinThen=null;f();return}renderParent();return}bad()}
     else if(pinStage==='create'){pinFirst=pinBuf;pinBuf='';pinStage='confirm'}
-    else{if(pinBuf===pinFirst){ROOT.pin=pinBuf;persistLocal();if(CL.mode==='cloud')CL.api.setUserDoc({pin:pinBuf}).catch(()=>{});CL.unlockUntil=0;closeOverlay();renderParent();return}pinStage='create';bad()}
+    else{if(pinBuf===pinFirst){ROOT.pin=pinBuf;persistLocal();if(CL.mode==='cloud')CL.api.setUserDoc({pin:pinBuf}).catch(()=>{});CL.unlockUntil=0;closeOverlay();if(pinThen){const f=pinThen;pinThen=null;f();return}renderParent();return}pinStage='create';bad()}
   }
   $('#ocard').innerHTML=pinHTML();bindPin();
   function bad(){pinBuf='';setTimeout(()=>{const p=$('#pinbox');if(p){p.classList.add('bad')}},10);sNo()}
 }
 $('#parentBtn').onclick=openParent;
 function acc(id){const s=G.stats[id];return s&&s.a?Math.round(s.c/s.a*100):null}
-const CURRIC=[['Math','Place value, adding, multiplying, dividing','4.NBT',['place','addsub','mult','div']],['Math','Fractions and decimals','4.NF',['frac','dec']],['Math','Patterns, factors, word problems','4.OA',['pattern','riddle']],
-  ['Math','Measurement, money, time, area, angles, graphs','4.MD',['measure','money','time','area','angle','graph']],['Math','Shapes, lines, symmetry','4.G',['shape']],
-  ['English','Reading stories and information','RL.4 / RI.4',['reading']],['English','Listening','SL.4',['listen']],['English','Vocabulary and grammar','L.4',['words','grammar']],['English','Writing','W.4',['write']],
-  ['Science','Earth, life and physical science','NGSS 4',['science']],['Social studies','California history and geography','HSS 4',['history','geo']]];
+/* program map: the pack's islands by subject, with the standard areas their skills cover */
+const stdArea=c=>c.replace(/[.-]\d+[a-z]?$/,'');
+const GRADE_WORD=g=>g===0?'Kindergarten':['','1st','2nd','3rd','4th','5th'][g]+' grade';
+function curMapHTML(){const gw=GRADE_WORD(PACK.grade);
+  const rows=Object.keys(SUBJ_NAMES).flatMap(sj=>ISLANDS.filter(i=>i.gen&&!i.retired&&islandSubject(i)===sj).map(i=>{const areas=[...new Set(skillsOf(i.id).flatMap(s=>s.codes).map(stdArea))];
+    const own=areas.filter(a=>a.includes(String(PACK.grade))&&a!=='MP');return [SUBJ_NAMES[sj],i,(own.length?own:areas).join(' / ')]}));
+  return `<div class="pcard wide curmap"><h4>${gw} program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the ${esc(PACK.stateName)} ${gw.toLowerCase()} program. Stars are the same as in the game: the best round, or recent accuracy (7 of 10 right lately = 2 stars, 8 of 10 = 3).</p>
+      <div class="tscroll"><table class="topics cur"><thead><tr><th>Subject</th><th>Island</th><th>Standards</th><th>Progress</th></tr></thead><tbody>
+      ${rows.map(([sub,i,code])=>{const sf=starFor(i.id),st=(G.stats[i.id]||{}).a||0,lab=sf?starsMini(sf):st?'Practicing':'Not started';return `<tr><td>${sub}</td><td>${esc(i.name)}<small class="cdone">${esc(i.topic)}</small></td><td><code>${esc(code)}</code></td><td><span class="cst s${sf||(st?'p':'n')}">${lab}</span></td></tr>`}).join('')}
+      </tbody></table></div></div>`}
 /* grown-ups: three tabs and one line that says what to do this week */
 let pTab='prog';
 const PT_ICO={prog:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="12" width="5" height="9" rx="1.5" fill="#5fc3f0" stroke="#1f3557" stroke-width="2"/><rect x="9.5" y="7" width="5" height="14" rx="1.5" fill="#38b98a" stroke="#1f3557" stroke-width="2"/><rect x="16" y="3" width="5" height="18" rx="1.5" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/></svg>`,acct:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.6A3.8 3.8 0 0 1 17.5 18Z" fill="#dff3ff" stroke="#1f3557" stroke-width="2" stroke-linejoin="round"/><path d="M12 10.5v5m-2.3-2.4L12 15.5l2.3-2.4" fill="none" stroke="#1f3557" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`};
 function parentTabs(rows,allA){const grid=document.querySelector('#parentBody .pgrid');if(!grid)return;
-  const tabOf=h=>/^(Settings|Players|Install)/.test(h)?'set':/^(Account|Backups|Move progress|Delete|Danger|Reset|Erase)/.test(h)?'acct':'prog';
+  const tabOf=h=>/^(Settings|Players|Install)/.test(h)?'set':/^(Account|Teacher tools|Backups|Move progress|Delete|Danger|Reset|Erase)/.test(h)?'acct':'prog';
   grid.querySelectorAll(':scope>.pcard').forEach(c=>{const h=(c.querySelector('h4')||{}).textContent||'';c.dataset.ptab=tabOf(h)});
   const w=rows.find(r=>r.s.a>=5&&r.p!=null&&r.p<80);
   const focus=allA<20?`Not enough puzzles yet for a weekly tip. After about 20 puzzles, Pip will point to the topic that needs practice.`:w?`<b>This week: ${esc(w.i.name)}</b> (${esc(w.i.topic)}) is at ${w.p}% right on the first try.${lessonsFor(w.i.id).length?' Its 3-minute lesson explains the trick.':''}</p><p class="pfbtn"><button type="button" class="go small" data-play="${w.i.id}">Play it together</button>`:`<b>Great week!</b> Every topic is at 80% or more right on the first try.`;
@@ -419,16 +441,14 @@ function renderParent(){
       const next=INSIDE.filter(it=>it.prize&&it.prize>(P.n||0)).sort((a,b)=>a.prize-b.prize)[0];
       return `<div class="pcard wide"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
     ${packParentHTML()}
+    ${classParentHTML()}
     ${nowParentHTML()}
     ${skillsParentHTML()}
     ${testParentHTML()}
     ${fluencyParentHTML()}
     ${deskParentHTML()}
     <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
-    <div class="pcard wide curmap"><h4>4th grade program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the California 4th grade program. Stars are the same as in the game: the best round, or recent accuracy (7 of 10 right lately = 2 stars, 8 of 10 = 3).</p>
-      <div class="tscroll"><table class="topics cur"><thead><tr><th>Subject</th><th>Area</th><th>Standard</th><th>Islands</th></tr></thead><tbody>
-      ${CURRIC.map(([sub,area,code,ids])=>{const isl=ids.map(byId).filter(Boolean),done=isl.filter(i=>starFor(i.id)>=2).length;return `<tr><td>${sub}</td><td>${area}<small class="cdone">${done} of ${isl.length} islands at 2 stars or more</small></td><td><code>${code}</code></td><td>${isl.map(i=>{const sf=starFor(i.id),st=(G.stats[i.id]||{}).a||0,lab=sf?starsMini(sf):st?'Practicing':'Not started';return `<span class="cst s${sf||(st?'p':'n')}">${esc(i.name)} · ${lab}</span>`}).join(' ')}</td></tr>`}).join('')}
-      </tbody></table></div></div>
+    ${curMapHTML()}
     <div class="pcard wide"><h4>Topics</h4><div class="tscroll"><table class="topics"><thead><tr><th>Island</th><th>Puzzles</th><th>First-try accuracy</th><th>Last 20</th><th>Level</th><th>Stars</th></tr></thead><tbody>
       ${rows.map(r=>`<tr><td><button type="button" class="cisl" data-play="${r.i.id}">${r.i.name}</button></td><td>${r.s.a}</td><td>${r.p==null?'–':`<div class="acc ${r.p<60?'low':r.p<80?'mid':''}"><div class="bar"><i style="width:${r.p}%"></i></div>${r.p}%</div>`}</td><td>${(()=>{const m=rollAcc(r.i.id);return m.n?`${Math.round(m.acc*100)}%${m.n>=12&&m.acc>=.8?' ✓':''}`:'–'})()}</td><td>${DIFF_NAME[diffFor(r.i)]}</td><td>${starsMini(starFor(r.i.id))||'–'}</td></tr>`).join('')}
     </tbody></table></div></div>
@@ -446,9 +466,10 @@ function renderParent(){
       <div class="setrow"><label>Player PIN<small>Optional. Stops brothers and sisters from playing as ${esc(G.name||'this player')}.</small></label><span class="actrow"><button type="button" class="go small alt" id="kPin">${G.kidPin?'Change':'Set PIN'}</button>${G.kidPin?'<button type="button" class="go small alt" id="kPinOff">Remove</button>':''}</span></div>
     </div>
     <div class="pcard"><h4>Players</h4><p>Each player has their own stars, coins and progress. Tap a name to switch.</p>
-      <div class="profs">${Object.keys(ROOT.profiles).map(id=>`<button type="button" class="prof${id===ROOT.current?' cur':''}" data-sw="${id}">${esc(ROOT.profiles[id].name||'Player')}</button>`).join('')}</div>
+      <div class="profs">${Object.keys(ROOT.profiles).filter(id=>!ROOT.profiles[id].roster||id===ROOT.current).map(id=>`<button type="button" class="prof${id===ROOT.current?' cur':''}" data-sw="${id}">${esc(ROOT.profiles[id].name||'Player')}</button>`).join('')}</div>
       <div class="actrow" style="justify-content:flex-start"><button type="button" class="go small" id="addP">Add player</button>${Object.keys(ROOT.profiles).length>1?'<button type="button" class="go small alt" id="delP">Remove this player</button>':''}</div><p class="note" id="pNote"></p>
       <h4 style="margin-top:8px">Grown-up PIN</h4><div class="actrow" style="justify-content:flex-start"><button type="button" class="go small alt" id="chPin">Set a new PIN</button></div></div>
+    ${teacherAcctHTML()}
     <div class="pcard wide"><h4>Account and saving</h4><p class="note" id="cloudNote"></p>
       ${CL.mode==='cloud'?`<p>Signed in as <b>${esc(CL.email)}</b>. Every player in this account is saved in the cloud and appears on any device where you sign in.</p>
         <div class="actrow" style="justify-content:flex-start"><button type="button" class="go small alt" id="aOut">Sign out</button><button type="button" class="go small alt" id="aDl">Download all data</button><button type="button" class="go small alt" id="aDel">Delete account and all data</button></div><p class="note" id="aNote"></p>`
@@ -499,6 +520,7 @@ function renderParent(){
   if($('#aDel'))$('#aDel').onclick=deleteAccountFlow;
   if($('#bkNow'))$('#bkNow').onclick=async()=>{const n=$('#bkNote');save();n.textContent='Saving...';const p=G,t=new Date();
     try{await CL.api.writeBackup(ROOT.current,`${dayKey()}-m${String(t.getHours()).padStart(2,'0')}${String(t.getMinutes()).padStart(2,'0')}`,bkDoc(p));n.className='note ok';n.textContent='Backup saved.';loadBackups()}catch(e){n.className='note bad';n.textContent='Backups need the internet.'}};
+  bindClassParent();bindTeacherAcct();
   parentTabs(rows,allA);
   $('#chPin').onclick=()=>{pinBuf='';pinStage='create';overlay(pinHTML(),bindPin)};
   $('#copyCode').onclick=()=>{const ta=$('#codeOut');const ok=()=>$('#copyNote').textContent='Copied!';

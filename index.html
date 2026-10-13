@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#86d8f8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="description" content="A free learning game for 4th graders: math, reading, grammar, science and California history, with Pip the balloon fox. No ads, nothing to buy.">
+<meta name="description" content="A free learning game for grades 3 to 5: math, reading, grammar, science and social studies on California standards, with Pip the balloon fox. No ads, nothing to buy.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pipskyislands.com/">
 <meta property="og:site_name" content="Pip's Sky Islands">
-<meta property="og:title" content="Pip's Sky Islands: a learning game for 4th grade">
-<meta property="og:description" content="A free learning game for 4th graders: math, reading, grammar, science and California history, with Pip the balloon fox. No ads, nothing to buy.">
+<meta property="og:title" content="Pip's Sky Islands: a learning game for grades 3 to 5">
+<meta property="og:description" content="A free learning game for grades 3 to 5: math, reading, grammar, science and social studies on California standards, with Pip the balloon fox. No ads, nothing to buy.">
 <meta property="og:image" content="https://pipskyislands.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -85,6 +85,7 @@
         <button class="navbtn home" id="homeBtn" type="button"><svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="36" rx="22" ry="8" fill="#8fd46a"/><path d="M8 36 Q26 54 44 36" fill="#a9785a"/><rect x="18" y="20" width="16" height="14" fill="#fff5d6" stroke="#1f3557" stroke-width="2"/><path d="M15 21 L26 11 L37 21Z" fill="#ff6b57" stroke="#1f3557" stroke-width="2" stroke-linejoin="round"/><rect x="23" y="26" width="6" height="8" fill="#a0683a"/></svg><span><b>My Island</b><small>Build your own home</small></span></button>
         <button class="navbtn closet" id="closetBtn" type="button"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M26 10 a5 5 0 1 1 5 5 v4 L46 34 a3 3 0 0 1 -2 5 H8 a3 3 0 0 1 -2 -5 L21 19" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 30 L24 22 L34 30" fill="#ffc23d"/></svg><span><b>Pip's Closet</b><small>Hats, balloons &amp; trophies</small></span></button>
       </div>
+      <div class="classcard" id="classCard" hidden></div>
       <div class="goalcard" id="goalCard" hidden></div>
       <div class="week" id="weekCard"></div>
       </div>
@@ -96,7 +97,7 @@
       <div class="tabp" data-tabp="math"><div class="islands five" id="g-math"></div></div>
       <div class="tabp" data-tabp="world"><div class="islands five" id="g-world"></div></div>
       <div id="g-time" hidden></div>
-      <p class="foot">4th grade: place value, multiplying, dividing, fractions, decimals, area &amp; perimeter, angles, shapes, money, measurement, patterns, graphs, time, calendars, words, maps and science.</p>
+      <p class="foot" id="mapFoot"></p>
       </div>
     </section>
     <div id="mapSpacer" aria-hidden="true"></div>
@@ -197,6 +198,7 @@
       <div class="chapters" id="chapters"></div>
     </section>
 
+    <section id="teach" hidden></section>
     <section id="parent" hidden>
       <div class="playhead"><button class="back" data-home type="button"><span class="ico-slot" data-ico="back"></span>Back to the game</button>
         <div class="ihead"><div class="iname">Grown-ups Corner</div><div class="qnum" id="pSub"></div></div></div>
@@ -225,6 +227,7 @@
 <script src="js/islands.js"></script>
 <script src="js/progress.js"></script>
 <script src="js/play.js"></script>
+<script src="js/teacher.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

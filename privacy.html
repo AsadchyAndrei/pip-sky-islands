@@ -29,14 +29,26 @@ a{color:#2f9fe0;font-weight:700}
 
 <h2>What we store</h2>
 <ul>
-<li><b>Grown-up account:</b> email address, the date consent was given, and the 4-digit Grown-ups PIN.</li>
+<li><b>Grown-up account:</b> email address, the date consent was given, the 4-digit Grown-ups PIN, and whether teacher tools are on.</li>
 <li><b>Each player:</b> a first name or nickname that the grown-up types, an optional 4-digit player PIN, and game progress (stars, coins, items bought, puzzle statistics, recent mistakes for practice, play minutes per day).</li>
 <li><b>Backups:</b> one copy of each player's progress per day, kept for 30 days, so progress can be restored.</li>
 </ul>
 <p>We do <b>not</b> collect children's full names, photos, voice, location, contacts, school, or any other personal information. "Read aloud" uses the voices built into your device; nothing is recorded or uploaded.</p>
 
+<h2 id="classes">Classes: what a teacher sees</h2>
+<p>A grown-up can choose to join a child to a teacher's class by typing the teacher's 6-character class code. The teacher then sees a <b>progress summary</b> for that child: the first name or nickname, which skills are mastered, stars per island, puzzles answered, minutes played in the last 7 days, which class tasks are finished, and up to 15 recent mistakes (the question, the child's answer and the right answer). The teacher never sees the grown-up's email, other children, or anything else in the account. The grown-up can leave the class at any time (Grown-ups → Progress → "Leave the class"), and the teacher can remove the child; either way the summary is deleted or no longer updated.</p>
+
+<h2 id="teachers">For teachers</h2>
+<ul>
+<li>Turning on teacher tools, you confirm that you are a teacher and that your school allows you to use this app with your students, or that you will get their parents' permission first. Under COPPA, a school may give this permission for use only in the school's educational context.</li>
+<li>Add students by <b>first name or nickname</b> only. Students on your classroom devices are stored in your account, like a family's players; they log in with two pictures that you print on login cards.</li>
+<li>A class holds its name, your display name (for example "Ms. Rivera"), the grade, the class code, the topics you mark as "in class now" and the tasks you send. Anyone signed in who has the class code can see these, so do not put student information in them.</li>
+<li>You can download everything (Grown-ups → Account and saving → "Download all data"), remove a student, or delete a class with all its summaries. Deleting your account deletes your classes too.</li>
+<li>Student data is used only to run the game and the teacher desk: no ads, no profiling, never sold or shared.</li>
+</ul>
+
 <h2>Where it is stored</h2>
-<p>Data is stored with Google Firebase (Firebase Authentication and Cloud Firestore). Security rules allow each account to read and write only its own data. A copy of the progress is also kept in the browser on devices where the game is played, so it works without internet.</p>
+<p>Data is stored with Google Firebase (Firebase Authentication and Cloud Firestore). Security rules allow each account to read and write only its own data; a class's progress summaries can be read only by that class's teacher and by each child's own grown-up. A copy of the progress is also kept in the browser on devices where the game is played, so it works without internet.</p>
 
 <h2>What we do with it</h2>
 <p>Only to run the game: save progress, show it on any device where you sign in, and show the Grown-ups progress page. No advertising, no profiling, no selling, no sharing with third parties (other than Google Firebase as the storage provider).</p>

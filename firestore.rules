@@ -1,5 +1,7 @@
 rules_version = '2';
 // Pip's Sky Islands: every grown-up account can read and write ONLY its own data.
+// Classes: a teacher owns a class; a child's grown-up shares a small progress summary with that class
+// by knowing its class code; only the teacher (and the child's own grown-up) can read that summary.
 service cloud.firestore {
   match /databases/{database}/documents {
     function isOwner(uid) {
@@ -10,6 +12,62 @@ service cloud.firestore {
       return d.keys().hasOnly(['data', 'name', 'ts', 'v', 'deleted'])
         && (!('data' in d) || (d.data is string && d.data.size() < 900000))
         && (!('name' in d) || (d.name is string && d.name.size() <= 16));
+    }
+
+    function signedIn() { return request.auth != null; }
+    function str(v, n) { return v is string && v.size() <= n; }
+    function okClass() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['owner', 'name', 'teacher', 'pack', 'code', 'ts', 'now', 'tasks', 'v'])
+        && d.owner == request.auth.uid && str(d.name, 40) && str(d.teacher, 40) && str(d.pack, 12)
+        && str(d.code, 8) && (!('now' in d) || (d.now is list && d.now.size() <= 8))
+        && (!('tasks' in d) || (d.tasks is list && d.tasks.size() <= 40));
+    }
+    function okMember() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['owner', 'kid', 'name', 'pack', 'code', 'ts', 'sum', 'removed'])
+        && d.owner == request.auth.uid && str(d.kid, 40) && str(d.name, 16) && str(d.pack, 12)
+        && (!('sum' in d) || str(d.sum, 60000)) && d.get('removed', false) == false;
+    }
+    function classOwner(cid) { return get(/databases/$(database)/documents/classes/$(cid)).data.owner; }
+
+    // class codes are looked up one at a time (never listed); a code can only point at the writer's own class
+    match /codes/{code} {
+      allow get: if signedIn();
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['cid', 'owner'])
+        && request.resource.data.owner == request.auth.uid
+        && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.cid)).data.owner == request.auth.uid
+        && getAfter(/databases/$(database)/documents/classes/$(request.resource.data.cid)).data.code == code;
+      allow delete: if signedIn() && resource.data.owner == request.auth.uid;
+    }
+
+    // a class holds no student data: its name, the teacher's display name, grade pack, topics and tasks
+    match /classes/{cid} {
+      allow get: if signedIn();
+      allow list: if signedIn() && resource.data.owner == request.auth.uid;
+      allow create: if signedIn() && okClass();
+      allow update: if signedIn() && resource.data.owner == request.auth.uid && okClass();
+      allow delete: if signedIn() && resource.data.owner == request.auth.uid;
+
+      // one child's summary; the id is "<grown-up uid>_<child id>"
+      match /members/{mid} {
+        allow get: if signedIn() && (resource == null || resource.data.owner == request.auth.uid || classOwner(cid) == request.auth.uid);
+        allow list: if signedIn() && classOwner(cid) == request.auth.uid;
+        // joining needs the class code (the teacher adds roster children without it)
+        allow create: if signedIn() && mid.matches(request.auth.uid + '_.+') && okMember()
+          && (classOwner(cid) == request.auth.uid
+              || request.resource.data.code == get(/databases/$(database)/documents/classes/$(cid)).data.code);
+        // the grown-up keeps the summary fresh until the teacher removes the child from the class
+        allow update: if signedIn() && resource.data.owner == request.auth.uid
+          && resource.data.get('removed', false) == false && okMember()
+          && request.resource.data.get('code', '') == resource.data.get('code', '');
+        // the teacher may only mark a child as removed
+        allow update: if signedIn() && classOwner(cid) == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['removed'])
+          && request.resource.data.removed == true;
+        allow delete: if signedIn() && (classOwner(cid) == request.auth.uid
+          || (resource.data.owner == request.auth.uid && resource.data.get('removed', false) == false));
+      }
     }
 
     match /users/{uid} {
