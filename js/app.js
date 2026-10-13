@@ -277,6 +277,7 @@ function importable(){const done=JSON.parse(lsGet('pip-imported-'+CL.uid)||'[]')
 function selectKid(id){
   if(!ROOT.profiles[id])return;ROOT.current=id;G=ROOT.profiles[id];
   const r=CL.remote[id];if(r&&r.p){G=mergeProfiles(G,r.p);ROOT.profiles[id]=G;r.fresh=false}
+  persistLocal();if(ensurePack())return;
   persistLocal();applySettings();renderMap();if(!G.name)askName(true);
 }
 function newPlayer(then){
@@ -483,13 +484,13 @@ function renderParent(){
     $('#setVstyle').onchange=e=>{G.settings.vstyle=e.target.value;save();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
     $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);bindSw('setDys','dys',applySettings);
   $('#setName').onchange=e=>{G.name=e.target.value.trim().slice(0,16);save();updateStats()};
-  document.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{save();ROOT.current=b.dataset.sw;G=ROOT.profiles[ROOT.current];const r=CL.remote[ROOT.current];if(r&&r.p){G=mergeProfiles(G,r.p);ROOT.profiles[ROOT.current]=G;r.fresh=false}persistLocal();applySettings();refreshFoxes();renderParent()});
-  $('#addP').onclick=()=>newPlayer(id=>{save();ROOT.current=id;G=ROOT.profiles[id];persistLocal();applySettings();renderParent()});
+  document.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{save();ROOT.current=b.dataset.sw;G=ROOT.profiles[ROOT.current];const r=CL.remote[ROOT.current];if(r&&r.p){G=mergeProfiles(G,r.p);ROOT.profiles[ROOT.current]=G;r.fresh=false}persistLocal();if(ensurePack())return;applySettings();refreshFoxes();renderParent()});
+  $('#addP').onclick=()=>newPlayer(id=>{save();ROOT.current=id;G=ROOT.profiles[id];persistLocal();if(ensurePack())return;applySettings();renderParent()});
   if($('#delP'))$('#delP').onclick=async e=>{const b=e.currentTarget,n=$('#pNote');if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to remove';n.className='note bad';n.textContent=`This removes ${G.name||'this player'}, all their progress and backups, on every device.`;return}
     const id=ROOT.current;b.disabled=true;
     if(CL.mode==='cloud'){n.className='note';n.textContent='Removing...';try{await CL.api.deleteKid(id)}catch(err){b.disabled=false;n.className='note bad';n.textContent='Could not remove right now. Check the internet and try again.';return}CL.remote[id]={deleted:true}}
     else if(CL.mode==='offline'){b.disabled=false;n.textContent='Removing a player needs the internet.';return}
-    delete CL.dirty[id];delete ROOT.profiles[id];(ROOT.gone=ROOT.gone||{})[id]=1;ROOT.current=Object.keys(ROOT.profiles)[0];G=ROOT.profiles[ROOT.current];persistLocal();applySettings();renderParent()};
+    delete CL.dirty[id];delete ROOT.profiles[id];(ROOT.gone=ROOT.gone||{})[id]=1;ROOT.current=Object.keys(ROOT.profiles)[0];G=ROOT.profiles[ROOT.current];persistLocal();if(ensurePack())return;applySettings();renderParent()};
   $('#kPin').onclick=()=>{let first='';pinPad('New player PIN','4 digits the player will type to start.',v=>{if(!first){first=v;$('#ocard h2').textContent='Type it again';return}if(v!==first){first='';$('#ocard h2').textContent='New player PIN';return false}G.kidPin=v;save();closeOverlay();renderParent();toast('Player PIN set',`${esc(G.name||'Player')} will type it to start.`,'#38b98a')})};
   if($('#kPinOff'))$('#kPinOff').onclick=()=>{G.kidPin='';save();renderParent()};
   if($('#aOut'))$('#aOut').onclick=signOutNow;

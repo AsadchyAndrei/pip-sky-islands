@@ -37,14 +37,16 @@ def launch(p):
     return p.chromium.launch(args=['--font-render-hinting=none'])
 
 
-def open_page(browser, w=1280, h=900, big=False):
+def open_page(browser, w=1280, h=900, big=False, pack=None):
     """A page with Alisa's test profile (level 12, 48 stars), already on the map."""
     ctx = browser.new_context(viewport={'width': w, 'height': h}, device_scale_factor=1, is_mobile=w < 700, has_touch=True,
                               service_workers='block')
     ctx.route('**/*', router)
     prof = dict(PROFILE); prof['settings'] = dict(prof['settings'], big=big)
+    if pack: prof['pack'] = pack
     root = {'profiles': {'a': prof}, 'current': 'a', 'pin': '', 'ts': 1}
     ctx.add_init_script(f"try{{if(!sessionStorage.getItem('seeded')){{localStorage.setItem('pip-sky-islands-v3',{json.dumps(json.dumps(root))});"
+                        + (f"localStorage.setItem('pip-pack','{pack}');" if pack else '') + f""
                         f"sessionStorage.setItem('seeded','1')}}}}catch(e){{}}"
                         "Math.random=(()=>{let s=12345;return()=>{s=(s*16807)%2147483647;return (s-1)/2147483646}})();")
     page = ctx.new_page()

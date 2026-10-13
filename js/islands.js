@@ -419,7 +419,7 @@ const GEN={
 };
 const PACK_DEFAULT='ca-4';
 const PACK=(()=>{let id='';try{id=localStorage.getItem('pip-pack')||''}catch(e){}return CONTENT.packs[id]||CONTENT.packs[PACK_DEFAULT]})();
-const ISLANDS=PACK.islands.map(r=>Object.assign({},r,GEN[r.id]||{}));
+const ISLANDS=PACK.islands.map(r=>Object.assign({},r,GEN[r.gen||r.id]||{},{genKey:r.gen||r.id}));
 const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review'&&i.id!=='ptest'&&!i.retired);
 const MAX=STAR_ISLANDS.length*3,BOSS_NEED=20;
 const MIXABLE=ISLANDS.filter(i=>i.gen&&!i.retired);
@@ -475,6 +475,8 @@ const CHAPTERS=[
     outro:'THE RAINBOW BRIDGE IS COMPLETE! The sun is back, and every island is connected. Thank you for being the best sky partner ever!'}
 ];
 const BOOKS={1:{title:"Pip's Lost Map",start:0,unit:'map piece',won:'Piece found!'},2:{title:'The Starlight Compass',start:4,unit:'compass part',won:'Compass part found!'},3:{title:'The Rainbow Bridge',start:8,unit:'bridge color',won:'Color restored!'}};
+/* a grade's pack may not have every island: chapters only ask for the islands this pack has */
+for(const ch of CHAPTERS)ch.islands=ch.islands.filter(id=>ISLANDS.some(i=>i.id===id&&i.gen&&!i.retired));
 const bookOf=i=>(CHAPTERS[Math.min(i,CHAPTERS.length-1)]||{}).book||1;
 function bookArt(b,n,fresh){return b===3?bridgeSVG3(n,fresh):b===2?compassSVG2(n,fresh):mapSVG(Math.min(n,4),fresh)}
 function bridgeSVG3(n,fresh){const cols=['#ff6b57','#ffc23d','#38b98a','#2f9fe0'],cx=158,cy=170;let o='';

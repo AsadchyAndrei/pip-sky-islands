@@ -31,6 +31,7 @@ function normalizeProfile(p){
   for(const k of ['review','wrongLog','fixedSeeds','badges'])if(!Array.isArray(g[k]))g[k]=[];
   g.review=trimReview(g.review);
   if(g.sk)g.sk=skLegacy(g.sk);
+  if(!g.pack)g.pack=PACK_DEFAULT;if(!g.grades||typeof g.grades!=='object')g.grades={};
   return attachCoins(g)}
 /* skill progress used to be saved under "island:number" keys; now under the skill's id from the library */
 const SK_LEGACY=Object.fromEntries(Object.values(CONTENT.skills).filter(s=>s.legacy).map(s=>[s.legacy,s.id]));
@@ -47,7 +48,7 @@ function deepMax(a,b){
   if(typeof a==='boolean'&&typeof b==='boolean')return a||b;
   return clone(a)}
 /* fields where the most recent choice wins (what Pip wears, settings, difficulty...) */
-const LATEST=['name','char','hat','balloon','pet','basket','glass','deco','wish','pickDay','charColor','settings','diff','wrongLog','kidPin','greetedName','saveGoal','roll','deck'];
+const LATEST=['pack','name','char','hat','balloon','pet','basket','glass','deco','wish','pickDay','charColor','settings','diff','wrongLog','kidPin','greetedName','saveGoal','roll','deck'];
 function mergeProfiles(a,b){
   if(!a&&!b)return freshProfile();if(!a)return normalizeProfile(b);if(!b)return normalizeProfile(a);
   a=normalizeProfile(a);b=normalizeProfile(b);
@@ -131,7 +132,7 @@ function onKids(docs,meta){
 function canAdopt(){return curScreen!=='play'&&curScreen!=='done'&&!ovOpen&&!(curScreen==='home'&&homeEdit)}
 /* pull in changes from other devices (only between rounds, never mid-puzzle) */
 function adoptRemote(){if(CL.mode!=='cloud'||!ROOT.current)return;const r=CL.remote[ROOT.current];if(!r||!r.p||!r.fresh)return;r.fresh=false;
-  if(sameProfile(G,r.p))return;G=mergeProfiles(G,r.p);ROOT.profiles[ROOT.current]=G;persistLocal();applySettings();refreshFoxes();
+  if(sameProfile(G,r.p))return;G=mergeProfiles(G,r.p);ROOT.profiles[ROOT.current]=G;persistLocal();if(ensurePack())return;applySettings();refreshFoxes();
   if(curScreen==='map'&&!adoptRemote.inMap){adoptRemote.inMap=1;renderMap();adoptRemote.inMap=0}
   else if(curScreen==='home')renderHome()} // the island screen must show the adopted profile, not the old object
 function dropKid(id){delete ROOT.profiles[id];(ROOT.gone=ROOT.gone||{})[id]=1;if(ROOT.current===id){ROOT.current='';G=freshProfile();if(CL.mode!=='guest'&&curScreen!=='gate')openKids()}persistLocal()}
@@ -207,15 +208,27 @@ function nowParentHTML(){const sel=G.settings.now||[],groups=[['Math',ISLANDS.fi
 const US_STATES=[['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],['DC','District of Columbia'],['FL','Florida'],['GA','Georgia'],['HI','Hawaii'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming']];
 const GRADES=[[0,'Kindergarten'],[1,'Grade 1'],[2,'Grade 2'],[3,'Grade 3'],[4,'Grade 4'],[5,'Grade 5']];
 const packKey=(st,gr)=>`${String(st).toLowerCase()}-${gr}`;
-function packParentHTML(){const st=G.settings.state||PACK.state,gr=G.settings.grade!=null?+G.settings.grade:PACK.grade,ready=!!CONTENT.packs[packKey(st,gr)];
+/* Progress tied to islands is kept per grade: changing grade (a new school year) starts that grade's islands fresh
+   and keeps the old grade's stars safe in G.grades. Coins, purchases, Pip, the home island and the story are shared. */
+const GRADE_FIELDS=['best','diff','hardMaster','stats','roll','star3','tierBest','review','wrongLog','deck','lessonOffer','skMig','placed'];
+function packSwitch(to){if(!G.pack)G.pack=PACK_DEFAULT;if(G.pack===to)return;G.grades=Object.assign({},G.grades);
+  const keep={};for(const f of GRADE_FIELDS)if(G[f]!==undefined)keep[f]=clone(G[f]);G.grades[G.pack]=keep;
+  const back=G.grades[to]||{};for(const f of GRADE_FIELDS){if(back[f]!==undefined)G[f]=clone(back[f]);else if(DEF[f]!==undefined)G[f]=clone(DEF[f]);else delete G[f]}
+  G.pack=to}
+const packReady=P=>P&&(P.status!=='draft'||(()=>{try{return localStorage.getItem('pip-dev-packs')==='1'}catch(e){return false}})());
+/* the page runs one pack at a time: if this player's pack is another one, reload with it */
+function ensurePack(){const id=G.pack||PACK_DEFAULT;if(id!==PACK.id&&CONTENT.packs[id]){try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return true}return false}
+function packParentHTML(){const st=G.settings.state||PACK.state,gr=G.settings.grade!=null?+G.settings.grade:PACK.grade,ready=packReady(CONTENT.packs[packKey(st,gr)]);
   const opt=(v,t,on)=>`<option value="${v}"${on?' selected':''}>${esc(t)}</option>`;
   return `<div class="pcard wide"><h4>School program</h4><p class="note">Choose the state and grade of ${esc(G.name||'your child')}'s school. The islands and skills follow that state's standards for that grade.</p>
-    <div class="setrow"><label for="setState">State</label><select id="setState">${US_STATES.map(([c,n])=>opt(c,n+(Object.values(CONTENT.packs).some(P=>P.state===c)?'':' (coming soon)'),c===st)).join('')}</select></div>
-    <div class="setrow"><label for="setGrade">Grade</label><select id="setGrade">${GRADES.map(([g,n])=>opt(g,n+(CONTENT.packs[packKey(st,g)]?'':' (coming soon)'),g===gr)).join('')}</select></div>
+    <div class="setrow"><label for="setState">State</label><select id="setState">${US_STATES.map(([c,n])=>opt(c,n+(Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P))?'':' (coming soon)'),c===st)).join('')}</select></div>
+    <div class="setrow"><label for="setGrade">Grade</label><select id="setGrade">${GRADES.map(([g,n])=>opt(g,n+(packReady(CONTENT.packs[packKey(st,g)])?'':' (coming soon)'),g===gr)).join('')}</select></div>
     <p class="note${ready?' ok':''}" id="packNote">${ready?`Playing: <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>.`:`${esc((US_STATES.find(x=>x[0]===st)||['',st])[1])}, ${esc(GRADES.find(x=>x[0]===gr)[1].toLowerCase())} is coming soon. Until then the islands follow <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>; most math and English skills are the same from state to state.`}</p></div>`}
-function setPack(st,gr){G.settings.state=st;G.settings.grade=gr;save();const id=packKey(st,gr);
-  if(CONTENT.packs[id]&&id!==PACK.id){try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return}renderParent()}
-function skillsParentHTML(){const groups=[['Math',['place','addsub','mult','div','frac','dec','area','angle','shape','money','measure','pattern','graph','time','riddle']],['English',['reading','listen','words','grammar','write']],['Science and social studies',['science','geo','history']]];
+function setPack(st,gr){G.settings.state=st;G.settings.grade=gr;const id=packKey(st,gr);
+  if(packReady(CONTENT.packs[id])&&id!==PACK.id){packSwitch(id);save();try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return}save();renderParent()}
+const SUBJ_NAMES={math:'Math',ela:'English',science:'Science',social:'Social studies'};
+const islandSubject=i=>{const k=(i.skills||[])[0];return k&&CONTENT.skills[k]?CONTENT.skills[k].subject:''};
+function skillsParentHTML(){const groups=Object.keys(SUBJ_NAMES).map(sj=>[SUBJ_NAMES[sj],ISLANDS.filter(i=>i.gen&&!i.retired&&islandSubject(i)===sj).map(i=>i.id)]).filter(g=>g[1].length);
   let all=0,done=0;const body=groups.map(([g,ids])=>`<h5 class="skgrp">${g}</h5>${ids.filter(id=>byId(id)&&skillsOf(id).length).map(id=>{const L=skillsOf(id),d=skillsDone(id);all+=L.length;done+=d;
     return `<details class="skdet"><summary><b>${esc(byId(id).name)}</b><span>${esc(byId(id).topic)}</span><em>${d}/${L.length}</em><span class="skmeter"><i style="width:${Math.round(d/L.length*100)}%"></i></span></summary><ul>${L.map(s=>{const m=skStat(s.k);return `<li class="s${m.st}">${SK_DOT(m.st)}<span>${esc(s.name)}</span><small>${esc(s.std)}</small><em>${m.st===2?'Mastered':m.n?`${m.ok}/${m.n} lately`:'Not tried'}</em></li>`}).join('')}</ul></details>`}).join('')}`).join('');
   return `<div class="pcard wide"><h4>Skills checklist</h4><p class="note">Every island is a topic made of skills. A skill is <b>mastered</b> at 8 of 10 right on the first try (at least 5 tries). Mastered: <b>${done} of ${all}</b> skills. Tap an island to see its skills and standards.</p><div class="sklegend">${SK_DOT(2)} mastered ${SK_DOT(1)} practicing ${SK_DOT(0)} not tried</div>${body}</div>`}
@@ -732,7 +745,8 @@ const LESSONS=[
    practice:[8,9,8]}
 
 ];
-const lessonsFor=id=>LESSONS.filter(L=>L.isl===id);
+/* lessons belong to a question generator (L.gen, or the island id for 4th grade lessons), so each grade gets its own */
+const lessonsFor=id=>{const k=(byId(id)||{}).genKey||id;return LESSONS.filter(L=>(L.gen||L.isl)===k)};
 function lessonFor(id){const ls=lessonsFor(id);if(!ls.length)return null;const miss=t=>G.review.filter(r=>r.i===id&&t.includes(r.t)).length,done=L=>((G.lessons||{})[L.id]||'');
   return ls.slice().sort((x,y)=>miss(y.types)-miss(x.types)||done(x).localeCompare(done(y)))[0]}
 function lessonIsland(L){const base=byId(L.isl);return Object.assign({},base,{id:'lesson_'+L.id,name:'Lesson: '+L.title,special:'lesson',lesson:L,gen:null})}
@@ -748,7 +762,7 @@ function offerLesson(isl,go){const L=lessonFor(isl.id);G.lessonOffer=Object.assi
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Pip's tip</div><h2>Learn the trick first?</h2><p>${esc(isl.name)} has been tricky lately. I have a <b>3-minute lesson</b>: <b>${L.title}</b>. Then the puzzles get easier!</p><div class="btnrow"><button class="go leaf" type="button" id="lsYes">Show me the trick</button><button class="go alt" type="button" id="lsNo">Just play</button></div>`,()=>{
     $('#lsYes').onclick=()=>{closeOverlay();start(lessonIsland(L))};$('#lsNo').onclick=()=>{closeOverlay();go()}})}
 /* ---------- quick check for new players: sets Easy or Normal on the core math islands ---------- */
-const PLACE_ISL=['place','addsub','mult','div','frac','area'];
+const PLACE_ISL=['place','addsub','mult','div','frac','area'].filter(id=>byId(id)&&byId(id).gen);
 function startPlacement(){const base=byId('daily'),isl=Object.assign({},base,{id:'placement',name:'Quick Check',special:'placement'});
   const qs=PLACE_ISL.flatMap(id=>[0,1].map(k=>{const i=byId(id);const q=makeQ(i,k%i.types,R(1,2e9),2);q.from=i.name;return q}));
   beginRound(isl,'place',shuffle(qs));say($('#say'),`Quick check! 12 puzzles, no pressure. Just do your best${nm()}, so I know where to start.`)}

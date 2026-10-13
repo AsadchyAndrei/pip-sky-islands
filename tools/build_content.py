@@ -79,7 +79,8 @@ for pid, p in packs.items():
             if sid not in skills: err(f'pack {pid}, island {isl["id"]}: skill "{sid}" is not in the library'); continue
             if sid in used: err(f'pack {pid}: skill "{sid}" is on two islands ({used[sid]} and {isl["id"]})')
             used[sid] = isl['id']
-            if skills[sid]['src']['gen'] != isl['id']: err(f'pack {pid}: skill "{sid}" makes questions with "{skills[sid]["src"]["gen"]}" but sits on island "{isl["id"]}"')
+            g = isl.get('gen', isl['id'])
+            if skills[sid]['src']['gen'] != g: err(f'pack {pid}: skill "{sid}" makes questions with "{skills[sid]["src"]["gen"]}" but island "{isl["id"]}" uses generator "{g}"')
             for c in skills[sid]['std']:
                 if c not in codes and base(c) not in codes: err(f'pack {pid}: skill "{sid}" names standard {c}, which is not in standards/{p["standards"]}.json')
     # coverage
@@ -90,7 +91,7 @@ for pid, p in packs.items():
     reports[pid] = (p, codes, by_std)
 
 def report_md(p, codes, by_std):
-    L = [f'# Standards coverage: {p["stateName"]}, grade {p["grade"]}', '',
+    L = [f'# Standards coverage: {p["stateName"]}, grade {p["grade"]}' + (' (draft: not offered to players yet)' if p.get('status') == 'draft' else ''), '',
          f'Built by `tools/build_content.py` from `content/`. Do not edit by hand.', '',
          'A standard counts as covered when at least one skill on this pack\'s islands practices it. '
          'Standards a game cannot check on its own (group discussion, presentations, long writing projects) are listed but not counted.', '',

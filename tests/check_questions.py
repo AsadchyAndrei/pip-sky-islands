@@ -37,17 +37,23 @@ for(const isl of ISLANDS.filter(i=>i.gen&&!i.retired)){
   L.forEach(s=>{if(!s.ts.length)add('skill with no questions',s.k,'');if(s.ts.some(t=>t<0||t>=isl.types))add('skill question type out of range',s.k,'')});
 }
 for(const P of Object.values(CONTENT.packs))for(const r of P.islands)if((r.skills||[]).length&&!GEN[r.id])add('pack island without a question generator',P.id+'/'+r.id,'');
-for(const L of LESSONS)for(let k=0;k<20;k++){let it;try{it=L.build()}catch(e){add('lesson crash',L.id,String(e).slice(0,100));break}
+for(const L of LESSONS.filter(L=>ISLANDS.some(i=>i.genKey===(L.gen||L.isl))))for(let k=0;k<20;k++){let it;try{it=L.build()}catch(e){add('lesson crash',L.id,String(e).slice(0,100));break}
   it.forEach((q,i)=>{if(!q.teach&&q.choices&&!q.choices.includes(q.answer))add('lesson answer missing',L.id+' #'+i,strip(q.prompt).slice(0,60))});
   if(!byId(L.isl))add('lesson island',L.id,L.isl)}
-const noLesson=ISLANDS.filter(i=>i.gen&&!i.retired&&!LESSONS.some(L=>L.isl===i.id)).map(i=>i.id);if(noLesson.length)add('islands without a lesson','',noLesson.join(','));
+const noLesson=ISLANDS.filter(i=>i.gen&&!i.retired&&!lessonsFor(i.id).length).map(i=>i.id);if(noLesson.length)add('islands without a lesson','',noLesson.join(','));
 return JSON.stringify({total:Object.values(cnt).reduce((a,b)=>a+b,0),bad})}"""
 c = Check('questions')
+PACKS = sorted(p.stem for p in (SITE / 'content' / 'packs').glob('*.json'))
 with sync_playwright() as p:
-    b = launch(p); ctx, pg, errs = open_page(b, 800, 600)
-    r = json.loads(pg.evaluate(JS))
-    print(f"     generated {r['total']} questions")
-    for x in r['bad']:
-        c.ok(False, x)
-    c.ok(not errs, f'page errors: {errs[:3]}')
+    b = launch(p)
+    for pack in PACKS:
+        ctx, pg, errs = open_page(b, 800, 600, pack=pack)
+        got = pg.evaluate('PACK.id')
+        c.ok(got == pack, f'{pack}: page opened with pack {got}')
+        r = json.loads(pg.evaluate(JS))
+        print(f"     {pack}: generated {r['total']} questions")
+        for x in r['bad']:
+            c.ok(False, f'{pack}: {x}')
+        c.ok(not errs, f'{pack}: page errors: {errs[:3]}')
+        ctx.close()
 c.done()
