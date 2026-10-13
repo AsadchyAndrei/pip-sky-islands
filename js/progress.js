@@ -745,6 +745,7 @@ const LESSONS=[
    practice:[8,9,8]}
 
 ];
+LESSONS.push(...LESSONS3);
 /* lessons belong to a question generator (L.gen, or the island id for 4th grade lessons), so each grade gets its own */
 const lessonsFor=id=>{const k=(byId(id)||{}).genKey||id;return LESSONS.filter(L=>(L.gen||L.isl)===k)};
 function lessonFor(id){const ls=lessonsFor(id);if(!ls.length)return null;const miss=t=>G.review.filter(r=>r.i===id&&t.includes(r.t)).length,done=L=>((G.lessons||{})[L.id]||'');

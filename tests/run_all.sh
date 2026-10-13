@@ -6,4 +6,5 @@ python3 ../tools/build_content.py --check
 python3 check_load.py
 python3 check_questions.py
 python3 check_interactions.py
+python3 check_packs.py
 echo "All checks passed."

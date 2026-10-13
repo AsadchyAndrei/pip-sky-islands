@@ -1,0 +1,60 @@
+{
+ "id": "ca-3",
+ "state": "CA",
+ "grade": 3,
+ "note": "Short plain-English summaries of each standard, written for parents. The official wording is at the source links. 'app: false' marks standards a game cannot check on its own; 'review: true' marks standards from another grade practiced for review. Neither counts toward coverage.",
+ "sets": [
+  {
+   "subject": "math",
+   "name": "California Common Core State Standards: Mathematics",
+   "url": "https://www.cde.ca.gov/be/st/ss/documents/ccssmathstandardaug2013.pdf"
+  },
+  {
+   "subject": "ela",
+   "name": "California Common Core State Standards: English Language Arts & Literacy",
+   "url": "https://www.cde.ca.gov/be/st/ss/documents/finalelaccssstandards.pdf"
+  },
+  {
+   "subject": "science",
+   "name": "California Next Generation Science Standards (CA NGSS)",
+   "url": "https://www.cde.ca.gov/pd/ca/sc/ngssstandards.asp"
+  },
+  {
+   "subject": "social",
+   "name": "California History-Social Science Content Standards",
+   "url": "https://www.cde.ca.gov/be/st/ss/documents/histsocscistnd.pdf"
+  }
+ ],
+ "standards": [
+  {"code": "3.OA.1", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Understand multiplication as equal groups: 5 × 7 is 5 groups of 7."},
+  {"code": "3.OA.2", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Understand division as sharing equally or making equal groups: 56 ÷ 8."},
+  {"code": "3.OA.3", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Solve multiplication and division word problems within 100 (equal groups, arrays, measurements)."},
+  {"code": "3.OA.4", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Find the unknown number in a multiplication or division equation: 8 × ? = 48."},
+  {"code": "3.OA.5", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Use properties of multiplication: switch the order, regroup factors, split a factor (8 × 7 = 8 × 5 + 8 × 2)."},
+  {"code": "3.OA.6", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Understand division as an unknown-factor problem: 32 ÷ 8 is the number that makes 32 when multiplied by 8."},
+  {"code": "3.OA.7", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Multiply and divide within 100 fluently; know all products of two one-digit numbers from memory by the end of grade 3."},
+  {"code": "3.OA.8", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Solve two-step word problems with all four operations, use a letter for the unknown, and check answers with estimation."},
+  {"code": "3.OA.9", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Find patterns in numbers (odd and even, addition and multiplication tables) and explain them."},
+  {"code": "3.NBT.1", "subject": "math", "domain": "Number & Operations in Base Ten", "summary": "Round whole numbers to the nearest 10 or 100."},
+  {"code": "3.NBT.2", "subject": "math", "domain": "Number & Operations in Base Ten", "summary": "Add and subtract within 1000 fluently."},
+  {"code": "3.NBT.3", "subject": "math", "domain": "Number & Operations in Base Ten", "summary": "Multiply one-digit numbers by multiples of 10 (9 × 80, 5 × 60)."},
+  {"code": "3.NF.1", "subject": "math", "domain": "Number & Operations: Fractions", "summary": "Understand a fraction 1/b as one part when a whole is cut into b equal parts, and a/b as a parts of size 1/b."},
+  {"code": "3.NF.2", "subject": "math", "domain": "Number & Operations: Fractions", "summary": "Show fractions on a number line."},
+  {"code": "3.NF.3", "subject": "math", "domain": "Number & Operations: Fractions", "summary": "Explain equivalent fractions, write whole numbers as fractions, and compare fractions with the same numerator or the same denominator."},
+  {"code": "3.MD.1", "subject": "math", "domain": "Measurement & Data", "summary": "Tell and write time to the nearest minute and solve elapsed-time problems in minutes."},
+  {"code": "3.MD.2", "subject": "math", "domain": "Measurement & Data", "summary": "Measure and estimate liquid volumes and masses in grams, kilograms and liters; solve one-step word problems with them."},
+  {"code": "3.MD.3", "subject": "math", "domain": "Measurement & Data", "summary": "Draw and read scaled picture graphs and bar graphs; solve 'how many more' and 'how many less' problems."},
+  {"code": "3.MD.4", "subject": "math", "domain": "Measurement & Data", "summary": "Measure lengths to the nearest half and quarter inch and show the data on a line plot."},
+  {"code": "3.MD.5", "subject": "math", "domain": "Measurement & Data", "summary": "Understand area: a unit square covers 1 square unit."},
+  {"code": "3.MD.6", "subject": "math", "domain": "Measurement & Data", "summary": "Measure area by counting unit squares."},
+  {"code": "3.MD.7", "subject": "math", "domain": "Measurement & Data", "summary": "Relate area to multiplication and addition: tiling, length × width, splitting rectangles, shapes made of rectangles."},
+  {"code": "3.MD.8", "subject": "math", "domain": "Measurement & Data", "summary": "Solve perimeter problems, including finding an unknown side, and rectangles with the same area but different perimeters."},
+  {"code": "3.G.1", "subject": "math", "domain": "Geometry", "summary": "Understand that shapes share attributes: rhombuses, rectangles and squares are all quadrilaterals."},
+  {"code": "3.G.2", "subject": "math", "domain": "Geometry", "summary": "Split shapes into parts with equal areas and name each part as a unit fraction of the whole."},
+  {"code": "MP.1", "subject": "math", "domain": "Mathematical Practices", "summary": "Make sense of problems and keep at them."},
+  {"code": "MP.3", "subject": "math", "domain": "Mathematical Practices", "summary": "Explain your reasoning and find mistakes in other people's reasoning."},
+  {"code": "2.NBT.1", "subject": "math", "domain": "Number & Operations in Base Ten", "grade": 2, "review": true, "summary": "Understand the digits of a three-digit number as hundreds, tens and ones."},
+  {"code": "2.NBT.3", "subject": "math", "domain": "Number & Operations in Base Ten", "grade": 2, "review": true, "summary": "Read and write numbers to 1000 in numerals, words and expanded form."},
+  {"code": "2.NBT.4", "subject": "math", "domain": "Number & Operations in Base Ten", "grade": 2, "review": true, "summary": "Compare two three-digit numbers using >, = and <."}
+ ]
+}

@@ -454,6 +454,8 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .coins{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;max-width:640px}
 .chart{width:min(100%,480px)}
 .chart text{font-family:var(--body)}
+.iotab{border-collapse:collapse;margin:0 auto;font:700 20px var(--display,inherit)}.iotab th,.iotab td{border:3px solid var(--line);padding:6px 14px;text-align:center;background:#fff}.iotab th{background:var(--pale-sky)}
+.shrow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.shrow svg{width:96px}
 .picto{display:flex;flex-direction:column;gap:6px;background:var(--pale-sky);border-radius:18px;padding:12px 16px}
 .picto div{display:flex;align-items:center;gap:6px;font-weight:800;font-size:20px}
 .picto div>span:first-child{width:96px}

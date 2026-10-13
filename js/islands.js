@@ -415,7 +415,11 @@ const GEN={
   week:{gen:genWeek,types:5},season:{gen:genSeason,types:6},riddle:{gen:genRiddle,types:22,round:riddleRound},words:{gen:genWords,types:8},
   reading:{gen:genReading,types:PASSAGES.length*3+LQ.length+TSTRUCT.length+MEDIA_Q.length,round:readingRound,noDiff:true},
   listen:{gen:genListen,types:LISTEN_Q.length,round:listenRound,noDiff:true},geo:{gen:genGeo,types:8},history:{gen:genHistory,types:CAHIST.length},
-  write:{gen:genWrite,types:16},grammar:{gen:genGrammar,types:GRAMF.length+32},science:{gen:genScience,types:SCIENCE.length+66}
+  write:{gen:genWrite,types:16},grammar:{gen:genGrammar,types:GRAMF.length+32},science:{gen:genScience,types:SCIENCE.length+66},
+  /* 3rd grade (js/math3.js) */
+  place3:{gen:genPlace3,types:6},addsub3:{gen:genAddSub3,types:5},mult3:{gen:genMult3,types:8},div3:{gen:genDiv3,types:7},frac3:{gen:genFrac3,types:8},
+  area3:{gen:genArea3,types:7},time3:{gen:genTime3,types:6},measure3:{gen:genMeasure3,types:6},graph3:{gen:genGraph3,types:6},shape3:{gen:genShape3,types:5},
+  pattern3:{gen:genPattern3,types:5},riddle3:{gen:genRiddle3,types:5}
 };
 const PACK_DEFAULT='ca-4';
 const PACK=(()=>{let id='';try{id=localStorage.getItem('pip-pack')||''}catch(e){}return CONTENT.packs[id]||CONTENT.packs[PACK_DEFAULT]})();
@@ -427,7 +431,7 @@ const byId=id=>ISLANDS.find(i=>i.id===id);
 function makeQ(isl,t,seed,d){
   const keepR=rand,keepD=DIFF;rand=seeded(seed);DIFF=d||diffFor(isl);let q;
   try{q=isl.gen(t)}finally{q&&(q.meta={i:isl.id,t,s:seed,d:DIFF});rand=keepR;DIFF=keepD}
-  if(q&&!q.kind&&q.calc==null){const c=(CALC[isl.id]||{})[t];if(c)q.calc=c}
+  if(q&&!q.kind&&q.calc==null){const c=(CALC[isl.genKey||isl.id]||{})[t];if(c)q.calc=c}
   return q;
 }
 /* calculation types whose answers are fractions, decimals, money or remainders: typed on the keypad too ('strict' = the answer must be in the asked form) */
