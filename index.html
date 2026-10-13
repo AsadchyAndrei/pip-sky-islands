@@ -1498,6 +1498,7 @@ header.top .pill{white-space:nowrap}
 .nlwrap{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
 #nlBox,#shBox{width:100%;max-width:520px}.nlsvg,.shsvg{width:100%;height:auto;display:block;touch-action:none;cursor:pointer}.nlsvg:focus{outline:3px solid var(--sun);outline-offset:4px;border-radius:8px}
 .shpart{cursor:pointer}.shpart:focus{outline:none;stroke:#ffc23d;stroke-width:5}
+.lcol{font:700 22px/1.3 ui-monospace,Menlo,monospace;background:#f4f7fb;border-radius:12px;padding:10px 16px;display:inline-block;margin:4px 0}
 .nlnote{margin:0;font-weight:700;color:var(--ink-soft);font-size:14.5px;text-align:center}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
@@ -4126,7 +4127,71 @@ const LESSONS=[
    build(){const P=shuffle(CONTEXT.slice()).slice(0,4);return [
     teachCard('The other words give clues',`<p class="lbig">"The <b>enormous</b> whale was longer than a school bus."</p><p>Don't know <b>enormous</b>? Look around it: <i>longer than a school bus</i>. So enormous means <b>very big</b>.</p><p>Clues can be an example, an opposite ("not tiny"), or an explanation after a comma.</p>`,'Let\'s try some!'),
     ...P.map(x=>Object.assign(guided(`<i>"${x[0]}"</i><br>What does <b>${x[1]}</b> mean?`,strChoices(x[2],x[3]),`Find the words near <b>${x[1]}</b> that explain it.`,`The clue is <i>${x[4]}</i>. So <b>${x[1]}</b> means <b>${x[2]}</b>.`),{long:true,render:c=>c}))]},
-   practice:[]}
+   practice:[]},
+  {id:'place_value',isl:'place',types:[0,2],title:'Each place is 10 times bigger',
+   build(){const n=R(21,98)*1000+R(100,999),s=String(n),pos=R(0,s.length-2),d=+s[pos],pl=s.length-1-pos,names=['ones','tens','hundreds','thousands','ten thousands'];return [
+    teachCard('Read the place, then the value',`<p class="lbig">4<b style="color:var(--berry)">7</b>,382</p><p>The <b>7</b> is in the <b>thousands</b> place, so it is worth <b>7,000</b>.</p><p>Moving one place to the left makes a digit worth <b>10 times more</b>: 7 → 70 → 700 → 7,000.</p>`,'Let\'s try one together!'),
+    guided(`In <b>${fmt(n)}</b>, which place is the <b>${d}</b> in? (count from the right: ones, tens, hundreds...)`,strChoices(names[pl],names.filter((_,i)=>i!==pl).slice(0,3)),`Start at the right with "ones" and move left one place at a time.`,`The ${d} is in the <b>${names[pl]}</b> place.`),
+    guided(`So what is the <b>${d}</b> worth?`,numChoices(d*10**pl,[d*10**(pl+1),d*10**Math.max(0,pl-1)||d*100,d]),`${names[pl]} means 1 with ${pl} zero${pl>1?'s':''}.`,`${d} ${names[pl]} = <b>${fmt(d*10**pl)}</b>.`),
+    guided(`A digit moves one place to the <b>left</b>. Its value becomes...`,strChoices('10 times bigger',['10 times smaller','2 times bigger','the same']),`Think: 7 → 70.`,`Each place to the left is worth <b>10 times more</b>.`)]},
+   practice:[0,2,0]},
+  {id:'place_round',isl:'place',types:[1],title:'Rounding: look next door',
+   build(){const n=R(1100,9899),p=pick([10,100,1000]),nm={10:'ten',100:'hundred',1000:'thousand'}[p],down=Math.floor(n/p)*p,up=down+p,r=Math.round(n/p)*p,next=Math.floor(n%p/(p/10));return [
+    teachCard('Find the digit next door',`<p>Round <b>3,<u>6</u>48</b> to the nearest <b>thousand</b>. It's between <b>3,000</b> and <b>4,000</b>.</p><p>Look at the digit <b>next door</b> (to the right): 6. <b>5 or more → round up</b>. 4 or less → round down.</p><p class="lbig">3,648 → 4,000</p>`,'Let\'s try one together!'),
+    guided(`Round <b>${fmt(n)}</b> to the nearest ${nm}. Which two numbers is it between?`,strChoices(`${fmt(down)} and ${fmt(up)}`,[`${fmt(down-p)} and ${fmt(down)}`,`${fmt(up)} and ${fmt(up+p)}`,`${fmt(down+p/2)} and ${fmt(up+p/2)}`]),`Keep the digits up to the ${nm}s place, make the rest zeros. Then add one ${nm}.`,`${fmt(n)} is between <b>${fmt(down)}</b> and <b>${fmt(up)}</b>.`),
+    guided(`What is the digit next door (just right of the ${nm}s place)?`,numChoices(next,[(next+1)%10,(next+5)%10,(next+3)%10]),`Find the ${nm}s digit, then look one place to the right.`,`The digit next door is <b>${next}</b>.`),
+    guided(`${next} is ${next>=5?'5 or more':'4 or less'}. So ${fmt(n)} rounds to...`,numChoices(r,[r===up?down:up,r+p,n]),`5 or more → up. 4 or less → down.`,`${fmt(n)} rounds to <b>${fmt(r)}</b>.`)]},
+   practice:[1,1,1]},
+  {id:'add_regroup',isl:'addsub',types:[0,1],title:'Line up and regroup',
+   build(){const a=R(1200,4800),b=R(1100,4900),o=(a%10+b%10),c=o>=10?1:0;return [
+    teachCard('Same places in a column, start on the right',`<pre class="lcol">  2,758\n+ 1,465\n-------\n  4,223</pre><p><b>Ones</b>: 8 + 5 = 13. Write <b>3</b>, carry the <b>1</b> ten.</p><p>Then tens, hundreds, thousands, always adding the carried 1.</p><p>Subtracting? If the top digit is smaller, <b>borrow</b> 1 from the next place: it becomes 10 more.</p>`,'Let\'s try one together!'),
+    guided(`Let's add <b>${fmt(a)} + ${fmt(b)}</b>. First the ones: <b>${a%10} + ${b%10} = ?</b>`,numChoices(o,[o+1,Math.abs(o-1),o+10]),`Just the last digits.`,`${a%10} + ${b%10} = <b>${o}</b>${c?'. Write the '+(o%10)+' and carry 1 ten.':'.'}`),
+    guided(`Do we carry a 1 into the tens?`,strChoices(c?'Yes, because the ones made 10 or more':'No, the ones made less than 10',[c?'No, the ones made less than 10':'Yes, because the ones made 10 or more','Only when subtracting']),`Is ${o} 10 or more?`,c?`${o} is 10 or more, so <b>carry 1</b>.`:`${o} is less than 10: <b>no carry</b>.`),
+    guided(`Finish the column: <b>${fmt(a)} + ${fmt(b)} = ?</b>`,numChoices(a+b,[a+b+10,a+b-10,a+b+100]),`Tens, hundreds, thousands, adding any carried 1s.`,`<b>${fmt(a)} + ${fmt(b)} = ${fmt(a+b)}</b>.`)]},
+   practice:[0,1,0]},
+  {id:'dec_tenths',isl:'dec',types:[0,1,3,4],title:'Tenths and hundredths',
+   build(){const t=R(1,9),h=R(11,99);return [
+    teachCard('A decimal is a fraction of 10 or 100',`<p class="lbig">0.7 = ${frac(7,10)} = ${frac(70,100)}</p><p>One place after the point = <b>tenths</b>. Two places = <b>hundredths</b>.</p><p class="lbig">0.45 = ${frac(45,100)}</p><p>To add tenths and hundredths, turn tenths into hundredths first: ${frac(3,10)} = ${frac(30,100)}.</p>`,'Let\'s try one together!'),
+    guided(`Write <b>${frac(t,10)}</b> as a decimal.`,strChoices(`0.${t}`,[`0.0${t}`,`${t}.0`,`0.${t}0${t}`]),`Tenths → one place after the point.`,`${frac(t,10)} = <b>0.${t}</b>.`),
+    guided(`Write <b>${frac(h,100)}</b> as a decimal.`,strChoices(dec(h),[`0.${h}0`,`${h}.0`,(h/1000).toFixed(3)]),`Hundredths → two places after the point.`,`${frac(h,100)} = <b>${dec(h)}</b>.`),
+    guided(`${frac(t,10)} is the same as how many hundredths?`,strChoices(`${t*10}/100`,[`${t}/100`,`${t+10}/100`,`${t}/1000`]),`Multiply the top and bottom by 10.`,`${frac(t,10)} = <b>${frac(t*10,100)}</b>.`)]},
+   practice:[0,1,4]},
+  {id:'graph_read',isl:'graph',types:[0,1,2,3],title:'Read the graph like a detective',
+   build(){const a=R(3,9),b=R(10,16);return [
+    teachCard('Title, scale, then compare',`<p>1. Read the <b>title</b>: what is it about?</p><p>2. Check the <b>scale</b>: does each line count by 1, 2 or 5?</p><p>3. <b>"How many more"</b> means <b>subtract</b>. <b>"Together"</b> or <b>"in all"</b> means <b>add</b>.</p>`,'Let\'s try one together!'),
+    guided(`Dogs got <b>${b}</b> votes and Fish got <b>${a}</b>. How many <b>more</b> votes did Dogs get?`,numChoices(b-a,[a+b,b-a+1,b]),`"How many more" → subtract.`,`${b} − ${a} = <b>${b-a}</b>.`),
+    guided(`How many votes did Dogs and Fish get <b>together</b>?`,numChoices(a+b,[b-a,a+b+1,a*b]),`"Together" → add.`,`${b} + ${a} = <b>${a+b}</b>.`),
+    guided(`On a picture graph each 🐾 stands for <b>2</b> votes. Cats have <b>4</b> 🐾. How many votes?`,numChoices(8,[4,6,2]),`Count by 2s for each picture.`,`4 pictures × 2 = <b>8</b> votes.`)]},
+   practice:[0,2,3]},
+  {id:'shape_lines',isl:'shape',types:[2,3,0],title:'Lines and four-sided shapes',
+   build(){return [
+    teachCard('Parallel, perpendicular, intersecting',`<svg viewBox="0 0 300 80" style="max-width:300px"><path d="M10 20 H90 M10 50 H90" stroke="#2f9fe0" stroke-width="5"/><path d="M130 65 H200 M165 10 V65" stroke="#e2558f" stroke-width="5"/><path d="M230 10 L290 70 M230 70 L290 10" stroke="#38b98a" stroke-width="5"/></svg><p><b>Parallel</b>: never meet. <b>Perpendicular</b>: meet in a square corner (90°). <b>Intersecting</b>: cross each other.</p><p>Quadrilaterals: a <b>parallelogram</b> has 2 pairs of parallel sides; a <b>rectangle</b> also has 4 right angles; a <b>square</b> also has 4 equal sides; a <b>trapezoid</b> has just 1 pair.</p>`,'Let\'s try some!'),
+    guided(`Two train tracks run side by side and never meet. They are...`,strChoices('parallel',['perpendicular','intersecting','curved']),`Never meeting = ?`,`Lines that never meet are <b>parallel</b>.`),
+    guided(`The corner of a book: two edges meet in a square corner. They are...`,strChoices('perpendicular',['parallel','curved','not lines']),`Square corner = 90°.`,`They are <b>perpendicular</b>.`),
+    guided(`A shape has 4 equal sides and 4 right angles. What is the <b>best</b> name?`,strChoices('Square',['Trapezoid','Rhombus','Pentagon']),`Rectangles have right angles; which one also has equal sides?`,`It's a <b>square</b>.`)]},
+   practice:[2,3,0]},
+  {id:'time_jump',isl:'time',types:[3,8,9,11],title:'Elapsed time: jump to the hour',
+   build(){const h=R(1,10),m=R(1,5)*5+20,d=R(4,9)*5,end=(m+d)%60,eh=h+Math.floor((m+d)/60);return [
+    teachCard('Jump to the next o\'clock first',`<p>The show starts at <b>2:40</b> and lasts <b>35 minutes</b>.</p><p>2:40 → <b>3:00</b> is a jump of 20 minutes. 35 − 20 = 15 left. 3:00 + 15 = <b>3:15</b>.</p><p>How long? Count the same jumps from start to end.</p>`,'Let\'s try one together!'),
+    guided(`Start at <b>${h}:${String(m).padStart(2,'0')}</b>. How many minutes to <b>${h+1}:00</b>?`,numChoices(60-m,[m,60-m+5,100-m]),`An hour has 60 minutes.`,`60 − ${m} = <b>${60-m}</b> minutes.`),
+    guided(`We need ${d} minutes in all. ${d>=60-m?`After the jump to ${h+1}:00, how many minutes are left?`:'Do we even reach the next hour?'}`,d>=60-m?numChoices(d-(60-m),[d,60-m,d-(60-m)+5]):strChoices('No, we stay in the same hour',['Yes','We go back an hour']),d>=60-m?`${d} − ${60-m}`:`${d} is less than ${60-m}.`,d>=60-m?`${d} − ${60-m} = <b>${d-(60-m)}</b> minutes left.`:`${d} < ${60-m}, so we stay before ${h+1}:00.`),
+    guided(`So the end time is...`,strChoices(`${eh}:${String(end).padStart(2,'0')}`,[`${eh+1}:${String(end).padStart(2,'0')}`,`${h}:${String((m+d)%60).padStart(2,'0')}`.replace(`${eh}:`,`${h+2}:`),`${eh}:${String((end+10)%60).padStart(2,'0')}`]),`Add the leftover minutes to the o'clock time.`,`It ends at <b>${eh}:${String(end).padStart(2,'0')}</b>.`)]},
+   practice:[3,8,9]},
+  {id:'riddle_steps',isl:'riddle',types:[0,3,1],title:'Big problems in small steps',
+   build(){const b=R(4,7),e=R(6,12),g=R(3,9);return [
+    teachCard('What do I know? What do I need? One step at a time.',`<p>"Pip has <b>3 bags</b> with <b>8 acorns</b> each. He eats <b>5</b>. How many are left?"</p><p><b>Step 1</b>: 3 × 8 = 24 acorns. <b>Step 2</b>: 24 − 5 = <b>19</b>.</p><p>Underline the numbers, find the question, then solve one step at a time.</p>`,'Let\'s try one together!'),
+    guided(`Mia has <b>${b} boxes</b> with <b>${e} crayons</b> each. She gives away <b>${g}</b>. Step 1: how many crayons does she have at first?`,numChoices(b*e,[b+e,b*e+b,b*e-g]),`Boxes × crayons in each box.`,`${b} × ${e} = <b>${b*e}</b>.`),
+    guided(`Step 2: she gives away ${g}. How many are left?`,numChoices(b*e-g,[b*e+g,b*e,b*e-g-1]),`Gives away → subtract.`,`${b*e} − ${g} = <b>${b*e-g}</b>.`),
+    guided(`I think of a number, multiply it by 3, then add 4, and get 19. Work <b>backward</b>: 19 − 4 = 15. What is 15 ÷ 3?`,numChoices(5,[4,6,15]),`Undo each step in reverse order.`,`15 ÷ 3 = <b>5</b>. The number is 5!`)]},
+   practice:[0,3,1]},
+  {id:'frac_line',isl:'frac',types:[8,9],title:'Fractions on a number line',
+   build(){const den=pick([3,4,5,6,8]),n=R(1,den-1);return [
+    teachCard('Split each whole into equal jumps',`<p>From 0 to 1, make <b>4 equal jumps</b>. Each jump is ${frac(1,4)}.</p><p>${frac(3,4)} is <b>3 jumps</b> from 0. ${frac(5,4)} is 5 jumps: past 1!</p><p>On a bar, ${frac(2,3)} and ${frac(4,6)} cover the <b>same amount</b>: they are equal.</p>`,'Let\'s try one together!'),
+    guided(`A line from 0 to 1 is split into <b>${den}</b> equal jumps. Each jump is...`,strChoices(`1/${den}`,[`${den}/1`,`1/${den+1}`,`1/${den*2}`]),`One whole split into ${den} parts.`,`Each jump is <b>${frac(1,den)}</b>.`),
+    guided(`How many jumps from 0 to reach <b>${frac(n,den)}</b>?`,numChoices(n,[den,den-n||n+1,n+1]),`The top number counts the jumps.`,`<b>${n}</b> jumps.`),
+    guided(`Which fraction is equal to ${frac(1,2)}?`,strChoices(`${den%2?2:den/2}/${den%2?4:den}`,['1/3','2/3','3/4'].filter(x=>x!==`${den%2?2:den/2}/${den%2?4:den}`)),`Half of the parts.`,`Half of the parts shaded is the same as ${frac(1,2)}.`)]},
+   practice:[8,9,8]}
+
 ];
 const lessonsFor=id=>LESSONS.filter(L=>L.isl===id);
 function lessonFor(id){const ls=lessonsFor(id);if(!ls.length)return null;const miss=t=>G.review.filter(r=>r.i===id&&t.includes(r.t)).length,done=L=>((G.lessons||{})[L.id]||'');
