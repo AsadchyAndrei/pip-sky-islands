@@ -118,3 +118,21 @@ Firestore: 1 GiB данных, 50 000 чтений, 20 000 записей и 20 
 Нет рекламы и трекинга. Взрослый может скачать или удалить все данные в разделе Grown-ups.
 Это разумная базовая схема, но не юридическая консультация. Если игру будет официально использовать школа,
 стоит показать её школьному администратору.
+
+## Project structure
+
+| File | What is inside |
+|---|---|
+| `index.html` | The page layout (screens, buttons, overlays) |
+| `styles.css` | All styles |
+| `js/core.js` | Helpers, icons, Pip the fox, shared drawings |
+| `js/math.js` | Math question generators, "Show me how", clocks, math reasoning and big tasks |
+| `js/english.js` | Words, reading passages, long test-style passages, listening |
+| `js/islands.js` | History, grammar, writing, Test Practice, Clock Cove, the island list, seasonal events |
+| `js/progress.js` | Saving, profiles, skills, sound, rewards, lessons, Pip's Pick |
+| `js/play.js` | Screens and the question player (drag and drop, Part A/B, Yes/No...) |
+| `js/app.js` | Closet, album, story, sign-in, Grown-ups, Writing Desk, my island, the house, start-up |
+| `sw.js` | Offline support: list every new file in `CORE` and bump the version |
+| `tests/` | Automatic checks, run `tests/run_all.sh` before publishing |
+
+The JS files are plain scripts loaded in this order and share one global scope, so a file may only use, while it loads, things defined in files above it.
