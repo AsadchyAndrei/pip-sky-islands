@@ -320,6 +320,15 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .passage .pfig{margin:12px auto 0;max-width:420px;text-align:center}.passage .pfig svg{width:100%;height:auto;background:#fff;border-radius:12px}.passage .pfig figcaption{font-size:.85em;color:#506686;margin-top:4px;font-style:italic}
 .passage .ptwo{display:grid;grid-template-columns:1fr 1fr;gap:12px}.passage .ptwo>div{background:rgba(255,255,255,.6);border-radius:12px;padding:8px 12px}.passage h5{margin:0 0 4px;font-size:.9em;color:#8c5a2c}
 @media (max-width:760px){.passage .ptwo{grid-template-columns:1fr}}
+.deskkinds{display:grid;gap:10px;width:100%}.deskkind{border:3px solid var(--dc);background:#fff;border-radius:18px;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:2px;cursor:pointer;box-shadow:0 4px 0 var(--dc)}
+.deskkind b{font-family:var(--display);font-weight:400;font-size:22px;color:var(--dc)}.deskkind small{font-weight:700;color:var(--ink-soft)}
+.dkpr{margin:0;font-family:var(--display);font-weight:400;font-size:24px;line-height:1.2}.dkpr .linkbtn{font:700 14px var(--body,inherit);background:none;border:0;color:var(--ocean);text-decoration:underline;cursor:pointer;padding:0 4px}
+.dkparts{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left}.dkpart{display:flex;flex-direction:column;gap:4px}.dkpart>span:first-child{font-weight:800;color:var(--ink)}
+.dkpart textarea{width:100%;border:3px solid var(--line);border-radius:14px;padding:8px 12px;font:600 18px/1.4 Lexend,sans-serif;resize:vertical;min-height:84px;field-sizing:content;color:var(--ink);background:#fff}.dkpart textarea:focus{outline:none;border-color:var(--ocean)}
+.dkst{display:flex;flex-wrap:wrap;gap:6px}.dkchip{border:2px solid var(--line);background:var(--pale-sky);border-radius:999px;padding:3px 10px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink)}
+.dkcheck{list-style:none;margin:4px 0 0;padding:0;width:100%;text-align:left;display:grid;gap:4px;font-weight:700;color:var(--ink-soft);font-size:15px}.dkcheck li{display:flex;align-items:center;gap:8px}.dkcheck li svg{width:20px;height:20px;flex:none}.dkcheck li.ok{color:#2b8a62}.dkcheck .dot{width:14px;height:14px;border-radius:50%;border:3px solid var(--line);flex:none;margin:0 3px}
+.dkdone{background:#fff7e3;border-radius:16px;padding:12px 14px;text-align:left;width:100%}.dkdone p{font-weight:600;color:var(--ink);margin:6px 0}.dkdone small{color:var(--ink-soft);font-weight:700}
+.dklist{list-style:none;padding:0;margin:8px 0;display:grid;gap:10px}.dklist li{background:#fff7e3;border-radius:14px;padding:10px 12px}.dklist li small{display:block;color:var(--ink-soft);font-weight:700}.dklist li p{margin:6px 0 0;font-weight:500;line-height:1.45}
 .seq.cmpseq{font-size:clamp(22px,5vw,34px);align-items:center}
 .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .choices.three{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -4594,6 +4603,7 @@ function buildTips(){
   if(!G.home||homeBuilt()<homeTotal())t.push({text:homeCount()?`Let's keep building <b>our island</b>! What should we add next?`:`Did you know we can build <b>our own island</b>? Let's start with a cozy tent!`,label:'Go to My Island',act:openHome});
   const due=reviewDue().length;if(due)t.push({text:`${n}<b>${due} old mistake${due>1?'s are':' is'}</b> waiting at Fix-It Falls. Fixing them makes your brain super strong!`,label:'Go to Fix-It Falls',act:()=>start(byId('review'))});
   const ch=CHAPTERS[G.story.ch];if(ch&&!chapterWaiting(G.story.ch))t.push({text:(ch.book||1)>=2?`Story time! ${BOOKS[ch.book].title} needs ${BOOKS[ch.book].unit} <b>${G.story.ch-BOOKS[ch.book].start+1}</b>: "${ch.name}". Will you help me?`:`Story time! We still need to find <b>map piece ${G.story.ch+1}</b>: "${ch.name}". Will you help me?`,label:'Open Story Mode',act:openStory});
+  {const L=G.writing||[];if(!L.length||Date.now()-L[0].ts>5*864e5)t.push({text:`${n}want to write your <b>own story</b>? The <b>Writing Desk</b> helps you, and saves it for your grown-ups to read!`,label:'Open Writing Desk',act:()=>openDesk()})}
   const unv=STAR_ISLANDS.filter(i=>i.gen&&!G.visited[i.id]);
   if(unv.length){const i=pick(unv);t.push({text:`Psst... I've never been to <b>${i.name}</b>! Want to explore it with me?`,label:`Fly to ${i.name}`,act:()=>start(i)})}
   const almost=STAR_ISLANDS.filter(i=>i.gen&&starFor(i.id)>0&&starFor(i.id)<3);
@@ -5031,6 +5041,7 @@ function done(st,line,o={}){
   else if(reviewDue().length&&S.mode!=='review'){nb.hidden=false;nb.textContent=`Fix ${reviewDue().length} mistake${reviewDue().length>1?'s':''}`;nb.onclick=()=>start(byId('review'))}
   else if(sugg){nb.hidden=false;nb.textContent=`Next: ${sugg.name}`;nb.onclick=()=>start(sugg)}else nb.hidden=true;
   if(S.mode==='island'&&S.chapter==null&&S.score<=3&&lessonsFor(isl.id).length){nb.hidden=false;nb.textContent='Learn the trick (3 min)';nb.onclick=()=>start(lessonIsland(lessonFor(isl.id)))}
+  else if(isl.id==='write'&&S.mode==='island'&&S.chapter==null){nb.hidden=false;nb.textContent='Write my own story';nb.onclick=()=>openDesk()}
   $('#again').hidden=S.mode==='review'&&!reviewDue().length;
   show('done');dropBadgeToasts();refreshFoxes();
   if(st>0){sWin();setTimeout(()=>burst(innerWidth/2,innerHeight/3,120),300)}
@@ -5352,6 +5363,48 @@ $('#playerBtn').onclick=pickPlayer;
 
 /* ================= grown-ups ================= */
 let pinBuf='',pinStage='',pinFirst='';
+/* ===== Writing Desk: Alisa writes her own paragraph or story with a frame; it is saved for grown-ups (W.4.1-3, W.4.5) ===== */
+const DESK={
+  opinion:{name:'Opinion',sub:'Tell what you think and why',color:'#e2558f',
+    prompts:['What is the best season of the year?','Should kids have homework?','What is the best pet to have?','Should every school have a garden?','What is the best place to visit in California?','Is it better to read a book or watch the movie?'],
+    parts:[['Your opinion',['I think','In my opinion,','I believe']],['Reason 1',['First,','One reason is']],['Reason 2',['Also,','Another reason is']],['Ending',['That is why','For these reasons,']]]},
+  story:{name:'Story',sub:'Make up a story with a beginning, middle and end',color:'#2f9fe0',
+    prompts:['Pip\'s balloon lands on a mystery island.','The day the class pet escaped.','You find a tiny door in your backyard.','Your best day ever at the beach.','A rainy day that turned out great.','A talking fox moves in next door.'],
+    parts:[['Beginning: who and where?',['One sunny morning,','Once upon a time,','Last summer,']],['The problem',['Suddenly,','All at once,','But then']],['What happened next',['Then','Next,','After that,']],['Ending: how did it turn out? How did they feel?',['Finally,','In the end,']]]},
+  info:{name:'Teach it',sub:'Explain how to do something or facts about a topic',color:'#38b98a',
+    prompts:['How to make a sandwich','All about your favorite animal','How to take care of a plant','All about your school','How to play your favorite game','All about the ocean'],
+    parts:[['Topic: what will you teach?',['Here is how to','Let me tell you about']],['Step or fact 1',['First,','One fact is']],['Step or fact 2',['Next,','Also,','For example,']],['Ending',['Finally,','Now you know']]]},
+};
+const DESK_REW=15,TRANS_RE=/\b(first|second|next|then|after that|finally|also|because|for example|another|in the end|suddenly|that is why|for these reasons|so|but)\b/i;
+const wcount=s=>(String(s).trim().match(/[A-Za-z0-9'’-]+/g)||[]).length;
+function deskList(){return G.writing=G.writing||[]}
+function openDesk(kind){
+  if(!kind){overlay(`<div class="eyebrow">Writing Desk</div><h2>What will you write?</h2><p>Your writing is saved, so your grown-ups can read it.</p><div class="deskkinds">${Object.entries(DESK).map(([k,D])=>`<button type="button" class="deskkind" data-k="${k}" style="--dc:${D.color}"><b>${D.name}</b><small>${D.sub}</small></button>`).join('')}</div>${deskList().length?`<p class="note">You have written <b>${deskList().length}</b> piece${deskList().length>1?'s':''} so far.</p>`:''}<div class="actrow"><button type="button" class="go alt" id="dkClose">Close</button></div>`,()=>{
+      $('#dkClose').onclick=closeOverlay;$('#ocard').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{tone([523,784]);closeOverlay();setTimeout(()=>openDesk(b.dataset.k),60)})});return}
+  const D=DESK[kind],dr=G.writeDraft&&G.writeDraft.k===kind?G.writeDraft:{k:kind,pr:pick(D.prompts),v:D.parts.map(()=>'')};G.writeDraft=dr;
+  overlay(`<div class="eyebrow" style="color:${D.color}">Writing Desk · ${D.name}</div><h3 class="dkpr">${esc(dr.pr)} <button type="button" class="linkbtn" id="dkNew">new idea</button></h3>
+    <div class="dkparts">${D.parts.map(([lab,st],i)=>`<label class="dkpart"><span>${i+1}. ${lab}</span><textarea rows="2" data-i="${i}" spellcheck="true" autocapitalize="sentences" placeholder="${esc(st[0])} ...">${esc(dr.v[i]||'')}</textarea><span class="dkst">${st.map(s=>`<button type="button" class="dkchip" data-i="${i}" data-s="${esc(s)}">${esc(s)}</button>`).join('')}</span></label>`).join('')}</div>
+    <ul class="dkcheck" aria-live="polite"></ul><div class="actrow"><button type="button" class="go" id="dkSave" disabled>Save my writing</button><button type="button" class="go alt" id="dkClose">Close</button></div>`,()=>{
+    $('#ocard').classList.add('wide');
+    const tas=[...$('#ocard').querySelectorAll('textarea')];
+    const check=()=>{dr.v=tas.map(t=>t.value);save(true);const parts=dr.v.map(s=>s.trim()),all=parts.join(' '),w=wcount(all);
+      const items=[[parts.every(p=>wcount(p)>=3),'Every part has a sentence'],[parts.filter(Boolean).every(p=>/^[A-Z"“]/.test(p)),'Sentences start with a capital letter'],[parts.filter(Boolean).every(p=>/[.!?]["”]?$/.test(p)),'Sentences end with . ! or ?'],[TRANS_RE.test(all),'Uses a linking word (first, then, because, also...)'],[w>=40,`At least 40 words (${w} now)`]];
+      $('#ocard .dkcheck').innerHTML=items.map(([ok,t])=>`<li class="${ok?'ok':''}">${ok?CHECK:'<span class="dot"></span>'} ${t}</li>`).join('');
+      $('#dkSave').disabled=!items[0][0];return items};
+    tas.forEach(t=>t.oninput=check);
+    $('#ocard').querySelectorAll('.dkchip').forEach(b=>b.onclick=()=>{const t=tas[+b.dataset.i];const s=b.dataset.s;if(!t.value.trim())t.value=s+' ';else if(!t.value.startsWith(s))t.value=s+' '+t.value.trim()[0].toLowerCase()+t.value.trim().slice(1);t.focus();t.setSelectionRange(t.value.length,t.value.length);check()});
+    $('#dkNew').onclick=()=>{let p;do{p=pick(D.prompts)}while(p===dr.pr&&D.prompts.length>1);dr.pr=p;$('#ocard .dkpr').firstChild.textContent=p+' ';save(true)};
+    $('#dkClose').onclick=()=>{$('#ocard').classList.remove('wide');closeOverlay()};
+    $('#dkSave').onclick=()=>{const items=check(),txt=dr.v.map(s=>s.trim()).filter(Boolean).join(' '),w=wcount(txt),L=deskList();
+      L.unshift({ts:Date.now(),d:dayKey(),k:kind,pr:dr.pr,txt,w,ok:items.filter(x=>x[0]).length});if(L.length>40)L.length=40;
+      let rew=0;if(G.writeDay!==dayKey()){G.writeDay=dayKey();rew=DESK_REW;G.coins+=rew;updateStats('#coinPill')}
+      G.writeDraft=null;save();sWin();$('#ocard').classList.remove('wide');closeOverlay();
+      overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Saved!</div><h2>${pick(['What a writer!','Great writing!','I love it!'])}</h2><div class="dkdone"><b>${esc(dr.pr)}</b><p>${esc(txt)}</p><small>${w} words</small></div>${rew?`<p><b>+${rew} coins</b> for writing today!</p>`:''}<p class="note">Your grown-ups can read it in Grown-ups.</p><div class="actrow"><button type="button" class="go alt" id="dkRead">Read it to me</button><button type="button" class="go" id="dkOk">Done</button></div>`,()=>{
+        $('#dkOk').onclick=()=>{stopSpeak&&stopSpeak();closeOverlay()};$('#dkRead').onclick=()=>speak(esc(txt));setTimeout(()=>burstAt($('#ocard'),80),150)})};
+    check();if(!dr.v.some(Boolean))setTimeout(()=>tas[0].focus({preventScroll:true}),200)});
+}
+function deskParentHTML(){const L=deskList(),nm=esc(G.name||'Your child');
+  return `<div class="pcard wide"><h4>Writing Desk</h4><p class="note">${nm} writes opinion pieces, stories and how-to paragraphs with a 4-part frame (4th grade writing standards). The newest are first. A good next step: read one together and ask "Can you add one more detail?"</p>${L.length?`<ul class="dklist">${L.slice(0,5).map(x=>`<li><div><b>${esc(x.pr)}</b><small>${DESK[x.k]?DESK[x.k].name:''} · ${new Date(x.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${x.w} words · ${x.ok}/5 checklist</small></div><p>${esc(x.txt)}</p></li>`).join('')}</ul>${L.length>5?`<p class="note">${L.length-5} older piece${L.length-5>1?'s':''} saved.</p>`:''}`:`<p>No writing saved yet.</p>`}<button type="button" class="go small" id="pDesk">Open the Writing Desk</button></div>`}
 function openParent(){
   stopTimers();if(CL.unlockUntil>Date.now()){renderParent();return}pinBuf='';pinStage=ROOT.pin?'enter':'create';pinFirst='';
   overlay(pinHTML(),bindPin);
@@ -5418,6 +5471,7 @@ function renderParent(){
     ${(()=>{const P=(G.home&&G.home.inside&&G.home.inside.pz)||{n:0,by:{},att:{},first:{},done:{},day:''};const att=P.att||{},fst=P.first||{},by=P.by||{},today=P.day===dayKey()?P.done||{}:{};
       const next=INSIDE.filter(it=>it.prize&&it.prize>(P.n||0)).sort((a,b)=>a.prize-b.prize)[0];
       return `<div class="pcard wide"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
+    ${deskParentHTML()}
     <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
     <div class="pcard wide curmap"><h4>4th grade program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the California 4th grade program. Stars are the same as in the game: the best round, or recent accuracy (7 of 10 right lately = 2 stars, 8 of 10 = 3).</p>
       <div class="tscroll"><table class="topics cur"><thead><tr><th>Subject</th><th>Area</th><th>Standard</th><th>Islands</th></tr></thead><tbody>
@@ -5465,6 +5519,7 @@ function renderParent(){
   </div>`;
   setSync();$('#codeOut').value=encodeSave(ROOT.current);if(CL.mode==='cloud')loadBackups();
   document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>start(byId(b.dataset.play)));
+  if($('#pDesk'))$('#pDesk').onclick=()=>openDesk();
   if($('#pInstall'))$('#pInstall').onclick=async()=>{const e=installEvt;if(!e)return;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderParent()};
   $('#setGoal').onchange=e=>{G.settings.goal=e.target.value;save();updateStats()};
   $('#setLimit').onchange=e=>{G.settings.limit=e.target.value;save()};
