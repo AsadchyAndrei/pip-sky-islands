@@ -3830,6 +3830,7 @@ const CAHIST=[
 ];
 function genHistory(t){const f=CAHIST[t%CAHIST.length];return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4]}}
 /* ================= Grammar Grove: sentences, punctuation, figurative language, roots (CA CCSS ELA L.4) ================= */
+LANDMARKS.test=`<rect x="58" y="14" width="44" height="52" rx="5" fill="#fff" stroke="#1f3557" stroke-width="2.5"/><rect x="70" y="9" width="20" height="10" rx="3" fill="#7b6cf0" stroke="#1f3557" stroke-width="2"/><path d="M65 30 l4 4 7-8 M65 44 l4 4 7-8" fill="none" stroke="#38b98a" stroke-width="3" stroke-linecap="round"/><path d="M80 31 h15 M80 45 h15 M66 57 h28" stroke="#9fb6cc" stroke-width="3" stroke-linecap="round"/>`;
 LANDMARKS.ear=`<path d="M80 66 V44" stroke="#8c5a2c" stroke-width="6" stroke-linecap="round"/><rect x="62" y="22" width="18" height="22" rx="4" fill="#5bb6e8" stroke="#1f3557" stroke-width="2"/><path d="M80 24 L96 12 V54 L80 42Z" fill="#ffd56b" stroke="#1f3557" stroke-width="2" stroke-linejoin="round"/><path d="M103 24 q7 9 0 18 M110 17 q13 16 0 32" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>`;
 LANDMARKS.grammar=`<path d="M80 66 V40" stroke="#8c5a2c" stroke-width="6" stroke-linecap="round"/><circle cx="80" cy="30" r="20" fill="#38b98a"/><circle cx="64" cy="38" r="12" fill="#2e9e5b"/><circle cx="96" cy="38" r="12" fill="#2e9e5b"/><text x="70" y="34" ${FONT} font-size="14" fill="#fff">A</text><text x="84" y="28" ${FONT} font-size="14" fill="#ffd56b">,</text><text x="88" y="40" ${FONT} font-size="13" fill="#fff">?</text><text x="62" y="44" ${FONT} font-size="13" fill="#ffd56b">!</text>`;
 /* each entry: [question, right answer, [3 wrong answers], hint, explanation]; long:true shows answers one per line */
@@ -4011,7 +4012,77 @@ const WR={
     ['Kids should help with chores at home.','Chores teach kids to be responsible.',['Dishes are in the kitchen.','My room is upstairs.','Brooms are made of straw.']]],
   steps:[['Get a cup','Add hot water','Put in a tea bag','Wait and then drink'],['Put on your socks','Put on your shoes','Tie the laces','Go outside'],['Take out the bread','Spread the peanut butter','Put the slices together','Eat your sandwich'],['Dig a small hole','Drop in a seed','Cover it with soil','Water it every day'],['Open the book','Read the story','Close the book','Tell a friend about it']]
 };
+/* ===== Story Studio: revising and research (CAASPP writing and research claims) ===== */
+const WR_BELONG=[
+ ['Sea otters are clever tool users.','They float on their backs and use rocks to crack open clams.','Some otters keep a favorite rock in a pocket of loose skin under their arm.','My cousin has a pet hamster named Biscuit.','Scientists have watched otters use the same rock for days.'],
+ ['Our school garden is a great place to learn.','Students measure how fast the bean plants grow.','We learn which bugs help plants and which ones hurt them.','The cafeteria serves pizza on Fridays.','In spring, we pick lettuce for a class salad.'],
+ ['Riding a bike to school has many benefits.','It is good exercise for your heart and legs.','It saves gas and keeps the air cleaner.','My favorite color for a bike is blue.','You also get to school feeling awake and ready.'],
+ ['The desert tortoise is well suited to dry places.','It digs burrows to escape the hot sun.','It can store water in its body for months.','Penguins live in very cold places.','It gets much of its water from the plants it eats.'],
+ ['Lighthouses helped keep sailors safe.','Their bright lights warned ships about rocks.','On foggy nights, many lighthouses used loud horns.','Lighthouse keepers lived nearby to keep the light burning.','Some people collect seashells on the beach.'],
+];
+const WR_WORD=[['The dog was <u>big</u>.','enormous',['nice','fine','okay'],'Choose the word that paints the clearest picture of size.'],
+ ['The soup tasted <u>good</u>.','delicious',['fine','alright','normal'],'Which word tells exactly HOW good?'],
+ ['Mia <u>went</u> across the finish line.','sprinted',['moved','got','did'],'Which verb shows exactly how she moved?'],
+ ['The storm was <u>bad</u>.','fierce',['nice','okay','fine'],'Which word shows how strong the storm was?'],
+ ['The puppy <u>said</u> something when we left.','whimpered',['told','talked','answered'],'Puppies don\'t talk. Which word fits a sad little sound?'],
+ ['The old house was <u>scary</u> at night.','eerie',['fun','pretty','bright'],'Which word keeps the meaning but is more exact?'],
+ ['The mountain was <u>very tall</u>.','towering',['short','long','wide'],'One strong word can replace "very tall".'],
+ ['Leo <u>looked at</u> the strange bug for a long time.','studied',['saw','ran','ate'],'Which verb shows he looked carefully and for a long time?']];
+const RESEARCH_Q=[['How long do blue whales live?','an encyclopedia article about blue whales',['a cookbook','a dictionary entry for "whale"','a map of the ocean']],
+ ['What is the weather going to be tomorrow?','a weather forecast website',['a book about clouds from 1980','a poem about rain','a history of weather']],
+ ['What does the word "migrate" mean?','a dictionary',['an atlas','a newspaper sports page','a recipe book']],
+ ['Which states border California?','an atlas or map of the United States',['a dictionary','a biography of a president','a science magazine about stars']],
+ ['How did people travel during the Gold Rush?','a history book about the Gold Rush',['a book about modern cars','a weather report','a fairy tale']],
+ ['How do bees make honey?','a science article about honeybees',['a song about flowers','a phone book','a math textbook']]];
+const RELIABLE=[['Your class is writing a report about the Golden Gate Bridge. Which source is most <b>reliable</b>?','the official Golden Gate Bridge website',['a classmate\'s guess','a comment on a video','a made-up story about a bridge']],
+ ['You want facts about the planet Mars. Which source is most <b>reliable</b>?','a NASA website for students',['an advertisement for a space toy','a cartoon about aliens','a friend who heard something once']],
+ ['You need to know how many people live in Sacramento. Which source is most <b>reliable</b>?','a government census website',['a social media post','a fiction book set in Sacramento','your neighbor\'s guess']]];
+const NOTES=[{topic:'Why bats are helpful',claim:'Bats help farmers.',good:'One bat can eat about 1,000 insects that harm crops in an hour.',bad:['Bats are the only mammals that can fly.','Some bats sleep upside down in caves.','Bats live on every continent except Antarctica.']},
+ {topic:'Why we should plant trees',claim:'Trees help keep cities cool.',good:'Shade from trees can make a street up to 10 degrees cooler.',bad:['The tallest tree in the world is a redwood.','Some trees lose their leaves in fall.','Apples grow on trees.']},
+ {topic:'The Pony Express',claim:'Riding for the Pony Express was difficult.',good:'Riders rode day and night through snowstorms and heat.',bad:['The Pony Express started in 1860.','The mail bag was called a mochila.','Stations had fresh horses.']},
+ {topic:'Recycling',claim:'Recycling saves trees.',good:'Recycling one ton of paper saves about 17 trees.',bad:['Paper is made in factories.','Many families have blue bins.','Plastic comes in many colors.']}];
+function genWriteX(t){
+  if(t===8){const P=pick(WR_BELONG),odd=P[3],sents=[P[0],...shuffle(P.slice(1).filter(x=>x!==odd)),odd];const order=[sents[0],...shuffle(sents.slice(1))];
+    return {prompt:`<div class="passage"><p>${order.join(' ')}</p></div>Which sentence does <b>NOT</b> belong in this paragraph?`,...strChoices(odd,shuffle(order.filter(x=>x!==odd&&x!==order[0]))),long:true,render:c=>c,
+      hint:`The first sentence tells the main idea. Which sentence is about something else?`,explain:`The paragraph is about: "${order[0]}" <b>"${odd}"</b> is about something else, so it should be taken out.`}}
+  if(t===9){const [s,a,w,h]=pick(WR_WORD);return {prompt:`A student wants to use a more <b>precise</b> word. Which word should replace the underlined word?<br><i>"${s}"</i>`,...strChoices(a,w),hint:h,explain:`<b>${a}</b> is more exact and paints a clearer picture.`}}
+  if(t===10){const [q,a,w]=pick(RESEARCH_Q);return {prompt:`A student wants to find out: <b>"${q}"</b> Which source would be <b>most helpful</b>?`,...strChoices(a,w),long:true,render:c=>c,hint:`Think about what each source is for.`,explain:`<b>${a}</b> has the information that answers this question.`}}
+  if(t===11){const N=pick(NOTES);return {prompt:`A student is writing about <b>${N.topic}</b>. The student wants to support this point: <b>"${N.claim}"</b> Which note supports it <b>best</b>?`,...strChoices(N.good,N.bad),long:true,render:c=>c,
+    hint:`Find the fact that proves the point, not just any true fact about the topic.`,explain:`<b>"${N.good}"</b> shows why the point is true. The other notes are true but don't support this point.`}}
+  const [q,a,w]=pick(RELIABLE);return {prompt:q,...strChoices(a,w),long:true,render:c=>c,hint:`A reliable source is written by experts or an official group, and it is based on facts.`,explain:`<b>${a}</b> is written by people who really know the facts.`};
+}
+/* ===== Test Practice: 12 questions like the spring CAASPP test, no hints, one try, a report by test area ===== */
+const TEST_SECTIONS={
+  math:{name:'Math',parts:[['Numbers and operations',['place','addsub','mult','div'],3],['Fractions and decimals',['frac','dec'],3],['Measurement, data and geometry',['measure','area','angle','shape','graph','time','money'],3],['Reasoning and problem solving',['riddle'],3]]},
+  ela:{name:'English',parts:[['Reading',['reading'],5],['Listening',['listen'],3],['Writing and research',['write'],2],['Language and vocabulary',['grammar','words'],2]]}};
+const TEST_LEVELS=[[.85,'Standard exceeded'],[.7,'Standard met'],[.5,'Standard nearly met'],[0,'Not met yet']];
+function testQs(sec){const isl=id=>byId(id),qs=[];
+  if(sec==='math'){for(const [claim,ids,n] of TEST_SECTIONS.math.parts){
+      if(claim.startsWith('Reasoning')){const r=isl('riddle');[pick([6,8]),pick([7,9]),10+R(0,11)].forEach(t=>{const q=makeQ(r,t,R(1,2e9));q.claim=claim;qs.push(q)});
+        if(coin()){const q=coin()?makeQ(isl('frac'),15,R(1,2e9)):makeQ(isl('mult'),7,R(1,2e9));q.claim=claim;qs[qs.length-1]=q}continue}
+      for(let k=0;k<n;k++){const I=isl(pick(ids));const q=makeQ(I,R(0,I.types-1),R(1,2e9));q.claim=claim;qs.push(q)}}}
+  else{const rd=isl('reading'),pi=dealTypes('test_long',LONGP.length,1)[0],off=PASSAGES.length*3+LQ.findIndex(x=>x[0]===pi);
+    LONGP[pi].q.forEach((_,qi)=>{const q=makeQ(rd,off+qi,R(1,2e9));q.claim='Reading';qs.push(q)});
+    const li=isl('listen'),ci=dealTypes('test_listen',LISTEN.length,1)[0],lo=LISTEN_Q.findIndex(x=>x[0]===ci);LISTEN[ci].q.forEach((_,qi)=>{const q=makeQ(li,lo+qi,R(1,2e9));q.claim='Listening';qs.push(q)});
+    const w=isl('write');shuffle([8,9,10,11,12,2,4]).slice(0,2).forEach(t=>{const q=makeQ(w,t,R(1,2e9));q.claim='Writing and research';qs.push(q)});
+    [isl('grammar'),isl('words')].forEach(I=>{const q=makeQ(I,R(0,I.types-1),R(1,2e9));q.claim='Language and vocabulary';qs.push(q)})}
+  qs.forEach(q=>q.from=null);return qs}
+function openTest(isl){const L=(G.tests||[]);
+  overlay(`<div class="eyebrow">Test Practice</div><h2>Practice like the real test</h2><p>12 questions in the same style as the spring test. <b>No hints and one try</b>, just like the real thing. At the end you get a report.</p>
+    <div class="deskkinds">${Object.entries(TEST_SECTIONS).map(([k,T])=>`<button type="button" class="deskkind" data-sec="${k}" style="--dc:${k==='math'?'#2f9fe0':'#e2558f'}"><b>${T.name}</b><small>${T.parts.map(p=>p[0]).join(' · ')}</small></button>`).join('')}</div>
+    ${L.length?`<p class="note">Last time: ${esc(TEST_SECTIONS[L[0].sec].name)} ${L[0].s} of ${L[0].n}.</p>`:''}<div class="actrow"><button type="button" class="go alt" id="tsClose">Not now</button></div>`,()=>{
+    $('#tsClose').onclick=closeOverlay;$('#ocard').querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{closeOverlay();const qs=testQs(b.dataset.sec);beginRound(isl,'test',qs);S.sec=b.dataset.sec;say($('#say'),`Test practice! Read carefully and take your time${nm()}. No hints this time. You've got this!`)})})}
+function finishTest(){const dots=[...document.querySelectorAll('#dots .dot')],by={};let s=0;
+  S.qs.forEach((q,i)=>{const ok=dots[i]&&dots[i].classList.contains('gold'),c=q.claim||'Other';by[c]=by[c]||[0,0];by[c][1]++;if(ok){by[c][0]++;s++}});
+  const n=S.qs.length,p=s/n,lvl=TEST_LEVELS.find(l=>p>=l[0])[1];G.tests=G.tests||[];G.tests.unshift({ts:Date.now(),sec:S.sec||'math',s,n,by,lvl});if(G.tests.length>30)G.tests.length=30;
+  const weak=Object.entries(by).filter(([,v])=>v[1]&&v[0]/v[1]<.67).map(([k])=>k);
+  const st=p>=.85?3:p>=.7?2:p>=.4?1:0;
+  done(st,`${s} of ${n} right. Practice level: <b>${lvl}</b>.<br>${Object.entries(by).map(([k,v])=>`${k}: <b>${v[0]}/${v[1]}</b>`).join(' · ')}${weak.length?`<br>Practice more: <b>${weak.join(', ')}</b>.`:'<br>Strong in every area!'}`,{sticker:st/3})}
+function testParentHTML(){const L=G.tests||[],nm=esc(G.name||'your child');
+  const rows=L.slice(0,6).map(x=>`<li><div><b>${esc(TEST_SECTIONS[x.sec]?TEST_SECTIONS[x.sec].name:x.sec)}: ${x.s} of ${x.n}</b> <small>${new Date(x.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${esc(x.lvl)}</small></div><p>${Object.entries(x.by).map(([k,v])=>`${esc(k)} ${v[0]}/${v[1]}`).join(' · ')}</p></li>`).join('');
+  return `<div class="pcard wide"><h4>Test Practice</h4><p class="note">12-question practice sets in the style of the spring CAASPP test (Math, English). No hints, one try. The "practice level" is only a rough guide: the real test has more questions and is scored differently.</p>${L.length?`<ul class="dklist">${rows}</ul>`:`<p>${nm} has not taken a practice test yet. It is in the Challenges row on the map.</p>`}</div>`}
 function genWrite(t){
+  if(t>=8)return genWriteX(t);
   if(t===0){const s=pick(WR.build),w=s.replace(/\.$/,' .').split(' ').filter(Boolean),items=[...new Set(w)].length===w.length?w:w;return {kind:'order',items,prompt:`Tap the words in order to build a <b>complete sentence</b>. Start with the capital letter. End with the period.`,hint:`The word with a capital letter goes first. Who or what is the sentence about? What did it do?`,explain:`The sentence is: <b>${s}</b>`}}
   if(t===1){const [p,a,w]=pick(WR.topic);return {prompt:`<div class="passage"><p>___ ${p}</p></div>Which <b>topic sentence</b> should start this paragraph?`,...strChoices(a,w),long:true,render:c=>c,hint:`A topic sentence tells the big idea that ALL the other sentences explain.`,explain:`<b>${a}</b> The other sentences all tell about it.`}}
   if(t===2){const [s,a,w]=pick(WR.trans);return {prompt:`Which word or phrase fits best?<br><i>"${s.replace('___','<u>&nbsp;?&nbsp;</u>')}"</i>`,...strChoices(a,w),long:true,render:c=>c,hint:`Transition words show order (first, next, then), a change (however), an example (for example) or an ending (in the end).`,explain:`"${s.replace('___','<b>'+a+'</b>')}"`}}
@@ -4044,6 +4115,7 @@ function genTimeTower(t){
 const ISLANDS=[
   {id:'daily',name:'Daily Challenge',topic:'8 mixed puzzles, new every day',color:'#ff9f43',lm:'daily',special:'daily',group:'ch'},
   {id:'review',name:'Fix-It Falls',topic:'Fix your old mistakes',color:'#5ec3d6',lm:'review',special:'review',group:'ch'},
+  {id:'ptest',name:'Test Practice',topic:'12 questions like the spring test',color:'#7b6cf0',lm:'test',special:'ptest',group:'ch'},
   {id:'flash',name:'Thunder Tower',topic:'60-second fact storm',color:'#7c8fb8',lm:'storm',flash:true,group:'ch'},
   {id:'boss',name:'Boss Island',topic:'Defeat the Grumble Cloud',color:'#6b6f9e',lm:'boss',special:'boss',group:'ch'},
   {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:8,group:'math'},
@@ -4068,11 +4140,11 @@ const ISLANDS=[
   {id:'listen',name:'Listening Lagoon',topic:'Listen and answer',color:'#5bb6e8',lm:'ear',gen:genListen,types:LISTEN_Q.length,round:listenRound,noDiff:true,group:'world'},
   {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:8,group:'world'},
   {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
-  {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:8,group:'world'},
+  {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:13,group:'world'},
   {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length+32,group:'world'},
   {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length+42,group:'world'}
 ];
-const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review'&&!i.retired);
+const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review'&&i.id!=='ptest'&&!i.retired);
 const MAX=STAR_ISLANDS.length*3,BOSS_NEED=20;
 const MIXABLE=ISLANDS.filter(i=>i.gen&&!i.retired);
 const byId=id=>ISLANDS.find(i=>i.id===id);
@@ -4960,6 +5032,7 @@ function card(isl,i){
   if(isl.special==='daily'){status=dailyDone()?`<span class="status ok">Done today! Back tomorrow</span>`:`<span class="status go">+${REW.daily} coins</span>`;if(!dailyDone())rib='<span class="ribbon">NEW!</span>'}
   else if(isl.special==='review'){const due=reviewDue().length,all=G.review.length;
     status=due?`<span class="status go">${due} puzzle${due>1?'s':''} to fix</span>`:all?`<span class="status lock">${all} coming back later</span>`:`<span class="status ok">No mistakes to fix!</span>`;if(due)rib=`<span class="ribbon blue">${due}</span>`}
+  else if(isl.special==='ptest'){const L=G.tests||[];status=L.length?`<span class="status ok">Last: ${L[0].s} of ${L[0].n}</span>`:`<span class="status go">Math or English</span>`;if(!L.length)rib='<span class="ribbon">NEW!</span>'}
   else if(isl.special==='boss'&&starTotal()<BOSS_NEED){cls=' locked';status=`<span class="status lock">Locked: ${starTotal()}/${BOSS_NEED} stars</span>`}
   else{status=`<span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}${G.hardMaster[isl.id]?CROWN_MINI:''}</span>`;
     if(isl.gen&&!isl.noDiff&&diffFor(isl)!==2)status+=`<span class="diff d${diffFor(isl)}">${DIFF_NAME[diffFor(isl)]}</span>`;}
@@ -5051,6 +5124,7 @@ function dealTypes(key,total,k){G.deck=Object.assign({},G.deck||{});let d=(G.dec
   G.deck[key]=d;return out}
 function start(isl,opts={}){
   if(limitGate(()=>start(isl,opts)))return;
+  if(isl.special==='ptest')return openTest(isl);
   if(isl.special==='lesson')return startLesson(isl.lesson);
   if(isl.special==='placement')return startPlacement();
   if(isl.gen&&!isl.special&&!opts.noOffer&&lessonOfferNeeded(isl))return offerLesson(isl,()=>start(isl,{noOffer:true}));
@@ -5103,7 +5177,7 @@ function showQ(){
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;if(q.listen)wireListen();$('#card').classList.toggle('lp',!!q.longp);
   $('#hint').hidden=$('#feedback').hidden=$('#next').hidden=true;
   $('#speakBtn').hidden=!canSpeak;
-  $('#howBtn').hidden=S.mode==='boss'||!(q.how||q.hint);
+  $('#howBtn').hidden=S.mode==='boss'||S.mode==='test'||!(q.how||q.hint);
   armNudge();
   if(q.kind==='setclock')return setupClock(q);
   if(q.kind==='order')return setupOrder(q);
@@ -5523,6 +5597,7 @@ function judge(ok,btn){
     if(q.kind==='keypad'){S.entry='';const t=$('#entryTxt');if(t)t.textContent=''}
     if(S.mode==='boss'){S.locked=true;track(q,true,false);loseHeart();reveal(q);say($('#say'),S.hearts>0?`Ouch! The ${BOSSES[S.boss].name} zapped a heart! Shake it off!`:`Oh no, no hearts left! It got away this time...`);
       const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ();return}
+    if(S.mode==='test'&&S.tries===1){track(q,true,false);S.tries=2}
     if(S.tries===1&&S.mode==='island'&&q.meta&&q.meta.t!=null&&!q.rv&&byId(q.meta.i)&&byId(q.meta.i).gen){const k=q.meta.i+'|'+q.meta.t;S.missRun=S.missRun||{};S.helped=S.helped||{};S.missRun[k]=(S.missRun[k]||0)+1;if(S.missRun[k]>=2&&!S.helped[k]){S.helped[k]=1;S.helpQ=q}}
     if(S.tries===1){track(q,true,false);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge()}
     else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review'||q.rv)reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
@@ -5604,6 +5679,7 @@ function nextFlash(){
 /* results */
 function finishRound(){
   if(S.mode==='lesson')return finishLesson();
+  if(S.mode==='test')return finishTest();
   const n=S.qs.length,s=S.score;let st=s===n?3:s>=Math.ceil(n*.66)?2:s>=1?1:0;let extra='',stick=st>=3?.6:st===2?.4:st===1?.2:0;
   if(S.mode==='daily'){
     if(!dailyDone()){G.dstreak=G.lastDaily===yesterdayKey()?G.dstreak+1:1;G.lastDaily=dayKey();gain(REW.daily,5,$('#prompt'));extra=` Daily bonus: +${REW.daily} coins! Streak: ${G.dstreak} day${G.dstreak>1?'s':''}!`;stick=1;
@@ -6089,6 +6165,7 @@ function renderParent(){
     ${(()=>{const P=(G.home&&G.home.inside&&G.home.inside.pz)||{n:0,by:{},att:{},first:{},done:{},day:''};const att=P.att||{},fst=P.first||{},by=P.by||{},today=P.day===dayKey()?P.done||{}:{};
       const next=INSIDE.filter(it=>it.prize&&it.prize>(P.n||0)).sort((a,b)=>a.prize-b.prize)[0];
       return `<div class="pcard wide"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
+    ${testParentHTML()}
     ${deskParentHTML()}
     <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
     <div class="pcard wide curmap"><h4>4th grade program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the California 4th grade program. Stars are the same as in the game: the best round, or recent accuracy (7 of 10 right lately = 2 stars, 8 of 10 = 3).</p>
