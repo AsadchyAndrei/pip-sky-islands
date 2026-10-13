@@ -1436,6 +1436,49 @@ html body.big .pzcard small,html body.big .pztag{font-size:16px}html body.big .p
   #parent .setrow:has(select),#parent .setrow:has(input[type=text]){grid-template-columns:1fr}
   #parent .setrow select,#parent .setrow input[type=text]{width:100%;min-width:0}
 }
+/* ===== calmer home ===== */
+.nextup{background:var(--card);border-radius:24px;box-shadow:0 6px 0 var(--line);overflow:hidden;order:2}
+.nextup .nuhead{display:flex;align-items:center;gap:12px;padding:14px 16px 12px;background:linear-gradient(180deg,#e9f7ff,#f7fcff);border-bottom:2px solid #e6f0f8}
+.nextup .pipmini{display:none;width:58px;flex:none}
+.nextup #mapsay{flex:1;margin:0;box-shadow:none;background:transparent;padding:0;min-height:0!important;font-size:16px;line-height:1.4;text-align:left}
+.nextup #mapsay::before{display:none}
+.nextup #pickCard{margin:0;box-shadow:none;border:0;border-radius:0;outline:0}
+#g-ch .isle.inplan{display:none}
+#g-ch.islands.four{grid-template-columns:repeat(3,minmax(0,1fr))}
+header.top .pill{white-space:nowrap}
+.rewards{background:var(--card);border-radius:24px;box-shadow:0 6px 0 var(--line);padding:14px 16px 16px;margin-top:16px;order:20}
+.rwhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.rwhead b{font-family:var(--display);font-weight:400;font-size:22px}
+.rwtabs{display:flex;gap:4px;background:#eef3f8;border-radius:999px;padding:4px}
+.rwtabs button{border:0;background:transparent;border-radius:999px;padding:6px 12px 4px;font:800 14px var(--body);color:var(--ink-soft);cursor:pointer;min-height:36px}
+.rwtabs button[aria-selected=true]{background:#fff;color:var(--ink);box-shadow:0 2px 0 var(--line)}
+.rwbody>*{margin:0!important;box-shadow:none!important;border:0!important;outline:0!important;padding:0!important;background:transparent!important}
+.rwbody>.rwoff{display:none!important}
+#goalPill{display:none!important}
+@media (min-width:1100px){
+  header.top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px}
+  header.top .row1{display:contents}
+  header.top .logo{grid-column:1;grid-row:1}
+  header.top .tools{grid-column:3;grid-row:1}
+  header.top .stats{grid-column:2;grid-row:1;flex-wrap:nowrap;gap:8px;justify-content:center}
+  header.top .lvl{flex:0 1 300px;padding:5px 12px}
+  header.top .lvl small{display:none}
+  header.top .pill{font-size:19px;padding:4px 12px 2px;min-height:44px}
+  header.top .pill small{display:none}
+  #syncBadge .tlabel,#syncBadge>span:not(:first-child){display:none}
+  #syncBadge{padding:0;width:44px;justify-content:center}
+  .nextup{margin-top:14px}
+  .mapR .chbox{padding-bottom:8px}
+  #g-ch .isle svg.isl{max-height:120px}
+}
+@media (max-width:760px){
+  #map .intro{display:none}
+  .nextup{margin-top:12px}
+  .nextup .pipmini{display:block}
+  .nextup .nuhead{padding:10px 12px}
+  .nextup #mapsay{font-size:15px}
+  .rwtabs button{padding:6px 10px 4px;font-size:13px}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -4187,7 +4230,7 @@ function fitSpacer(y=scrollY){const sp=$('#mapSpacer');if(!sp)return;const H=doc
 addEventListener('scroll',()=>{const sp=$('#mapSpacer');if(sp&&sp.offsetHeight)fitSpacer()},{passive:true});
 function setTab(t){const y=scrollY,sp=$('#mapSpacer');if(sp)sp.style.height=(y+innerHeight)+'px';mapTab=t;try{localStorage.setItem('pip-tab',t)}catch(e){}document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('.tabp').forEach(p=>{p.hidden=p.dataset.tabp!==t});fitSpacer(y)}
 document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.onclick=()=>{setTab(b.dataset.tab);tone([523,659],.04)});
-function renderMap(){{const sp=$('#mapSpacer');if(sp)sp.style.height=''}
+function renderMap(){setTimeout(homeLayout,0);{const sp=$('#mapSpacer');if(sp)sp.style.height=''}
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
   adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
   pickExplore();const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
@@ -5552,6 +5595,25 @@ function renderPuzzles(){
 }
 $('#inBack').onclick=()=>{tone([523,392]);openHome()};
 
+
+/* ===== calmer home: one "next up" block, one rewards card, no duplicates ===== */
+let rwTab='';
+function homeLayout(){
+  const L=document.querySelector('.mapL'),pc=$('#pickCard');if(!L||!pc)return;
+  let nu=$('#nextUp');
+  if(!nu){nu=document.createElement('div');nu.id='nextUp';nu.className='nextup';nu.innerHTML='<div class="nuhead"><div class="pipmini" data-fox></div></div>';
+    pc.parentNode.insertBefore(nu,pc);nu.querySelector('.nuhead').appendChild($('#mapsay'));nu.appendChild(pc);refreshFoxes()}
+  let rw=$('#rewards');
+  if(!rw){rw=document.createElement('div');rw.id='rewards';rw.className='rewards';rw.innerHTML='<div class="rwhead"><b>Rewards</b><div class="rwtabs" role="tablist" aria-label="Rewards"></div></div><div class="rwbody"></div>';
+    const ev=$('#eventCard');ev.parentNode.insertBefore(rw,ev);const body=rw.querySelector('.rwbody');['eventCard','goalCard','weekCard'].forEach(id=>{const e=$('#'+id);if(e)body.appendChild(e)})}
+  const tabs=[['eventCard',CUR_EV?CUR_EV.name.replace(/ Party| Festival| Fest/,''):'Event'],['goalCard','My goal'],['weekCard','This week']].filter(([id])=>{const e=$('#'+id);return e&&!e.hidden&&e.innerHTML.trim()});
+  if(!tabs.some(t=>t[0]===rwTab))rwTab=tabs[0]?tabs[0][0]:'';
+  rw.hidden=!tabs.length;
+  rw.querySelector('.rwtabs').innerHTML=tabs.map(([id,n])=>`<button type="button" role="tab" aria-selected="${id===rwTab}" data-rw="${id}">${esc(n)}</button>`).join('');
+  ['eventCard','goalCard','weekCard'].forEach(id=>{const e=$('#'+id);if(e)e.classList.toggle('rwoff',id!==rwTab)});
+  rw.querySelectorAll('[data-rw]').forEach(b=>b.onclick=()=>{rwTab=b.dataset.rw;tone([523,659],.04);homeLayout()});
+  const d=document.querySelector('#g-ch .isle[data-id="daily"]');if(d)d.classList.add('inplan');
+}
 /* phone bottom bar: the four sections + the map, always one tap away */
 document.querySelectorAll('#bnav [data-go]').forEach(b=>{const id=b.dataset.go;if(id!=='map'){const sv=document.querySelector('#'+id+' svg');if(sv)b.insertAdjacentHTML('afterbegin',sv.outerHTML)}
   b.onclick=()=>{tone([523,784]);if(id==='map'){stopTimers();renderMap()}else $('#'+id).click()}});
