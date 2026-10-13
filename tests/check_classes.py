@@ -140,7 +140,7 @@ with sync_playwright() as p:
     c.ok(pg.evaluate("G.cls&&G.cls.cid") == cid, 'joined again after being removed')
     pg.evaluate("renderParent()")
     c.ok(pg.locator('#setGrade').count() == 0 and 'leave the class first' in pg.text_content('#parentBody'), 'grade locked while in a class')
-    c.ok('Grade 4' in pg.text_content('#playerBtn'), 'grade shown next to the name')
+    c.ok('4th' in pg.text_content('#playerBtn'), 'grade shown next to the name')
     pg.evaluate("cloudFlush()"); pg.wait_for_timeout(300)
     store = json.loads(pg.evaluate("localStorage.getItem('mock-store')"))
     c.ok(not errs, f'parent page errors: {errs[:3]}')
