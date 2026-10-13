@@ -375,6 +375,7 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .skrow{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:8px 10px}.skrow .skd{width:12px;height:12px}.skname{flex:1;min-width:0}.skname b{display:block;font-size:15px;line-height:1.25}.skname small{color:var(--ink-soft);font-weight:700;font-size:12px}.skrow.s2{background:var(--pale-leaf);border-color:#bfe8d1}.skrow .go.small{padding:7px 14px;font-size:16px;flex:none}
 .skgrp{margin:12px 0 4px;font-family:var(--display);font-weight:400;font-size:18px}.skdet{border:2px solid var(--line);border-radius:12px;margin:6px 0;background:#fff}.skdet summary{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;flex-wrap:wrap}.skdet summary span{color:var(--ink-soft);font-size:13px;font-weight:600;flex:1;min-width:120px}.skdet summary em{font-style:normal;font-weight:800}
 .skdet ul{list-style:none;margin:0;padding:0 12px 10px;display:grid;gap:4px}.skdet li{display:grid;grid-template-columns:12px 1fr auto auto;gap:8px;align-items:center;font-size:14px}.skdet li .skd{width:10px;height:10px}.skdet li small{color:var(--ink-soft);font-weight:700}.skdet li em{font-style:normal;font-weight:700;color:var(--ink-soft);font-size:12px;min-width:76px;text-align:right}.skdet li.s2 em{color:#239068}
+.nowgrp{margin:8px 0}.nowgrp>b{display:block;margin-bottom:6px}.nowchips{display:flex;flex-wrap:wrap;gap:6px}.nowchip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink)}.nowchip.on{background:var(--ocean);border-color:var(--ocean);color:#fff}
 .sklegend{display:flex;gap:10px;align-items:center;font-size:13px;font-weight:700;color:var(--ink-soft);margin:6px 0}
 @media (max-width:760px){.isico{width:80px}.ishead h2{font-size:24px}.skdet li{grid-template-columns:12px 1fr auto}.skdet li small{display:none}}
 .dict{background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 12px;margin:6px 0 10px;text-align:left;font-size:.9em;line-height:1.5}
@@ -4918,6 +4919,8 @@ function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone
     $('#isPlay').onclick=()=>{close();start(isl)};if($('#isLearn'))$('#isLearn').onclick=()=>{close();start(lessonIsland(lessonFor(isl.id)))};$('#isClose').onclick=close;$('#isPlay').focus({preventScroll:true});
     $('#ocard').querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{close();tone([523,784]);startSkill(isl,L[+b.dataset.sk])})})}
 function pickPlay(P){const w=weakSkill(P.id);if(w&&skillsOf(P.id).length>1)startSkill(P,w);else start(P,{noOffer:true})}
+function nowParentHTML(){const sel=G.settings.now||[],groups=[['Math',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='math')],['English and more',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='world')]];
+  return `<div class="pcard wide"><h4>In class right now</h4><p class="note">Tap the topics ${esc(G.name||'your child')} is learning at school this month (up to 4). Pip's Pick will practice these first, starting with the skills not mastered yet.</p>${groups.map(([g,L])=>`<div class="nowgrp"><b>${g}</b><div class="nowchips">${L.map(i=>`<button type="button" class="nowchip${sel.includes(i.id)?' on':''}" data-now="${i.id}" aria-pressed="${sel.includes(i.id)}">${esc(i.topic)}</button>`).join('')}</div></div>`).join('')}${sel.length?`<p class="note">Now practicing first: <b>${sel.map(id=>esc(byId(id).name)).join(', ')}</b>.</p>`:''}</div>`}
 function skillsParentHTML(){const groups=[['Math',['place','addsub','mult','div','frac','dec','area','angle','shape','money','measure','pattern','graph','time','riddle']],['English',['reading','listen','words','grammar','write']],['Science and social studies',['science','geo','history']]];
   let all=0,done=0;const body=groups.map(([g,ids])=>`<h5 class="skgrp">${g}</h5>${ids.filter(id=>byId(id)&&skillsOf(id).length).map(id=>{const L=skillsOf(id),d=skillsDone(id);all+=L.length;done+=d;
     return `<details class="skdet"><summary><b>${esc(byId(id).name)}</b><span>${esc(byId(id).topic)}</span><em>${d}/${L.length}</em><span class="skmeter"><i style="width:${Math.round(d/L.length*100)}%"></i></span></summary><ul>${L.map(s=>{const m=skStat(s.k);return `<li class="s${m.st}">${SK_DOT(m.st)}<span>${esc(s.name)}</span><small>${esc(s.std)}</small><em>${m.st===2?'Mastered':m.n?`${m.ok}/${m.n} lately`:'Not tried'}</em></li>`}).join('')}</ul></details>`}).join('')}`).join('');
@@ -5465,11 +5468,13 @@ function tierOf(id){const m=rollAcc(id);let t=0;for(let k=1;k<4;k++)if(m.acc>=TI
 function toTier(id,k){const r=(G.roll||{})[id]||'',need=k===1?10:MASTER_N;for(let x=0;x<=40;x++){const w=(r+'1'.repeat(x)).slice(-20),a=w.split('').filter(c=>c==='1').length/(w.length||1);if(w.length>=need&&a>=TIERS[k][0])return x}return 40}
 const tierBest=id=>Math.max(tierOf(id),(G.tierBest||{})[id]||0);
 /* ---------- Pip's Pick: the trickiest topic pays double today ---------- */
-const pickToday=()=>Object.values(G.stats||{}).some(x=>x&&x.a>=6)?pipPick():null;
+const pickToday=()=>((G.settings.now||[]).length||Object.values(G.stats||{}).some(x=>x&&x.a>=6))?pipPick():null;
 function pipPick(){
   const pool=ISLANDS.filter(i=>i.gen&&['math','time','world'].includes(i.group)&&!i.special&&!i.flash&&STAR_ISLANDS.includes(i));
   const accOf=i=>{const m=rollAcc(i.id);if(m.n>=8)return m.acc;const st=G.stats[i.id];return st&&st.a>=6?st.c/st.a:null};
-  let weak=pool.filter(i=>accOf(i)!==null&&accOf(i)<.8).sort((a,b)=>accOf(a)-accOf(b)).slice(0,3);
+  const now=(G.settings.now||[]).map(byId).filter(i=>i&&pool.includes(i));
+  /* topics the grown-up marked as "in class right now" come first; inside them, the ones with skills still to master */
+  let weak=now.length?now.slice().sort((a,b)=>(allSkills(a.id)-allSkills(b.id))||((accOf(a)??-1)-(accOf(b)??-1))).slice(0,3):pool.filter(i=>accOf(i)!==null&&accOf(i)<.8).sort((a,b)=>accOf(a)-accOf(b)).slice(0,3);
   if(!weak.length)weak=pool.filter(i=>i.group==='math').sort((a,b)=>(G.best[a.id]||0)-(G.best[b.id]||0)||((G.stats[a.id]||{}).a||0)-((G.stats[b.id]||{}).a||0)).slice(0,3);
   if(!weak.length)return null;const d=Math.floor(Date.parse(dayKey())/864e5),pd=G.pickDay&&G.pickDay.d===dayKey()?G.pickDay:null;
   /* after 3 rounds on today's pick, Pip moves the x2 to the next weak topic, so no single topic gets all the practice */
@@ -6651,6 +6656,7 @@ function renderParent(){
     ${(()=>{const P=(G.home&&G.home.inside&&G.home.inside.pz)||{n:0,by:{},att:{},first:{},done:{},day:''};const att=P.att||{},fst=P.first||{},by=P.by||{},today=P.day===dayKey()?P.done||{}:{};
       const next=INSIDE.filter(it=>it.prize&&it.prize>(P.n||0)).sort((a,b)=>a.prize-b.prize)[0];
       return `<div class="pcard wide"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
+    ${nowParentHTML()}
     ${skillsParentHTML()}
     ${testParentHTML()}
     ${fluencyParentHTML()}
@@ -6702,6 +6708,7 @@ function renderParent(){
   </div>`;
   setSync();$('#codeOut').value=encodeSave(ROOT.current);if(CL.mode==='cloud')loadBackups();
   document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>start(byId(b.dataset.play)));
+  document.querySelectorAll('[data-now]').forEach(b=>b.onclick=()=>{const id=b.dataset.now,L=G.settings.now=(G.settings.now||[]).slice(),k=L.indexOf(id);if(k>=0)L.splice(k,1);else{if(L.length>=4)L.shift();L.push(id)}save();renderParent();const c=[...document.querySelectorAll('.pcard h4')].find(h=>h.textContent==='In class right now');c&&c.scrollIntoView({block:'center'})});
   if($('#pDesk'))$('#pDesk').onclick=()=>openDesk();if($('#pFlu'))$('#pFlu').onclick=()=>openFluency();
   if($('#pInstall'))$('#pInstall').onclick=async()=>{const e=installEvt;if(!e)return;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderParent()};
   $('#setGoal').onchange=e=>{G.settings.goal=e.target.value;save();updateStats()};
