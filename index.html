@@ -377,6 +377,10 @@ body.ev-summer{--sky1:#5fcdf7;--sky2:#c9f0ff;--sky3:#fff3b0}
 .skdet ul{list-style:none;margin:0;padding:0 12px 10px;display:grid;gap:4px}.skdet li{display:grid;grid-template-columns:12px 1fr auto auto;gap:8px;align-items:center;font-size:14px}.skdet li .skd{width:10px;height:10px}.skdet li small{color:var(--ink-soft);font-weight:700}.skdet li em{font-style:normal;font-weight:700;color:var(--ink-soft);font-size:12px;min-width:76px;text-align:right}.skdet li.s2 em{color:#239068}
 .sklegend{display:flex;gap:10px;align-items:center;font-size:13px;font-weight:700;color:var(--ink-soft);margin:6px 0}
 @media (max-width:760px){.isico{width:80px}.ishead h2{font-size:24px}.skdet li{grid-template-columns:12px 1fr auto}.skdet li small{display:none}}
+.dict{background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 12px;margin:6px 0 10px;text-align:left;font-size:.9em;line-height:1.5}
+.ckey{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;margin:10px 0;font-size:18px}.ckey span{background:#fff;border-radius:8px;padding:2px 8px;box-shadow:inset 0 0 0 2px var(--line)}.cmsg{font-size:30px;letter-spacing:2px;font-weight:800;color:var(--ocean);margin:6px 0;text-align:center}
+.dknotes{width:100%;text-align:left;background:#fff7e3;border-radius:14px;padding:8px 12px;display:grid;gap:4px;font-size:14px;font-weight:600}.dknotes span::before{content:"• ";color:#e09a14}
+.flutext{text-align:left;font-size:20px;line-height:1.7;font-weight:600;background:#fff;border-radius:14px;padding:12px 16px;box-shadow:inset 0 0 0 3px var(--line)}.flut{font-family:var(--display);font-size:26px;min-width:90px}.flul{font-weight:700}.flul input{width:80px;font-size:20px;padding:4px 8px;border:3px solid var(--line);border-radius:10px;margin-left:6px}
 .seq.cmpseq{font-size:clamp(22px,5vw,34px);align-items:center}
 .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .choices.three{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -2577,10 +2581,10 @@ function genPlace(t){
       explain:`The ${d} is in the <b>${PLACE[place]}</b> place. So it's worth ${d} × ${fmt(10**place)} = <b>${fmt(ans)}</b>.`};
   }
   if(t===1){
-    const p=pick(Dv([10,100],[10,100,1000],[1000,10000])),name={10:'ten',100:'hundred',1000:'thousand',10000:'ten thousand'}[p];
+    const p=pick(Dv([10,100],[10,100,1000],[1000,10000,100000])),name={10:'ten',100:'hundred',1000:'thousand',10000:'ten thousand',100000:'hundred thousand'}[p];
     let n;do{n=R(Dv(100,1000,10000),Dv(9999,9999,999999))}while(n%p===0||n<p);
     const down=Math.floor(n/p)*p,up=down+p,ans=n-down>=p/2?up:down;
-    return {how:['place1',n,p],prompt:`Round <b>${fmt(n)}</b> to the nearest ${name}.`,...numChoices(ans,[ans===up?down:up,Math.round(n/(p*10))*p*10,p>10?Math.round(n/(p/10))*(p/10):n+10]),
+    return {how:['place1',n,p],prompt:`Round <b>${fmt(n)}</b> to the nearest ${name}.`,...numChoices(ans,[ans===up?down:up,Math.round(n/(p*10))*p*10,p>10?Math.round(n/(p/10))*(p/10):n+10,up+p]),
       hint:`Look at the digit just to the right of the ${name}s place. 5 or more rounds up.`,
       explain:`${fmt(n)} is between ${fmt(down)} and ${fmt(up)}. It is ${n-down>=p/2?'halfway or more, so it rounds up':'less than halfway, so it rounds down'} to <b>${fmt(ans)}</b>.`};
   }
@@ -2600,6 +2604,7 @@ function genPlace(t){
     explain:`Read from the left. <b>${fmt(ans)}</b> has the biggest digit at the first place where the numbers are different.`};
 }
 function genMult(t){
+  if(t===8)return genCmpEq();
   if(t===7)return genYesNoMult();
   if(t>=6)return genMultX(t);
   if(t>=4)return genMultCmp(t);
@@ -2810,6 +2815,7 @@ const UNITQ=[['the length of a pencil','inches','length'],['the distance between
   ['the weight of an apple','ounces','weight'],['the weight of a dog','pounds','weight'],['the weight of a school bus','tons','weight'],['the milk in a glass','cups','capacity'],['the water in a bathtub','gallons','capacity'],
   ['the time to brush your teeth','minutes','time'],['the time to blink','seconds','time'],['the time of a long road trip','hours','time'],['the time of summer vacation','days','time']];
 function genMeasure(t){
+  if(t===7)return genMeasLine();
   if(t>=5)return genMeasureX(t);
   const c=pick(DIFF===1?CONV.filter(x=>x.f<=24):CONV);
   if(t===0){const n=R(2,Dv(5,9,15)),ans=n*c.f;return {prompt:`1 ${c.big} = ${fmt(c.f)} ${c.small}. How many ${c.small} are in <b>${n} ${c.bigs}</b>?`,...numChoices(ans,[ans+c.f,ans-c.f,n+c.f,n*10]),
@@ -2835,6 +2841,7 @@ const SHAPE_ICON={circle:['#ff6b57','<circle cx="20" cy="20" r="15"/>'],triangle
   star:['#ffc23d','<path d="M20 3l5 10.5 11.5 1.6-8.3 8 2 11.4L20 29l-10.2 5.5 2-11.4-8.3-8 11.5-1.6z"/>'],heart:['#e2558f','<path d="M20 35s-15-9-15-19a7.5 7.5 0 0 1 15-3 7.5 7.5 0 0 1 15 3c0 10-15 19-15 19z"/>']};
 const shapeIcon=(n,s=40)=>`<svg viewBox="0 0 40 40" style="width:${s}px;height:${s}px" fill="${SHAPE_ICON[n][0]}" stroke="#1f3557" stroke-width="2" aria-label="${n}">${SHAPE_ICON[n][1]}</svg>`;
 function genPattern(t){
+  if(t===10)return genPatFeat();
   if(t>=8)return dragPattern(t);
   if(t>=6)return genPatternX(t);
   if(t===0){if(DIFF===1||coin()){const a=R(1,30),s=R(Dv(2,3,7),Dv(5,12,25)),seq=[0,1,2,3].map(k=>a+k*s),ans=a+4*s;
@@ -3170,6 +3177,7 @@ const HOMO=[['Pip has ___ balloons.','two',['to','too']],['I want to come ___!',
   ["May I have a ___ of cake?", "piece", ["peace"]],
   ["I can ___ a bird in the tree.", "see", ["sea"]]];
 function genWords(t){
+  if(t===6||t===7)return genDict(t);
   if(t===0){const [w,s]=pick(SYN),others=shuffle(SYN.filter(p=>p[0]!==w).map(p=>p[1])).slice(0,3);
     return {prompt:`Which word means almost the <b>same</b> as <b>"${w}"</b>?`,...strChoices(s,others),hint:`Try each word in a sentence: "I feel ${w}." Which one fits the same way?`,explain:`"${w}" and "<b>${s}</b>" are <b>synonyms</b>. They mean almost the same thing.`};}
   if(t===1){const [w,a]=pick(ANT),others=shuffle([...SYN.map(p=>p[1]),...ANT.filter(p=>p[0]!==w).map(p=>p[0])]).slice(0,3);
@@ -3382,6 +3390,7 @@ function quakeMap(){const fault='M70 20 C95 70 120 110 150 150 S210 215 250 250'
   return `<svg viewBox="0 0 300 280" style="width:300px;max-width:100%" role="img" aria-label="Map of earthquakes"><rect width="300" height="280" rx="14" fill="#8fd3f7"/><path d="M40 0 H300 V280 H230 C200 250 150 210 110 170 C80 140 50 80 40 0Z" fill="#f6e1b8" stroke="#8c5a2c" stroke-width="2"/><path d="${fault}" fill="none" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="8 5"/>${dots}<text x="200" y="60" ${SF} font-size="14" fill="#1f3557">LAND</text><text x="16" y="250" ${SF} font-size="14" fill="#1f3557">OCEAN</text><g transform="translate(176 100)"><circle r="6" fill="#ff6b57" stroke="#1f3557"/><text x="10" y="5" ${SF} font-size="12" fill="#1f3557">= earthquake</text><path d="M-6 22 h18" stroke="#8c5a2c" stroke-width="3" stroke-dasharray="6 4"/><text x="16" y="27" ${SF} font-size="12" fill="#1f3557">= fault</text></g></svg>`}
 function layersSVG(lay){const H=34;return `<svg viewBox="0 0 300 ${lay.length*H+20}" style="width:360px;max-width:100%" role="img" aria-label="Rock layers">${lay.map((l,i)=>`<rect x="20" y="${10+i*H}" width="260" height="${H}" fill="${l[1]}" stroke="#1f3557" stroke-width="1.5"/><text x="34" y="${10+i*H+22}" ${SF} font-size="15" fill="#1f3557">${l[0]}</text>${l[2]?`<text x="270" y="${10+i*H+22}" text-anchor="end" font-size="13" ${SF} fill="#1f3557">${l[2]}</text>`:''}`).join('')}</svg>`}
 function sciX(k){
+  if(k>=7)return sciNew(k);
   if(k>=4)return dragSci(k);
   if(k===0){const e=pick([['ramp',['10 cm','20 cm','30 cm','40 cm'],'Ramp height','Distance rolled (cm)','the car rolled','the ramp height','higher the ramp, the farther the car rolls','#ff9f43'],
       ['ball',['1 m','2 m','3 m','4 m'],'Drop height','Bounce height (cm)','the ball bounced','the drop height','higher you drop the ball, the higher it bounces','#2f9fe0'],
@@ -3411,7 +3420,7 @@ function sciX(k){
     ...strChoices(order[1],[order[0],order[2],order[3]]),long:true,hint:`Follow the arrows from the sun.`,explain:`${order.map((o,i)=>`${i+1}. ${o}`).join('. ')}. So second: <b>light bounces off the apple</b>.`};
   return {kind:'order',items:order,prompt:`Put the steps in order: how do we <b>see</b> things?`,hint:`Start with where light comes from. End with your brain.`,explain:`${order.map((o,i)=>`${i+1}. ${o}`).join('. ')}.`};
 }
-function genScience(t){if(t>=SCIENCE.length)return sciX((t-SCIENCE.length)%7);const f=SCIENCE[t%SCIENCE.length];return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4]}}
+function genScience(t){if(t>=SCIENCE.length)return sciX((t-SCIENCE.length)%11);const f=SCIENCE[t%SCIENCE.length];return {prompt:f[0],...strChoices(f[1],f[2]),hint:f[3],explain:f[4]}}
 
 /* ================= reading ================= */
 const PASSAGES=[
@@ -3691,6 +3700,15 @@ const LONGP=[
   ['mc','How do engineers use earthquake maps?','To design stronger buildings and bridges',['To tell people the exact day of an earthquake','To move the plates','To build new faults'],'Look at the end of paragraph 4.','Engineers use the maps <b>to design stronger buildings and bridges</b>.'],
   ['mc','Why does the author compare plate movement to <b>fingernails growing</b>?','To show how slowly the plates move',['To show plates are made of fingernails','To explain how earthquakes feel','To tell what scientists measure'],'Fingernails grow so slowly you cannot see it happen.','It helps you understand <b>how slowly</b> plates move.']]},
 ];
+LONGP.push({t:'Two Tales of Small Helpers',k:'Fables',p:[
+ 'The first tale is a fable from ancient Greece, told by Aesop. Long ago, a lion was caught in a hunter\'s net. A tiny mouse heard him roaring. "I will help you," squeaked the mouse. The lion laughed, but the mouse chewed through the ropes until the lion was free. "I was wrong to laugh," said the lion. "Even the smallest friend can be a great help."',
+ 'The second tale comes from India, from an old collection of stories called the Panchatantra. A herd of elephants walked to a lake every day and trampled the homes of the mice who lived there. The mice asked the elephant king to take another path. "Someday we may help you," they said. The king smiled at the idea, but he agreed. Later, hunters trapped the elephants in strong nets. The mice gnawed through the ropes all night until every elephant was free. "I thought you were too small to matter," said the king. "Now I know that size does not measure a heart."',
+ 'The two tales come from places far apart, but they are alike in many ways. In both, big, proud animals are trapped. In both, small creatures help, and the big animals learn a lesson.'],
+ q:[['mc','What <b>theme</b> do both tales share?','Small creatures can be important helpers.',['Lions are kings of the animals.','Elephants need a lot of water.','Never go near a lake.'],'What does the big animal learn in each tale?','In both tales, the big animal learns that <b>small creatures can be great helpers</b>.'],
+  ['ab','<b>Part A:</b> How are the lion and the elephant king alike at the <b>beginning</b>?','Both do not believe small animals could help them.',['Both are hungry.','Both are hunting.','Both live by a lake.'],'<b>Part B:</b> Which detail from the second tale supports your answer?','The king smiled at the idea, but he agreed.',['A herd of elephants walked to a lake every day.','The mice gnawed through the ropes all night.','Later, hunters trapped the elephants in strong nets.'],'Compare how each big animal reacts when the small animals offer help.','The lion <b>laughed</b>, and the king <b>smiled at the idea</b>: neither believed the small animals could help.'],
+  ['two','Which <b>two</b> things are the <b>same</b> in both tales?',['Big animals are trapped in nets.','Small creatures chew through the ropes.'],['The animals live by a lake.','The story is from ancient Greece.','The helpers are birds.'],'Look at the details of what happens in each tale.','In both, <b>big animals are trapped in nets</b> and <b>small creatures chew through the ropes</b>.'],
+  ['hl','Tap the sentence that tells the lesson the <b>lion</b> learned.','"Even the smallest friend can be a great help."','Look at the end of the first tale.','The lion says: "<b>Even the smallest friend can be a great help.</b>"'],
+  ['mc','How are the two tales <b>different</b>?','They come from different cultures and have different animals.',['One has a lesson and one does not.','One is true and one is made up.','They have different themes.'],'Think about where they come from and who is in them.','One is from ancient Greece (a lion and a mouse) and one is from India (elephants and mice): <b>different cultures and animals</b>, same lesson.']]});
 const LQ=LONGP.flatMap((P,pi)=>P.q.map((_,qi)=>[pi,qi]));
 function lpSentences(P){let n=0;return P.p.map(par=>par.split(/(?<=[.!?]["”']?)\s+(?=["“A-Z])/).map(s=>({s,i:n++})))}
 function longHTML(P){const S2=lpSentences(P);return `<div class="passage longp"><div class="lptag">${esc(P.k)}</div><h4>${P.t}</h4>${S2.map((ss,pi)=>`<p><span class="pn">${pi+1}</span>${ss.map(x=>`<span class="sent" data-s="${x.i}">${x.s}</span>`).join(' ')}</p>`).join('')}</div>`}
@@ -3761,9 +3779,114 @@ function wireListen(){const L=document.querySelector('#visual .listen');if(!L)re
   const reveal=()=>{box.hidden=false;if(show)show.hidden=true};
   play.onclick=()=>{if(!canSpeak){reveal();play.hidden=true;return}stopSpeak();speak(txt,{user:true});play.textContent='↻ Listen again';S.heard=1};
   if(show)show.onclick=()=>{reveal();bump&&bump('w')}}
+/* ===== closing the last gaps in the 4th grade standards ===== */
+/* 4.OA.2: "times as many" vs "more than" */
+function genCmpEq(){const [a,b]=shuffle([...NAMES]).slice(0,2),n=R(3,9),k=R(2,9),times=coin(),th=pick(['stickers','shells','marbles','books']);
+  const ans=times?`${a}: ${n} × ${k} = ${n*k}`:`${a}: ${k} + ${n} = ${n+k}`;
+  return {prompt:`${b} has <b>${k}</b> ${th}. ${a} has <b>${times?`${n} times as many`:`${n} more`}</b> ${th} ${times?'as':'than'} ${b}. Which shows how to find how many ${a} has?`,
+    ...strChoices(ans,[times?`${a}: ${k} + ${n} = ${n+k}`:`${a}: ${n} × ${k} = ${n*k}`,`${a}: ${Math.max(k,n)} − ${Math.min(k,n)} = ${Math.abs(k-n)}`,times?`${a}: ${n*k} ÷ ${k} = ${n}`:`${a}: ${k} × 2 = ${k*2}`]),long:true,
+    hint:`"Times as many" means multiply. "More than" means add.`,explain:times?`<b>${n} times as many</b> as ${k} means ${n} groups of ${k}: ${n} × ${k} = <b>${n*k}</b>.`:`<b>${n} more</b> than ${k} means add: ${k} + ${n} = <b>${n+k}</b>.`}}
+/* 4.OA.5: features of a pattern that the rule does not say */
+function genPatFeat(){const s=R(1,9),k=pick([2,4,6,10,3,5]),seq=[0,1,2,3,4,5].map(i=>s+i*k);let ans,w;
+  if(k%2===0){ans=s%2?'All the numbers are odd.':'All the numbers are even.';w=[s%2?'All the numbers are even.':'All the numbers are odd.','The numbers go odd, even, odd, even.','Every number ends in 0.']}
+  else{ans=s%2?'The numbers go odd, even, odd, even.':'The numbers go even, odd, even, odd.';w=['All the numbers are odd.','All the numbers are even.','Every number is a multiple of 10.']}
+  return {prompt:`The rule is <b>"start at ${s}, add ${k}"</b>. Which is true about the pattern?`,visual:`<div class="seq">${seq.map(x=>`<span>${x}</span>`).join('')}</div>`,...strChoices(ans,w),long:true,
+    hint:`Look at each number. Is it odd or even? Adding an even number keeps odd/even the same. Adding an odd number switches it.`,explain:`${seq.join(', ')}: ${ans} Adding ${k} (${k%2?'odd':'even'}) ${k%2?'switches between odd and even':'keeps odd or even the same'}.`}}
+/* 4.MD.2: measurement on a number line */
+function genMeasLine(){const unit=pick([['minutes',0,60,5,'Pip\'s walk','walked'],['centimeters',0,100,10,'The ribbon','is'],['milliliters',0,500,50,'The water','was poured']]);
+  const [u,lo,hi,step,who]=unit,n=(hi-lo)/step;let a,b;do{a=R(0,n-2)*step;b=R(1,n)*step}while(b-a<step*2);
+  const X=v=>20+(v-lo)/(hi-lo)*300;let tk='';for(let v=lo;v<=hi;v+=step)tk+=`<line x1="${X(v)}" y1="60" x2="${X(v)}" y2="${(v-lo)%(step*2)===0?72:68}" stroke="#1f3557" stroke-width="2"/>${(v-lo)%(step*2)===0?`<text x="${X(v)}" y="88" text-anchor="middle" ${FONT} font-size="12" fill="#1f3557">${v}</text>`:''}`;
+  const vis=`<svg viewBox="0 0 340 100" style="width:380px;max-width:100%" role="img" aria-label="Number line"><line x1="20" y1="60" x2="320" y2="60" stroke="#1f3557" stroke-width="3"/>${tk}<rect x="${X(a)}" y="44" width="${X(b)-X(a)}" height="10" rx="5" fill="#ff9f43"/><circle cx="${X(a)}" cy="49" r="7" fill="#2f9fe0" stroke="#1f3557" stroke-width="2"/><circle cx="${X(b)}" cy="49" r="7" fill="#e2558f" stroke="#1f3557" stroke-width="2"/><text x="${X(a)}" y="34" text-anchor="middle" ${FONT} font-size="12" fill="#2f9fe0">start</text><text x="${X(b)}" y="34" text-anchor="middle" ${FONT} font-size="12" fill="#e2558f">end</text><text x="170" y="98" text-anchor="middle" font-size="11" fill="#506686" font-weight="700">${u}</text></svg>`;
+  return {prompt:`The number line shows the start and end. How many <b>${u}</b> is it from start to end?`,visual:vis,unit:u==='milliliters'?'mL':u==='centimeters'?'cm':'min',...numChoices(b-a,[b,a,b-a+step,b-a-step].filter(x=>x>0)),
+    hint:`Read the start and the end. Then subtract: end − start. Each small tick is ${step}.`,explain:`Start: ${a}. End: ${b}. ${b} − ${a} = <b>${b-a} ${u}</b>.`}}
+/* RI.4.5 text structure */
+const TSTRUCT=[['First, the caterpillar hatches from a tiny egg. Next, it eats and grows for about two weeks. Then it forms a chrysalis. Finally, a butterfly comes out.','Sequence (time order)'],
+ ['Frogs and toads are both amphibians. Frogs have smooth, wet skin, but toads have dry, bumpy skin. Frogs have long legs for jumping, while toads have short legs for walking.','Compare and contrast'],
+ ['Heavy rain fell for three days. Because of this, the river rose over its banks. As a result, many roads near the river were closed.','Cause and effect'],
+ ['Many birds crashed into the big glass windows at our school. To solve this, students stuck colorful paper shapes on the glass. Now the birds can see the windows and fly around them.','Problem and solution'],
+ ['A volcano is an opening in Earth\'s crust. Hot melted rock called magma rises up through it. Volcanoes can be found on land and under the ocean.','Description'],
+ ['The town library was too small for all its books. So the people raised money with bake sales and a fun run. In two years, they built a bigger library.','Problem and solution'],
+ ['When water gets very cold, it freezes into ice. Because ice takes up more space than water, frozen pipes can crack.','Cause and effect'],
+ ['Dolphins and sharks both live in the ocean. Dolphins are mammals that breathe air, but sharks are fish that breathe with gills.','Compare and contrast'],
+ ['In 1769, the first mission was built in San Diego. Over the next 54 years, 20 more missions were built. The last one was finished in Sonoma in 1823.','Sequence (time order)']];
+function genStruct(t){const [p,a]=TSTRUCT[t%TSTRUCT.length];return {prompt:`<div class="passage"><p>${p}</p></div>How is this paragraph <b>organized</b>?`,...strChoices(a,shuffle(['Sequence (time order)','Compare and contrast','Cause and effect','Problem and solution','Description'].filter(x=>x!==a))),
+  hint:`Look for clue words: first/next/then (sequence), but/while/both (compare), because/as a result (cause and effect), to solve (problem and solution).`,
+  explain:`Clue words show it: <b>${a}</b>.`,long:true}}
+/* L.4.4c dictionary, L.4.3 formal English and punctuation for effect, W.4.3 dialogue */
+const DICT=[['bank','1. land along the side of a river 2. a place where people keep money 3. to tilt an airplane while turning',['We had a picnic on the <b>bank</b> of the river.',1],['Mom put her paycheck in the <b>bank</b>.',2]],
+ ['bat','1. a flying mammal that is active at night 2. a wooden stick used to hit a ball 3. to blink (your eyes)',['The <b>bat</b> flew out of the cave at dusk.',1],['Leo swung the <b>bat</b> and hit a home run.',2]],
+ ['fair','1. treating everyone equally 2. an outdoor event with rides and games 3. light in color',['It is not <b>fair</b> that only one team gets the ball.',1],['We rode the Ferris wheel at the county <b>fair</b>.',2]],
+ ['bark','1. the sound a dog makes 2. the outer covering of a tree trunk',['The <b>bark</b> of the oak tree was rough.',2],['I heard a loud <b>bark</b> from next door.',1]],
+ ['light','1. not heavy 2. brightness that lets us see 3. to start a fire',['This backpack is so <b>light</b>!',1],['Turn on the <b>light</b>, please.',2]],
+ ['present','1. a gift 2. here, not absent 3. to show or give to a group',['Everyone in class was <b>present</b> today.',2],['Maya will <b>present</b> her project on Friday.',3]]];
+const GUIDE=[['apple','berry',['banana','bike','avocado','cherry'],'banana'],['magic','mitten',['milk','map','moon','music'],'milk'],['seal','snow',['shell','sail','sun','sock'],'shell'],['table','tiger',['tent','train','turtle','taco'],'tent'],['rabbit','robin',['river','rocket','rain','rose'],'river']];
+function genDict(t){if(t===6){const [w,def,s1,s2]=pick(DICT),[s,n]=coin()?s1:s2,defs=def.split(/\s(?=\d\.)/);
+    return {prompt:`<div class="dict"><b>${w}</b> <i>(noun or verb)</i><br>${defs.join('<br>')}</div>Which meaning of <b>${w}</b> is used in this sentence?<br><i>"${s}"</i>`,...strChoices(`Meaning ${n}`,['Meaning 1','Meaning 2','Meaning 3'].filter((x,i)=>i<defs.length&&x!==`Meaning ${n}`)),
+      hint:`Try each meaning in the sentence. Which one makes sense?`,explain:`In this sentence, <b>${w}</b> means "${defs[n-1].replace(/^\d\.\s*/,'')}" (meaning ${n}).`}}
+  const [a,b,opts,ans]=pick(GUIDE);return {prompt:`A dictionary page has the guide words <b>${a}</b> and <b>${b}</b>. Which word would you find on this page?`,...strChoices(ans,opts.filter(x=>x!==ans)),
+    hint:`Guide words show the first and last word on the page. Your word must come between them in ABC order.`,explain:`<b>${ans}</b> comes after "${a}" and before "${b}" in ABC order.`}}
+const FORMAL=[['You are writing a letter to the principal. Which sentence is the most <b>formal</b>?','I would like to ask if our class can plant a garden.',['Hey! Can we do a garden?? Pleeease!','Garden. Yes or no?','Yo, we want a garden, okay?']],
+ ['You are giving a report to the class about whales. Which sentence fits <b>best</b>?','Blue whales are the largest animals that have ever lived.',['Blue whales are super duper huge, LOL.','Whales? So big. Like, wow.','OMG blue whales are big.']],
+ ['Which sentence would you use when texting a <b>friend</b> (informal)?','Wanna come over after school?',['I would like to invite you to visit my home after school.','Dear Sir, please attend my residence.','To whom it may concern: come over.']]];
+const PUNCT=[['Which ending shows that the speaker is <b>excited</b>?','"We won the championship!"',['"We won the championship."','"We won the championship?"','"We won the championship,"']],
+ ['Which sentence uses punctuation to show a <b>question</b>?','"Where did my backpack go?"',['"Where did my backpack go."','"Where did my backpack go!"','"Where, did my backpack go"']],
+ ['Which sentence shows a <b>surprise</b> best?','"Look out! A snake!"',['"Look out. A snake."','"Look out, a snake."','"look out a snake"']]];
+const DIALOGUE=[['Which sentence shows a character\'s feeling through <b>dialogue</b>?','"I can\'t believe I finally did it!" Ana shouted, jumping up and down.',['Ana was happy.','Ana felt good about it.','Ana did it.']],
+ ['Which sentence <b>shows</b> (not tells) that Ben is nervous?','Ben\'s hands shook as he whispered, "Is it my turn already?"',['Ben was nervous.','Ben felt nervous about his turn.','Ben was very, very nervous.']],
+ ['Which line of dialogue is punctuated <b>correctly</b>?','"Let\'s go to the park," said Mom.',['"Let\'s go to the park" said Mom.','"Let\'s go to the park, said Mom."','Let\'s go to the park, "said Mom".']]];
+function genLang(t){const [p,a,w]=pick(t===13?FORMAL:t===14?PUNCT:DIALOGUE);return {prompt:p,...strChoices(a,w),long:true,render:c=>esc(c),
+  hint:t===13?'Formal language is polite and uses complete sentences. Informal is how you talk to friends.':t===14?'An exclamation point shows strong feeling. A question mark asks something.':'Dialogue is what a character says, inside quotation marks. Showing uses actions and words instead of just naming the feeling.',
+  explain:`<b>${esc(a)}</b>`}}
+/* science: coded messages (4-PS4-3), weathering and erosion (4-ESS2-1), hazards and engineering (4-ESS3-2, ETS), collisions (4-PS3-3) */
+const CODE={A:'•—',B:'—•••',E:'•',H:'••••',I:'••',L:'•—••',O:'———',P:'•——•',S:'•••',T:'—',N:'—•'};
+const SCI_ERO=[['A canyon with tall walls slowly got deeper over millions of years. A river runs along the bottom. What most likely made the canyon?','Water flowing and carrying away rock',['A single earthquake','People digging','Wind from one storm']],
+ ['Rocks in the desert have been carved into strange round shapes. There is very little water. What most likely shaped them?','Wind blowing sand against the rocks',['Ocean waves','Ice in glaciers','Plant roots']],
+ ['A tree root grew into a crack in a big rock. Years later, the rock split apart. What is this an example of?','Weathering by plants',['Erosion by wind','A volcano','Melting']],
+ ['Water seeps into a crack in a rock, freezes, and expands. After many winters, the rock breaks. What caused this?','Ice (freezing and thawing)',['Sunlight','Animals','Wind']],
+ ['Which would slow down erosion on a hillside the most?','Planting grass and trees on the hill',['Removing all the plants','Pouring water down the hill','Digging trenches']]];
+const SCI_HAZ=[['A town is near a river that floods every spring. Which solution would best protect the houses?','Build the houses on raised platforms (stilts)',['Paint the houses blue','Plant flowers in front of the houses','Build the houses closer to the river']],
+ ['Engineers want buildings to survive earthquakes. Which design is best?','A building with a flexible frame that can sway without breaking',['A tall building made of loose bricks','A building with no foundation','A heavy roof on thin walls']],
+ ['Scientists put sensors along a coast to warn people about tsunamis. What is the main purpose?','To give people time to get to higher ground',['To stop the waves completely','To make the waves bigger','To count fish']],
+ ['A class tests three roof designs to keep a model house dry. Design A leaks a lot, B leaks a little, C does not leak but costs the most. Their budget is small. Which is the best <b>next step</b>?','Improve design B so it stops leaking but still costs little',['Pick A because it is cheapest','Give up','Pick C without thinking about cost']],
+ ['To protect a hillside town from mudslides, which is the best idea?','Build retaining walls and plant deep-rooted plants',['Cut down all the trees','Build more houses on the slope','Paint the hillside']]];
+function sciNew(k){
+  if(k===7){const words=['HI','SO','TO','NO','HOT','PET','TAB','BOAT','PIE','LEO'],w=pick(words),enc=[...w].map(c=>CODE[c]).join('  /  ');
+    const opts=shuffle(words.filter(x=>x!==w)).sort((x,y)=>Math.abs(x.length-w.length)-Math.abs(y.length-w.length)).slice(0,3);const all=[w,...opts].join('');const key=Object.entries(CODE).filter(([c])=>all.includes(c)).map(([c,v])=>`<span><b>${c}</b> ${v}</span>`).join('');
+    return {prompt:`Pip sends a message with flashes of light: short (•) and long (—). Use the code key. What does the message say?<div class="ckey">${key}</div><div class="cmsg">${enc}</div>`,...strChoices(w,opts),
+      hint:`Decode one letter at a time. Letters are separated by /.`,explain:`${[...w].map(c=>`${CODE[c]} = ${c}`).join(', ')}. The message is <b>${w}</b>. Patterns of light or sound can carry information, like Morse code.`}}
+  if(k===8||k===9){const [p,a,w]=pick(k===8?SCI_ERO:SCI_HAZ);return {prompt:p,...strChoices(a,w),long:true,render:c=>c,hint:k===8?'Weathering breaks rock. Erosion moves the pieces. Think about water, wind, ice and plants.':'Pick the solution that solves the problem and fits the limits (cost, safety).',explain:`<b>${a}</b>`}}
+  const fast=coin(),vis=`<svg viewBox="0 0 320 120" style="width:340px;max-width:100%" role="img" aria-label="Two collisions"><text x="80" y="18" text-anchor="middle" ${FONT} font-size="14">Cart A</text><text x="240" y="18" text-anchor="middle" ${FONT} font-size="14">Cart B</text>
+    <rect x="20" y="60" width="44" height="26" rx="6" fill="#2f9fe0" stroke="#1f3557" stroke-width="2"/><path d="M${fast?'68 73 h40':'68 73 h14'}" stroke="#e2558f" stroke-width="4" marker-end="url(#ca)"/><rect x="120" y="60" width="24" height="26" rx="4" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/>
+    <rect x="180" y="60" width="44" height="26" rx="6" fill="#2f9fe0" stroke="#1f3557" stroke-width="2"/><path d="M${fast?'228 73 h14':'228 73 h40'}" stroke="#e2558f" stroke-width="4" marker-end="url(#ca)"/><rect x="280" y="60" width="24" height="26" rx="4" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/>
+    <text x="80" y="110" text-anchor="middle" font-size="12" fill="#506686">${fast?'fast':'slow'}</text><text x="240" y="110" text-anchor="middle" font-size="12" fill="#506686">${fast?'slow':'fast'}</text><defs><marker id="ca" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#e2558f"/></marker></defs></svg>`;
+  const win=fast?'Cart A':'Cart B';
+  return {prompt:`Two identical carts roll into identical blocks. The arrows show their speed. Which cart will push its block <b>farther</b>?`,visual:vis,choices:['Cart A','Cart B','Both the same'],answer:win,
+    hint:`A faster object has more energy. In a collision, energy moves to the other object.`,explain:`<b>${win}</b> is faster, so it has more energy to pass to the block in the collision.`}}
+/* HSS 4.5: more about government */
+CA_GOV.push(
+ ['Who is responsible for running public schools, mostly?','State and local governments',['The President','Other countries','Only parents'],'California and your school district make many school decisions.','<b>State and local governments</b> (California and school districts) run most public schools.'],
+ ['Which level of government prints money and runs the post office?','Federal (national) government',['City government','State government','The school board'],'It is the same for the whole country.','The <b>federal</b> government prints money and runs the U.S. mail.'],
+ ['Which level of government fixes city streets and runs local parks?','Local (city or county) government',['Federal government','Other countries','The President alone'],'Think about the closest level to your home.','<b>Local</b> government takes care of streets and parks.'],
+ ['What is the <b>Bill of Rights</b>?','The first 10 amendments to the U.S. Constitution that protect people\'s freedoms',['A list of school rules','A bill you pay at a store','The California state song'],'It protects freedoms like speech and religion.','The <b>Bill of Rights</b> is the first 10 amendments, protecting freedoms like speech and religion.'],
+ ['California has its own constitution. What does it do?','It sets up how California\'s state government works',['It replaces the U.S. Constitution','It is a list of state animals','It only applies to cities'],'The U.S. Constitution is for the country. California\'s is for the state.','The <b>California Constitution</b> sets up the state government and the rights of Californians.'],
+ ['Many Native American tribes in California have their own governments. What can tribal governments do?','Make decisions and laws for their own tribal lands and people',['Choose the U.S. President','Print U.S. money','Run every school in the state'],'Tribes are sovereign nations.','<b>Tribal governments</b> make decisions for their own people and lands.']);
+/* RF.4.4 fluency check for grown-ups: the child reads a passage aloud, a grown-up times it */
+const FLU_BENCH='About 94 words per minute in fall, 120 in winter, 133 in spring is typical (50th percentile) for 4th grade, from Hasbrouck & Tindal (2017).';
+function openFluency(){const C=pick(LISTEN),words=C.txt.split(/\s+/).length;let t0=0,tid=0;
+  overlay(`<div class="eyebrow">Reading fluency check</div><h3 style="margin:0">${esc(C.t)}</h3><p class="note">For a grown-up: press Start when your child begins reading <b>out loud</b>, and Stop when they finish. Then enter how many words they misread or skipped.</p><div class="flutext">${esc(C.txt)}</div>
+    <div class="actrow"><button type="button" class="go" id="fluGo">Start</button><span class="flut" id="fluT">0.0 s</span></div><div id="fluRes"></div><div class="actrow"><button type="button" class="go alt" id="fluClose">Close</button></div>`,()=>{
+    $('#ocard').classList.add('wide');const close=()=>{clearInterval(tid);$('#ocard').classList.remove('wide');closeOverlay();if(curScreen==='parent')renderParent()};$('#fluClose').onclick=close;
+    $('#fluGo').onclick=()=>{if(!t0){t0=Date.now();$('#fluGo').textContent='Stop';tid=setInterval(()=>{$('#fluT').textContent=((Date.now()-t0)/1000).toFixed(1)+' s'},100);return}
+      clearInterval(tid);const sec=(Date.now()-t0)/1000;$('#fluGo').remove();
+      $('#fluRes').innerHTML=`<p>Time: <b>${sec.toFixed(1)} s</b>. Words in the passage: <b>${words}</b>.</p><label class="flul">Words misread or skipped: <input type="number" id="fluErr" min="0" max="${words}" value="0"></label><div class="actrow"><button type="button" class="go" id="fluSave">Save</button></div>`;
+      $('#fluSave').onclick=()=>{if(sec<10){$('#fluRes').innerHTML='<p class="pzno">That was very quick. Please time a whole read-aloud from start to finish.</p>';return}const e=Math.max(0,Math.min(words,+$('#fluErr').value||0)),wcpm=Math.round((words-e)/(sec/60)),acc=Math.round((words-e)/words*100);
+        G.flu=G.flu||[];G.flu.unshift({ts:Date.now(),t:C.t,wcpm,acc});if(G.flu.length>30)G.flu.length=30;save();
+        $('#fluRes').innerHTML=`<p class="pzok"><b>${wcpm}</b> words correct per minute · <b>${acc}%</b> accuracy</p><p class="note">${FLU_BENCH}</p>`}}})}
+function fluencyParentHTML(){const L=G.flu||[];return `<div class="pcard wide"><h4>Reading fluency</h4><p class="note">Reading out loud smoothly and accurately (RF.4.4). Takes 1 minute: your child reads a short passage aloud while you time it. ${FLU_BENCH}</p>${L.length?`<ul class="mist">${L.slice(0,6).map(x=>`<li>${x.wcpm} words/min · ${x.acc}% accurate<small>${new Date(x.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${esc(x.t)}</small></li>`).join('')}</ul>`:'<p>No checks yet.</p>'}<button type="button" class="go small" id="pFlu">Start a fluency check</button></div>`}
+/* RL.4.9: two folktales from different cultures with the same theme */
 function passageHTML(P){if(P.p2)return `<div class="passage two"><h4>${P.t}</h4><div class="ptwo"><div><h5>${P.t1}</h5><p>${P.p.join(' ')}</p></div><div><h5>${P.p2.t}</h5><p>${P.p2.p.join(' ')}</p></div></div></div>`;
   return `<div class="passage${P.lines?' lines':''}"><h4>${P.t}</h4>${P.lines?`<div class="plines">${P.p.map(l=>l?`<span class="ln">${l}</span>`:'<span class="ln gap"></span>').join('')}</div>`:`<p>${P.p.join(' ')}</p>`}${P.fig||''}</div>`}
-function genReading(t){if(t>=PASSAGES.length*3){const [pi,qi]=LQ[(t-PASSAGES.length*3)%LQ.length];return genLong(pi,qi)}
+function genReading(t){if(t>=PASSAGES.length*3+LQ.length)return genStruct(t-PASSAGES.length*3-LQ.length);if(t>=PASSAGES.length*3){const [pi,qi]=LQ[(t-PASSAGES.length*3)%LQ.length];return genLong(pi,qi)}
   const P=PASSAGES[Math.floor(t/3)%PASSAGES.length],Q=P.q[t%3];
   return {prompt:Q[0],visual:passageHTML(P),...strChoices(Q[1],shuffle([...Q[2]])),hint:Q[3],explain:Q[4],speak:`${P.t}. ${P.t1?P.t1+'. ':''}${P.p.join(' ')} ${P.p2?P.p2.t+'. '+P.p2.p.join(' '):''} Question: ${Q[0]}`.replace(/<[^>]+>/g,''),wide:true,long:[Q[1],...Q[2]].some(c=>c.length>34)};}
 function readingRound(isl){G.readLong=!G.readLong;if(G.readLong){const pi=dealTypes('reading_long',LONGP.length,1)[0],off=PASSAGES.length*3+LQ.findIndex(x=>x[0]===pi);return LONGP[pi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9)))}
@@ -4093,6 +4216,7 @@ function testParentHTML(){const L=G.tests||[],nm=esc(G.name||'your child');
   const rows=L.slice(0,6).map(x=>`<li><div><b>${esc(TEST_SECTIONS[x.sec]?TEST_SECTIONS[x.sec].name:x.sec)}: ${x.s} of ${x.n}</b> <small>${new Date(x.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${esc(x.lvl)}</small></div><p>${Object.entries(x.by).map(([k,v])=>`${esc(k)} ${v[0]}/${v[1]}`).join(' · ')}</p></li>`).join('');
   return `<div class="pcard wide"><h4>Test Practice</h4><p class="note">12-question practice sets in the style of the spring CAASPP test (Math, English). No hints, one try. The "practice level" is only a rough guide: the real test has more questions and is scored differently.</p>${L.length?`<ul class="dklist">${rows}</ul>`:`<p>${nm} has not taken a practice test yet. It is in the Challenges row on the map.</p>`}</div>`}
 function genWrite(t){
+  if(t>=13)return genLang(t);
   if(t>=8)return genWriteX(t);
   if(t===0){const s=pick(WR.build),w=s.replace(/\.$/,' .').split(' ').filter(Boolean),items=[...new Set(w)].length===w.length?w:w;return {kind:'order',items,prompt:`Tap the words in order to build a <b>complete sentence</b>. Start with the capital letter. End with the period.`,hint:`The word with a capital letter goes first. Who or what is the sentence about? What did it do?`,explain:`The sentence is: <b>${s}</b>`}}
   if(t===1){const [p,a,w]=pick(WR.topic);return {prompt:`<div class="passage"><p>___ ${p}</p></div>Which <b>topic sentence</b> should start this paragraph?`,...strChoices(a,w),long:true,render:c=>c,hint:`A topic sentence tells the big idea that ALL the other sentences explain.`,explain:`<b>${a}</b> The other sentences all tell about it.`}}
@@ -4131,7 +4255,7 @@ const ISLANDS=[
   {id:'boss',name:'Boss Island',topic:'Defeat the Grumble Cloud',color:'#6b6f9e',lm:'boss',special:'boss',group:'ch'},
   {id:'place',name:'Digit Cliffs',topic:'Place value & rounding',color:'#38b98a',lm:'tower',gen:genPlace,types:8,group:'math'},
   {id:'addsub',name:'Carry Canyon',topic:'Adding & subtracting',color:'#4fb87a',lm:'canyon',gen:genAddSub,types:7,group:'math'},
-  {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:8,group:'math'},
+  {id:'mult',name:'Times Meadow',topic:'Multiplying big numbers',color:'#7cc95a',lm:'meadow',gen:genMult,types:9,group:'math'},
   {id:'div',name:'Sharing Shore',topic:'Division & leftovers',color:'#3fb8b5',lm:'shore',gen:genDiv,types:5,group:'math'},
   {id:'frac',name:'Pie Peak',topic:'Fractions',color:'#5cc48c',lm:'pie',gen:genFrac,types:16,group:'math'},
   {id:'dec',name:'Decimal Dock',topic:'Tenths & hundredths',color:'#4fbfd0',lm:'dock',gen:genDec,types:8,group:'math'},
@@ -4139,21 +4263,21 @@ const ISLANDS=[
   {id:'angle',name:'Angle Arch',topic:'Angles & protractors',color:'#6cc3a0',lm:'angle',gen:genAngle,types:7,group:'math'},
   {id:'shape',name:'Shape Shipyard',topic:'Shapes, lines & symmetry',color:'#4bb3c9',lm:'ship',gen:genShape,types:8,group:'math'},
   {id:'money',name:'Money Market',topic:'Coins, change & prices',color:'#9bd15a',lm:'money',gen:genMoney,types:5,group:'math'},
-  {id:'measure',name:'Measure Mine',topic:'Units & conversions',color:'#a8b45c',lm:'ruler',gen:genMeasure,types:7,group:'math'},
-  {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:10,group:'math'},
+  {id:'measure',name:'Measure Mine',topic:'Units & conversions',color:'#a8b45c',lm:'ruler',gen:genMeasure,types:8,group:'math'},
+  {id:'pattern',name:'Pattern Pass',topic:'Patterns, factors & primes',color:'#56c47a',lm:'pattern',gen:genPattern,types:11,group:'math'},
   {id:'graph',name:'Graph Garden',topic:'Bar graphs & line plots',color:'#7ccf6b',lm:'graph',gen:genGraph,types:6,group:'math'},
   {id:'time',name:'Clock Cove',topic:'Clocks, calendars & elapsed time',color:'#5ec3d6',lm:'clock',gen:genTimeTower,types:12,group:'math'},
   {id:'week',name:'Week Woods',topic:'Days & calendar',color:'#4caf6e',lm:'week',gen:genWeek,types:5,group:'time',retired:true},
   {id:'season',name:'Season Summit',topic:'Months & seasons',color:'#a6c95a',lm:'season',gen:genSeason,types:6,group:'time',retired:true},
   {id:'riddle',name:'Riddle Reef',topic:'Logic & word problems',color:'#5ab8c4',lm:'riddle',gen:genRiddle,types:22,round:riddleRound,group:'world'},
-  {id:'words',name:'Word Waterfall',topic:'Vocabulary & spelling',color:'#53bf91',lm:'words',gen:genWords,types:6,group:'world'},
-  {id:'reading',name:'Bookworm Bay',topic:'Reading & understanding',color:'#e0b45a',lm:'book',gen:genReading,types:PASSAGES.length*3+LQ.length,round:readingRound,noDiff:true,group:'world'},
+  {id:'words',name:'Word Waterfall',topic:'Vocabulary & spelling',color:'#53bf91',lm:'words',gen:genWords,types:8,group:'world'},
+  {id:'reading',name:'Bookworm Bay',topic:'Reading & understanding',color:'#e0b45a',lm:'book',gen:genReading,types:PASSAGES.length*3+LQ.length+TSTRUCT.length,round:readingRound,noDiff:true,group:'world'},
   {id:'listen',name:'Listening Lagoon',topic:'Listen and answer',color:'#5bb6e8',lm:'ear',gen:genListen,types:LISTEN_Q.length,round:listenRound,noDiff:true,group:'world'},
   {id:'geo',name:'Map Mountain',topic:'Maps, directions & California',color:'#8bbf6a',lm:'mountain',gen:genGeo,types:8,group:'world'},
   {id:'history',name:'Gold Rush Gulch',topic:'California history',color:'#d9a441',lm:'mission',gen:genHistory,types:CAHIST.length,group:'world'},
-  {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:13,group:'world'},
+  {id:'write',name:'Story Studio',topic:'Writing sentences & paragraphs',color:'#e58fb0',lm:'pencil',gen:genWrite,types:16,group:'world'},
   {id:'grammar',name:'Grammar Grove',topic:'Grammar & word meanings',color:'#38b98a',lm:'grammar',gen:genGrammar,types:GRAMF.length+32,group:'world'},
-  {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length+42,group:'world'}
+  {id:'science',name:'Science Springs',topic:'4th grade science',color:'#47c2a8',lm:'science',gen:genScience,types:SCIENCE.length+66,group:'world'}
 ];
 const STAR_ISLANDS=ISLANDS.filter(i=>i.id!=='daily'&&i.id!=='review'&&i.id!=='ptest'&&!i.retired);
 const MAX=STAR_ISLANDS.length*3,BOSS_NEED=20;
@@ -4516,7 +4640,7 @@ const rng=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
 const SKILL_DEF={
   place:[['Value of a digit','4.NBT.2',[0]],['Rounding','4.NBT.3',[1]],['Expanded form','4.NBT.2',[2]],['Comparing and ordering numbers','4.NBT.2',[3,6,7]],['Each place is 10 times bigger','4.NBT.1',[4]],['Numbers in words','4.NBT.2',[5]]],
   addsub:[['Adding with regrouping','4.NBT.4',[0]],['Subtracting with borrowing','4.NBT.4',[1]],['Add and subtract word problems','4.OA.3',[2]],['Missing numbers','4.OA.3',[3]],['Estimating','4.OA.3',[4]],['Equations with a letter','4.OA.3',[5,6]]],
-  mult:[['Multi-digit × 1-digit','4.NBT.5',[0]],['2-digit × 2-digit','4.NBT.5',[1]],['Multiplication word problems','4.OA.3',[2]],['Multiplying by 10s and 100s','4.NBT.5',[3]],['"Times as many" problems','4.OA.1-2',[4,5]],['Area model','4.NBT.5',[6]],['Equal expressions (Yes/No)','4.OA.1',[7]]],
+  mult:[['Multi-digit × 1-digit','4.NBT.5',[0]],['2-digit × 2-digit','4.NBT.5',[1]],['Multiplication word problems','4.OA.3',[2]],['Multiplying by 10s and 100s','4.NBT.5',[3]],['"Times as many" problems','4.OA.1-2',[4,5]],['Area model','4.NBT.5',[6]],['Equal expressions (Yes/No)','4.OA.1',[7]],['"Times as many" or "more than"?','4.OA.2',[8]]],
   div:[['Dividing','4.NBT.6',[0,2]],['Remainders','4.NBT.6',[1,4]],['What to do with the leftover','4.OA.3',[3]]],
   frac:[['Naming fractions','4.NF.1',[0]],['Equivalent fractions','4.NF.1',[1,9,12,15]],['Comparing fractions','4.NF.2',[2,13,14]],['Adding and subtracting fractions','4.NF.3',[3,4]],['Mixed numbers','4.NF.3',[5,6]],['Fraction × whole number','4.NF.4',[7,11]],['Fractions on a number line','4.NF.2',[8]],['Fraction word problems','4.NF.3',[10]]],
   dec:[['Tenths and hundredths','4.NF.6',[0,1,3]],['Comparing decimals','4.NF.7',[2,7]],['Adding tenths and hundredths','4.NF.5',[4,6]],['Decimals on a number line','4.NF.6',[5]]],
@@ -4524,20 +4648,20 @@ const SKILL_DEF={
   angle:[['Kinds of angles','4.G.1',[0,6]],['Measuring with a protractor','4.MD.6',[1,2]],['Adding angles','4.MD.7',[3,5]],['Turns and degrees','4.MD.5',[4]]],
   shape:[['Right angles and parallel sides','4.G.2',[0]],['Lines of symmetry','4.G.3',[1,4]],['Parallel and perpendicular lines','4.G.1',[2]],['Naming quadrilaterals','4.G.2',[3]],['Points, lines, rays, segments','4.G.1',[5]],['Kinds of triangles','4.G.2',[6,7]]],
   money:[['Counting and paying exact amounts','4.MD.2',[0,1]],['Making change','4.MD.2',[2]],['Adding prices','4.MD.2',[3]],['Multiplying money','4.MD.2',[4]]],
-  measure:[['Converting units','4.MD.1',[0,1,4]],['Measurement word problems','4.MD.2',[2,5]],['Choosing the right unit','4.MD.1',[3]],['Fractions of a unit','4.MD.2',[6]]],
-  pattern:[['Number patterns and rules','4.OA.5',[0,1]],['Factors and factor pairs','4.OA.4',[2,7,8]],['Prime and composite','4.OA.4',[3,6,9]],['Multiples','4.OA.4',[4]],['Shape patterns','4.OA.5',[5]]],
+  measure:[['Converting units','4.MD.1',[0,1,4]],['Measurement word problems','4.MD.2',[2,5]],['Choosing the right unit','4.MD.1',[3]],['Fractions of a unit','4.MD.2',[6]],['Measurement on a number line','4.MD.2',[7]]],
+  pattern:[['Number patterns and rules','4.OA.5',[0,1,10]],['Factors and factor pairs','4.OA.4',[2,7,8]],['Prime and composite','4.OA.4',[3,6,9]],['Multiples','4.OA.4',[4]],['Shape patterns','4.OA.5',[5]]],
   graph:[['Reading bar graphs','3.MD.3',[0,1,2]],['Picture graphs','3.MD.3',[3]],['Line plots','4.MD.4',[4,5]]],
   time:[['Telling time','3.MD.1',[0,1,2,4]],['Elapsed time','4.MD.2',[3,8,9,11]],['Calendar','4.MD.1',[5,6,7]],['Time units','4.MD.1',[10]]],
   riddle:[['Logic puzzles','4.OA.3',[0,1,2,4,5]],['Multi-step word problems','4.OA.3',[3]],['Find the mistake','Math reasoning',[6,8]],['Explain your thinking','Math reasoning',[7,9]],['Big tasks (4 steps)','Problem solving',rng(10,21)]],
-  words:[['Synonyms','L.4.5',[0]],['Antonyms','L.4.5',[1]],['Prefixes','L.4.4',[2]],['Suffixes','L.4.4',[3]],['Spelling','L.4.2',[4]],['Words in context','L.4.4',[5]]],
+  words:[['Synonyms','L.4.5',[0]],['Antonyms','L.4.5',[1]],['Prefixes','L.4.4',[2]],['Suffixes','L.4.4',[3]],['Spelling','L.4.2',[4]],['Words in context','L.4.4',[5]],['Using a dictionary','L.4.4c',[6,7]]],
   geo:[['Compass directions','HSS 4.1',[0,2]],['Map grids','HSS 4.1',[1]],['California facts','HSS 4.1',[3]],['U.S. and world','HSS 4.1',[4]],['Latitude and longitude','HSS 4.1',[5]],['California regions','HSS 4.1',[6]],['Government','HSS 4.5',[7]]],
-  write:[['Building sentences','L.4.1',[0]],['Topic sentences','W.4.2',[1]],['Transition words','W.4.2',[2]],['Combining sentences','L.4.3',[3]],['Supporting details','W.4.2',[4]],['Endings','W.4.3',[5]],['Opinions and reasons','W.4.1',[6]],['Putting steps in order','W.4.2',[7]],['Revising: what does not belong','W.4.5',[8]],['Precise words','L.4.3',[9]],['Research: choosing sources','W.4.8',[10,12]],['Research: using evidence','W.4.9',[11]]],
+  write:[['Building sentences','L.4.1',[0]],['Topic sentences','W.4.2',[1]],['Transition words','W.4.2',[2]],['Combining sentences','L.4.3',[3]],['Supporting details','W.4.2',[4]],['Endings','W.4.3',[5]],['Opinions and reasons','W.4.1',[6]],['Putting steps in order','W.4.2',[7]],['Revising: what does not belong','W.4.5',[8]],['Precise words','L.4.3',[9]],['Research: choosing sources','W.4.8',[10,12]],['Research: using evidence','W.4.9',[11]],['Formal and informal English','L.4.3c',[13]],['Punctuation for effect','L.4.3b',[14]],['Dialogue and showing feelings','W.4.3b',[15]]],
 };
 function skillsOf(id){const c=skillsOf.c||(skillsOf.c={});if(c[id])return c[id];const isl=byId(id);if(!isl||!isl.gen||isl.retired)return c[id]=[];let d=SKILL_DEF[id];
   if(id==='reading'){const P3=PASSAGES.length*3,k=n=>LQ.map((x,i)=>LONGP[x[0]].q[x[1]][0]===n?P3+i:-1).filter(i=>i>=0);
-    d=[['Short passages','RL.4.1 / RI.4.1',rng(0,P3-1)],['Main idea, theme and word meaning','RL.4.2 / RI.4.2 / RL.4.4',k('mc')],['Evidence: Part A + Part B','RL.4.1 / RI.4.1',k('ab')],['Choose two answers','RL.4.1 / RI.4.1',k('two')],['Find the sentence in the text','RL.4.1 / RI.4.1',k('hl')]]}
+    d=[['Short passages','RL.4.1 / RI.4.1',rng(0,P3-1)],['Main idea, theme and word meaning','RL.4.2 / RI.4.2 / RL.4.4',k('mc')],['Evidence: Part A + Part B','RL.4.1 / RI.4.1',k('ab')],['Choose two answers','RL.4.1 / RI.4.1',k('two')],['Find the sentence in the text','RL.4.1 / RI.4.1',k('hl')],['Text structure','RI.4.5',rng(P3+LQ.length,isl.types-1)]]}
   if(id==='grammar'){const L=GRAMF.length;d=GRAM.map(g=>[g.name,'L.4.1-5',GRAMF.map((x,i)=>x.cat===g.name?i:-1).filter(i=>i>=0)]).concat(['Fixing sentences','Run-on sentences','Adjective order','Prepositional phrases','Confusing words (their/there...)','Where, when, why','Finding prepositions','Nouns, verbs, adjectives'].map((n,j)=>[n,'L.4.1-2',rng(0,isl.types-L-1).filter(x=>x%8===j).map(x=>L+x)]))}
-  if(id==='science'){const L=SCIENCE.length;d=[['Science facts','NGSS 4',rng(0,L-1)]].concat(['Reading experiment graphs','Waves and sound','Earthquakes and rock layers','How we see','Energy sources','Parts of a plant','The water cycle'].map((n,j)=>[n,'NGSS 4',rng(0,isl.types-L-1).filter(x=>x%7===j).map(x=>L+x)]))}
+  if(id==='science'){const L=SCIENCE.length;d=[['Science facts','NGSS 4',rng(0,L-1)]].concat(['Reading experiment graphs','Waves and sound','Earthquakes and rock layers','How we see','Energy sources','Parts of a plant','The water cycle','Coded messages','Weathering and erosion','Hazards and engineering','Collisions and energy'].map((n,j)=>[n,'NGSS 4',rng(0,isl.types-L-1).filter(x=>x%11===j).map(x=>L+x)]))}
   if(id==='listen')d=[['Listening for details','SL.4.2',rng(0,isl.types-1)]];
   if(id==='history')d=[['California history','HSS 4.2-4.4',rng(0,isl.types-1)]];
   if(!d)d=[['All puzzles','',rng(0,isl.types-1)]];
@@ -6144,6 +6268,10 @@ const DESK={
   story:{name:'Story',sub:'Make up a story with a beginning, middle and end',color:'#2f9fe0',
     prompts:['Pip\'s balloon lands on a mystery island.','The day the class pet escaped.','You find a tiny door in your backyard.','Your best day ever at the beach.','A rainy day that turned out great.','A talking fox moves in next door.'],
     parts:[['Beginning: who and where?',['One sunny morning,','Once upon a time,','Last summer,']],['The problem',['Suddenly,','All at once,','But then']],['What happened next',['Then','Next,','After that,']],['Ending: how did it turn out? How did they feel?',['Finally,','In the end,']]]},
+  report:{name:'Report',sub:'Use fact cards to write a short report',color:'#e09a14',
+    prompts:['Sea otters','The Gold Rush','Volcanoes','Honeybees'],
+    notes:{'Sea otters':['Sea otters live along the California coast.','They use rocks to crack open shellfish.','They wrap themselves in kelp so they don\'t drift while sleeping.','Their thick fur keeps them warm in cold water.'],'The Gold Rush':['Gold was found at Sutter\'s Mill in 1848.','About 300,000 people came to California.','Miners used pans to wash gold from rivers.','Towns like San Francisco grew very fast.'],'Volcanoes':['A volcano is an opening in Earth\'s crust.','Hot melted rock is called magma (lava when it comes out).','Mount Shasta in California is a volcano.','Volcanic ash can make soil very rich.'],'Honeybees':['Honeybees live in hives with up to 60,000 bees.','Worker bees collect nectar from flowers.','Bees help plants by carrying pollen.','Bees dance to tell others where flowers are.']},
+    parts:[['Topic: what is your report about?',['This report is about','Did you know that']],['Fact 1 (in your own words)',['First,','One fact is that']],['Fact 2 (in your own words)',['Also,','Another fact is that']],['Ending: why does it matter?',['That is why','In conclusion,']]]},
   info:{name:'Teach it',sub:'Explain how to do something or facts about a topic',color:'#38b98a',
     prompts:['How to make a sandwich','All about your favorite animal','How to take care of a plant','All about your school','How to play your favorite game','All about the ocean'],
     parts:[['Topic: what will you teach?',['Here is how to','Let me tell you about']],['Step or fact 1',['First,','One fact is']],['Step or fact 2',['Next,','Also,','For example,']],['Ending',['Finally,','Now you know']]]},
@@ -6156,20 +6284,20 @@ function openDesk(kind){
       $('#dkClose').onclick=closeOverlay;$('#ocard').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{tone([523,784]);closeOverlay();setTimeout(()=>openDesk(b.dataset.k),60)})});return}
   const D=DESK[kind],dr=G.writeDraft&&G.writeDraft.k===kind?G.writeDraft:{k:kind,pr:pick(D.prompts),v:D.parts.map(()=>'')};G.writeDraft=dr;
   overlay(`<div class="eyebrow" style="color:${D.color}">Writing Desk · ${D.name}</div><h3 class="dkpr">${esc(dr.pr)} <button type="button" class="linkbtn" id="dkNew">new idea</button></h3>
-    <div class="dkparts">${D.parts.map(([lab,st],i)=>`<label class="dkpart"><span>${i+1}. ${lab}</span><textarea rows="2" data-i="${i}" spellcheck="true" autocapitalize="sentences" placeholder="${esc(st[0])} ...">${esc(dr.v[i]||'')}</textarea><span class="dkst">${st.map(s=>`<button type="button" class="dkchip" data-i="${i}" data-s="${esc(s)}">${esc(s)}</button>`).join('')}</span></label>`).join('')}</div>
+    ${D.notes?`<div class="dknotes"><b>Fact cards</b>${(D.notes[dr.pr]||[]).map(n=>`<span>${esc(n)}</span>`).join('')}</div>`:''}<div class="dkparts">${D.parts.map(([lab,st],i)=>`<label class="dkpart"><span>${i+1}. ${lab}</span><textarea rows="2" data-i="${i}" spellcheck="true" autocapitalize="sentences" placeholder="${esc(st[0])} ...">${esc(dr.v[i]||'')}</textarea><span class="dkst">${st.map(s=>`<button type="button" class="dkchip" data-i="${i}" data-s="${esc(s)}">${esc(s)}</button>`).join('')}</span></label>`).join('')}</div>
     <ul class="dkcheck" aria-live="polite"></ul><div class="actrow"><button type="button" class="go" id="dkSave" disabled>Save my writing</button><button type="button" class="go alt" id="dkClose">Close</button></div>`,()=>{
     $('#ocard').classList.add('wide');
     const tas=[...$('#ocard').querySelectorAll('textarea')];
     const check=()=>{dr.v=tas.map(t=>t.value);save(true);const parts=dr.v.map(s=>s.trim()),all=parts.join(' '),w=wcount(all);
-      const items=[[parts.every(p=>wcount(p)>=3),'Every part has a sentence'],[parts.filter(Boolean).every(p=>/^[A-Z"“]/.test(p)),'Sentences start with a capital letter'],[parts.filter(Boolean).every(p=>/[.!?]["”]?$/.test(p)),'Sentences end with . ! or ?'],[TRANS_RE.test(all),'Uses a linking word (first, then, because, also...)'],[w>=40,`At least 40 words (${w} now)`]];
+      const items=[[parts.every(p=>wcount(p)>=3),'Every part has a sentence'],[parts.filter(Boolean).every(p=>/^[A-Z"“]/.test(p)),'Sentences start with a capital letter'],[parts.filter(Boolean).every(p=>/[.!?]["”]?$/.test(p)),'Sentences end with . ! or ?'],[TRANS_RE.test(all),'Uses a linking word (first, then, because, also...)'],[w>=40,`At least 40 words (${w} now)`]].concat(kind==='story'?[[/["“][^"”]{3,}["”]/.test(all),'Has dialogue: someone talks in "quotation marks"']]:[]);
       $('#ocard .dkcheck').innerHTML=items.map(([ok,t])=>`<li class="${ok?'ok':''}">${ok?CHECK:'<span class="dot"></span>'} ${t}</li>`).join('');
       $('#dkSave').disabled=!items[0][0];return items};
     tas.forEach(t=>t.oninput=check);
     $('#ocard').querySelectorAll('.dkchip').forEach(b=>b.onclick=()=>{const t=tas[+b.dataset.i];const s=b.dataset.s;if(!t.value.trim())t.value=s+' ';else if(!t.value.startsWith(s))t.value=s+' '+t.value.trim()[0].toLowerCase()+t.value.trim().slice(1);t.focus();t.setSelectionRange(t.value.length,t.value.length);check()});
-    $('#dkNew').onclick=()=>{let p;do{p=pick(D.prompts)}while(p===dr.pr&&D.prompts.length>1);dr.pr=p;$('#ocard .dkpr').firstChild.textContent=p+' ';save(true)};
+    $('#dkNew').onclick=()=>{let p;do{p=pick(D.prompts)}while(p===dr.pr&&D.prompts.length>1);dr.pr=p;$('#ocard .dkpr').firstChild.textContent=p+' ';const nb=$('#ocard .dknotes');if(nb)nb.innerHTML=`<b>Fact cards</b>${D.notes[p].map(n=>`<span>${esc(n)}</span>`).join('')}`;save(true)};
     $('#dkClose').onclick=()=>{$('#ocard').classList.remove('wide');closeOverlay()};
     $('#dkSave').onclick=()=>{const items=check(),txt=dr.v.map(s=>s.trim()).filter(Boolean).join(' '),w=wcount(txt),L=deskList();
-      L.unshift({ts:Date.now(),d:dayKey(),k:kind,pr:dr.pr,txt,w,ok:items.filter(x=>x[0]).length});if(L.length>40)L.length=40;
+      L.unshift({ts:Date.now(),d:dayKey(),k:kind,pr:dr.pr,txt,w,ok:items.filter(x=>x[0]).length,of:items.length});if(L.length>40)L.length=40;
       let rew=0;if(G.writeDay!==dayKey()){G.writeDay=dayKey();rew=DESK_REW;G.coins+=rew;updateStats('#coinPill')}
       G.writeDraft=null;save();sWin();$('#ocard').classList.remove('wide');closeOverlay();
       overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Saved!</div><h2>${pick(['What a writer!','Great writing!','I love it!'])}</h2><div class="dkdone"><b>${esc(dr.pr)}</b><p>${esc(txt)}</p><small>${w} words</small></div>${rew?`<p><b>+${rew} coins</b> for writing today!</p>`:''}<p class="note">Your grown-ups can read it in Grown-ups.</p><div class="actrow"><button type="button" class="go alt" id="dkRead">Read it to me</button><button type="button" class="go" id="dkOk">Done</button></div>`,()=>{
@@ -6177,7 +6305,7 @@ function openDesk(kind){
     check();if(!dr.v.some(Boolean))setTimeout(()=>tas[0].focus({preventScroll:true}),200)});
 }
 function deskParentHTML(){const L=deskList(),nm=esc(G.name||'Your child');
-  return `<div class="pcard wide"><h4>Writing Desk</h4><p class="note">${nm} writes opinion pieces, stories and how-to paragraphs with a 4-part frame (4th grade writing standards). The newest are first. A good next step: read one together and ask "Can you add one more detail?"</p>${L.length?`<ul class="dklist">${L.slice(0,5).map(x=>`<li><div><b>${esc(x.pr)}</b><small>${DESK[x.k]?DESK[x.k].name:''} · ${new Date(x.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${x.w} words · ${x.ok}/5 checklist</small></div><p>${esc(x.txt)}</p></li>`).join('')}</ul>${L.length>5?`<p class="note">${L.length-5} older piece${L.length-5>1?'s':''} saved.</p>`:''}`:`<p>No writing saved yet.</p>`}<button type="button" class="go small" id="pDesk">Open the Writing Desk</button></div>`}
+  return `<div class="pcard wide"><h4>Writing Desk</h4><p class="note">${nm} writes opinion pieces, stories and how-to paragraphs with a 4-part frame (4th grade writing standards). The newest are first. A good next step: read one together and ask "Can you add one more detail?"</p>${L.length?`<ul class="dklist">${L.slice(0,5).map(x=>`<li><div><b>${esc(x.pr)}</b><small>${DESK[x.k]?DESK[x.k].name:''} · ${new Date(x.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${x.w} words · ${x.ok}/${x.of||5} checklist</small></div><p>${esc(x.txt)}</p></li>`).join('')}</ul>${L.length>5?`<p class="note">${L.length-5} older piece${L.length-5>1?'s':''} saved.</p>`:''}`:`<p>No writing saved yet.</p>`}<button type="button" class="go small" id="pDesk">Open the Writing Desk</button></div>`}
 function openParent(){
   stopTimers();if(CL.unlockUntil>Date.now()){renderParent();return}pinBuf='';pinStage=ROOT.pin?'enter':'create';pinFirst='';
   overlay(pinHTML(),bindPin);
@@ -6246,6 +6374,7 @@ function renderParent(){
       return `<div class="pcard wide"><h4>Home Puzzles</h4><p class="note">Math tasks inside ${esc(G.name||'the player')}'s home: one of each gives coins once a day.</p><ul class="mist pzlist">${PZ_TYPES.map(T=>{const a=att[T.id]||0,f=fst[T.id]||0;return `<li>${T.name} <small>${T.sub} · <b>${by[T.id]||0}</b> solved${a?` · ${Math.round(f/a*100)}% right on the first try (${f} of ${a})`:''}${today[T.id]?' · done today':''}</small></li>`}).join('')}</ul><p>Total solved: <b>${P.n||0}</b>${next?` · ${next.prize-(P.n||0)} more to unlock the ${esc(next.name)}`:' · all prizes unlocked'}.</p></div>`})()}
     ${skillsParentHTML()}
     ${testParentHTML()}
+    ${fluencyParentHTML()}
     ${deskParentHTML()}
     <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
     <div class="pcard wide curmap"><h4>4th grade program map</h4><p class="note">How ${esc(G.name||'your child')} is doing in each part of the California 4th grade program. Stars are the same as in the game: the best round, or recent accuracy (7 of 10 right lately = 2 stars, 8 of 10 = 3).</p>
@@ -6294,7 +6423,7 @@ function renderParent(){
   </div>`;
   setSync();$('#codeOut').value=encodeSave(ROOT.current);if(CL.mode==='cloud')loadBackups();
   document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>start(byId(b.dataset.play)));
-  if($('#pDesk'))$('#pDesk').onclick=()=>openDesk();
+  if($('#pDesk'))$('#pDesk').onclick=()=>openDesk();if($('#pFlu'))$('#pFlu').onclick=()=>openFluency();
   if($('#pInstall'))$('#pInstall').onclick=async()=>{const e=installEvt;if(!e)return;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderParent()};
   $('#setGoal').onchange=e=>{G.settings.goal=e.target.value;save();updateStats()};
   $('#setLimit').onchange=e=>{G.settings.limit=e.target.value;save()};
