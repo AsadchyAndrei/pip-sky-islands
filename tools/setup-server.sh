@@ -30,10 +30,13 @@ gcloud services enable iam.googleapis.com iamcredentials.googleapis.com sts.goog
 say "2/4 The deploy account and GitHub sign-in..."
 gcloud iam service-accounts describe "$SA" >/dev/null 2>&1 || \
   gcloud iam service-accounts create pip-deployer --display-name="Deploys Pip's Sky Islands from GitHub" --quiet
+# a brand-new account takes a little while to be known everywhere: retry each step
+retry(){ for i in 1 2 3 4 5 6 7 8 9 10 11 12; do "$@" >/dev/null 2>&1 && return 0; echo "  waiting for Google Cloud to catch up..."; sleep 10; done; "$@" >/dev/null; }
 for R in roles/editor roles/resourcemanager.projectIamAdmin roles/secretmanager.admin roles/iam.serviceAccountUser \
          roles/run.admin roles/cloudfunctions.admin roles/firebaserules.admin roles/eventarc.admin roles/cloudscheduler.admin; do
-  gcloud projects add-iam-policy-binding "$P" --member="serviceAccount:$SA" --role="$R" --condition=None --quiet >/dev/null
+  retry gcloud projects add-iam-policy-binding "$P" --member="serviceAccount:$SA" --role="$R" --condition=None --quiet
 done
+echo "  permissions set."
 gcloud iam workload-identity-pools describe github --location=global >/dev/null 2>&1 || \
   gcloud iam workload-identity-pools create github --location=global --display-name="GitHub Actions" --quiet
 gcloud iam workload-identity-pools providers describe github --workload-identity-pool=github --location=global >/dev/null 2>&1 || \
@@ -41,8 +44,9 @@ gcloud iam workload-identity-pools providers describe github --workload-identity
     --issuer-uri="https://token.actions.githubusercontent.com" \
     --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.ref=assertion.ref" \
     --attribute-condition="assertion.repository=='$REPO' && assertion.ref=='refs/heads/main'" --quiet
-gcloud iam service-accounts add-iam-policy-binding "$SA" --role=roles/iam.workloadIdentityUser \
-  --member="principalSet://iam.googleapis.com/projects/$N/locations/global/workloadIdentityPools/github/attribute.repository/$REPO" --quiet >/dev/null
+retry gcloud iam service-accounts add-iam-policy-binding "$SA" --role=roles/iam.workloadIdentityUser \
+  --member="principalSet://iam.googleapis.com/projects/$N/locations/global/workloadIdentityPools/github/attribute.repository/$REPO" --quiet
+echo "  GitHub sign-in set." 
 
 say "3/4 Emails (Resend)"
 echo "Paste your Resend API key (it starts with re_; https://resend.com/api-keys → Create API key, 'Sending access')."
