@@ -8,6 +8,13 @@ MOCK = (pathlib.Path(__file__).parent / 'mock_cloud.js').read_text()
 c = Check('classes')
 
 
+def to_desk(pg):
+    """a teacher account opens at the desk; with a Grown-ups PIN set it asks for the PIN first"""
+    until(pg, "curScreen==='teach' || !!document.querySelector('#pinbox')")
+    if pg.evaluate("curScreen") != 'teach': pg.evaluate("closeOverlay();CL.unlockUntil=Date.now()+60000;openTeach()")
+    until(pg, "curScreen==='teach' && !!document.querySelector('[data-cls]')")
+
+
 def cloud_page(b, user, store, w=1100):
     ctx = b.new_context(viewport={'width': w, 'height': 900}, service_workers='block')
     ctx.route('**/*', router)
@@ -16,7 +23,7 @@ def cloud_page(b, user, store, w=1100):
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)+' '+str(e.stack)[:300]))
     pg.goto(ORIGIN)
-    pg.wait_for_function("typeof curScreen!=='undefined' && curScreen==='kids'", timeout=30000)
+    pg.wait_for_function("typeof curScreen!=='undefined' && (curScreen==='kids'||curScreen==='teach'||!!document.querySelector('#pinbox'))", timeout=30000)
     return ctx, pg, errs
 
 
@@ -29,8 +36,8 @@ with sync_playwright() as p:
     T = {'uid': 'T1', 'email': 'teacher@school.test'}
     store = {'users/T1': {'consentAt': '2026-10-01', 'consentVersion': 1, 'role': 'teacher', 'pin': ''}}
     ctx, pg, errs = cloud_page(b, T, store)
-    c.ok(pg.locator('#kTeach').is_visible(), 'teacher sees the Teacher desk button')
-    pg.click('#kTeach'); until(pg, "curScreen==='teach'")
+    until(pg, "curScreen==='teach'")
+    c.ok(pg.evaluate("curScreen") == 'teach', 'a teacher account opens at the teacher desk')
     pg.fill('#ncName', 'Room 12'); pg.fill('#ncTeacher', 'Ms. Rivera'); pg.select_option('#ncPack', 'ca-4'); pg.click('#ncGo')
     until(pg, "TC.cur && document.querySelector('#addNames')")
     pg.fill('#addNames', 'Maya\nLeo\nMaya'); pg.click('#addGo'); pg.wait_for_timeout(300)
@@ -80,7 +87,7 @@ with sync_playwright() as p:
 
     # a family joins from home
     P = {'uid': 'P1', 'email': 'parent@home.test'}
-    store['users/P1'] = {'consentAt': '2026-10-01', 'consentVersion': 1, 'pin': ''}
+    store['users/P1'] = {'consentAt': '2026-10-01', 'consentVersion': 1, 'role': 'parent', 'pin': ''}
     store['users/P1/kids/kx'] = {'data': json.dumps({'name': 'Ana', 'pack': 'ca-4', 'settings': {'sv': 2}}), 'name': 'Ana', 'ts': 1, 'v': 1}
     ctx, pg, errs = cloud_page(b, P, store, 800)
     until(pg, "!!document.querySelector('[data-kid=\"kx\"]')"); pg.click('[data-kid="kx"]'); until(pg, "curScreen==='map'")
@@ -100,7 +107,7 @@ with sync_playwright() as p:
 
     # the teacher sees both, downloads CSV, removes the family
     ctx, pg, errs = cloud_page(b, T, store)
-    pg.click('#kTeach'); until(pg, "curScreen==='teach' && !!document.querySelector('[data-cls]')")
+    to_desk(pg)
     pg.click('[data-cls]'); until(pg, "TC.mem[TC.cur]&&TC.mem[TC.cur].length>=3")
     pg.click('[data-tt="prog"]'); until(pg, "!!document.querySelector('table.heat')")
     rows = pg.evaluate("[...document.querySelectorAll('table.heat tbody th')].map(t=>t.textContent)")
@@ -148,7 +155,7 @@ with sync_playwright() as p:
 
     # a new school year: the teacher moves the class to grade 5
     ctx, pg, errs = cloud_page(b, T, store)
-    pg.click('#kTeach'); until(pg, "curScreen==='teach' && !!document.querySelector('[data-cls]')")
+    to_desk(pg)
     pg.click('[data-cls]'); until(pg, "!!document.querySelector('[data-tt=\"set\"]')"); pg.click('[data-tt="set"]')
     until(pg, "!!document.querySelector('#csUp')"); pg.click('#csUp'); pg.click('#csUp'); pg.wait_for_timeout(500)
     r = pg.evaluate("[curClass().pack,rosterOf(TC.cur).map(([,p])=>[p.pack,!!(p.grades&&p.grades['ca-4'])])]")

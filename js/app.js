@@ -191,7 +191,7 @@ async function onAuthChange(u){
   loadCache();show('gate');gateLoading();
   let ud=null;try{ud=await CL.api.getUserDoc()}catch(e){ud=lsJSON('pip-ud-'+CL.uid)}
   if(CL.uid!==u.uid)return;
-  if(!ud||!ud.consentAt)return showConsent();
+  if(!ud||!ud.consentAt||!ud.role)return showConsent(ud||{});
   afterConsent(ud);
 }
 function afterConsent(ud){
@@ -201,6 +201,8 @@ function afterConsent(ud){
   if(CL.unsub)CL.unsub();
   CL.unsub=CL.api.watchKids(onKids,e=>{CL.err=(e&&e.code)||'error';setSync()});
   openKids();
+  /* a teacher starts at the teacher desk (not on a classroom device, where students pick their names) */
+  if(isTeacher()&&!classDevice()&&curScreen==='kids')teacherGate(()=>openTeach());
 }
 function leaveCloud(){cloudFlush();persistLocal();if(CL.unsub)CL.unsub();CL.unsub=null;clearTimeout(CL.t);CL.t=0;
   Object.assign(CL,{mode:'guest',uid:'',email:'',remote:{},dirty:{},synced:false,loaded:false,userDoc:{},unlockUntil:0,waiting:0,err:''});ROOT={profiles:{},current:'',pin:'',ts:0};G=freshProfile()}
@@ -214,7 +216,7 @@ function gateOffline(){gateShell(`<div class="gcard"><h3>Can't reach the sign-in
 function showGate(){
   if(!(CL.api&&CL.api.configured))return startGuest();
   gateShell(`<p class="gsub">Math, reading, science and social studies puzzles for grades 3 to 5.</p>
-  <div class="gcard"><h3>Grown-ups: sign in once</h3><p>Then kids just tap their name. Progress is saved in the cloud and follows you to any device.</p>
+  <div class="gcard"><h3>Parents and teachers: sign in once</h3><p>Then kids just tap their name. Progress is saved in the cloud and follows you to any device.</p>
     <button class="gbtn" type="button" id="gGoogle">${G_ICON}<span>Continue with Google</span></button>
     <div class="or"><span>or with email</span></div>
     <input class="gin" type="email" id="gEmail" placeholder="Email" autocomplete="email" aria-label="Email">
@@ -236,16 +238,36 @@ function showGate(){
     try{await CL.api.resetPassword(em());note('If that email has an account, a reset link is on its way. Check your inbox.',true)}catch(e){note(authMsg(e))}};
   $('#gGuest').onclick=()=>{const b=$('#gGuest');if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again: progress will be saved only on this device and can be lost if browser data is cleared';return}CL.wantGuest=true;startGuest()};
 }
-function showConsent(){
-  gateShell(`<div class="gcard"><div class="eyebrow">One quick step</div><h3>Welcome, grown-up!</h3>
-    <ul class="glist"><li>We save your <b>email</b>, and for each child a <b>first name or nickname</b> plus their game progress.</li><li>No ads, no tracking, never sold or shared.</li><li>You can download or delete everything at any time in <b>Grown-ups</b>.</li></ul>
-    <label class="chk"><input type="checkbox" id="cOk"><span>I am the parent or legal guardian of the children who will play (or a teacher using it with their parents' permission), and I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>.</span></label>
-    <div class="btnrow"><button class="go" type="button" id="cGo" disabled>Continue</button><button class="go alt" type="button" id="cOut">Sign out</button></div><p class="note" id="cNote"></p></div>`);
-  $('#cOk').onchange=e=>$('#cGo').disabled=!e.target.checked;
+const ROLE_ICO={parent:`<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="14" r="7" fill="#ffd8a8" stroke="#1f3557" stroke-width="2.5"/><path d="M5 42c0-9 6-15 13-15s13 6 13 15" fill="#7cc4ff" stroke="#1f3557" stroke-width="2.5" stroke-linejoin="round"/><circle cx="35" cy="22" r="5" fill="#ffd8a8" stroke="#1f3557" stroke-width="2.5"/><path d="M27 42c0-7 4-11 8-11s8 4 8 11" fill="#ffc23d" stroke="#1f3557" stroke-width="2.5" stroke-linejoin="round"/></svg>`,
+  teacher:`<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="6" width="40" height="26" rx="3" fill="#38b98a" stroke="#1f3557" stroke-width="2.5"/><path d="M10 14h14M10 20h20M10 26h10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M16 32l-4 10M32 32l4 10" stroke="#1f3557" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="16" r="4" fill="#ffc23d"/></svg>`};
+/* first sign-in: who is this grown-up (parent or teacher) and the matching agreement; old accounts only pick a role */
+function showConsent(ud){ud=ud||{};const had=!!ud.consentAt;let role=ud.role==='teacher'||ud.role==='parent'?ud.role:'';
+  const bullets=`<ul class="glist"><li>We save your <b>email</b>, and for each child a <b>first name or nickname</b> plus their game progress.</li><li>No ads, no tracking, never sold or shared.</li><li>You can download or delete everything at any time in <b>Grown-ups</b>.</li></ul>`;
+  gateShell(`<div class="gcard"><div class="eyebrow">${had?'One quick question':'One quick step'}</div><h3>Welcome! Who are you?</h3>
+    <div class="rolepick" role="radiogroup" aria-label="I am a">
+      <button type="button" class="rolebtn" data-role="parent" role="radio" aria-checked="false">${ROLE_ICO.parent}<span><b>Parent or guardian</b><small>My own children play, at home or anywhere</small></span></button>
+      <button type="button" class="rolebtn" data-role="teacher" role="radio" aria-checked="false">${ROLE_ICO.teacher}<span><b>Teacher</b><small>I use Pip with a class (I can add my own kids too)</small></span></button></div>
+    <div id="roleMore"></div>
+    <div class="btnrow"><button class="go" type="button" id="cGo" disabled>Continue</button><button class="go alt" type="button" id="cOut">Sign out</button></div><p class="note" id="cNote"></p>
+    <p class="note">You can change this later in <b>Grown-ups</b>.</p></div>`);
+  const more=()=>{const m=$('#roleMore');
+    if(role==='parent')m.innerHTML=had?'':`${bullets}<label class="chk"><input type="checkbox" id="cOk"><span>I am the parent or legal guardian of the children who will play, and I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>.</span></label>`;
+    else if(role==='teacher')m.innerHTML=`${TEACHER_TERMS}${had?'':'<p class="note">No ads, no tracking, never sold or shared. You can download or delete everything at any time in <b>Grown-ups</b>.</p>'}
+      <div class="setrow"><label for="cName">Your name for students<small>Shown to students and families, for example "Ms. Rivera"</small></label><input type="text" id="cName" class="gin" maxlength="40" autocomplete="off" value="${esc(ud.teacherName||lsGet('pip-tname-'+CL.uid)||'')}"></div>
+      ${ud.teacherAt?'':`<label class="chk"><input type="checkbox" id="cOk"><span>I agree${had?'':' to the <a href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>'}, and I have read the <a href="privacy.html#teachers" target="_blank" rel="noopener">Privacy notice for teachers</a>.</span></label>`}`;
+    else m.innerHTML='';
+    document.querySelectorAll('.rolebtn').forEach(b=>b.setAttribute('aria-checked',b.dataset.role===role));
+    const check=()=>{const ok=role&&(!$('#cOk')||$('#cOk').checked)&&(role!=='teacher'||$('#cName').value.trim().length>=2);$('#cGo').disabled=!ok};
+    if($('#cOk'))$('#cOk').onchange=check;if($('#cName'))$('#cName').oninput=check;check()};
+  document.querySelectorAll('.rolebtn').forEach(b=>b.onclick=()=>{role=b.dataset.role;tone([523,659],.04);more();const n=$('#cName');if(n&&!n.value)n.focus()});
+  more();
   $('#cOut').onclick=signOutNow;
-  $('#cGo').onclick=async()=>{const ud={email:CL.email,consentAt:new Date().toISOString(),consentVersion:1};$('#cGo').disabled=true;
-    try{await CL.api.setUserDoc(ud)}catch(e){$('#cNote').className='note bad';$('#cNote').textContent='Could not save. Check the internet and try again.';$('#cGo').disabled=false;return}
-    afterConsent(Object.assign({},CL.userDoc,ud))};
+  $('#cGo').onclick=async()=>{const now=new Date().toISOString(),d={role,roleAt:now};
+    if(!had)Object.assign(d,{email:CL.email,consentAt:now,consentVersion:1});
+    if(role==='teacher'){const tn=$('#cName').value.trim().slice(0,40);d.teacherName=tn;lsSet('pip-tname-'+CL.uid,tn);if(!ud.teacherAt)Object.assign(d,{teacherAt:now,teacherVersion:1})}
+    $('#cGo').disabled=true;
+    try{await CL.api.setUserDoc(d)}catch(e){$('#cNote').className='note bad';$('#cNote').textContent='Could not save. Check the internet and try again.';$('#cGo').disabled=false;return}
+    CL.interactive=true;afterConsent(Object.assign({},ud,CL.userDoc,d))};
 }
 
 function openKids(){stopTimers();stopSpeak();if(ROOT.current){ROOT.profiles[ROOT.current]=G;cloudFlush()}
