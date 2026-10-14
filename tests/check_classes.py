@@ -12,7 +12,7 @@ def to_desk(pg):
     """a teacher account opens at the desk; with a Grown-ups PIN set it asks for the PIN first"""
     until(pg, "curScreen==='teach' || !!document.querySelector('#pinbox')")
     if pg.evaluate("curScreen") != 'teach': pg.evaluate("closeOverlay();CL.unlockUntil=Date.now()+60000;openTeach()")
-    until(pg, "curScreen==='teach' && !!document.querySelector('[data-cls]')")
+    until(pg, "curScreen==='teach' && !!TC.cur && !!document.querySelector('[data-tt]')")
 
 
 def cloud_page(b, user, store, w=1100):
@@ -108,12 +108,15 @@ with sync_playwright() as p:
     # the teacher sees both, downloads CSV, removes the family
     ctx, pg, errs = cloud_page(b, T, store)
     to_desk(pg)
-    pg.click('[data-cls]'); until(pg, "TC.mem[TC.cur]&&TC.mem[TC.cur].length>=3")
-    pg.click('[data-tt="prog"]'); until(pg, "!!document.querySelector('table.heat')")
+    until(pg, "TC.mem[TC.cur]&&TC.mem[TC.cur].length>=3&&!!document.querySelector('table.heat')")
+    c.ok(pg.evaluate("TC.tab") == 'prog', 'the only class opens by itself, on Progress')
     rows = pg.evaluate("[...document.querySelectorAll('table.heat tbody th')].map(t=>t.textContent)")
     c.ok(len(rows) == 3 and any('Ana' in r for r in rows), f'heatmap rows: {rows}')
     c.ok(pg.evaluate("document.querySelector('table.heat td.hm:not(.s-none)')!==null"), 'progress cells drawn')
     c.ok(pg.evaluate("/of 3/.test(document.querySelector('.csum').textContent)"), 'class summary on top')
+    pg.fill('#stuFind', 'an'); c.ok(pg.evaluate("[...document.querySelectorAll('table.heat tbody tr')].filter(r=>!r.hidden).length") == 1, 'find a student by name')
+    pg.fill('#stuFind', '')
+    pg.select_option('#stuSort', 'min'); until(pg, "TC.sort==='min'")
     pg.locator('[data-stu]:visible').first.click(); until(pg, "!!document.querySelector('.stucard')")
     c.ok(('minutes this week' in pg.inner_text('.stucard')) or ('No progress yet' in pg.inner_text('.stucard')), 'student card opens')
     pg.evaluate("closeOverlay()"); pg.locator('[data-stu]:visible', has_text='Ana').first.click(); until(pg, "!!document.querySelector('.stucard')")
@@ -164,7 +167,7 @@ with sync_playwright() as p:
     # a new school year: the teacher moves the class to grade 5
     ctx, pg, errs = cloud_page(b, T, store)
     to_desk(pg)
-    pg.click('[data-cls]'); until(pg, "!!document.querySelector('[data-tt=\"set\"]')"); pg.click('[data-tt="set"]')
+    pg.click('[data-tt="set"]')
     until(pg, "!!document.querySelector('#csUp')"); pg.click('#csUp'); pg.click('#csUp'); pg.wait_for_timeout(500)
     r = pg.evaluate("[curClass().pack,rosterOf(TC.cur).map(([,p])=>[p.pack,!!(p.grades&&p.grades['ca-4'])])]")
     c.ok(r[0] == 'ca-5' and all(x == ['ca-5', True] for x in r[1]), f'class and roster moved, last year kept: {r}')

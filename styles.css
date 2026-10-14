@@ -1691,3 +1691,30 @@ table.heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabu
 }
 
 .stucard{text-align:left}.stucard h2,.stucard .eyebrow,.stucard>p.note{text-align:center}.ctiles.st{grid-template-columns:repeat(2,minmax(0,1fr))}.stucard .skgrp{margin:14px 0 6px}.stucard .btnrow{justify-content:center}
+/* grown-ups: child switcher, weekly bars, folded detail cards */
+.kidbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.kidbar button{display:flex;align-items:center;gap:8px;border:3px solid rgba(255,255,255,.8);background:rgba(255,255,255,.55);border-radius:999px;padding:5px 14px 5px 6px;font:800 16px var(--body);color:var(--ink);cursor:pointer;min-height:44px}
+.kidbar button small{font-weight:700;color:var(--ink-soft);font-size:12px}
+.kidbar button[aria-selected=true]{background:#fff;border-color:var(--ocean-d);box-shadow:0 3px 0 var(--ocean-dd)}
+.kidbar .kav.sm{width:30px;height:30px}
+.weeks{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;align-items:end;height:150px;margin:6px 0 2px}
+.weeks>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px;min-width:0}
+.weeks i{display:block;width:70%;background:#5fc3f0;border-radius:6px 6px 2px 2px}
+.weeks em{font-style:normal;font-size:12px;font-weight:800}
+.weeks span{line-height:1.35;font-size:10.5px;font-weight:700;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.weeks small{font-size:11px;font-weight:800;color:#1f8a5f}.weeks small.low{color:#c2412d}
+.weeks>div:last-child i{background:var(--ocean-d)}
+.pfold>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none}
+.pfold>summary::-webkit-details-marker{display:none}
+.pfold>summary h4{margin:0}
+.pfmore{font-size:13px;font-weight:800;color:var(--ocean-d);border:2px solid var(--line);border-radius:999px;padding:3px 12px 1px;white-space:nowrap}
+.pfold[open] .pfmore{font-size:0}.pfold[open] .pfmore::after{content:'Hide';font-size:13px}
+.pfold[open]>summary{margin-bottom:8px}
+/* teacher: find and sort */
+.tfind{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:2px 0 8px}
+.tfind input{flex:1 1 180px;min-width:0;font:700 15px var(--body);padding:8px 12px;border:2px solid var(--line);border-radius:12px;color:var(--ink);background:#fff}
+.tfind label{font-weight:800;font-size:14px}
+.tfind select{font:700 14px var(--body);padding:7px 10px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+
+.ptoday .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wknote{font-size:12.5px!important;text-align:left!important;margin:4px 0 0!important}

@@ -128,6 +128,8 @@ function onKids(docs,meta){
   if(!meta.fromCache)for(const id in ROOT.profiles)if(!docs[id]&&CL.remote[id]&&CL.remote[id].p&&!CL.dirty[id]){/* removed elsewhere */dropKid(id)}
   persistLocal();if(Object.keys(CL.dirty).length)cloudSchedule(first?1500:3000);
   setSync();if(curScreen==='kids')renderKids();
+  /* the teacher desk follows when class students arrive from the cloud */
+  const nk=Object.keys(ROOT.profiles).length;if(curScreen==='teach'&&!ovOpen&&nk!==onKids.n&&typeof renderTeach==='function'){if(TC.autoTab&&TC.cur)TC.tab=tabFor(TC.cur);renderTeach()}onKids.n=nk;
 }
 function canAdopt(){return curScreen!=='play'&&curScreen!=='done'&&!ovOpen&&!(curScreen==='home'&&homeEdit)}
 /* pull in changes from other devices (only between rounds, never mid-puzzle) */
@@ -199,6 +201,13 @@ function skillQs(isl,s){
 function startSkill(isl,s){if(limitGate(()=>startSkill(isl,s)))return;beginRound(isl,'island',skillQs(isl,s));S.skill=s.k;
   const nm2=$('#iname');const sp=document.createElement('span');sp.className='idiff';sp.textContent=` · ${s.name}`;nm2.appendChild(sp);say($('#say'),`Let's practice <b>${esc(s.name)}</b>${nm()}! Six puzzles, all on this one skill.`)}
 const SK_DOT=st=>`<i class="skd s${st}"></i>`;
+/* "almost there": not mastered yet, at least 3 tries and 70% or more right */
+const skAlmost=m=>m&&m.st!==2&&m.n>=3&&m.ok/m.n>=.7;
+/* the last n weeks (oldest first): [minutes, puzzles, right on the first try] */
+function weekHist(n,P=G){return [...Array(n)].map((_,w)=>{const off=(n-1-w)*7;const D=[...Array(7)].map((_,k)=>addDays(k-6-off));return D.reduce((a,k)=>{const d=(P.days||{})[k]||{};return [a[0]+(d.sec||0)/60,a[1]+(d.q||0),a[2]+(d.c||0)]},[0,0,0]).map(Math.round)})}
+/* weekly bars: minutes per week, accuracy under each bar */
+function weeksHTML(wh){if(!wh||!wh.length)return '<p class="note">No weeks yet.</p>';const mx=Math.max(10,...wh.map(w=>w[0]));
+  return `<div class="weeks">${wh.map((w,i)=>`<div><em>${w[0]}</em><i style="height:${Math.max(2,w[0]/mx*100)}%"></i><span>${i===wh.length-1?'This wk':i===wh.length-2?'Last wk':`${wh.length-1-i}w ago`}</span><small class="${w[1]&&w[2]/w[1]<.6?'low':''}">${w[1]?Math.round(w[2]/w[1]*100)+'%':'–'}</small></div>`).join('')}</div><p class="note wknote">Bars: minutes per week. Under each bar: right on the first try.</p>`}
 function skillBar(id){const L=skillsOf(id);if(L.length<2)return '';const d=skillsDone(id);
   return `<span class="skbar" title="${d} of ${L.length} skills mastered" aria-label="${d} of ${L.length} skills mastered">${(()=>{const st=L.map(s=>skStat(s.k).st),pc=v=>Math.round(st.filter(x=>x===v).length/L.length*100);return `<span class="sksegs meter"><i class="s2" style="flex:0 0 ${pc(2)}%"></i><i class="s1" style="flex:0 0 ${pc(1)}%"></i></span>`})()}<em>${d}/${L.length}</em></span>`}
 function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone(isl.id);

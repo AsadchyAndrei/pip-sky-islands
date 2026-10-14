@@ -272,7 +272,8 @@ function showConsent(ud){ud=ud||{};const had=!!ud.consentAt;let role=ud.role==='
 
 function openKids(){stopTimers();stopSpeak();if(ROOT.current){ROOT.profiles[ROOT.current]=G;cloudFlush()}
   let rs=null;try{rs=sessionStorage.getItem('pip-resume');sessionStorage.removeItem('pip-resume')}catch(e){}
-  if(rs&&ROOT.profiles[rs]&&(ROOT.profiles[rs].pack||PACK_DEFAULT)===PACK.id)return selectKid(rs);
+  let to='',ul=0;try{to=sessionStorage.getItem('pip-resume-to')||'';ul=+sessionStorage.getItem('pip-unlock')||0;sessionStorage.removeItem('pip-resume-to');sessionStorage.removeItem('pip-unlock')}catch(e){}
+  if(rs&&ROOT.profiles[rs]&&(ROOT.profiles[rs].pack||PACK_DEFAULT)===PACK.id){selectKid(rs);if(to==='parent'&&ul>Date.now()){CL.unlockUntil=ul;renderParent()}return}
   show('kids');renderKids()}
 function renderKids(){
   const el=$('#kids');if(!el)return;
@@ -447,6 +448,9 @@ function curMapHTML(){const gw=GRADE_WORD(PACK.grade);
 let pTab='prog';
 const PT_ICO={prog:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="12" width="5" height="9" rx="1.5" fill="#5fc3f0" stroke="#1f3557" stroke-width="2"/><rect x="9.5" y="7" width="5" height="14" rx="1.5" fill="#38b98a" stroke="#1f3557" stroke-width="2"/><rect x="16" y="3" width="5" height="18" rx="1.5" fill="#ffc23d" stroke="#1f3557" stroke-width="2"/></svg>`,acct:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.6A3.8 3.8 0 0 1 17.5 18Z" fill="#dff3ff" stroke="#1f3557" stroke-width="2" stroke-linejoin="round"/><path d="M12 10.5v5m-2.3-2.4L12 15.5l2.3-2.4" fill="none" stroke="#1f3557" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`};
 function parentTabs(rows,allA){const grid=document.querySelector('#parentBody .pgrid');if(!grid)return;
+  /* long detail cards start closed, so the first screen shows the week at a glance */
+  grid.querySelectorAll(':scope>.pcard').forEach(c=>{const h=c.querySelector(':scope>h4');if(!h||!/^(Skills checklist|Topics|Home Puzzles|Recent mistakes|Writing Desk|Reading fluency|Test Practice|.*program map)/.test(h.textContent))return;
+    const d=document.createElement('details');d.className='pfold';const sm=document.createElement('summary');sm.appendChild(h);sm.insertAdjacentHTML('beforeend','<span class="pfmore">Show</span>');d.appendChild(sm);while(c.firstChild)d.appendChild(c.firstChild);c.appendChild(d)});
   const tabOf=h=>/^(Settings|Players|Install|School program|Join a teacher|Teacher's class|In class right now)/.test(h)?'set':/^(Account|Teacher tools|Backups|Move progress|Delete|Danger|Reset|Erase)/.test(h)?'acct':'prog';
   grid.querySelectorAll(':scope>.pcard').forEach(c=>{const h=(c.querySelector('h4')||{}).textContent||'';c.dataset.ptab=tabOf(h)});
   const w=rows.find(r=>r.s.a>=5&&r.p!=null&&r.p<80);
@@ -457,6 +461,9 @@ function parentTabs(rows,allA){const grid=document.querySelector('#parentBody .p
   grid.insertAdjacentHTML('beforebegin',`<div class="itabs ptabs" role="tablist" aria-label="Grown-ups sections"><button type="button" role="tab" data-pt="prog">${PT_ICO.prog}<span>Progress</span></button><button type="button" role="tab" data-pt="set">${ICON.gear}<span>Settings</span></button><button type="button" role="tab" data-pt="acct">${PT_ICO.acct}<span>Account<span class="ptlong"> &amp; data</span></span></button></div>`);
   const sel=t=>{pTab=t;document.querySelectorAll('.ptabs [data-pt]').forEach(b=>b.setAttribute('aria-selected',b.dataset.pt===t));grid.querySelectorAll(':scope>.pcard').forEach(c=>c.hidden=c.dataset.ptab!==t)};
   document.querySelectorAll('.ptabs [data-pt]').forEach(b=>b.onclick=()=>sel(b.dataset.pt));sel(pTab)}
+function parentSwitch(id){if(!ROOT.profiles[id]||id===ROOT.current)return;save();ROOT.current=id;G=ROOT.profiles[id];const r=CL.remote[id];if(r&&r.p){G=mergeProfiles(G,r.p);ROOT.profiles[id]=G;r.fresh=false}persistLocal();
+  try{sessionStorage.setItem('pip-resume-to','parent');sessionStorage.setItem('pip-unlock',String(CL.unlockUntil||0))}catch(e){}
+  if(ensurePack())return;try{sessionStorage.removeItem('pip-resume-to');sessionStorage.removeItem('pip-unlock')}catch(e){}applySettings();refreshFoxes();renderParent()}
 function renderParent(){
   show('parent');
   const t=today(),last7=[...Array(7)].map((_,i)=>addDays(i-6)),mins=last7.map(k=>Math.round(((G.days[k]||{}).sec||0)/60)),maxM=Math.max(10,...mins);
@@ -470,22 +477,24 @@ function renderParent(){
   const notes=[];{const mx=Math.max(...mins),di=mins.indexOf(mx);if(mx>60&&!+(G.settings.limit||0))notes.push(`<b>${Math.floor(mx/60)} h ${mx%60} min</b> played on ${new Date(last7[di]+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}. That is a lot for one day. You can set a daily time limit in Settings below.`)}
   {const w=rows.find(r=>r.s.a>=10&&r.p<60);if(w){const ln=Object.keys(G.lessons||{}).filter(k=>LESSONS.some(L=>L.id===k&&L.isl===w.i.id)).length;notes.push(`<b>${esc(w.i.name)}</b> is the hardest topic right now: ${w.p}% right on the first try (${w.s.a} puzzles). ${lessonsFor(w.i.id).length?(ln?`${ln} of ${lessonsFor(w.i.id).length} Pip lessons done for it.`:`Pip has ${lessonsFor(w.i.id).length} short lessons for it; none done yet.`):''}`)}}
   if(G.review.length>=15)notes.push(`<b>${G.review.length} old mistakes</b> are waiting for practice (${G.fixed} fixed so far). One comes back in every round and up to five in the Daily Challenge.`);
-  $('#parentBody').innerHTML=`<div class="pgrid">${notes.length?`<div class="pcard wide pnotes"><h4>Pip's notes for grown-ups</h4><ul>${notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>`:''}
+  const kidsP=Object.keys(ROOT.profiles).filter(id=>!ROOT.profiles[id].roster);
+  $('#parentBody').innerHTML=`${kidsP.length>1?`<div class="kidbar" role="tablist" aria-label="Child">${kidsP.map(id=>`<button type="button" role="tab" data-pk="${id}" aria-selected="${id===ROOT.current}"><span class="kav sm">${kidAvatar(ROOT.profiles[id])}</span>${esc(ROOT.profiles[id].name||'Player')}<small>${kidGrade(ROOT.profiles[id])}</small></button>`).join('')}</div>`:''}<div class="pgrid">${notes.length?`<div class="pcard wide pnotes"><h4>Pip's notes for grown-ups</h4><ul>${notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>`:''}
     ${(()=>{const wk=off=>{const D=[...Array(7)].map((_,k)=>addDays(k-6-off));return D.reduce((a,k)=>{const d=G.days[k]||{};return [a[0]+(d.sec||0)/60,a[1]+(d.q||0),a[2]+(d.c||0)]},[0,0,0]).map(Math.round)};
       const w=wk(0),p=wk(7),ac=w[1]?Math.round(w[2]/w[1]*100):null,acp=p[1]?Math.round(p[2]/p[1]*100):null;
-      const SK=ISLANDS.filter(i=>i.gen&&!i.retired).flatMap(i=>skillsOf(i.id)),mast=SK.filter(s=>skStat(s.k).st===2).length,tried=SK.filter(s=>skStat(s.k).n).length;
+      const SK=ISLANDS.filter(i=>i.gen&&!i.retired).flatMap(i=>skillsOf(i.id)),mast=SK.filter(s=>skStat(s.k).st===2).length,tried=SK.filter(s=>skStat(s.k).n).length,alm=SK.filter(s=>skAlmost(skStat(s.k))).length;
       const tr=(a,b,u='')=>{if(a==null||b==null)return '';const d=a-b;return d===0?'<small class="tr">same as last week</small>':`<small class="tr ${d>0?'up':'dn'}">${d>0?'▲':'▼'} ${Math.abs(d)}${u} vs last week</small>`};
       return `<div class="pcard wide"><h4>This week</h4><div class="ctiles">
         <div><b>${w[0]}</b><span>minutes played</span>${tr(w[0],p[0],' min')}</div>
         <div><b>${w[1]}</b><span>puzzles answered</span>${tr(w[1],p[1])}</div>
         <div><b>${ac==null?'–':ac+'%'}</b><span>right on the first try</span>${ac!=null&&acp!=null?tr(ac,acp,'%'):''}</div>
-        <div><b>${mast} <small>of ${SK.length}</small></b><span>skills mastered</span><small class="tr">${tried} tried so far</small></div></div>
+        <div><b>${mast} <small>of ${SK.length}</small></b><span>skills mastered</span><small class="tr">${alm} almost there · ${tried} tried</small></div></div>
         <p class="note">A skill is mastered at 8 of 10 right on the first try. Settings, the school program and class topics are in the <b>Settings</b> tab.</p></div>`})()}
-    <div class="pcard"><h4>Last 7 days (minutes)</h4><div class="days7">${last7.map((k,i)=>`<div><em>${mins[i]}</em><i style="height:${Math.max(2,mins[i]/maxM*100)}%"></i><span>${DSHORT[new Date(k+'T12:00').getDay()]}</span></div>`).join('')}</div>
-      <p>All time: ${allA} puzzles, ${allA?Math.round(allC/allA*100):0}% right on the first try. Best combo: ${G.bestCombo}. Mistakes fixed for good: ${G.fixed}.</p></div>
     <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small></li>`).join('')}</ul><p>Tip: tap a topic below to play it together.</p>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
       <p>Waiting at Fix-It Falls: <b>${G.review.length}</b> puzzle${G.review.length===1?'':'s'} (${reviewDue().length} due today).</p></div>
-    <div class="pcard wide"><h4>Today</h4><div class="kpis">
+    <div class="pcard"><h4>Last 8 weeks</h4>${weeksHTML(weekHist(8))}</div>
+    <div class="pcard"><h4>Last 7 days (minutes)</h4><div class="days7">${last7.map((k,i)=>`<div><em>${mins[i]}</em><i style="height:${Math.max(2,mins[i]/maxM*100)}%"></i><span>${DSHORT[new Date(k+'T12:00').getDay()]}</span></div>`).join('')}</div>
+      <p>All time: ${allA} puzzles, ${allA?Math.round(allC/allA*100):0}% right on the first try. Best combo: ${G.bestCombo}. Mistakes fixed for good: ${G.fixed}.</p></div>
+    <div class="pcard ptoday"><h4>Today</h4><div class="kpis">
       <div class="kpi"><b>${Math.floor(t.sec/60)}</b><small>minutes played</small></div><div class="kpi"><b>${t.q}</b><small>puzzles answered</small></div>
       <div class="kpi"><b>${t.q?Math.round(t.c/t.q*100)+'%':'–'}</b><small>right on first try</small></div><div class="kpi"><b>${gi?(gi.cur>=gi.max?'Done':gi.label):'Off'}</b><small>daily goal</small></div></div><p class="note">Today: ${t.h||0} hints shown · ${t.w||0} "How?" explanations · ${t.l||0} lessons · ${t.e||0} coins earned, ${t.s||0} spent.</p></div>
     ${packParentHTML()}
@@ -556,7 +565,7 @@ function renderParent(){
     $('#setVstyle').onchange=e=>{G.settings.vstyle=e.target.value;save();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
     $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);bindSw('setDys','dys',applySettings);
   $('#setName').onchange=e=>{G.name=e.target.value.trim().slice(0,16);save();updateStats()};
-  document.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{save();ROOT.current=b.dataset.sw;G=ROOT.profiles[ROOT.current];const r=CL.remote[ROOT.current];if(r&&r.p){G=mergeProfiles(G,r.p);ROOT.profiles[ROOT.current]=G;r.fresh=false}persistLocal();if(ensurePack())return;applySettings();refreshFoxes();renderParent()});
+  document.querySelectorAll('[data-sw],[data-pk]').forEach(b=>b.onclick=()=>parentSwitch(b.dataset.sw||b.dataset.pk));
   $('#addP').onclick=()=>newPlayer(id=>{save();ROOT.current=id;G=ROOT.profiles[id];persistLocal();if(ensurePack())return;applySettings();renderParent()});
   if($('#delP'))$('#delP').onclick=async e=>{const b=e.currentTarget,n=$('#pNote');if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to remove';n.className='note bad';n.textContent=`This removes ${G.name||'this player'}, all their progress and backups, on every device.`;return}
     const id=ROOT.current;b.disabled=true;
