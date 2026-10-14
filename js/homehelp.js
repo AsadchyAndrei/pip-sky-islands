@@ -1,5 +1,5 @@
 /* Pip's Sky Islands: "Try at home" — one short, screen-free idea per island and grade, for grown-ups.
-   Shown under "Needs practice" in Grown-ups, in the weekly report and in teacher reports for families. */
+   Shown under "Needs practice" in For Parents, in the weekly report and in teacher reports for families. */
 const HOME_TIPS={
 'ca-3':{
   place:'Pick a 3-digit number from a receipt or license plate. Ask: what is the 5 worth? Then round it to the nearest ten and hundred together.',

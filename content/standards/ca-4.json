@@ -63,7 +63,7 @@
     {"code": "RI.4.9", "subject": "ela", "domain": "Reading: Informational Text", "summary": "Combine information from two texts on the same topic."},
     {"code": "RI.4.10", "subject": "ela", "domain": "Reading: Informational Text", "app": false, "summary": "Read and understand grade 4–5 informational texts by the end of the year (reading range over the whole year)."},
     {"code": "RF.4.3", "subject": "ela", "domain": "Reading: Foundational Skills", "summary": "Use letter-sound knowledge, syllables and word parts (roots, prefixes, suffixes) to read unfamiliar words."},
-    {"code": "RF.4.4", "subject": "ela", "domain": "Reading: Foundational Skills", "app": false, "summary": "Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in Grown-ups)."},
+    {"code": "RF.4.4", "subject": "ela", "domain": "Reading: Foundational Skills", "app": false, "summary": "Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in For Parents)."},
     {"code": "W.4.1", "subject": "ela", "domain": "Writing", "summary": "Write opinion pieces with reasons and facts."},
     {"code": "W.4.2", "subject": "ela", "domain": "Writing", "summary": "Write informative texts: topic sentence, grouped details, linking words, conclusion."},
     {"code": "W.4.3", "subject": "ela", "domain": "Writing", "summary": "Write stories with dialogue, description, time order and an ending."},

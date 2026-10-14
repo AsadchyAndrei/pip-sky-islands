@@ -11,7 +11,7 @@
 2. **Три слоя защиты:**
    - каждое изменение сразу пишется в браузер (localStorage);
    - Firestore держит офлайн-очередь: без интернета игра продолжается, данные уходят в облако, когда сеть вернётся;
-   - облачная копия плюс **автобэкап раз в день** (хранится 30 дней), восстановление в один клик в разделе Grown-ups.
+   - облачная копия плюс **автобэкап раз в день** (хранится 30 дней), восстановление в один клик в разделе For Parents.
 3. **Слияние без потерь между устройствами.** Если ребёнок играл на двух устройствах (даже одновременно и без
    интернета), прогресс объединяется, а не перезаписывается:
    - звёзды, опыт и стикеры берутся по максимуму;
@@ -99,15 +99,15 @@ Firebase → **Authentication → Settings → Authorized domains → Add domain
 ### 8. Последние штрихи
 - `privacy.html`: замените `CONTACT_EMAIL_HERE` на email для вопросов родителей.
 - Firebase → Authentication → **Templates**: можно указать название отправителя писем (например *Pip's Sky Islands*).
-- Перенести старый прогресс из версии на claude.ai: там **Grown-ups → Sync between devices → Copy code**,
-  затем на новом сайте **Grown-ups → Move progress with a code → Add from code**.
+- Перенести старый прогресс из версии на claude.ai: там **For Parents → Sync between devices → Copy code**,
+  затем на новом сайте **For Parents → Move progress with a code → Add from code**.
 
 ---
 
 ## Проверка после запуска
 1. Войдите через Google → отметьте согласие → добавьте игрока → решите пару задач. Значок в шапке должен показать **Saved**.
 2. Откройте сайт на другом устройстве (или в другом браузере) → войдите тем же аккаунтом → прогресс на месте.
-3. **Grown-ups → Backups**: после первой задачи дня появляется ежедневная копия.
+3. **For Parents → Backups**: после первой задачи дня появляется ежедневная копия.
 
 ## Лимиты бесплатного плана (Spark)
 Firestore: 1 GiB данных, 50 000 чтений, 20 000 записей и 20 000 удалений в сутки. Auth: до 50 000 активных пользователей в месяц.
@@ -116,7 +116,7 @@ Firestore: 1 GiB данных, 50 000 чтений, 20 000 записей и 20 
 
 ## Дети и приватность (COPPA)
 Аккаунт создаёт только взрослый и подтверждает согласие. О детях хранится только имя или ник и игровой прогресс.
-Нет рекламы и трекинга. Взрослый может скачать или удалить все данные в разделе Grown-ups.
+Нет рекламы и трекинга. Взрослый может скачать или удалить все данные в разделе For Parents.
 Это разумная базовая схема, но не юридическая консультация. Если игру будет официально использовать школа,
 стоит показать её школьному администратору.
 
@@ -134,7 +134,7 @@ Firestore: 1 GiB данных, 50 000 чтений, 20 000 записей и 20 
 | `js/islands.js` | History, grammar, writing, Test Practice, Clock Cove, question generators per island (`GEN`), the island list from the pack, seasonal events |
 | `js/progress.js` | Saving, profiles, skills, sound, rewards, lessons, Pip's Pick |
 | `js/play.js` | Screens and the question player (drag and drop, Part A/B, Yes/No...) |
-| `js/app.js` | Closet, album, story, sign-in, Grown-ups, Writing Desk, my island, the house, start-up |
+| `js/app.js` | Closet, album, story, sign-in, For Parents, Writing Desk, my island, the house, start-up |
 | `sw.js` | Offline support: list every new file in `CORE` and bump the version |
 | `tools/build_content.py` | Checks `content/`, builds `js/content.js` and the standards coverage report |
 | `tests/` | Automatic checks, run `tests/run_all.sh` before publishing |

@@ -1,5 +1,5 @@
 """The first sign-in asks who the grown-up is. A parent goes to "Who's playing?", a teacher to the teacher desk.
-Old accounts only pick a role (no second consent). The role can be switched in Grown-ups."""
+Old accounts only pick a role (no second consent). The role can be switched in For Parents."""
 import json, pathlib
 from serve import *
 
@@ -45,7 +45,7 @@ with sync_playwright() as p:
     c.ok(pg.locator('.tsteps').is_visible() and pg.input_value('#ncTeacher') == 'Ms. Lee', 'empty desk shows the first steps and knows the name')
     pg.click('#tBack'); until(pg, "curScreen==='kids'")
     c.ok(True, 'My own kids opens the players screen')
-    # switch to parent in Grown-ups
+    # switch to parent in For Parents
     pg.evaluate("CL.unlockUntil=Date.now()+60000;renderParent()"); pg.click('[data-pt=acct]')
     pg.click('#tOff'); pg.click('#toGo'); until(pg, "!!document.querySelector('#tOn')")
     c.ok((stored(pg, 'users/N2') or {}).get('role') == 'parent', 'switched to a parent account')

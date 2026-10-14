@@ -71,7 +71,7 @@ A standard counts as covered when at least one skill on this pack's islands prac
 | RI.3.9 | Compare the most important points of two texts on the same topic. | covered | reading: Short passages |
 | RI.3.10 | Read and understand grade 2–3 informational texts by the end of the year (reading range over the whole year). | not checked in the game | — |
 | RF.3.3 | Read words using prefixes, suffixes and syllables, and spell common irregular words. | covered | words: Prefixes; words: Suffixes; words: Spelling patterns |
-| RF.3.4 | Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in Grown-ups). | not checked in the game | — |
+| RF.3.4 | Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in For Parents). | not checked in the game | — |
 | W.3.1 | Write opinion pieces: state an opinion, give reasons, use linking words, and end with a conclusion. | covered | write: Opinion writing |
 | W.3.2 | Write informative texts: introduce a topic, give facts and details, use linking words, conclude. | covered | write: Informative writing |
 | W.3.3 | Write stories with characters, dialogue, feelings, time-order words and an ending. | covered | write: Story writing |

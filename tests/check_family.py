@@ -1,4 +1,4 @@
-"""Grown-ups: family goal shows on the map, teacher note and tasks show in Grown-ups, tips and weekly report."""
+"""For Parents: family goal shows on the map, teacher note and tasks show in For Parents, tips and weekly report."""
 from serve import *
 c = Check('family goal and grown-ups extras')
 with sync_playwright() as p:
@@ -11,7 +11,7 @@ with sync_playwright() as p:
           CL.unlockUntil=Date.now()+600000;renderParent()""")
         pg.wait_for_timeout(500)
         t = pg.inner_text('#parentBody')
-        c.ok('From Ms. Lee' in t and 'We are learning fractions.' in t and 'Overdue' in t, f'{w}: teacher note and overdue task in Grown-ups')
+        c.ok('From Ms. Lee' in t and 'We are learning fractions.' in t and 'Overdue' in t, f'{w}: teacher note and overdue task in For Parents')
         c.ok('overdue' in t, f'{w}: overdue reminder in the notes')
         c.ok(pg.evaluate("realTasks(classDoc()).length") == 1, f'{w}: the note is not a task')
         pg.select_option('#fgKind', 'min'); pg.select_option('#fgN', '60'); pg.fill('#fgRew', 'Park trip'); pg.click('#fgGo'); pg.wait_for_timeout(400)

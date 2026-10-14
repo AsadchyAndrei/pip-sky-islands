@@ -9,7 +9,7 @@ c = Check('classes')
 
 
 def to_desk(pg):
-    """a teacher account opens at the desk; with a Grown-ups PIN set it asks for the PIN first"""
+    """a teacher account opens at the desk; with a parents' PIN set it asks for the PIN first"""
     until(pg, "curScreen==='teach' || !!document.querySelector('#pinbox')")
     if pg.evaluate("curScreen") != 'teach': pg.evaluate("closeOverlay();CL.unlockUntil=Date.now()+60000;openTeach()")
     until(pg, "curScreen==='teach' && !!TC.cur && !!document.querySelector('[data-tt]')")

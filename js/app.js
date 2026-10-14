@@ -1,4 +1,4 @@
-/* Pip's Sky Islands: Closet, album, story, sign-in, Grown-ups, Writing Desk, my island, the house, home layout, start-up. Loaded in order by index.html; all files share one global scope. */
+/* Pip's Sky Islands: Closet, album, story, sign-in, For Parents, Writing Desk, my island, the house, home layout, start-up. Loaded in order by index.html; all files share one global scope. */
 /* ================= closet ================= */
 function openCloset(){
   stopTimers();show('closet');renderCloset();
@@ -242,17 +242,17 @@ const ROLE_ICO={parent:`<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="
   teacher:`<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="6" width="40" height="26" rx="3" fill="#38b98a" stroke="#1f3557" stroke-width="2.5"/><path d="M10 14h14M10 20h20M10 26h10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M16 32l-4 10M32 32l4 10" stroke="#1f3557" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="16" r="4" fill="#ffc23d"/></svg>`};
 /* first sign-in: who is this grown-up (parent or teacher) and the matching agreement; old accounts only pick a role */
 function showConsent(ud){ud=ud||{};const had=!!ud.consentAt;let role=ud.role==='teacher'||ud.role==='parent'?ud.role:'';
-  const bullets=`<ul class="glist"><li>We save your <b>email</b>, and for each child a <b>first name or nickname</b> plus their game progress.</li><li>No ads, no tracking, never sold or shared.</li><li>You can download or delete everything at any time in <b>Grown-ups</b>.</li></ul>`;
+  const bullets=`<ul class="glist"><li>We save your <b>email</b>, and for each child a <b>first name or nickname</b> plus their game progress.</li><li>No ads, no tracking, never sold or shared.</li><li>You can download or delete everything at any time in <b>For Parents</b>.</li></ul>`;
   gateShell(`<div class="gcard"><div class="eyebrow">${had?'One quick question':'One quick step'}</div><h3>Welcome! Who are you?</h3>
     <div class="rolepick" role="radiogroup" aria-label="I am a">
       <button type="button" class="rolebtn" data-role="parent" role="radio" aria-checked="false">${ROLE_ICO.parent}<span><b>Parent or guardian</b><small>My own children play, at home or anywhere</small></span></button>
       <button type="button" class="rolebtn" data-role="teacher" role="radio" aria-checked="false">${ROLE_ICO.teacher}<span><b>Teacher</b><small>I use Pip with a class (I can add my own kids too)</small></span></button></div>
     <div id="roleMore"></div>
     <div class="btnrow"><button class="go" type="button" id="cGo" disabled>Continue</button><button class="go alt" type="button" id="cOut">Sign out</button></div><p class="note" id="cNote"></p>
-    <p class="note">You can change this later in <b>Grown-ups</b>.</p></div>`);
+    <p class="note">You can change this later in <b>For Parents</b>.</p></div>`);
   const more=()=>{const m=$('#roleMore');
     if(role==='parent')m.innerHTML=had?'':`${bullets}<label class="chk"><input type="checkbox" id="cOk"><span>I am the parent or legal guardian of the children who will play, and I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>.</span></label>`;
-    else if(role==='teacher')m.innerHTML=`${TEACHER_TERMS}${had?'':'<p class="note">No ads, no tracking, never sold or shared. You can download or delete everything at any time in <b>Grown-ups</b>.</p>'}
+    else if(role==='teacher')m.innerHTML=`${TEACHER_TERMS}${had?'':'<p class="note">No ads, no tracking, never sold or shared. You can download or delete everything at any time in <b>For Parents</b>.</p>'}
       <div class="setrow"><label for="cName">Your name for students<small>Shown to students and families, for example "Ms. Rivera"</small></label><input type="text" id="cName" class="gin" maxlength="40" autocomplete="off" value="${esc(ud.teacherName||lsGet('pip-tname-'+CL.uid)||'')}"></div>
       ${ud.teacherAt?'':`<label class="chk"><input type="checkbox" id="cOk"><span>I agree${had?'':' to the <a href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>'}, and I have read the <a href="privacy.html#teachers" target="_blank" rel="noopener">Privacy notice for teachers</a>.</span></label>`}`;
     else m.innerHTML='';
@@ -293,7 +293,7 @@ function renderKids(){
     ${guest.length?`<div class="kimport"><p>This device has progress from before you signed in: <b>${guest.map(([,p])=>esc(p.name||'Player')).join(', ')}</b>. Keep it safe in your account?</p><button class="go small leaf" type="button" id="kImp">Add to my account</button></div>`:''}
     <div class="kidfoot">${acct}${isStandalone()?'':'<button class="linkbtn" type="button" id="kInst">Install app</button>'}<a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy</a></div>`;
   if($('#kInst'))$('#kInst').onclick=async()=>{if(installEvt){const e=installEvt;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderKids();return}
-    overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">For grown-ups</div><h2>Install Pip as an app</h2><p>It opens full screen, like an app, and works without internet.</p>${/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p><p class="note">The installed app keeps its own copy. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<button class="go alt" type="button" style="align-self:center" onclick="closeOverlay()">Close</button>`)};
+    overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">For grown-ups</div><h2>Install Pip as an app</h2><p>It opens full screen, like an app, and works without internet.</p>${/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p><p class="note">The installed app keeps its own copy. Sign in once inside it (For Parents → account) and the progress comes back from the cloud.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<button class="go alt" type="button" style="align-self:center" onclick="closeOverlay()">Close</button>`)};
   refreshFoxes();
   el.querySelectorAll('[data-kid]').forEach(b=>b.onclick=()=>{const id=b.dataset.kid,p=ROOT.profiles[id];tone([523,784]);if(p.kidPin&&id!==ROOT.current)kidPinPrompt(p,()=>selectKid(id));else selectKid(id)});
   $('#kAdd').onclick=()=>newPlayer(id=>selectKid(id));
@@ -333,10 +333,10 @@ function newPlayer(then){
   const grOpts=(st,gr)=>GRADES.map(([g,n])=>{const ok=packReady(CONTENT.packs[packKey(st,g)]);return opt(g,n+(ok?'':' (planned)'),g===gr,!ok)}).join('');
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New player</div><h2>What's the player's name?</h2><p>A first name or nickname is perfect.</p>
     <input type="text" id="nameIn" maxlength="16" autocomplete="off" aria-label="Player name">
-    <div class="npschool"><b>School program</b><small>The islands follow this state's standards for this grade. You can change it later in Grown-ups.</small>
+    <div class="npschool"><b>School program</b><small>The islands follow this state's standards for this grade. You can change it later in For Parents.</small>
       <div class="setrow"><label for="npState">State</label><select id="npState">${stOpts(D.state)}</select></div>
       <div class="setrow"><label for="npGrade">Grade</label><select id="npGrade">${grOpts(D.state,D.grade)}</select></div></div>
-    <label class="limchk"><input type="checkbox" id="limIn" checked> Limit play to 45 minutes a day <small>Recommended. Grown-ups can change it any time.</small></label><div class="btnrow"><button class="go" type="button" id="nameOk">Add player</button><button class="go alt" type="button" id="nameNo">Cancel</button></div>`,
+    <label class="limchk"><input type="checkbox" id="limIn" checked> Limit play to 45 minutes a day <small>Recommended. Parents can change it any time.</small></label><div class="btnrow"><button class="go" type="button" id="nameOk">Add player</button><button class="go alt" type="button" id="nameNo">Cancel</button></div>`,
     ()=>{const i=$('#nameIn'),sS=$('#npState'),sG=$('#npGrade');setTimeout(()=>i.focus(),100);
       sS.onchange=()=>{const st=sS.value,cur=+sG.value,ok=g=>packReady(CONTENT.packs[packKey(st,g)]);const g=ok(cur)?cur:(GRADES.map(x=>x[0]).find(ok)??cur);sG.innerHTML=grOpts(st,g)};
       const ok=()=>{const n=i.value.trim().slice(0,16);if(!n){i.focus();return}const key=packKey(sS.value,+sG.value);if(!packReady(CONTENT.packs[key])){sG.focus();return}
@@ -404,7 +404,7 @@ function openDesk(kind){
       L.unshift({ts:Date.now(),d:dayKey(),k:kind,pr:dr.pr,txt,w,ok:items.filter(x=>x[0]).length,of:items.length});if(L.length>40)L.length=40;
       let rew=0;if(G.writeDay!==dayKey()){G.writeDay=dayKey();rew=DESK_REW;G.coins+=rew;updateStats('#coinPill')}
       G.writeDraft=null;save();sWin();$('#ocard').classList.remove('wide');closeOverlay();
-      overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Saved!</div><h2>${pick(['What a writer!','Great writing!','I love it!'])}</h2><div class="dkdone"><b>${esc(dr.pr)}</b><p>${esc(txt)}</p><small>${w} words</small></div>${rew?`<p><b>+${rew} coins</b> for writing today!</p>`:''}<p class="note">Your grown-ups can read it in Grown-ups.</p><div class="actrow"><button type="button" class="go alt" id="dkRead">Read it to me</button><button type="button" class="go" id="dkOk">Done</button></div>`,()=>{
+      overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Saved!</div><h2>${pick(['What a writer!','Great writing!','I love it!'])}</h2><div class="dkdone"><b>${esc(dr.pr)}</b><p>${esc(txt)}</p><small>${w} words</small></div>${rew?`<p><b>+${rew} coins</b> for writing today!</p>`:''}<p class="note">Your grown-ups can read it in For Parents.</p><div class="actrow"><button type="button" class="go alt" id="dkRead">Read it to me</button><button type="button" class="go" id="dkOk">Done</button></div>`,()=>{
         $('#dkOk').onclick=()=>{stopSpeak&&stopSpeak();closeOverlay()};$('#dkRead').onclick=()=>speak(esc(txt));setTimeout(()=>burstAt($('#ocard'),80),150)})};
     check();if(!dr.v.some(Boolean))setTimeout(()=>tas[0].focus({preventScroll:true}),200)});
 }
@@ -415,10 +415,10 @@ function openParent(){
   overlay(pinHTML(),bindPin);
 }
 function pinHTML(){const t={enter:'Enter your grown-up PIN',create:'Create a 4-digit PIN',confirm:'Type the PIN again'}[pinStage];
-  return `<div class="eyebrow">Grown-ups only</div><h2 style="font-size:28px">${t}</h2>${pinStage==='create'?'<p>Kids won\'t know it, so this page stays private.</p>':''}
+  return `<div class="eyebrow">Parents only</div><h2 style="font-size:28px">${t}</h2>${pinStage==='create'?'<p>Kids won\'t know it, so this page stays private.</p>':''}
   <div class="pinbox" id="pinbox">${[0,1,2,3].map(i=>`<i class="${i<pinBuf.length?'on':''}"></i>`).join('')}</div>
   <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-pk="${n}">${n}</button>`).join('')}<button type="button" class="del" data-pk="x" aria-label="Cancel">${ICON.close}</button><button type="button" data-pk="0">0</button><button type="button" class="del" data-pk="del" aria-label="Delete">${ICON.del}</button></div>
-  ${pinStage==='enter'?`<p class="note">${CL.mode==='cloud'?'Forgot the PIN? Tap "Switch player" (the name button), sign out, then sign in again: Grown-ups opens without the PIN for 10 minutes so you can set a new one.':'Forgot the PIN? Use the save code to restore progress, or contact whoever set it.'}</p>`:''}`}
+  ${pinStage==='enter'?`<p class="note">${CL.mode==='cloud'?'Forgot the PIN? Tap "Switch player" (the name button), sign out, then sign in again: For Parents opens without the PIN for 10 minutes so you can set a new one.':'Forgot the PIN? Use the save code to restore progress, or contact whoever set it.'}</p>`:''}`}
 let pinThen=null;
 function askPinThen(fn){pinThen=fn;pinBuf='';pinStage='enter';pinFirst='';overlay(pinHTML(),bindPin)}
 function bindPin(){document.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>pinKey(b.dataset.pk))}
@@ -458,7 +458,7 @@ function parentTabs(rows,allA){const grid=document.querySelector('#parentBody .p
   grid.insertAdjacentHTML('afterbegin',`<div class="pcard wide pfocus" data-ptab="prog"><span class="pfico">${PT_ICO.prog}</span><p>${focus}</p></div>`);
   grid.querySelectorAll(':scope>.pcard').forEach(c=>{if(/^Install/.test((c.querySelector('h4')||{}).textContent||''))grid.appendChild(c)});
   const fb=grid.querySelector('.pfocus [data-play]');if(fb)fb.onclick=()=>start(byId(fb.dataset.play),{noOffer:true});
-  grid.insertAdjacentHTML('beforebegin',`<div class="itabs ptabs" role="tablist" aria-label="Grown-ups sections"><button type="button" role="tab" data-pt="prog">${PT_ICO.prog}<span>Progress</span></button><button type="button" role="tab" data-pt="set">${ICON.gear}<span>Settings</span></button><button type="button" role="tab" data-pt="acct">${PT_ICO.acct}<span>Account<span class="ptlong"> &amp; data</span></span></button></div>`);
+  grid.insertAdjacentHTML('beforebegin',`<div class="itabs ptabs" role="tablist" aria-label="Parents' Corner sections"><button type="button" role="tab" data-pt="prog">${PT_ICO.prog}<span>Progress</span></button><button type="button" role="tab" data-pt="set">${ICON.gear}<span>Settings</span></button><button type="button" role="tab" data-pt="acct">${PT_ICO.acct}<span>Account<span class="ptlong"> &amp; data</span></span></button></div>`);
   const sel=t=>{pTab=t;document.querySelectorAll('.ptabs [data-pt]').forEach(b=>b.setAttribute('aria-selected',b.dataset.pt===t));grid.querySelectorAll(':scope>.pcard').forEach(c=>c.hidden=c.dataset.ptab!==t)};
   document.querySelectorAll('.ptabs [data-pt]').forEach(b=>b.onclick=()=>sel(b.dataset.pt));sel(pTab)}
 function parentSwitch(id){if(!ROOT.profiles[id]||id===ROOT.current)return;save();ROOT.current=id;G=ROOT.profiles[id];const r=CL.remote[id];if(r&&r.p){G=mergeProfiles(G,r.p);ROOT.profiles[id]=G;r.fresh=false}persistLocal();
@@ -512,7 +512,7 @@ function renderParent(){
     ${testParentHTML()}
     ${fluencyParentHTML()}
     ${deskParentHTML()}
-    <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (Grown-ups → account) and the progress comes back from the cloud.</p>`}</div>
+    <div class="pcard wide"><h4>Install the app</h4>${isStandalone()?'<p>You are using the installed app. It opens even without internet; progress uploads when you are back online.</p>':`<p>Put Pip on the home screen: it opens like an app, full screen, and works without internet.</p>${installEvt?'<button type="button" class="go small leaf" id="pInstall">Install on this device</button>':/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<p class="note">On iPhone and iPad the installed app keeps its own copy of the game. Sign in once inside it (For Parents → account) and the progress comes back from the cloud.</p>`}</div>
     ${curMapHTML()}
     <div class="pcard wide"><h4>Topics</h4><div class="tscroll"><table class="topics"><thead><tr><th>Island</th><th>Puzzles</th><th>First-try accuracy</th><th>Last 20</th><th>Level</th><th>Stars</th></tr></thead><tbody>
       ${rows.map(r=>`<tr><td><button type="button" class="cisl" data-play="${r.i.id}">${r.i.name}</button></td><td>${r.s.a}</td><td>${r.p==null?'–':`<div class="acc ${r.p<60?'low':r.p<80?'mid':''}"><div class="bar"><i style="width:${r.p}%"></i></div>${r.p}%</div>`}</td><td>${(()=>{const m=rollAcc(r.i.id);return m.n?`${Math.round(m.acc*100)}%${m.n>=12&&m.acc>=.8?' ✓':''}`:'–'})()}</td><td>${DIFF_NAME[diffFor(r.i)]}</td><td>${starsMini(starFor(r.i.id))||'–'}</td></tr>`).join('')}
@@ -840,8 +840,8 @@ function applySettings(){document.body.classList.toggle('big',!!G.settings.big);
 $('#gearBtn').onclick=e=>{e.stopPropagation();const m=$('#tmenu'),o=m.hidden;m.hidden=!o;$('#gearBtn').setAttribute('aria-expanded',o);
   /* keep the menu on screen: if it would stick out on the left, open it from the button's left edge instead */
   if(o){m.style.left='';m.style.right='';const r=m.getBoundingClientRect();if(r.left<8){m.style.left='0';m.style.right='auto'}const r2=m.getBoundingClientRect();if(r2.right>innerWidth-8){m.style.left='auto';m.style.right=Math.min(0,innerWidth-8-m.parentNode.getBoundingClientRect().right)+'px'}}};
-/* on phones the Grown-ups button lives inside the Settings menu */
-(()=>{const b=document.createElement('button');b.type='button';b.className='tbtn menuonly';b.innerHTML=ICON.family+'<span>Grown-ups</span>';b.onclick=()=>{$('#tmenu').hidden=true;$('#gearBtn').setAttribute('aria-expanded','false');$('#parentBtn').click()};$('#tmenu').appendChild(b)})();
+/* on phones the For Parents button lives inside the Settings menu */
+(()=>{const b=document.createElement('button');b.type='button';b.className='tbtn menuonly';b.innerHTML=ICON.family+'<span>For Parents</span>';b.onclick=()=>{$('#tmenu').hidden=true;$('#gearBtn').setAttribute('aria-expanded','false');$('#parentBtn').click()};$('#tmenu').appendChild(b)})();
 document.querySelectorAll('.ico-slot[data-ico]').forEach(e=>{e.outerHTML=ICON[e.dataset.ico]});
 /* ================= inside the house: rooms you decorate ================= */
 /* the room is a doll-house cut-away: a wall with 2 rows of slots and a floor with 3 rows of cells.
