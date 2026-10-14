@@ -429,9 +429,9 @@ const GEN={
   listen:{gen:genListen,types:LISTEN_Q.length,round:listenRound,noDiff:true},geo:{gen:genGeo,types:8},history:{gen:genHistory,types:CAHIST.length},
   write:{gen:genWrite,types:16},grammar:{gen:genGrammar,types:GRAMF.length+32},science:{gen:genScience,types:SCIENCE.length+66},
   /* 3rd grade (js/math3.js) */
-  place3:{gen:genPlace3,types:6},addsub3:{gen:genAddSub3,types:5},mult3:{gen:genMult3,types:8},div3:{gen:genDiv3,types:7},frac3:{gen:genFrac3,types:8},
-  area3:{gen:genArea3,types:7},time3:{gen:genTime3,types:6},measure3:{gen:genMeasure3,types:6},graph3:{gen:genGraph3,types:6},shape3:{gen:genShape3,types:5},
-  pattern3:{gen:genPattern3,types:5},riddle3:{gen:genRiddle3,types:5},
+  place3:{gen:extGen(genPlace3,6,X3.place3),types:6+X3.place3.length},addsub3:{gen:extGen(genAddSub3,5,X3.addsub3),types:5+X3.addsub3.length},mult3:{gen:extGen(genMult3,8,X3.mult3),types:8+X3.mult3.length},div3:{gen:extGen(genDiv3,7,X3.div3),types:7+X3.div3.length},frac3:{gen:extGen(genFrac3,8,X3.frac3),types:8+X3.frac3.length},
+  area3:{gen:extGen(genArea3,7,X3.area3),types:7+X3.area3.length},time3:{gen:extGen(genTime3,6,X3.time3),types:6+X3.time3.length},measure3:{gen:extGen(genMeasure3,6,X3.measure3),types:6+X3.measure3.length},graph3:{gen:extGen(genGraph3,6,X3.graph3),types:6+X3.graph3.length},shape3:{gen:extGen(genShape3,5,X3.shape3),types:5+X3.shape3.length},
+  pattern3:{gen:extGen(genPattern3,5,X3.pattern3),types:5+X3.pattern3.length},riddle3:{gen:extGen(genRiddle3,5,X3.riddle3),types:5+X3.riddle3.length},
   /* 3rd grade English, science and social studies (js/english3.js) */
   reading3:{gen:genReading3,types:PASS3Q.length+LONG3Q.length+BANK3.feat3.length+MEDIA_Q.length,round:readingRound3,noDiff:true,
     test:isl=>{const pi=dealTypes('test_long3',LONG3.length,1)[0],off=PASS3Q.length+LONG3Q.findIndex(x=>x[0]===pi);return LONG3[pi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9)))}},
@@ -440,9 +440,9 @@ const GEN={
   write3:{gen:bankGen('write3'),types:BANK3.write3.length,noDiff:true},science3:{gen:bankGen('science3'),types:BANK3.science3.length,noDiff:true},
   geo3:{gen:bankGen('geo3'),types:BANK3.geo3.length,noDiff:true},history3:{gen:bankGen('history3'),types:BANK3.history3.length,noDiff:true},
   /* 5th grade (js/math5.js, js/english5.js) */
-  place5:{gen:genPlace5,types:7},expr5:{gen:genExpr5,types:5},mult5:{gen:genMult5,types:5},div5:{gen:genDiv5,types:7},dec5:{gen:genDec5,types:7},
-  frac5:{gen:genFrac5,types:8},vol5:{gen:genVol5,types:6},shape5:{gen:genShape5,types:4},graph5:{gen:genGraph5,types:5},pattern5:{gen:genPattern5,types:4},
-  measure5:{gen:genMeasure5,types:5},riddle5:{gen:genRiddle5,types:5},
+  place5:{gen:extGen(genPlace5,7,X5.place5),types:7+X5.place5.length},expr5:{gen:extGen(genExpr5,5,X5.expr5),types:5+X5.expr5.length},mult5:{gen:extGen(genMult5,5,X5.mult5),types:5+X5.mult5.length},div5:{gen:extGen(genDiv5,7,X5.div5),types:7+X5.div5.length},dec5:{gen:extGen(genDec5,7,X5.dec5),types:7+X5.dec5.length},
+  frac5:{gen:extGen(genFrac5,8,X5.frac5),types:8+X5.frac5.length},vol5:{gen:extGen(genVol5,6,X5.vol5),types:6+X5.vol5.length},shape5:{gen:extGen(genShape5,4,X5.shape5),types:4+X5.shape5.length},graph5:{gen:extGen(genGraph5,5,X5.graph5),types:5+X5.graph5.length},pattern5:{gen:extGen(genPattern5,4,X5.pattern5),types:4+X5.pattern5.length},
+  measure5:{gen:extGen(genMeasure5,5,X5.measure5),types:5+X5.measure5.length},riddle5:{gen:extGen(genRiddle5,5,X5.riddle5),types:5+X5.riddle5.length},
   reading5:{gen:genReading5,types:PASS5Q.length+LONG5Q.length+BANK3.feat5.length+MEDIA_Q.length,round:readingRound5,noDiff:true,
     test:isl=>{const pi=dealTypes('test_long5',LONG5.length,1)[0],off=PASS5Q.length+LONG5Q.findIndex(x=>x[0]===pi);return LONG5[pi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9)))}},
   listen5:{gen:genListen5,types:LISTEN5_Q.length,round:listenRound5,noDiff:true},

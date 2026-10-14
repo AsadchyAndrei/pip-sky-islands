@@ -44,7 +44,7 @@ A standard counts as covered when at least one skill on this pack's islands prac
 | MP.1 | Make sense of problems and keep at them. | covered | riddle: Two-step word problems |
 | MP.3 | Explain your reasoning and find mistakes in other people's reasoning. | covered | riddle: Checking answers by estimating; riddle: Find the mistake |
 | 2.NBT.1 | Understand the digits of a three-digit number as hundreds, tens and ones. | review from grade 2 | place: Value of a digit |
-| 2.NBT.3 | Read and write numbers to 1000 in numerals, words and expanded form. | review from grade 2 | place: Expanded form |
+| 2.NBT.3 | Read and write numbers to 1000 in numerals, words and expanded form. | review from grade 2 | place: Expanded form; place: Number names |
 | 2.NBT.4 | Compare two three-digit numbers using >, = and <. | review from grade 2 | place: Comparing numbers |
 
 ## English language arts
