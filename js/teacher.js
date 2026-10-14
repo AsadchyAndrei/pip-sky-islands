@@ -36,6 +36,7 @@ const isTeacher=()=>CL.mode==='cloud'&&(CL.userDoc||{}).role==='teacher';
 const classDevice=()=>CL.mode!=='guest'&&CL.uid?lsGet('pip-classdev-'+CL.uid)||'':'';
 const rosterOf=cid=>Object.entries(ROOT.profiles).filter(([,p])=>p.roster&&p.cls&&p.cls.cid===cid).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
 const curClass=()=>(TC.classes||[]).find(c=>c.cid===TC.cur);
+const ownsClass=c=>!c||!c.owner||c.owner===CL.uid;
 const packLabel=pk=>{const P=CONTENT.packs[pk];return P?`${P.stateName}, ${GRADE_WORD(P.grade).toLowerCase()}`:pk};
 const packIslands=pk=>((CONTENT.packs[pk]||{}).islands||[]).filter(i=>(i.skills||[]).length);
 const packSkills=pk=>packIslands(pk).flatMap(i=>i.skills.map(k=>CONTENT.skills[k]).filter(Boolean).map(s=>({...s,isl:i.id})));
@@ -60,7 +61,8 @@ function memberSum(){
   const wrong=(G.wrongLog||[]).filter(w=>byId(w.i)).slice(0,15).map(w=>{const s=w.t!=null?skillOf(w.i,w.t):null;return {i:w.i,k:s&&CONTENT.skills[s.k]?s.k:'',p:String(w.p||'').slice(0,120),g:w.g||'',a:String(w.a||'').slice(0,40),d:w.d}});
   const lastDay=Object.keys(G.days||{}).filter(k=>(G.days[k].q||0)>0).sort().pop()||'';
   const wk=off=>{const D=[...Array(7)].map((_,k)=>addDays(k-6-off));return [Math.round(D.reduce((s,k)=>s+((G.days[k]||{}).sec||0),0)/60),D.reduce((s,k)=>s+((G.days[k]||{}).q||0),0),D.reduce((s,k)=>s+((G.days[k]||{}).c||0),0)]};
-  return {v:1,sk,isl,a:all[0],c:all[1],m7,w:wk(0),wp:wk(7),wh:weekHist(8),last:lastDay,tasks:G.taskDone||{},wrong}}
+  const dd={};for(let i=0;i<14;i++){const k=addDays(-i),d=(G.days||{})[k];if(d&&(d.q||d.sec))dd[k]=[Math.round((d.sec||0)/60),d.q||0,d.c||0]}
+  return {v:1,sk,isl,a:all[0],c:all[1],m7,w:wk(0),wp:wk(7),wh:weekHist(8),dd,day:dayKey(),last:lastDay,tasks:G.taskDone||{},wrong}}
 function memberDoc(){const s=memberSum();return s&&{name:(G.name||'Player').slice(0,16),pack:G.pack,ts:Date.now(),sum:JSON.stringify(s),...(G.cls.code?{code:G.cls.code}:{})}}
 let clsPushT=0,clsPushAt=0;
 function classPush(now){if(CL.mode!=='cloud'||!G.cls||!ROOT.current)return;clearTimeout(clsPushT);const wait=now?0:Math.max(0,clsPushAt+(lessonOf(classDoc())?20000:120000)-Date.now());
@@ -160,22 +162,32 @@ function renderTeach(){const el=$('#teach');if(!el)return;const c=curClass();
 function classListHTML(){const L=TC.classes;
   const ready=Object.values(CONTENT.packs).filter(packReady).sort((a,b)=>a.state.localeCompare(b.state)||a.grade-b.grade);
   return `<p class="tkidsnote">Your classes are here. Your <b>own children</b> play under <b>My own kids</b> (top left), separate from your classes.</p><div class="pgrid">${L==null?'<div class="pcard wide"><p>Loading your classes...</p></div>':''}
-    ${(L||[]).map(c=>{const n=rosterOf(c.cid).length;return `<button type="button" class="pcard tclass" data-cls="${c.cid}"><h4>${esc(c.name)}</h4><p>${esc(packLabel(c.pack))}</p><p class="note">${n} student${n===1?'':'s'} on this account · class code <b class="ccode">${esc(c.code)}</b></p></button>`}).join('')}
+    ${(L||[]).map(c=>{const n=rosterOf(c.cid).length;return `<button type="button" class="pcard tclass" data-cls="${c.cid}"><h4>${esc(c.name)}${ownsClass(c)?'':' <span class="cochip">co-teacher</span>'}</h4><p>${esc(packLabel(c.pack))}</p><p class="note">${ownsClass(c)?`${n} student${n===1?'':'s'} on this account · class code <b class="ccode">${esc(c.code)}</b>`:`${esc(c.teacher||'Another teacher')}'s class`}</p></button>`}).join('')}
     ${L&&!L.length?`<div class="pcard wide tsteps"><h4>Welcome to the teacher desk!</h4><ol><li><b>Make a class</b> below: a name and a grade.</li><li><b>Add students</b> by first name, then print login cards with picture passwords, or give families the class code to join from home.</li><li><b>Send tasks</b> and see who needs help, skill by skill.</li></ol></div>`:''}
     <div class="pcard wide"><h4>${L&&L.length?'Add a class':'Make your first class'}</h4><p class="note">A class has a name, a grade and a class code. Students can play on classroom devices with picture passwords, or join from home with the code.</p>
       <div class="setrow"><label for="ncName">Class name<small>For example "Room 12" or "Ms. Rivera's 4th grade"</small></label><input type="text" id="ncName" maxlength="40" autocomplete="off"></div>
       <div class="setrow"><label for="ncTeacher">Your name for students<small>Shown to students and families, for example "Ms. Rivera"</small></label><input type="text" id="ncTeacher" maxlength="40" autocomplete="off" value="${esc(lsGet('pip-tname-'+CL.uid)||(CL.userDoc||{}).teacherName||'')}"></div>
       <div class="setrow"><label for="ncPack">Grade</label><select id="ncPack">${ready.map(P=>`<option value="${P.id}"${P.id===PACK.id?' selected':''}>${esc(packLabel(P.id))}</option>`).join('')}</select></div>
-      <div class="btnrow"><button type="button" class="go" id="ncGo">Make the class</button></div><p class="note" id="ncNote" role="status">${TC.err?'Offline: showing the classes saved on this device.':''}</p></div></div>`}
-const tabFor=cid=>rosterOf(cid).length||(TC.mem[cid]||[]).some(m=>m.owner!==CL.uid&&!m.removed)?'prog':'kids';
+      <div class="btnrow"><button type="button" class="go" id="ncGo">Make the class</button></div><p class="note" id="ncNote" role="status">${TC.err?'Offline: showing the classes saved on this device.':''}</p></div>
+    <div class="pcard"><h4>Join a colleague's class</h4><p class="note">Got a co-teacher invite code from another teacher? Type it here to see their class and help with tasks.</p>
+      <div class="setrow"><label for="coCode">Invite code</label><input type="text" id="coCode" maxlength="10" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+      <div class="btnrow"><button type="button" class="go small" id="coJoin">Join as co-teacher</button></div><p class="note" id="coJNote" role="status"></p></div>
+    ${typeof teachNotifyHTML==='function'?teachNotifyHTML():''}</div>`}
+const tabFor=cid=>!ownsClass((TC.classes||[]).find(c=>c.cid===cid))||rosterOf(cid).length||(TC.mem[cid]||[]).some(m=>m.owner!==CL.uid&&!m.removed)?'prog':'kids';
 function bindClassList(){document.querySelectorAll('[data-cls]').forEach(b=>b.onclick=()=>{TC.cur=b.dataset.cls;TC.tab=tabFor(TC.cur);TC.autoTab=1;renderTeach();loadMembers(TC.cur).then(()=>{if(TC.autoTab&&TC.cur)TC.tab=tabFor(TC.cur);if(curScreen==='teach')renderTeach()})});
+  if(typeof bindTeachNotify==='function')bindTeachNotify();
+  if($('#coJoin'))$('#coJoin').onclick=async()=>{const b=$('#coJoin'),n=$('#coJNote'),code=$('#coCode').value.trim().toUpperCase();if(code.length<6){n.className='note bad';n.textContent='Type the code from the invite.';return}
+    b.disabled=true;n.className='note';n.textContent='Joining...';
+    try{const r=await CL.api.joinCoTeacher(code);await loadClasses(true);TC.cur=r.cid;TC.tab='prog';TC.autoTab=0;renderTeach();loadMembers(r.cid).then(()=>{if(curScreen==='teach'&&TC.cur===r.cid)renderTeach()});toast('You joined the class',esc(r.name||''),'#38b98a')}
+    catch(e){const m=String((e&&e.message)||'');b.disabled=false;n.className='note bad';n.textContent=/no-invite|bad-code/.test(m)?'That code does not work or has expired. Ask for a new one.':/own-class/.test(m)?'This is your own class.':/full/.test(m)?'This class already has 6 co-teachers.':'Could not join right now. Try again in a few minutes.'}};
   const go=$('#ncGo');if(!go)return;go.onclick=async()=>{const name=$('#ncName').value.trim(),teacher=$('#ncTeacher').value.trim(),pack=$('#ncPack').value,n=$('#ncNote');
     if(!name){n.className='note bad';n.textContent='Type a class name.';$('#ncName').focus();return}
     go.disabled=true;n.className='note';n.textContent='Making the class...';lsSet('pip-tname-'+CL.uid,teacher);
     try{const c=await CL.api.createClass({name,teacher,pack,now:[],tasks:[],v:1});TC.classes.push(c);TC.cur=c.cid;TC.tab='kids';TC.mem[c.cid]=[];renderTeach()}
     catch(e){go.disabled=false;n.className='note bad';n.textContent='Could not make the class. Check the internet and try again.'}}}
 const TABS=[['kids','Students'],['prog','Progress'],['tasks','Tasks'],['set','Class settings']];
-function classHTML(c){return `<div class="itabs ptabs ttabs" role="tablist" aria-label="Class sections">${TABS.map(([k,t])=>`<button type="button" role="tab" data-tt="${k}" aria-selected="${TC.tab===k}"><span>${t}</span></button>`).join('')}</div>
+function classHTML(c){const own=ownsClass(c),T=own?TABS:TABS.filter(t=>t[0]!=='kids');if(!own&&TC.tab==='kids')TC.tab='prog';
+  return `<div class="itabs ptabs ttabs${own?'':' co'}" role="tablist" aria-label="Class sections">${T.map(([k,t])=>`<button type="button" role="tab" data-tt="${k}" aria-selected="${TC.tab===k}"><span>${t}</span></button>`).join('')}</div>
   <div class="pgrid">${TC.tab==='kids'?kidsTabHTML(c):TC.tab==='prog'?progTabHTML(c):TC.tab==='tasks'?tasksTabHTML(c):setTabHTML(c)}</div>`}
 function bindClass(c){document.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>{TC.tab=b.dataset.tt;TC.autoTab=0;renderTeach();if(TC.tab==='prog'||TC.tab==='tasks')loadMembers(c.cid).then(()=>{if(curScreen==='teach'&&TC.cur===c.cid)renderTeach()})});
   if(TC.tab==='kids')bindKidsTab(c);else if(TC.tab==='prog')bindProgTab(c);else if(TC.tab==='tasks')bindTasksTab(c);else bindSetTab(c)}
@@ -195,16 +207,37 @@ function parseNames(txt){const out=[];let fi=-1,li=-1;const isW=x=>/^[A-Za-z][A-
     const m=n.match(/^([^,]+),\s*(.+)$/);if(m)n=m[2]+' '+m[1].trim()[0]+'.';
     if(n.trim())out.push(n.trim())}
   return [...new Set(out.map(s=>s.replace(/\s+/g,' ').slice(0,16)).filter(Boolean))]}
-const homeMembers=c=>(TC.mem[c.cid]||[]).filter(m=>m.owner!==CL.uid&&!m.removed);
+const homeMembers=c=>(TC.mem[c.cid]||[]).filter(m=>m.owner!==CL.uid&&m.owner!==c.owner&&!m.removed);
 function kidsTabHTML(c){const R=rosterOf(c.cid),H=homeMembers(c);
   return `<div class="pcard wide"><h4>Students on classroom devices</h4>${R.length?`<p class="note">Each student taps their name, then their 2 pictures. Print the login cards and hand them out.</p>
       <ul class="roster">${R.map(([id,p])=>`<li><span class="kav sm">${kidAvatar(p)}</span><b>${esc(p.name)}</b><span class="rpics">${(p.pic||[]).map(i=>picSVG(i)).join('')}</span><button type="button" class="linkbtn" data-rpic="${id}">New pictures</button><button type="button" class="linkbtn bad" data-rdel="${id}">Remove</button></li>`).join('')}</ul>`
       :'<p class="note">No students yet. Add their first names or nicknames below.</p>'}
     <div class="setrow col"><label for="addNames">Add students<small>One first name or nickname per line (up to 16 letters each). You can paste a column from a spreadsheet; "Rivera, Maya" becomes "Maya R."</small></label><textarea id="addNames" rows="4" placeholder="Maya&#10;Leo&#10;Sam R."></textarea></div>
-    <div class="btnrow"><button type="button" class="go small" id="addGo">Add students</button>${R.length?'<button type="button" class="go small leaf" id="cardsGo">Print login cards</button><button type="button" class="go small alt" id="devGo">Use this device for the class</button>':''}</div><p class="note" id="addNote" role="status"></p></div>
+    <div class="btnrow"><button type="button" class="go small" id="addGo">Add students</button><button type="button" class="go small alt gcbtn" id="gcImp">${GC_ICO}Import from Google Classroom</button>${R.length?'<button type="button" class="go small leaf" id="cardsGo">Print login cards</button><button type="button" class="go small alt" id="devGo">Use this device for the class</button>':''}</div><p class="note" id="addNote" role="status"></p></div>
     <div class="pcard wide"><h4>Students who joined from home</h4><p class="note">Families type the class code <b class="ccode">${esc(c.code)}</b> in Grown-ups → Settings → "Join a teacher's class". Their child's progress then shows here.</p>
+      <p><a class="gcshare" href="${gcShare(`Join ${c.name} on Pip's Sky Islands`,`Practice at home with Pip's Sky Islands (free): open pipskyislands.com, sign in as a grown-up, then Grown-ups → Settings → "Join a teacher's class" and type the class code ${c.code}.`)}" target="_blank" rel="noopener">${GC_ICO}Share the code in Google Classroom</a></p>
       ${H.length?`<ul class="roster">${H.map(m=>`<li><b>${esc(m.name)}</b><small>${m.ts?'updated '+new Date(m.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}</small><button type="button" class="linkbtn bad" data-mdel="${esc(m.mid)}">Remove from class</button></li>`).join('')}</ul>`:'<p>No one yet.</p>'}</div>`}
-function bindKidsTab(c){const n=$('#addNote');
+const GC_ICO='<svg class="gcico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2.5" fill="#1e8e3e"/><rect x="4.5" y="6.5" width="15" height="11" rx="1" fill="#fff"/><circle cx="12" cy="10.3" r="1.7" fill="#1e8e3e"/><path d="M8.6 15.5c.5-1.8 1.8-2.6 3.4-2.6s2.9.8 3.4 2.6" fill="#1e8e3e"/></svg>';
+const gcShare=(title,body)=>'https://classroom.google.com/share?url='+encodeURIComponent('https://pipskyislands.com/')+'&title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body);
+/* Google Classroom: read the teacher's class lists once (nothing is stored), and fill the "Add students" box */
+async function gcImport(c){const msg=(t,bad)=>{const m=$('#gcMsg');if(m){m.className='note'+(bad?' bad':'');m.innerHTML=t}};
+  overlay(`<div class="eyebrow">Google Classroom</div><h2>Import a class list</h2><p class="note" id="gcMsg">Sign in with the Google account you use for Classroom. Pip only reads class names and students' names, once, to fill in the list. Nothing else is read or kept.</p><div class="gclist" id="gcList"></div><div class="btnrow"><button type="button" class="go alt" id="gcX">Close</button></div>`,()=>{$('#gcX').onclick=closeOverlay});
+  let tok;try{tok=await CL.api.classroomToken()}catch(e){msg(/popup-closed|cancelled/.test(String(e&&e.code))?'The Google window was closed. Try again when you are ready.':'Google sign-in did not work. Check that pop-ups are allowed, then try again.',1);return}
+  if(!tok){msg('Google did not give access to Classroom.',1);return}
+  const get=async u=>{const r=await fetch('https://classroom.googleapis.com/v1/'+u,{headers:{Authorization:'Bearer '+tok}});if(!r.ok)throw Object.assign(new Error('http'),{status:r.status});return r.json()};
+  let courses=[];try{courses=(await get('courses?teacherId=me&courseStates=ACTIVE&pageSize=50')).courses||[]}
+  catch(e){msg(e.status===403?'Your school does not allow this app to read Classroom yet. Ask your Google Workspace admin to allow "Pip\'s Sky Islands", or type the names instead.':'Could not read your classes from Classroom. Try again later.',1);return}
+  if(!courses.length){msg('No active Classroom classes where you are a teacher.',1);return}
+  msg('Pick the class to import:');
+  $('#gcList').innerHTML=courses.map(k=>`<button type="button" class="go small alt" data-gc="${esc(k.id)}">${esc(k.name)}${k.section?` <small>${esc(k.section)}</small>`:''}</button>`).join('');
+  document.querySelectorAll('[data-gc]').forEach(b=>b.onclick=async()=>{document.querySelectorAll('[data-gc]').forEach(x=>x.disabled=true);msg('Reading the class list...');
+    let names=[],page='';try{do{const r=await get(`courses/${b.dataset.gc}/students?pageSize=100${page?'&pageToken='+page:''}`);
+        for(const st of r.students||[]){const n=(st.profile||{}).name||{},g=(n.givenName||n.fullName||'').trim(),f=(n.familyName||'').trim();if(g)names.push((g+(f?' '+f[0].toUpperCase()+'.':'')).slice(0,16))}page=r.nextPageToken||''}while(page)}
+    catch(e){msg('Could not read the students of this class.',1);document.querySelectorAll('[data-gc]').forEach(x=>x.disabled=false);return}
+    const have=new Set(rosterOf(c.cid).map(([,p])=>(p.name||'').toLowerCase()));names=[...new Set(names)].filter(x=>!have.has(x.toLowerCase()));
+    if(!names.length){msg('Everyone in that class is already here.',0);document.querySelectorAll('[data-gc]').forEach(x=>x.disabled=false);return}
+    closeOverlay();const ta=$('#addNames');if(ta){ta.value=names.join('\n');ta.scrollIntoView({block:'center'});const n=$('#addNote');n.className='note ok';n.textContent=`${names.length} name${names.length>1?'s':''} from Google Classroom. Check them, then tap "Add students".`}})}
+function bindKidsTab(c){const n=$('#addNote');if($('#gcImp'))$('#gcImp').onclick=()=>gcImport(c);
   $('#addGo').onclick=()=>{const names=parseNames($('#addNames').value);if(!names.length){n.className='note bad';n.textContent='Type at least one name.';return}
     const R=rosterOf(c.cid);if(R.length+names.length>40){n.className='note bad';n.textContent='A class can have up to 40 students on classroom devices.';return}
     for(const name of names){const p=freshProfile();p.name=name;p.roster=1;p.pic=newPics();p.pack=c.pack;p.packSince=Date.now();p.cls={cid:c.cid,code:'',name:c.name,teacher:c.teacher||''};
@@ -226,6 +259,7 @@ function printCards(c){const R=rosterOf(c.cid);let pa=$('#printArea');if(!pa){pa
 
 /* --- progress: students x islands, weak skills, typical mistakes, CSV --- */
 function classRows(c){const rows=[];
+  if(!ownsClass(c))for(const m of (TC.mem[c.cid]||[]).filter(m=>m.owner===c.owner&&!m.removed))rows.push({mid:m.mid,name:m.name,sum:parseSum(m.sum),ts:m.ts,roster:1});
   for(const [id,p] of rosterOf(c.cid)){const m=(TC.mem[c.cid]||[]).find(x=>x.mid===CL.uid+'_'+id);rows.push({mid:CL.uid+'_'+id,name:p.name,sum:parseSum(m&&m.sum),ts:m&&m.ts,roster:1})}
   for(const m of homeMembers(c))rows.push({mid:m.mid,name:m.name,sum:parseSum(m.sum),ts:m.ts});
   return rows}
@@ -256,7 +290,7 @@ function groupsHTML(c,rows){const G3={help:[],ok:[],ahead:[],none:[]};
 /* one click: a task on this skill for everyone who has not mastered it, due in a week */
 async function assignSkill(c,skId,btn){const sk=packSkills(c.pack).find(s=>s.id===skId);if(!sk)return;const rows=classRows(c).filter(r=>skSt(r,skId)[0]!==2);
   if(!rows.length){toast('Everyone has it','All students have mastered this skill.','#38b98a');return}
-  const t={id:'t'+Date.now().toString(36),isl:[sk.isl],sk:skId,due:addDays(7),note:('Practice: '+sk.name).slice(0,60),to:rows.length===classRows(c).length?[]:rows.map(r=>r.mid),ts:Date.now()};
+  const t={id:'t'+Date.now().toString(36),isl:[sk.isl],sk:skId,nm:(((packIslands(c.pack).find(i=>i.id===sk.isl)||{}).name||'')+': '+sk.name).slice(0,80),due:addDays(7),note:('Practice: '+sk.name).slice(0,60),to:rows.length===classRows(c).length?[]:rows.map(r=>r.mid),ts:Date.now()};
   btn.disabled=true;if(await saveClass(c,{tasks:[...(c.tasks||[]),t].slice(-40)})){toast('Practice sent',`${esc(sk.name)}: ${rows.length} student${rows.length>1?'s':''}, due in a week.`,'#38b98a');renderTeach()}else btn.disabled=false}
 /* standards: share of each standard's skills each student has mastered */
 function stdHTML(c,rows){const P=CONTENT.packs[c.pack],ST=CONTENT.standards[(P||{}).standards];if(!ST||!rows.length)return '';const S=packSkills(c.pack);
@@ -364,7 +398,7 @@ function tasksTabHTML(c){const rows=classRows(c),isl=packIslands(c.pack),T=realT
     ${lessonHTML(c,rows,isl)}
     <div class="pcard wide"><h4>Message to families</h4><p class="note">A short note families see in Grown-ups, for example "This week we are learning fractions."</p>
       <div class="setrow col"><textarea id="fnote" rows="2" maxlength="200" placeholder="Write a note (up to 200 letters)">${esc((noteOf(c)||{}).text||'')}</textarea></div><div class="btnrow"><button type="button" class="go small" id="fnSave">Save note</button>${noteOf(c)?'<button type="button" class="go small alt" id="fnDel">Remove</button>':''}</div><p class="note" id="fnNote" role="status"></p></div>
-    <div class="pcard wide"><h4>Tasks</h4>${T.length?`<ul class="tasks">${T.map(t=>{const W=who(t),d=W.filter(r=>r.sum&&r.sum.tasks&&r.sum.tasks[t.id]),late=t.due&&t.due<dayKey()&&d.length<W.length;return `<li><div><b>${(t.isl||[]).map(id=>esc((isl.find(i=>i.id===id)||{}).name||id)).join(', ')}</b><small>${t.due?'due '+new Date(t.due+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'no due date'} · ${!t.to||!t.to.length?'whole class':W.map(r=>esc(r.name)).join(', ')}${t.note?' · '+esc(t.note):''}</small></div><em class="${late?'late':''}" title="${esc(W.filter(r=>!d.includes(r)).map(r=>r.name).join(', '))}">${late?'Overdue · ':''}${d.length} of ${W.length} done</em><button type="button" class="linkbtn bad" data-tdel="${t.id}">Delete</button></li>`}).join('')}</ul>`:'<p class="note">No tasks yet.</p>'}
+    <div class="pcard wide"><h4>Tasks</h4>${T.length?`<ul class="tasks">${T.map(t=>{const W=who(t),d=W.filter(r=>r.sum&&r.sum.tasks&&r.sum.tasks[t.id]),late=t.due&&t.due<dayKey()&&d.length<W.length;return `<li><div><b>${(t.isl||[]).map(id=>esc((isl.find(i=>i.id===id)||{}).name||id)).join(', ')}</b><small>${t.due?'due '+new Date(t.due+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'no due date'} · ${!t.to||!t.to.length?'whole class':W.map(r=>esc(r.name)).join(', ')}${t.note?' · '+esc(t.note):''}</small></div><a class="gcshare sm" href="${gcShare(`Pip's Sky Islands: ${t.nm||'practice'}`,`Play one round on: ${(t.isl||[]).map(id=>(isl.find(i=>i.id===id)||{}).name||id).join(', ')}${t.due?'. Due '+new Date(t.due+'T12:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):''}.${t.note?' '+t.note:''}`)}" target="_blank" rel="noopener" title="Post this task in Google Classroom">${GC_ICO}<span>Classroom</span></a><em class="${late?'late':''}" title="${esc(W.filter(r=>!d.includes(r)).map(r=>r.name).join(', '))}">${late?'Overdue · ':''}${d.length} of ${W.length} done</em><button type="button" class="linkbtn bad" data-tdel="${t.id}">Delete</button></li>`}).join('')}</ul>`:'<p class="note">No tasks yet.</p>'}
       <h5 class="skgrp" id="tNewTask">New task</h5><p class="note">Students play one round on each island. A task is done when every island in it has a finished round.</p>
       <div class="nowchips">${isl.map(i=>`<button type="button" class="nowchip" data-tisl="${i.id}" aria-pressed="false">${esc(i.name)}</button>`).join('')}</div>
       <div class="setrow"><label for="tDue">Due date</label><input type="date" id="tDue" value="${addDays(7)}"></div>
@@ -390,7 +424,7 @@ function bindTasksTab(c){const tog=b=>{const on=b.getAttribute('aria-pressed')!=
   all.onclick=()=>{document.querySelectorAll('[data-twho]').forEach(b=>{b.setAttribute('aria-pressed',false);b.classList.remove('on')});all.setAttribute('aria-pressed',true);all.classList.add('on')};
   $('#tAdd').onclick=async()=>{const n=$('#tNote2'),ids=[...document.querySelectorAll('[data-tisl][aria-pressed="true"]')].map(b=>b.dataset.tisl);
     if(!ids.length){n.className='note bad';n.textContent='Pick at least one island.';return}
-    const t={id:'t'+Date.now().toString(36),isl:ids.slice(0,6),due:$('#tDue').value||'',note:$('#tNoteIn').value.trim().slice(0,60),to:[...document.querySelectorAll('[data-twho][aria-pressed="true"]')].map(b=>b.dataset.twho),ts:Date.now()};
+    const PI=packIslands(c.pack),t={id:'t'+Date.now().toString(36),isl:ids.slice(0,6),nm:ids.slice(0,6).map(id=>(PI.find(i=>i.id===id)||{}).name||id).join(', ').slice(0,80),due:$('#tDue').value||'',note:$('#tNoteIn').value.trim().slice(0,60),to:[...document.querySelectorAll('[data-twho][aria-pressed="true"]')].map(b=>b.dataset.twho),ts:Date.now()};
     const T=[...(c.tasks||[]),t].slice(-40);$('#tAdd').disabled=true;if(await saveClass(c,{tasks:T},n)){toast('Task sent','Students see it on their map.','#38b98a');renderTeach()}else $('#tAdd').disabled=false};
   document.querySelectorAll('[data-lisl]').forEach(b=>b.onclick=()=>{const on=tog(b);if(on&&document.querySelectorAll('[data-lisl][aria-pressed="true"]').length>3)tog(b)});
   if($('#lGo'))$('#lGo').onclick=async()=>{const ids=[...document.querySelectorAll('[data-lisl][aria-pressed="true"]')].map(b=>b.dataset.lisl),n=$('#lNote');if(!ids.length){n.className='note bad';n.textContent='Pick 1 to 3 islands.';return}
@@ -405,14 +439,32 @@ function bindTasksTab(c){const tog=b=>{const on=b.getAttribute('aria-pressed')!=
   document.querySelectorAll('[data-tdel]').forEach(b=>b.onclick=()=>{if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again';return}saveClass(c,{tasks:(c.tasks||[]).filter(t=>t.id!==b.dataset.tdel)});renderTeach()})}
 
 /* --- class settings --- */
-function setTabHTML(c){return `<div class="pcard wide"><h4>Class</h4>
+function coSetHTML(c){return `<div class="pcard wide"><h4>You co-teach this class</h4><p><b>${esc(c.name)}</b> belongs to ${esc(c.teacher||'another teacher')}. You can see progress and send tasks, lessons and notes to families. Students, the class code and class settings are managed by ${esc(c.teacher||'the class owner')}.</p>
+  <div class="btnrow"><button type="button" class="go small alt bad" id="coLeave">Leave this class</button></div><p class="note" id="coLNote" role="status"></p></div>`}
+function coOwnerHTML(c){const N=Object.entries(c.coNames||{}).filter(([u])=>(c.co||[]).includes(u));
+  return `<div class="pcard wide"><h4>Co-teachers</h4><p class="note">Another teacher, a specialist or an aide can co-teach this class: they see progress and send tasks, lessons and notes. Only you manage students, codes and the class itself.</p>
+    ${N.length?`<ul class="roster">${N.map(([u,nm])=>`<li><b>${esc(nm)}</b><button type="button" class="linkbtn bad" data-corm="${esc(u)}">Remove</button></li>`).join('')}</ul>`:''}
+    <div class="btnrow"><button type="button" class="go small alt" id="coInv">Invite a co-teacher</button></div><div id="coInvOut" role="status">${coInvHTML((TC.coInv||{})[c.cid])}</div></div>`}
+const coInvHTML=r=>r&&r.exp>Date.now()?`<p class="coinv">Invite code: <b class="ccode">${esc(r.code)}</b></p><p class="note">Works for 7 days and for up to 6 co-teachers. Your colleague signs in to Pip as a <b>teacher</b>, then on the teacher desk types the code under "Join a colleague's class".</p>`:'';
+function setTabHTML(c){if(!ownsClass(c))return coSetHTML(c);return `<div class="pcard wide"><h4>Class</h4>
     <div class="setrow"><label for="csName">Class name</label><input type="text" id="csName" maxlength="40" value="${esc(c.name)}"></div>
     <div class="setrow"><label for="csTeacher">Your name for students</label><input type="text" id="csTeacher" maxlength="40" value="${esc(c.teacher||'')}"></div>
     <p>Grade: <b>${esc(packLabel(c.pack))}</b></p><div class="btnrow"><button type="button" class="go small" id="csSave">Save</button></div><p class="note" id="csNote" role="status"></p></div>
+  ${coOwnerHTML(c)}
   ${(()=>{const P=CONTENT.packs[c.pack],nx=P&&CONTENT.packs[packKey(P.state,P.grade+1)];return nx&&packReady(nx)?`<div class="pcard wide"><h4>New school year</h4><p class="note">Move the whole class to <b>${esc(packLabel(nx.id))}</b>. Every student gets the ${GRADE_WORD(nx.grade).toLowerCase()} islands; last year's stars stay saved in each student's progress. Tasks and "in class now" topics are cleared. You may want to rename the class too.</p><div class="btnrow"><button type="button" class="go small leaf" id="csUp">Move to ${GRADE_WORD(nx.grade).toLowerCase()}</button></div><p class="note" id="csUpNote" role="status"></p></div>`:''})()}
   <div class="pcard"><h4>Class code: <span class="ccode">${esc(c.code)}</span></h4><p class="note">Families use it to join from home. A new code stops new joins with the old one; students already in the class stay.</p><div class="btnrow"><button type="button" class="go small alt" id="csCode">Make a new code</button></div></div>
   <div class="pcard"><h4>Delete the class</h4><p class="note">Removes the class, its tasks, and the progress summaries families shared. Students on classroom devices are removed with all their progress.</p><div class="btnrow"><button type="button" class="go small alt bad" id="csDel">Delete the class</button></div><p class="note" id="csDelNote" role="status"></p></div>`}
-function bindSetTab(c){if($('#csUp'))$('#csUp').onclick=e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to move the class';return}b.disabled=true;moveClassUp(c,$('#csUpNote'))};
+function bindSetTab(c){
+  if($('#coLeave'))$('#coLeave').onclick=async e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to leave';return}b.disabled=true;
+    try{await CL.api.leaveCo(c.cid)}catch(err){b.disabled=false;$('#coLNote').className='note bad';$('#coLNote').textContent='Could not leave right now. Check the internet.';return}
+    TC.classes=TC.classes.filter(x=>x.cid!==c.cid);TC.cur='';lsSet('pip-classes-'+CL.uid,JSON.stringify(TC.classes));renderTeach()};
+  if(!ownsClass(c))return;
+  if($('#coInv'))$('#coInv').onclick=async()=>{const b=$('#coInv'),o=$('#coInvOut');b.disabled=true;
+    try{const r=await CL.api.makeCoInvite(c.cid);(TC.coInv=TC.coInv||{})[c.cid]=r;o.innerHTML=coInvHTML(r)}
+    catch(e){o.innerHTML='<p class="note bad">Could not make an invite right now. Check the internet and try again.</p>'}b.disabled=false};
+  document.querySelectorAll('[data-corm]').forEach(b=>b.onclick=async()=>{if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to remove';return}b.disabled=true;const u=b.dataset.corm;
+    try{await CL.api.removeCo(c.cid,u);c.co=(c.co||[]).filter(x=>x!==u);if(c.coNames)delete c.coNames[u];lsSet('pip-classes-'+CL.uid,JSON.stringify(TC.classes));renderTeach()}catch(e){b.disabled=false}});
+  if($('#csUp'))$('#csUp').onclick=e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to move the class';return}b.disabled=true;moveClassUp(c,$('#csUpNote'))};
   $('#csSave').onclick=async()=>{const name=$('#csName').value.trim()||c.name,teacher=$('#csTeacher').value.trim();if(await saveClass(c,{name,teacher},$('#csNote'))){
     for(const [id] of rosterOf(c.cid))touchKid(id,p=>{p.cls=Object.assign({},p.cls,{name,teacher})});renderTeach();toast('Saved','','#38b98a')}};
   $('#csCode').onclick=async e=>{const b=e.currentTarget;b.disabled=true;try{const code=await CL.api.newClassCode(c.cid,c.code);c.code=code;lsSet('pip-classes-'+CL.uid,JSON.stringify(TC.classes));renderTeach()}catch(err){b.disabled=false}};

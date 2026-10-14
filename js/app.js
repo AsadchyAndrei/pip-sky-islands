@@ -195,7 +195,7 @@ async function onAuthChange(u){
   afterConsent(ud);
 }
 function afterConsent(ud){
-  CL.userDoc=ud||{};lsSet('pip-ud-'+CL.uid,JSON.stringify(CL.userDoc));
+  CL.userDoc=ud||{};lsSet('pip-ud-'+CL.uid,JSON.stringify(CL.userDoc));setTimeout(()=>{if(typeof notifyFresh==='function')notifyFresh()},4000);
   if(CL.userDoc.pin)ROOT.pin=CL.userDoc.pin;else if(ROOT.pin)CL.api.setUserDoc({pin:ROOT.pin}).catch(()=>{});
   if(CL.interactive){CL.interactive=false;CL.unlockUntil=Date.now()+10*60000}
   if(CL.unsub)CL.unsub();
@@ -451,7 +451,7 @@ function parentTabs(rows,allA){const grid=document.querySelector('#parentBody .p
   /* long detail cards start closed, so the first screen shows the week at a glance */
   grid.querySelectorAll(':scope>.pcard').forEach(c=>{const h=c.querySelector(':scope>h4');if(!h||!/^(Skills checklist|Topics|Home Puzzles|Recent mistakes|Writing Desk|Reading fluency|Test Practice|.*program map)/.test(h.textContent))return;
     const d=document.createElement('details');d.className='pfold';const sm=document.createElement('summary');sm.appendChild(h);sm.insertAdjacentHTML('beforeend','<span class="pfmore">Show</span>');d.appendChild(sm);while(c.firstChild)d.appendChild(c.firstChild);c.appendChild(d)});
-  const tabOf=h=>/^(Settings|Players|Install|School program|Join a teacher|Teacher's class|In class right now)/.test(h)?'set':/^(Account|Teacher tools|Backups|Move progress|Delete|Danger|Reset|Erase)/.test(h)?'acct':'prog';
+  const tabOf=h=>/^(Settings|Players|Install|School program|Join a teacher|Teacher's class|In class right now)/.test(h)?'set':/^(Account|Emails and|Teacher tools|Backups|Move progress|Delete|Danger|Reset|Erase)/.test(h)?'acct':'prog';
   grid.querySelectorAll(':scope>.pcard').forEach(c=>{const h=(c.querySelector('h4')||{}).textContent||'';c.dataset.ptab=tabOf(h)});
   const w=rows.find(r=>r.s.a>=5&&r.p!=null&&r.p<80);
   const focus=allA<20?`Not enough puzzles yet for a weekly tip. After about 20 puzzles, Pip will point to the topic that needs practice.`:w?`<b>This week: ${esc(w.i.name)}</b> (${esc(w.i.topic)}) is at ${w.p}% right on the first try.${lessonsFor(w.i.id).length?' Its 3-minute lesson explains the trick.':''}</p><p class="pfbtn"><button type="button" class="go small" data-play="${w.i.id}">Play it together</button>`:`<b>Great week!</b> Every topic is at 80% or more right on the first try.`;
@@ -494,6 +494,7 @@ function renderParent(){
         ${(()=>{const yp=yearPace();if(!yp||yp.st==='early'||!tried)return '';return `<p class="pace p-${yp.st}"><b>School-year pace ${qhelp('pace')}:</b> ${yp.st==='ahead'?'ahead of pace':yp.st==='on'?'on pace':'a bit behind pace'} (${Math.round(yp.have*100)}% of this grade's skills, ${Math.round(yp.f*100)}% of the school year so far).</p>`})()}
         <div class="btnrow" style="justify-content:flex-start"><button type="button" class="go small alt" id="wkPrint">Print this week's report</button></div>
         <p class="note">A skill is mastered at 8 of 10 right on the first try. Settings, the school program and class topics are in the <b>Settings</b> tab.</p></div>`})()}
+    ${notifyAskHTML()}
     ${fromTeacherHTML()}
     ${fgoalParentHTML()}
     <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small>${homeTip(r.i.id)?`<p class="htip"><b>Try at home:</b> ${esc(homeTip(r.i.id))}</p>`:''}</li>`).join('')}</ul>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
@@ -536,6 +537,7 @@ function renderParent(){
       <div class="profs">${Object.keys(ROOT.profiles).filter(id=>!ROOT.profiles[id].roster||id===ROOT.current).map(id=>`<button type="button" class="prof${id===ROOT.current?' cur':''}" data-sw="${id}">${esc(ROOT.profiles[id].name||'Player')}</button>`).join('')}</div>
       <div class="actrow" style="justify-content:flex-start"><button type="button" class="go small" id="addP">Add player</button>${Object.keys(ROOT.profiles).length>1?'<button type="button" class="go small alt" id="delP">Remove this player</button>':''}</div><p class="note" id="pNote"></p>
       <h4 style="margin-top:8px">Grown-up PIN</h4><div class="actrow" style="justify-content:flex-start"><button type="button" class="go small alt" id="chPin">Set a new PIN</button></div></div>
+    ${notifyHTML()}
     ${teacherAcctHTML()}
     <div class="pcard wide"><h4>Account and saving</h4><p class="note" id="cloudNote"></p>
       ${CL.mode==='cloud'?`<p>Signed in as <b>${esc(CL.email)}</b>. Every player in this account is saved in the cloud and appears on any device where you sign in.</p>
@@ -587,7 +589,7 @@ function renderParent(){
   if($('#aDel'))$('#aDel').onclick=deleteAccountFlow;
   if($('#bkNow'))$('#bkNow').onclick=async()=>{const n=$('#bkNote');save();n.textContent='Saving...';const p=G,t=new Date();
     try{await CL.api.writeBackup(ROOT.current,`${dayKey()}-m${String(t.getHours()).padStart(2,'0')}${String(t.getMinutes()).padStart(2,'0')}`,bkDoc(p));n.className='note ok';n.textContent='Backup saved.';loadBackups()}catch(e){n.className='note bad';n.textContent='Backups need the internet.'}};
-  bindClassParent();bindTeacherAcct();bindFGoal();if($("#wkPrint"))$("#wkPrint").onclick=printWeek;
+  bindClassParent();bindTeacherAcct();bindFGoal();bindNotify();bindNotifyAsk();if($("#wkPrint"))$("#wkPrint").onclick=printWeek;
   parentTabs(rows,allA);
   $('#chPin').onclick=()=>{pinBuf='';pinStage='create';overlay(pinHTML(),bindPin)};
   $('#copyCode').onclick=()=>{const ta=$('#codeOut');const ok=()=>$('#copyNote').textContent='Copied!';

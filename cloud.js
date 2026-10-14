@@ -7,6 +7,9 @@
 //   classes/{cid}                        a teacher's class: owner, name, teacher, pack, code, now, tasks (no student data)
 //   classes/{cid}/members/{uid_kidId}    one child's progress summary for the teacher, written by the child's grown-up
 //   codes/{code}                         class code -> class id (read one at a time, never listed)
+//   tinv/{code}                          co-teacher invite: class id, owner, expiry (redeemed by the joinCoTeacher function)
+//   users/{uid}/push/{id}                devices that get notifications (the messaging token)
+// Server functions (functions/index.js): weekly emails, reminders, pushes for new tasks, co-teacher joining.
 const VERSION = '12.19.0';
 const BASE = `https://www.gstatic.com/firebasejs/${VERSION}/`;
 const cfg = window.PIP_FIREBASE_CONFIG;
@@ -100,9 +103,24 @@ if (window.PipCloud) {
       },
       // ---- classes (teachers) ----
       async myClasses() {
-        const s = await FS.getDocs(FS.query(FS.collection(db, 'classes'), FS.where('owner', '==', me())));
-        return s.docs.map((d) => ({ cid: d.id, ...d.data() }));
+        const own = await FS.getDocs(FS.query(FS.collection(db, 'classes'), FS.where('owner', '==', me())));
+        let co = { docs: [] };
+        try { co = await FS.getDocs(FS.query(FS.collection(db, 'classes'), FS.where('co', 'array-contains', me()))); } catch (e) { /* older rules */ }
+        const seen = new Set(), out = [];
+        for (const d of [...own.docs, ...co.docs]) if (!seen.has(d.id)) { seen.add(d.id); out.push({ cid: d.id, ...d.data() }); }
+        return out;
       },
+      // ---- co-teachers ----
+      async makeCoInvite(cid) {
+        for (let k = 0; k < 5; k++) {
+          const code = classCode() + classCode().slice(0, 2), exp = Date.now() + 7 * 864e5;
+          try { await FS.setDoc(FS.doc(db, 'tinv', code), { cid, owner: me(), exp }); return { code, exp }; }
+          catch (e) { if (k === 4) throw e; }
+        }
+      },
+      joinCoTeacher: (code) => api.call('joinCoTeacher', { code }),
+      removeCo: (cid, uid) => FS.updateDoc(FS.doc(db, 'classes', cid), { co: FS.arrayRemove(uid), ['coNames.' + uid]: FS.deleteField() }),
+      leaveCo: (cid) => FS.updateDoc(FS.doc(db, 'classes', cid), { co: FS.arrayRemove(me()), ['coNames.' + me()]: FS.deleteField() }),
       async createClass(d) {
         for (let k = 0; k < 6; k++) {
           const code = classCode(), ref = FS.doc(FS.collection(db, 'classes'));
@@ -150,6 +168,55 @@ if (window.PipCloud) {
       saveMember: (cid, kid, d) => FS.setDoc(FS.doc(db, 'classes', cid, 'members', me() + '_' + kid), { ...d, owner: me(), kid }),
       leaveClass: (cid, kid) => FS.deleteDoc(FS.doc(db, 'classes', cid, 'members', me() + '_' + kid)),
       removeMember: (cid, mid) => FS.updateDoc(FS.doc(db, 'classes', cid, 'members', mid), { removed: true }),
+      // ---- server functions ----
+      async call(name, data) {
+        const FN = await import(BASE + 'firebase-functions.js');
+        const r = await FN.httpsCallable(FN.getFunctions(app, 'us-central1'), name, { timeout: 60000 })(data || {});
+        return r.data;
+      },
+      sendTestEmail: () => api.call('sendTestEmail', {}),
+      // ---- notifications on this device (Firebase Cloud Messaging through the game's service worker) ----
+      async pushSupported() {
+        if (!('serviceWorker' in navigator) || !('Notification' in window) || !('PushManager' in window)) return false;
+        try { const M = await import(BASE + 'firebase-messaging.js'); return await M.isSupported(); } catch (e) { return false; }
+      },
+      async enablePush() {
+        if (!(await api.pushSupported())) return { ok: false, why: 'unsupported' };
+        const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+        if (perm !== 'granted') return { ok: false, why: perm };
+        const M = await import(BASE + 'firebase-messaging.js');
+        const reg = await navigator.serviceWorker.ready;
+        const t = await M.getToken(M.getMessaging(app), { serviceWorkerRegistration: reg });
+        if (!t) return { ok: false, why: 'no-token' };
+        const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+        const id = [...new Uint8Array(h)].slice(0, 16).map((b) => b.toString(16).padStart(2, '0')).join('');
+        await FS.setDoc(FS.doc(db, 'users', me(), 'push', id), { t, ts: Date.now(), ua: navigator.userAgent.replace(/\s+/g, ' ').slice(0, 120) });
+        try { localStorage.setItem('pip-push-' + me(), id); } catch (e) { /* private mode */ }
+        return { ok: true };
+      },
+      async disablePush() {
+        let id = '';
+        try { id = localStorage.getItem('pip-push-' + me()) || ''; localStorage.removeItem('pip-push-' + me()); } catch (e) { /* private mode */ }
+        try { const M = await import(BASE + 'firebase-messaging.js'); await M.deleteToken(M.getMessaging(app)); } catch (e) { /* already gone */ }
+        if (id) await FS.deleteDoc(FS.doc(db, 'users', me(), 'push', id));
+      },
+      pushOn: () => { try { return Notification.permission === 'granted' && !!localStorage.getItem('pip-push-' + me()); } catch (e) { return false; } },
+      // ---- Google Classroom: a one-time Google sign-in in a separate, temporary session, only to read class lists ----
+      async classroomToken() {
+        const p = new AU.GoogleAuthProvider();
+        p.addScope('https://www.googleapis.com/auth/classroom.courses.readonly');
+        p.addScope('https://www.googleapis.com/auth/classroom.rosters.readonly');
+        p.setCustomParameters({ prompt: 'select_account' });
+        const app2 = A.getApps().find((a) => a.name === 'classroom') || A.initializeApp(cfg, 'classroom');
+        const a2 = AU.getAuth(app2);
+        await AU.setPersistence(a2, AU.inMemoryPersistence);
+        const r = await AU.signInWithPopup(a2, p);
+        const tok = (AU.GoogleAuthProvider.credentialFromResult(r) || {}).accessToken;
+        // that sign-in was only for Classroom: don't leave a new empty Pip account behind
+        if ((AU.getAdditionalUserInfo(r) || {}).isNewUser) await r.user.delete().catch(() => AU.signOut(a2));
+        else await AU.signOut(a2);
+        return tok;
+      },
       async exportAll() {
         const u = auth.currentUser;
         const user = (await FS.getDoc(userRef())).data() || {};
@@ -163,7 +230,7 @@ if (window.PipCloud) {
           kids.push({ id: k.id, name: d.name, savedAt: new Date(d.ts).toISOString(), progress, backups });
         }
         const classes = [];
-        for (const c of await api.myClasses()) classes.push({ ...c, members: await api.members(c.cid) });
+        for (const c of await api.myClasses()) if (c.owner === u.uid) classes.push({ ...c, members: await api.members(c.cid) });
         return { exportedAt: new Date().toISOString(), account: { email: u.email, ...user }, players: kids, classes };
       },
       async deleteAccount(password) {
@@ -171,7 +238,11 @@ if (window.PipCloud) {
         // confirm identity first, so we never wipe data and then fail to delete the login
         if (password != null) await AU.reauthenticateWithCredential(u, AU.EmailAuthProvider.credential(u.email, password));
         else await AU.reauthenticateWithPopup(u, new AU.GoogleAuthProvider());
-        for (const c of await api.myClasses()) await api.deleteClass(c.cid, c.code);
+        for (const c of await api.myClasses()) {
+          if (c.owner === u.uid) await api.deleteClass(c.cid, c.code);
+          else await api.leaveCo(c.cid).catch(() => {});
+        }
+        for (const d of (await FS.getDocs(FS.collection(db, 'users', u.uid, 'push'))).docs) await FS.deleteDoc(d.ref);
         for (const k of (await FS.getDocs(kidsCol())).docs) {
           await api.pruneBackups(k.id, 0);
           await FS.deleteDoc(k.ref);

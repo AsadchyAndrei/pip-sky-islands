@@ -101,7 +101,8 @@ async function cloudPush(){
     const merged=mergeProfiles(local,rem&&rem.p);
     if(rem&&rem.p&&sameProfile(merged,rem.p))continue;
     CL.remote[id]={p:merged,ts:Date.now()};CL.waiting++;
-    let pr;try{pr=CL.api.saveKid(id,{data:JSON.stringify(merged),name:(merged.name||'Player').slice(0,16),ts:Date.now(),v:1})}catch(e){pr=Promise.reject(e)}
+    const dg=!local.roster&&typeof digestFor==='function'?digestFor(id):'';
+    let pr;try{pr=CL.api.saveKid(id,{data:JSON.stringify(merged),name:(merged.name||'Player').slice(0,16),ts:Date.now(),v:1,...(dg&&dg.length<11000?{mail:dg}:{})})}catch(e){pr=Promise.reject(e)}
     pr.then(()=>{CL.waiting--;CL.err='';setSync()},e=>{CL.waiting--;CL.err=(e&&e.code)||'error';
       if(e&&e.code==='permission-denied'){CL.remote[id]={deleted:true};dropKid(id)}else{CL.dirty[id]=1;cloudSchedule(30000)}setSync()});
     dailyBackup(id,merged);

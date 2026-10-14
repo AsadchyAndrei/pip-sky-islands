@@ -8,7 +8,8 @@ const admin = require('../../functions/node_modules/firebase-admin');
 const T = F._test;
 
 let bad = 0, n = 0;
-const ok = (c, m) => { n++; if (!c) { bad++; console.log('  - ' + m); } };
+const gh = !!process.env.GITHUB_ACTIONS;
+const ok = (c, m) => { n++; if (!c) { bad++; console.log((gh ? '::error::' : '  - ') + m); } };
 const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(false, m + ': ' + (e && e.message)); } };
 
 (async () => {
@@ -107,6 +108,6 @@ const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(fal
   ok(mails.length === 1 && mails[0][2].includes('Room 12') && mails[0][2].includes('Maya'), 'the teacher gets the class summary: ' + JSON.stringify(mails.map((m) => m[1])));
 
   await env.cleanup();
-  console.log(bad ? `FAIL server (${n} checks): ${bad} problem(s)` : `OK   server rules and functions (${n} checks)`);
+  console.log((gh ? (bad ? '::error::' : '::notice::') : '') + (bad ? `FAIL server (${n} checks): ${bad} problem(s)` : `OK   server rules and functions (${n} checks)`));
   process.exit(bad ? 1 : 0);
 })().catch((e) => { console.log('FAIL server: ' + (e && e.stack || e)); process.exit(1); });

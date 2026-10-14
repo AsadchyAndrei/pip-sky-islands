@@ -26,6 +26,9 @@ jobs:
           distribution: temurin
           java-version: '21'
       - run: tests/server/run.sh
+      - name: Email domain records (information only)
+        run: |
+          for n in resend._domainkey send; do echo "::notice title=DNS $n::TXT=$(dig +short TXT $n.pipskyislands.com | tr '\n' ' ') MX=$(dig +short MX $n.pipskyislands.com | tr '\n' ' ')"; done
   deploy:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
