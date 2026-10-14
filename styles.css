@@ -1612,3 +1612,5 @@ table.heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabu
 }
 @media (max-width:359px){#playerBtn{padding:0 10px}.grchip{padding:1px 5px}}
 @media (max-width:374px){header.top #coinPill,header.top #starPill{font-size:16px;padding:4px 8px 2px;gap:4px;min-height:38px}header.top #coinPill svg,header.top #starPill svg{width:17px;height:17px}#playerBtn{height:40px}}
+
+.sxwrap{max-width:100%;overflow-x:auto}.sxtab{font-size:16px}.sxtab th,.sxtab td{padding:6px 10px}.sxcycle{font-size:18px;font-weight:700;text-align:center}

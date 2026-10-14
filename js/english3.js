@@ -3,7 +3,10 @@
    A skill in content/skills names its bank and tag (selector 'tag'), so the skills checklist and Pip's Pick work per skill. */
 const BANK3={};
 function bankQ(it){const [,pr,a,w,h,e]=it;return {prompt:pr,...strChoices(a,shuffle(w.slice())),hint:h,explain:e,long:[a,...w].some(c=>String(c).length>28),render:c=>esc(c)}}
-const bankGen=k=>t=>bankQ(BANK3[k][t%BANK3[k].length]);
+/* some banks also have generated question types after their fixed items (BANKX[k]: {tag, f}), e.g. science with data and diagrams */
+const BANKX={};
+const bankN=k=>BANK3[k].length+(BANKX[k]||[]).length;
+const bankGen=k=>t=>{t%=bankN(k);return t<BANK3[k].length?bankQ(BANK3[k][t]):BANKX[k][t-BANK3[k].length].f()};
 
 /* ---------- Grammar Grove, grade 3 (L.3.1, L.3.2, L.3.3) ---------- */
 BANK3.grammar3=[

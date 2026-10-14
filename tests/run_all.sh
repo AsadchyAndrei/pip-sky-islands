@@ -8,4 +8,5 @@ python3 check_questions.py
 python3 check_interactions.py
 python3 check_packs.py
 python3 check_classes.py
+python3 check_tests.py
 echo "All checks passed."

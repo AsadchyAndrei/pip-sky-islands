@@ -350,7 +350,7 @@ const TEST_SECTIONS={
   ela:{name:'English',parts:[['Reading',['reading'],5],['Listening',['listen'],3],['Writing and research',['write'],2],['Language and vocabulary',['grammar','words'],2]]}};
 const TEST_LEVELS=[[.85,'Standard exceeded'],[.7,'Standard met'],[.5,'Standard nearly met'],[0,'Not met yet']];
 function testQs(sec){const isl=id=>byId(id),qs=[];
-  if(PACK.grade!==4)return testQsAny(sec);
+  if(PACK.grade!==4)return TEST_BP[PACK.grade]?testQsBP(sec,TEST_BP[PACK.grade]):testQsAny(sec);
   if(sec==='math'){for(const [claim,ids,n] of TEST_SECTIONS.math.parts){
       if(claim.startsWith('Reasoning')){const r=isl('riddle');[pick([6,8]),pick([7,9]),10+R(0,11)].forEach(t=>{const q=makeQ(r,t,R(1,2e9));q.claim=claim;qs.push(q)});
         if(coin()){const q=coin()?makeQ(isl('frac'),15,R(1,2e9)):makeQ(isl('mult'),7,R(1,2e9));q.claim=claim;qs[qs.length-1]=q}continue}
@@ -361,6 +361,30 @@ function testQs(sec){const isl=id=>byId(id),qs=[];
     const w=isl('write');shuffle([8,9,10,11,12,2,4]).slice(0,2).forEach(t=>{const q=makeQ(w,t,R(1,2e9));q.claim='Writing and research';qs.push(q)});
     [isl('grammar'),isl('words')].forEach(I=>{const q=makeQ(I,R(0,I.types-1),R(1,2e9));q.claim='Language and vocabulary';qs.push(q)})}
   qs.forEach(q=>q.from=null);return qs}
+/* Test Practice blueprints for grades 3 and 5, shaped like Smarter Balanced: claim 1 (concepts and procedures) without
+   bare fact drills, and claims 2-4 (problem solving, reasoning, modeling) from multi-step and "explain / find the mistake" skills.
+   English: one long passage, one listening clip, writing items that revise, organize and use evidence, and language items. */
+const TEST_BP={
+ 3:{math:[['Numbers and operations',['addsub3.missing-numbers','mult3.properties-of-multiplication','mult3.missing-factors','div3.fact-families','div3.missing-numbers-in-division','place3.rounding-to-the-nearest-hundred','mult3.multiplying-by-tens','pattern3.input-and-output-rules'],3],
+     ['Fractions',['frac3.fractions-on-a-number-line','frac3.equivalent-fractions','frac3.comparing-fractions','frac3.whole-numbers-as-fractions'],3],
+     ['Measurement, data and geometry',['area3.shapes-made-of-rectangles','area3.same-area-different-perimeter','area3.perimeter','time3.elapsed-time','graph3.scaled-bar-graphs','graph3.line-plots','shape3.shape-categories','measure3.mass-word-problems'],3],
+     ['Reasoning and problem solving',['riddle3.two-step-word-problems','riddle3.find-the-mistake','riddle3.checking-answers-by-estimating','addsub3.two-step-problems','riddle3.letters-for-unknown-numbers','pattern3.odd-and-even'],3]],
+   write:['write3.revising-and-editing','write3.research-and-notes','write3.opinion-writing','write3.informative-writing','write3.story-writing'],
+   lang:['grammar3.agreement','grammar3.punctuating-dialogue','grammar3.simple-compound-and-complex-sentences','grammar3.possessives','words3.words-in-context','words3.literal-and-nonliteral-meaning']},
+ 5:{math:[['Numbers and operations',['place5.powers-of-ten','place5.comparing-decimals','place5.rounding-decimals','expr5.brackets-and-parentheses','expr5.writing-expressions','mult5.multiplying-by-two-digit-numbers','div5.dividing-by-two-digit-numbers','dec5.multiplying-decimals','dec5.dividing-decimals'],3],
+     ['Fractions',['frac5.unlike-denominators','frac5.adding-mixed-numbers','frac5.fractions-as-division','frac5.multiplying-fractions','frac5.multiplication-as-scaling','div5.dividing-unit-fractions'],3],
+     ['Measurement, data and geometry',['vol5.volume-formulas','vol5.adding-volumes','graph5.coordinate-plane','graph5.line-plots-with-fractions','measure5.conversion-word-problems','shape5.attributes-of-categories','pattern5.ordered-pairs-from-patterns'],3],
+     ['Reasoning and problem solving',['riddle5.multi-step-problems','riddle5.find-the-mistake','riddle5.explain-your-thinking','frac5.is-the-answer-reasonable','div5.interpreting-remainders','dec5.money-problems-with-decimals','mult5.estimating-products'],3]],
+   write:['write5.revising-and-editing','write5.research-and-evidence','write5.opinion-writing','write5.informative-writing','write5.narrative-writing'],
+   lang:['grammar5.verb-tense-and-time','grammar5.commas','grammar5.combining-sentences','grammar5.correlative-conjunctions','words5.context-clues','words5.figurative-language']}};
+/* a question from a skill named "gen.skill" (e.g. "riddle3.find-the-mistake"): the island that uses that generator, one of the skill's types */
+function bpQ(key,claim){const [g]=key.split('.'),I=ISLANDS.find(i=>i.genKey===g);if(!I)return null;const sk=skillsOf(I.id).find(s=>s.k.endsWith('.'+key));
+  if(!sk||!sk.ts.length)return null;const q=makeQ(I,pick(sk.ts),R(1,2e9));q.claim=claim;q.from=null;return q}
+function testQsBP(sec,B){const qs=[],take=(keys,n,claim)=>{const pool=shuffle(keys.slice());for(let k=0,j=0;k<n&&j<pool.length*2;j++){const q=bpQ(pool[j%pool.length],claim);if(q){qs.push(q);k++}}};
+  if(sec==='math'){for(const [claim,keys,n] of B.math)take(keys,n,claim);return qs}
+  const rd=byId('reading');if(rd&&rd.test)rd.test(rd).forEach(q=>{q.claim='Reading';q.from=null;qs.push(q)});
+  const li=byId('listen');if(li&&li.round)li.round(li).slice(0,3).forEach(q=>{q.claim='Listening';q.from=null;qs.push(q)});
+  take(B.write,3,'Writing and research');take(B.lang,2,'Language and vocabulary');return qs}
 /* Test Practice for any grade: math from the pack's math islands plus reasoning from Riddle Reef;
    English from one long passage, one listening clip, writing and language */
 function testQsAny(sec){const qs=[],add=(I,t,claim)=>{if(!I)return;const q=makeQ(I,t==null?R(0,I.types-1):t,R(1,2e9));q.claim=claim;q.from=null;qs.push(q)};
@@ -374,7 +398,7 @@ function testQsAny(sec){const qs=[],add=(I,t,claim)=>{if(!I)return;const q=makeQ
   add(byId('grammar'),null,'Language and vocabulary');add(byId('words'),null,'Language and vocabulary');return qs}
 function openTest(isl){const L=(G.tests||[]);
   overlay(`<div class="eyebrow">Test Practice</div><h2>Practice like the real test</h2><p>12 questions in the same style as the spring test. <b>No hints and one try</b>, just like the real thing. At the end you get a report.</p>
-    <div class="deskkinds">${Object.entries(TEST_SECTIONS).map(([k,T])=>`<button type="button" class="deskkind" data-sec="${k}" style="--dc:${k==='math'?'#2f9fe0':'#e2558f'}"><b>${T.name}</b><small>${T.parts.map(p=>p[0]).join(' · ')}</small></button>`).join('')}</div>
+    <div class="deskkinds">${Object.entries(TEST_SECTIONS).map(([k,T])=>`<button type="button" class="deskkind" data-sec="${k}" style="--dc:${k==='math'?'#2f9fe0':'#e2558f'}"><b>${T.name}</b><small>${(k==='math'&&TEST_BP[PACK.grade]?TEST_BP[PACK.grade].math:T.parts).map(p=>p[0]).join(' · ')}</small></button>`).join('')}</div>
     ${L.length?`<p class="note">Last time: ${esc(TEST_SECTIONS[L[0].sec].name)} ${L[0].s} of ${L[0].n}.</p>`:''}<div class="actrow"><button type="button" class="go alt" id="tsClose">Not now</button></div>`,()=>{
     $('#tsClose').onclick=closeOverlay;$('#ocard').querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{closeOverlay();const qs=testQs(b.dataset.sec);beginRound(isl,'test',qs);S.sec=b.dataset.sec;say($('#say'),`Test practice! Read carefully and take your time${nm()}. No hints this time. You've got this!`)})})}
 function finishTest(){const dots=[...document.querySelectorAll('#dots .dot')],by={};let s=0;
@@ -437,7 +461,7 @@ const GEN={
     test:isl=>{const pi=dealTypes('test_long3',LONG3.length,1)[0],off=PASS3Q.length+LONG3Q.findIndex(x=>x[0]===pi);return LONG3[pi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9)))}},
   listen3:{gen:genListen3,types:LISTEN3_Q.length,round:listenRound3,noDiff:true},
   words3:{gen:bankGen('words3'),types:BANK3.words3.length,noDiff:true},grammar3:{gen:bankGen('grammar3'),types:BANK3.grammar3.length,noDiff:true},
-  write3:{gen:bankGen('write3'),types:BANK3.write3.length,noDiff:true},science3:{gen:bankGen('science3'),types:BANK3.science3.length,noDiff:true},
+  write3:{gen:bankGen('write3'),types:BANK3.write3.length,noDiff:true},science3:{gen:bankGen('science3'),types:bankN('science3'),noDiff:true},
   geo3:{gen:bankGen('geo3'),types:BANK3.geo3.length,noDiff:true},history3:{gen:bankGen('history3'),types:BANK3.history3.length,noDiff:true},
   /* 5th grade (js/math5.js, js/english5.js) */
   place5:{gen:extGen(genPlace5,7,X5.place5),types:7+X5.place5.length},expr5:{gen:extGen(genExpr5,5,X5.expr5),types:5+X5.expr5.length},mult5:{gen:extGen(genMult5,5,X5.mult5),types:5+X5.mult5.length},div5:{gen:extGen(genDiv5,7,X5.div5),types:7+X5.div5.length},dec5:{gen:extGen(genDec5,7,X5.dec5),types:7+X5.dec5.length},
@@ -447,7 +471,7 @@ const GEN={
     test:isl=>{const pi=dealTypes('test_long5',LONG5.length,1)[0],off=PASS5Q.length+LONG5Q.findIndex(x=>x[0]===pi);return LONG5[pi].q.map((_,qi)=>makeQ(isl,off+qi,R(1,2e9)))}},
   listen5:{gen:genListen5,types:LISTEN5_Q.length,round:listenRound5,noDiff:true},
   words5:{gen:bankGen('words5'),types:BANK3.words5.length,noDiff:true},grammar5:{gen:bankGen('grammar5'),types:BANK3.grammar5.length,noDiff:true},
-  write5:{gen:bankGen('write5'),types:BANK3.write5.length,noDiff:true},science5:{gen:bankGen('science5'),types:BANK3.science5.length,noDiff:true},
+  write5:{gen:bankGen('write5'),types:BANK3.write5.length,noDiff:true},science5:{gen:bankGen('science5'),types:bankN('science5'),noDiff:true},
   geo5:{gen:bankGen('geo5'),types:BANK3.geo5.length,noDiff:true},history5:{gen:bankGen('history5'),types:BANK3.history5.length,noDiff:true}
 };
 const PACK_DEFAULT='ca-4';

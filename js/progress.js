@@ -168,7 +168,7 @@ const SKILL_SEL={
   mod:(isl,a)=>{const L=SKILL_BANKS[a.base].length;return rng(0,isl.types-L-1).filter(x=>x%a.m===a.j).map(x=>L+x)},
   'gram.cat':(isl,name)=>GRAMF.map((x,i)=>x.cat===name?i:-1).filter(i=>i>=0),
   /* grade 3 and later: question banks with skill tags, and grade 3 reading */
-  tag:(isl,a)=>BANK3[a.bank].map((x,i)=>x[0]===a.tag?i:-1).filter(i=>i>=0),
+  tag:(isl,a)=>{const L=BANK3[a.bank].length;return BANK3[a.bank].map((x,i)=>x[0]===a.tag?i:-1).filter(i=>i>=0).concat((BANKX[a.bank]||[]).map((x,i)=>x.tag===a.tag?L+i:-1).filter(i=>i>=0))},
   'r3.short':isl=>rng(0,PASS3Q.length-1),
   'r3.long':(isl,k)=>LONG3Q.map((x,i)=>LONG3[x[0]].q[x[1]][0]===k?PASS3Q.length+i:-1).filter(i=>i>=0),
   'r3.feat':isl=>rng(PASS3Q.length+LONG3Q.length,PASS3Q.length+LONG3Q.length+BANK3.feat3.length-1),
