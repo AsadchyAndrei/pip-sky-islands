@@ -201,6 +201,22 @@ function skillQs(isl,s){
 function startSkill(isl,s){if(limitGate(()=>startSkill(isl,s)))return;beginRound(isl,'island',skillQs(isl,s));S.skill=s.k;
   const nm2=$('#iname');const sp=document.createElement('span');sp.className='idiff';sp.textContent=` · ${s.name}`;nm2.appendChild(sp);say($('#say'),`Let's practice <b>${esc(s.name)}</b>${nm()}! Six puzzles, all on this one skill.`)}
 const SK_DOT=st=>`<i class="skd s${st}"></i>`;
+/* "?" explanations for grown-ups */
+const QHELP={mastered:['Mastered','A skill is mastered when 8 of the last 10 puzzles on it were right on the first try (at least 5 tries). It means your child can do it reliably.'],
+  almost:['Almost there','Not mastered yet, but at least 3 tries and 70% or more right. A little more practice usually finishes it.'],
+  first:['Right on the first try','The share of puzzles answered correctly before any hint or second try. 80% or more is strong; under 60% means the topic is still hard.'],
+  struggling:['Struggling','Under 60% right on the first try after at least 5 puzzles. A short lesson or practicing together helps most.'],
+  groups:['Groups','Students are grouped by how often they are right on the first try this week: under 65%, 65 to 84%, and 85% or more. Use them for small-group work or to send a task to one group.'],
+  lesson:['Lesson mode','While a lesson runs, every student\'s map shows the topic you picked at the top, and Pip\'s Pick practices it first. Students who are not in your room just see it as a suggestion.'],
+  pace:['School-year pace','A rough guide: the share of this grade\'s skills mastered (and almost mastered) compared with how much of the school year has passed. Every child learns in their own order, so use it as a hint, not a grade.']};
+const qhelp=k=>`<button type="button" class="qh" data-qh="${k}" aria-label="What does ${QHELP[k][0]} mean?">?</button>`;
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-qh]');if(!b)return;e.preventDefault();e.stopPropagation();const h=QHELP[b.dataset.qh];if(!h)return;
+  if(ovOpen){toast(h[0],h[1],'#2f9fe0');return}overlay(`<div class="eyebrow">What does it mean?</div><h2>${h[0]}</h2><p>${h[1]}</p><div class="btnrow"><button class="go" type="button" id="qhOk">Got it</button></div>`,()=>{$('#qhOk').onclick=closeOverlay})},true);
+/* school-year pace: mastered (+ half of almost) against the part of the school year that has passed (mid-August to the end of May) */
+function yearPace(P=G){const SK=ISLANDS.filter(i=>i.gen&&!i.retired).flatMap(i=>skillsOf(i.id));if(!SK.length)return null;
+  const d=new Date(),y=d.getMonth()>=7?d.getFullYear():d.getFullYear()-1,a=new Date(y,7,15),b=new Date(y+1,4,31),f=Math.max(0,Math.min(1,(d-a)/(b-a)));
+  const m=SK.filter(s=>skStat(s.k).st===2).length,al=SK.filter(s=>skAlmost(skStat(s.k))).length,have=(m+al/2)/SK.length;
+  return {f,have,st:f<.08?'early':have>=f+.1?'ahead':have>=f-.12?'on':'behind'}}
 /* "almost there": not mastered yet, at least 3 tries and 70% or more right */
 const skAlmost=m=>m&&m.st!==2&&m.n>=3&&m.ok/m.n>=.7;
 /* the last n weeks (oldest first): [minutes, puzzles, right on the first try] */

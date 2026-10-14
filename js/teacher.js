@@ -63,13 +63,13 @@ function memberSum(){
   return {v:1,sk,isl,a:all[0],c:all[1],m7,w:wk(0),wp:wk(7),wh:weekHist(8),last:lastDay,tasks:G.taskDone||{},wrong}}
 function memberDoc(){const s=memberSum();return s&&{name:(G.name||'Player').slice(0,16),pack:G.pack,ts:Date.now(),sum:JSON.stringify(s),...(G.cls.code?{code:G.cls.code}:{})}}
 let clsPushT=0,clsPushAt=0;
-function classPush(now){if(CL.mode!=='cloud'||!G.cls||!ROOT.current)return;clearTimeout(clsPushT);const wait=now?0:Math.max(0,clsPushAt+120000-Date.now());
+function classPush(now){if(CL.mode!=='cloud'||!G.cls||!ROOT.current)return;clearTimeout(clsPushT);const wait=now?0:Math.max(0,clsPushAt+(lessonOf(classDoc())?20000:120000)-Date.now());
   const id=ROOT.current;clsPushT=setTimeout(()=>{if(ROOT.current!==id||!G.cls)return;const d=memberDoc();if(!d)return;clsPushAt=Date.now();
     CL.api.saveMember(G.cls.cid,id,d).catch(e=>{if(e&&e.code==='permission-denied')classCheck(true)})},wait)}
 /* the class document (topics and tasks) is cached per class; a child removed from the class, or a deleted class, is let go */
 const clsCache=cid=>lsJSON('pip-class-'+cid);
 async function classCheck(force){if(CL.mode!=='cloud'||!G.cls)return;const cid=G.cls.cid,id=ROOT.current,c0=clsCache(cid);
-  if(!force&&c0&&Date.now()-(c0._at||0)<10*60000)return;
+  if(!force&&c0&&Date.now()-(c0._at||0)<(lessonOf(c0)?30000:3*60000))return;
   let c=null,m=null;try{c=await CL.api.getClass(cid);m=await CL.api.getMember(cid,CL.uid+'_'+id)}catch(e){return}
   if(ROOT.current!==id||!G.cls||G.cls.cid!==cid)return;
   if(!c||(m&&m.removed)){const nm=G.cls.name;if(m)CL.api.leaveClass(cid,id).catch(()=>{});touchKid(id,p=>{delete p.cls});try{localStorage.removeItem('pip-class-'+cid)}catch(e){}
@@ -81,24 +81,29 @@ async function classCheck(force){if(CL.mode!=='cloud'||!G.cls)return;const cid=G
     toast(`Now in ${GRADE_WORD(CONTENT.packs[c.pack].grade).toLowerCase()}!`,`${esc(c.teacher||'The teacher')} moved the class. Last year's stars are kept safe.`,'#38b98a');setTimeout(()=>location.reload(),1800);return}
   if(curScreen==='map')renderClassCard()}
 const classDoc=()=>G.cls?clsCache(G.cls.cid):null;
+const realTasks=c=>((c&&c.tasks)||[]).filter(t=>!t.kind);
+const lessonOf=c=>{const L=((c&&c.tasks)||[]).find(t=>t.kind==='lesson');return L&&L.until>Date.now()?L:null};
+const noteOf=c=>((c&&c.tasks)||[]).find(t=>t.kind==='note'&&t.text)||null;
 const myMid=()=>CL.uid+'_'+ROOT.current;
 function openTasks(){const c=classDoc();if(!c)return [];const mid=myMid(),done=G.taskDone||{};
-  return (c.tasks||[]).filter(t=>(!t.to||!t.to.length||t.to.includes(mid))).map(t=>({...t,done:!!done[t.id]}))}
+  return realTasks(c).filter(t=>(!t.to||!t.to.length||t.to.includes(mid))).map(t=>({...t,done:!!done[t.id]}))}
 /* topics "in class right now": the teacher's list wins over the grown-up's list */
-function nowList(){const c=classDoc();return c&&(c.now||[]).length?c.now.filter(id=>byId(id)):(G.settings.now||[])}
+function nowList(){const c=classDoc(),L=lessonOf(c);if(L)return L.isl.filter(id=>byId(id));return c&&(c.now||[]).length?c.now.filter(id=>byId(id)):(G.settings.now||[])}
 function classRoundDone(S){if(!G.cls||!S||!S.isl)return;const id=S.isl.id,c=classDoc();if(!c)return;let hit=false;
-  for(const t of c.tasks||[])if((t.isl||[]).includes(id)&&!(G.taskDone||{})[t.id]){
+  for(const t of realTasks(c))if((t.isl||[]).includes(id)&&!(G.taskDone||{})[t.id]){
     const left=t.isl.filter(x=>x!==id&&!((G.taskRounds||{})[t.id]||[]).includes(x));G.taskRounds=Object.assign({},G.taskRounds,{[t.id]:[...new Set([...((G.taskRounds||{})[t.id]||[]),id])]});
     if(!left.length){G.taskDone=Object.assign({},G.taskDone,{[t.id]:Date.now()});hit=true}}
   if(hit)toast('Task done!',`${esc(G.cls.teacher||'Your teacher')} will see it.`,'#38b98a');classPush(hit)}
 function renderClassCard(){const el=$('#classCard');if(!el)return;const c=classDoc();if(!c){el.hidden=true;return}
   const L=openTasks().sort((a,b)=>a.done-b.done||String(a.due||'9').localeCompare(String(b.due||'9')));const open=L.filter(t=>!t.done);
-  if(!L.length&&!(c.now||[]).length){el.hidden=true;return}
+  const LS=lessonOf(c);if(!L.length&&!(c.now||[]).length&&!LS){el.hidden=true;return}
   el.hidden=false;const due=d=>d?`due ${new Date(d+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}`:'';
   el.innerHTML=`<div class="cchead"><span class="ccico">${BOARD_ICO}</span><div><div class="eyebrow">From ${esc(c.teacher||'your teacher')} · ${esc(c.name)}</div><b>${open.length?`${open.length} task${open.length>1?'s':''} to do`:L.length?'All tasks done!':'In class right now'}</b></div></div>
-    ${L.length?`<div class="cctasks">${L.slice(0,4).map(t=>`<div class="cctask${t.done?' done':''}">${(t.isl||[]).map(id=>byId(id)).filter(Boolean).map(i=>`<button type="button" class="ccisl" data-cc="${i.id}" style="--c:${i.color}">${esc(i.name)}${((G.taskRounds||{})[t.id]||[]).includes(i.id)?' ✓':''}</button>`).join('')}<small>${t.done?'Done':esc(due(t.due))}${t.note?` · ${esc(t.note)}`:''}</small></div>`).join('')}</div>`:''}
-    ${(c.now||[]).length?`<p class="ccnow">In class now: ${c.now.map(byId).filter(Boolean).map(i=>esc(i.topic)).join(', ')}</p>`:''}`;
-  el.querySelectorAll('[data-cc]').forEach(b=>b.onclick=()=>{tone([523,784]);const i=byId(b.dataset.cc);i.gen&&!i.special?openIsland(i):start(i)})}
+    ${L.length?`<div class="cctasks">${L.slice(0,4).map(t=>`<div class="cctask${t.done?' done':''}">${(t.isl||[]).map(id=>byId(id)).filter(Boolean).map(i=>`<button type="button" class="ccisl" data-cc="${i.id}"${t.sk?` data-sk="${esc(t.sk)}"`:''} style="--c:${i.color}">${esc(i.name)}${t.sk&&CONTENT.skills[t.sk]?': '+esc(CONTENT.skills[t.sk].name):''}${((G.taskRounds||{})[t.id]||[]).includes(i.id)?' ✓':''}</button>`).join('')}<small>${t.done?'Done':esc(due(t.due))}${t.note?` · ${esc(t.note)}`:''}</small></div>`).join('')}</div>`:''}
+    ${(c.now||[]).length&&!LS?`<p class="ccnow">In class now: ${c.now.map(byId).filter(Boolean).map(i=>esc(i.topic)).join(', ')}</p>`:''}`;
+  if(LS)el.insertAdjacentHTML('afterbegin',`<div class="cclesson"><b>Class lesson now!</b><span>Until ${new Date(LS.until).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span><div>${LS.isl.map(byId).filter(Boolean).map(i=>`<button type="button" class="ccisl" data-cc="${i.id}" style="--c:${i.color}">${esc(i.name)}</button>`).join('')}</div></div>`);
+  el.querySelectorAll('[data-cc]').forEach(b=>b.onclick=()=>{tone([523,784]);const i=byId(b.dataset.cc),t=b.dataset.sk&&skillsOf(i.id).find(x=>x.k===b.dataset.sk);if(t)return startSkill(i,t);i.gen&&!i.special?openIsland(i):start(i)})}
+setInterval(()=>{if(G.cls&&CL.mode==='cloud'&&curScreen==='map'&&document.visibilityState==='visible')classCheck()},30000);
 
 /* ---------- a grown-up joins a class from home (Grown-ups → School program) ---------- */
 function classParentHTML(){if(CL.mode!=='cloud')return `<div class="pcard wide"><h4>Join a teacher's class</h4><p class="note">Sign in with a grown-up account to join a class with the teacher's class code.</p></div>`;
@@ -176,17 +181,31 @@ function bindClass(c){document.querySelectorAll('[data-tt]').forEach(b=>b.onclic
   if(TC.tab==='kids')bindKidsTab(c);else if(TC.tab==='prog')bindProgTab(c);else if(TC.tab==='tasks')bindTasksTab(c);else bindSetTab(c)}
 
 /* --- students --- */
+/* names pasted from a spreadsheet or a list: one per line; "Last, First" becomes "First"; tabs and extra columns are ignored */
+function parseNames(txt){const out=[];let fi=-1,li=-1;const isW=x=>/^[A-Za-z][A-Za-z'’.\- ]*$/.test(x);
+  for(let line of String(txt).split(/\r?\n/)){line=line.trim();if(!line)continue;
+    let cells=line.split('\t').map(x=>x.trim());if(cells.length===1&&/;/.test(line))cells=line.split(';').map(x=>x.trim());
+    if(cells.length===1&&/^[^,]+,[^,]+$/.test(line)&&/^(first|name|student)/i.test(line)&&/(last|surname)/i.test(line))continue;
+    if(cells.length===1&&line.split(',').length>2){for(const p of line.split(','))if(p.trim())out.push(p.trim());continue}
+    /* a header row: remember which columns hold the first and last names */
+    if(cells.length>=2&&cells.some(x=>/^(first|last|surname|name|student)/i.test(x))&&!cells.some(x=>/\d/.test(x))&&cells.every(x=>!x||/^(first|last|surname|given|family|name|student|grade|id|email|class|period|teacher)/i.test(x))){
+      fi=cells.findIndex(x=>/^(first|given)/i.test(x));li=cells.findIndex(x=>/^(last|surname|family)/i.test(x));if(fi<0)fi=cells.findIndex(x=>/^(name|student)/i.test(x));continue}
+    let n;if(cells.length>=2){const f=cells[fi>=0?fi:0]||'',l=li>=0?cells[li]||'':(fi<0&&isW(cells[1])?cells[1]:'');n=f+(l&&!/,/.test(f)?' '+l[0].toUpperCase()+'.':'')}else n=cells[0];
+    if(/^(name|student|first name|student name|last name)$/i.test(n))continue;
+    const m=n.match(/^([^,]+),\s*(.+)$/);if(m)n=m[2]+' '+m[1].trim()[0]+'.';
+    if(n.trim())out.push(n.trim())}
+  return [...new Set(out.map(s=>s.replace(/\s+/g,' ').slice(0,16)).filter(Boolean))]}
 const homeMembers=c=>(TC.mem[c.cid]||[]).filter(m=>m.owner!==CL.uid&&!m.removed);
 function kidsTabHTML(c){const R=rosterOf(c.cid),H=homeMembers(c);
   return `<div class="pcard wide"><h4>Students on classroom devices</h4>${R.length?`<p class="note">Each student taps their name, then their 2 pictures. Print the login cards and hand them out.</p>
       <ul class="roster">${R.map(([id,p])=>`<li><span class="kav sm">${kidAvatar(p)}</span><b>${esc(p.name)}</b><span class="rpics">${(p.pic||[]).map(i=>picSVG(i)).join('')}</span><button type="button" class="linkbtn" data-rpic="${id}">New pictures</button><button type="button" class="linkbtn bad" data-rdel="${id}">Remove</button></li>`).join('')}</ul>`
       :'<p class="note">No students yet. Add their first names or nicknames below.</p>'}
-    <div class="setrow col"><label for="addNames">Add students<small>One first name or nickname per line (up to 16 letters each)</small></label><textarea id="addNames" rows="4" placeholder="Maya&#10;Leo&#10;Sam R."></textarea></div>
+    <div class="setrow col"><label for="addNames">Add students<small>One first name or nickname per line (up to 16 letters each). You can paste a column from a spreadsheet; "Rivera, Maya" becomes "Maya R."</small></label><textarea id="addNames" rows="4" placeholder="Maya&#10;Leo&#10;Sam R."></textarea></div>
     <div class="btnrow"><button type="button" class="go small" id="addGo">Add students</button>${R.length?'<button type="button" class="go small leaf" id="cardsGo">Print login cards</button><button type="button" class="go small alt" id="devGo">Use this device for the class</button>':''}</div><p class="note" id="addNote" role="status"></p></div>
     <div class="pcard wide"><h4>Students who joined from home</h4><p class="note">Families type the class code <b class="ccode">${esc(c.code)}</b> in Grown-ups → Settings → "Join a teacher's class". Their child's progress then shows here.</p>
       ${H.length?`<ul class="roster">${H.map(m=>`<li><b>${esc(m.name)}</b><small>${m.ts?'updated '+new Date(m.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}</small><button type="button" class="linkbtn bad" data-mdel="${esc(m.mid)}">Remove from class</button></li>`).join('')}</ul>`:'<p>No one yet.</p>'}</div>`}
 function bindKidsTab(c){const n=$('#addNote');
-  $('#addGo').onclick=()=>{const names=[...new Set($('#addNames').value.split(/\n|,/).map(s=>s.trim().replace(/\s+/g,' ').slice(0,16)).filter(Boolean))];if(!names.length){n.className='note bad';n.textContent='Type at least one name.';return}
+  $('#addGo').onclick=()=>{const names=parseNames($('#addNames').value);if(!names.length){n.className='note bad';n.textContent='Type at least one name.';return}
     const R=rosterOf(c.cid);if(R.length+names.length>40){n.className='note bad';n.textContent='A class can have up to 40 students on classroom devices.';return}
     for(const name of names){const p=freshProfile();p.name=name;p.roster=1;p.pic=newPics();p.pack=c.pack;p.packSince=Date.now();p.cls={cid:c.cid,code:'',name:c.name,teacher:c.teacher||''};
       const P=CONTENT.packs[c.pack];p.settings.state=P.state;p.settings.grade=P.grade;p.greeted='';const id=addKid(p);
@@ -227,6 +246,41 @@ function islState(r,i){const v=(r.sum&&r.sum.isl||{})[i.id],tot=v?v[2]:i.skills.
 function studentNeeds(r,c,max){return packSkills(c.pack).map(s=>({s,v:skSt(r,s.id)})).filter(x=>x.v[2]>=3&&x.v[0]<2).sort((a,b)=>a.v[1]/a.v[2]-b.v[1]/b.v[2]).slice(0,max)}
 const stdShort=L=>L.length>3?L.slice(0,3).join(', ')+' …':L.join(', ');
 const trend=(a,b,unit='')=>{if(a==null||b==null)return '';const d=a-b;return d===0?'<small class="tr">same as last week</small>':`<small class="tr ${d>0?'up':'dn'}">${d>0?'▲':'▼'} ${Math.abs(d)}${unit} vs last week</small>`};
+const ALERT_ICO='<svg class="rico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#ffc23d"/><path d="M10 5v6M10 14v.5" stroke="#1f3557" stroke-width="2.4" stroke-linecap="round"/></svg>';
+/* three working groups by accuracy (and mastered share), for small-group teaching and tasks */
+function groupsHTML(c,rows){const G3={help:[],ok:[],ahead:[],none:[]};
+  for(const r of rows){const a=accOf(r);if(a==null){G3.none.push(r);continue}const S=packSkills(c.pack),m=S.filter(s=>skSt(r,s.id)[0]===2).length,t=S.filter(s=>skSt(r,s.id)[2]).length;
+    if(a<65)G3.help.push(r);else if(a>=85&&(t<4||m/t>=.3))G3.ahead.push(r);else G3.ok.push(r)}
+  const box=(k,t,sub)=>`<div class="grp g-${k}"><b>${t} <small>${G3[k].length}</small></b><small>${sub}</small><p>${G3[k].length?G3[k].map(r=>`<button type="button" class="linkbtn" data-stu="${esc(r.mid)}">${esc(r.name)}</button>`).join(', '):'–'}</p>${G3[k].length&&k!=='none'?`<button type="button" class="go small alt" data-group="${G3[k].map(r=>r.mid).join(',')}">Send this group a task</button>`:''}</div>`;
+  return `<div class="pcard wide"><h4>Groups ${qhelp('groups')}</h4><div class="grps">${box('help','Needs help','under 65% right')}${box('ok','On track','65–84% right')}${box('ahead','Ahead','85%+ right')}${G3.none.length?box('none','Not enough data','fewer than 5 puzzles'):''}</div></div>`}
+/* one click: a task on this skill for everyone who has not mastered it, due in a week */
+async function assignSkill(c,skId,btn){const sk=packSkills(c.pack).find(s=>s.id===skId);if(!sk)return;const rows=classRows(c).filter(r=>skSt(r,skId)[0]!==2);
+  if(!rows.length){toast('Everyone has it','All students have mastered this skill.','#38b98a');return}
+  const t={id:'t'+Date.now().toString(36),isl:[sk.isl],sk:skId,due:addDays(7),note:('Practice: '+sk.name).slice(0,60),to:rows.length===classRows(c).length?[]:rows.map(r=>r.mid),ts:Date.now()};
+  btn.disabled=true;if(await saveClass(c,{tasks:[...(c.tasks||[]),t].slice(-40)})){toast('Practice sent',`${esc(sk.name)}: ${rows.length} student${rows.length>1?'s':''}, due in a week.`,'#38b98a');renderTeach()}else btn.disabled=false}
+/* standards: share of each standard's skills each student has mastered */
+function stdHTML(c,rows){const P=CONTENT.packs[c.pack],ST=CONTENT.standards[(P||{}).standards];if(!ST||!rows.length)return '';const S=packSkills(c.pack);
+  const codes=Object.keys(ST.codes).filter(k=>ST.codes[k].app!==false&&!ST.codes[k].review&&S.some(s=>s.std.some(x=>x===k||x.replace(/[a-z]$/,'')===k)));
+  const by=k=>S.filter(s=>s.std.some(x=>x===k||x.replace(/[a-z]$/,'')===k)),cellv=(r,k)=>{const L=by(k);return Math.round(L.filter(s=>skSt(r,s.id)[0]===2).length/L.length*100)};
+  return `<div class="pcard wide"><details class="pfold"><summary><h4>By standard</h4><span class="pfmore">Show</span></summary><p class="note">Share of each standard's skills that a student has mastered. Hover a code for its summary.</p>
+    <div class="tscroll"><table class="heat stdt"><thead><tr><th>Standard</th><th>Class</th>${rows.map(r=>`<th><span>${esc(r.name)}</span></th>`).join('')}</tr></thead><tbody>${codes.map(k=>{const v=rows.map(r=>cellv(r,k)),avg=Math.round(v.reduce((a,b)=>a+b,0)/v.length);
+      return `<tr><th title="${esc(ST.codes[k].summary||'')}">${esc(k)}<small>${esc(String(ST.codes[k].summary||'').slice(0,60))}</small></th><td class="num">${avg}%</td>${v.map(x=>`<td class="hm ${x>=80?'s-done':x>0?'s-go':'s-none'}">${x?x+'%':''}</td>`).join('')}</tr>`}).join('')}</tbody></table></div></details></div>`}
+/* printable family reports */
+function reportHTML(c,r){const S=packSkills(c.pack),w=(r.sum&&r.sum.w)||[0,0,0],acc=w[1]?pct(w[2],w[1]):null,mast=S.filter(s=>skSt(r,s.id)[0]===2).length,alm=S.filter(s=>{const v=skSt(r,s.id);return skAlmost({st:v[0],ok:v[1],n:v[2]})}).length;
+  const nd=studentNeeds(r,c,4),isl=packIslands(c.pack),subj=[['math','Math'],['ela','English'],['sci','Science & social']].map(([k,t])=>{const L=S.filter(s=>islSubj(isl.find(i=>i.id===s.isl))===k);return [t,L.filter(s=>skSt(r,s.id)[0]===2).length,L.length]}).filter(x=>x[2]);
+  const tips=[...new Set(nd.map(x=>x.s.isl))].slice(0,3).map(id=>[(isl.find(i=>i.id===id)||{}).name,homeTip(id,c.pack)]).filter(x=>x[1]);
+  return `<section class="rpt"><header><b>Pip's Sky Islands</b><span>${esc(c.name)}${c.teacher?' · '+esc(c.teacher):''} · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</span></header>
+    <h1>${esc(r.name)}</h1><p class="rsub">${esc(packLabel(c.pack))} · last played ${r.sum&&r.sum.last?lastLbl(r.sum.last):'not yet'}</p>
+    <div class="rtiles"><div><b>${w[0]}</b><span>minutes this week</span></div><div><b>${w[1]}</b><span>puzzles this week</span></div><div><b>${acc==null?'–':acc+'%'}</b><span>right on the first try</span></div><div><b>${mast}/${S.length}</b><span>skills mastered (${alm} almost)</span></div></div>
+    ${r.sum&&r.sum.wh?`<h2>Last 8 weeks</h2>${weeksHTML(r.sum.wh)}`:''}
+    <h2>Skills by subject</h2><table class="rtab">${subj.map(([t,m,n])=>`<tr><td>${t}</td><td><div class="rbar"><i style="width:${Math.round(m/n*100)}%"></i></div></td><td>${m} of ${n} mastered</td></tr>`).join('')}</table>
+    <h2>To practice next</h2>${nd.length?`<ul>${nd.map(x=>`<li><b>${esc(x.s.name)}</b> (${esc(stdShort(x.s.std))}): ${x.v[1]} of ${x.v[2]} right</li>`).join('')}</ul>`:'<p>Nothing stands out right now. Keep playing a little each day!</p>'}
+    ${tips.length?`<h2>Try at home</h2><ul>${tips.map(([n,t])=>`<li><b>${esc(n)}:</b> ${esc(t)}</li>`).join('')}</ul>`:''}
+    <h2>Notes</h2><div class="rlines"></div></section>`}
+function printReports(c,rows){rows=rows.filter(r=>r.sum);if(!rows.length){toast('No progress yet','Reports appear after students play.','#2f9fe0');return}
+  let pa=$('#printArea');if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.appendChild(pa)}
+  pa.innerHTML=rows.map(r=>reportHTML(c,r)).join('');document.body.classList.add('printing');const done=()=>{document.body.classList.remove('printing');removeEventListener('afterprint',done)};addEventListener('afterprint',done);
+  setTimeout(()=>{try{window.print()}catch(e){}setTimeout(done,1000)},50)}
 function progTabHTML(c){const rows=classRows(c),allIsl=packIslands(c.pack);
   if(!rows.length)return `<div class="pcard wide"><h4>Progress</h4><p>Add students first. Their progress shows up here after they play.</p></div>`;
   const sub=TC.subj||'math',isl=sub==='all'?allIsl:allIsl.filter(i=>islSubj(i)===sub),drill=TC.drill&&allIsl.find(i=>i.id===TC.drill);
@@ -244,7 +298,11 @@ function progTabHTML(c){const rows=classRows(c),allIsl=packIslands(c.pack);
       <div><b>${cacc==null?'–':cacc+'%'}</b><span>right on the first try</span></div>
       <div><b>${W.length}</b><span>skills that need help</span></div></div>
       ${W.length?`<p class="cneed"><b>Needs help most:</b> ${W.slice(0,3).map(x=>esc(x.s.name)).join(', ')}</p>`:''}
-      ${idle.length&&idle.length<rows.length?`<p class="note">Did not play this week: ${idle.map(r=>esc(r.name)).join(', ')}</p>`:''}</div>
+      ${idle.length&&idle.length<rows.length?`<p class="note">Did not play this week: ${idle.map(r=>esc(r.name)).join(', ')}</p>`:''}
+      ${(()=>{const away=rows.filter(r=>r.sum&&r.sum.last&&(Date.now()-new Date(r.sum.last+'T12:00'))/864e5>=5);const od=realTasks(c).filter(t=>t.due&&t.due<dayKey()).map(t=>({t,left:(t.to&&t.to.length?rows.filter(r=>t.to.includes(r.mid)):rows).filter(r=>!(r.sum&&r.sum.tasks&&r.sum.tasks[t.id]))})).filter(x=>x.left.length);
+        return (away.length?`<p class="remind">${ALERT_ICO}Not played for 5+ days: <b>${away.map(r=>esc(r.name)).join(', ')}</b></p>`:'')+(od.length?`<p class="remind">${ALERT_ICO}Overdue tasks: ${od.map(x=>`<b>${esc((x.t.isl||[]).map(id=>(allIsl.find(i=>i.id===id)||{}).name||id).join(', '))}</b> (${x.left.length} not done)`).join('; ')}</p>`:'')})()}
+      ${lessonOf(c)?`<p class="remind live">${ALERT_ICO}Lesson running until ${new Date(lessonOf(c).until).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}. <button type="button" class="linkbtn" data-golive="1">See it live</button></p>`:''}</div>
+    ${groupsHTML(c,rows)}
     <div class="pcard wide"><h4>Students</h4>
       <div class="tfind"><input type="search" id="stuFind" placeholder="Find a student" aria-label="Find a student" autocomplete="off" value="${esc(TC.find||'')}">
         <label for="stuSort">Sort</label><select id="stuSort">${[['name','Name'],['acc','Lowest accuracy first'],['min','Most minutes first'],['last','Longest since playing']].map(([v,t])=>`<option value="${v}"${sk===v?' selected':''}>${t}</option>`).join('')}</select></div>
@@ -259,11 +317,13 @@ function progTabHTML(c){const rows=classRows(c),allIsl=packIslands(c.pack);
     ${drill?`<div class="pcard wide"><h4>${esc(drill.name)}: skills</h4><div class="tscroll"><table class="heat sk"><thead><tr><th>Student</th>${drill.skills.map(k=>CONTENT.skills[k]).filter(Boolean).map(s=>`<th title="${esc(s.std.join(', '))}"><span>${esc(s.name)}</span></th>`).join('')}</tr></thead>
       <tbody>${rows.map(r=>`<tr><th>${esc(r.name)}</th>${drill.skills.map(k=>{const v=skSt(r,k);return `<td class="skc" title="${v[2]?`${v[1]} of ${v[2]} right lately`:'Not tried'}">${SK_DOT(v[0])}${v[2]?`<small>${v[1]}/${v[2]}</small>`:''}</td>`}).join('')}</tr>`).join('')}</tbody></table></div></div>`:''}
     <div class="pcard wide"><h4>Where the class needs help</h4>${W.length?`<p class="note">Skills that fewer than 60% of the class have mastered, among the topics in class now, the tasks, and skills many students have tried.</p><ul class="weak">${W.map(x=>{const ex=[];const seen=new Set();for(const r of rows)for(const w of (r.sum&&r.sum.wrong)||[])if(w.k===x.s.id&&!seen.has(w.p+w.g)&&ex.length<2){seen.add(w.p+w.g);ex.push(w)}
-      return `<li><div><b>${esc(x.s.name)}</b><small>${esc((allIsl.find(i=>i.id===x.s.isl)||{}).name||'')} · ${esc(stdShort(x.s.std))}</small></div><em>${x.M} of ${rows.length} mastered · ${x.T} tried</em>${ex.length?`<ul class="wex">${ex.map(w=>`<li>${esc(w.p)} <small>answered <b>${esc(w.g)}</b>, right: <b>${esc(w.a)}</b></small></li>`).join('')}</ul>`:''}</li>`}).join('')}</ul>`:'<p class="note">Nothing stands out yet. Skills show up here once several students have tried them.</p>'}</div>
+      return `<li><div><b>${esc(x.s.name)}</b><small>${esc((allIsl.find(i=>i.id===x.s.isl)||{}).name||'')} · ${esc(stdShort(x.s.std))}</small></div><em>${x.M} of ${rows.length} mastered · ${x.T} tried</em><button type="button" class="go small leaf" data-assign="${esc(x.s.id)}">Assign practice</button>${ex.length?`<ul class="wex">${ex.map(w=>`<li>${esc(w.p)} <small>answered <b>${esc(w.g)}</b>, right: <b>${esc(w.a)}</b></small></li>`).join('')}</ul>`:''}</li>`}).join('')}</ul>`:'<p class="note">Nothing stands out yet. Skills show up here once several students have tried them.</p>'}</div>
+    ${stdHTML(c,rows)}
+    <div class="pcard wide"><h4>Reports for families</h4><p class="note">One printable page per student: this week, the last 8 weeks, skills, what to practice and ideas to try at home. Good for conferences.</p><div class="btnrow"><button type="button" class="go small" id="rptAll">Print all reports</button></div></div>
     <div class="pcard wide"><h4>Download</h4><p class="note">Spreadsheet files (CSV) for your gradebook: one row per student.</p><div class="btnrow"><button type="button" class="go small alt" id="csvSk">By skill</button><button type="button" class="go small alt" id="csvStd">By standard</button></div></div>`}
 function studentCard(c,mid){const r=classRows(c).find(x=>x.mid===mid);if(!r)return;const w=r.sum&&r.sum.w,wp=r.sum&&r.sum.wp,S=packSkills(c.pack);
   const acc=w&&w[1]?pct(w[2],w[1]):null,accP=wp&&wp[1]?pct(wp[2],wp[1]):null,mast=S.filter(s=>skSt(r,s.id)[0]===2).length,tried=S.filter(s=>skSt(r,s.id)[2]).length,alm=S.filter(s=>{const v=skSt(r,s.id);return skAlmost({st:v[0],ok:v[1],n:v[2]})}).length;
-  const nd=studentNeeds(r,c,5),wr=((r.sum&&r.sum.wrong)||[]).slice(0,5),T=(c.tasks||[]).filter(t=>!t.to||!t.to.length||t.to.includes(mid)),isl=packIslands(c.pack);
+  const nd=studentNeeds(r,c,5),wr=((r.sum&&r.sum.wrong)||[]).slice(0,5),T=realTasks(c).filter(t=>!t.to||!t.to.length||t.to.includes(mid)),isl=packIslands(c.pack);
   overlay(`<div class="stucard"><div class="eyebrow">${esc(c.name)}${r.roster?'':' · joined from home'}</div><h2>${esc(r.name)}</h2><p class="note">Last played: ${r.sum&&r.sum.last?lastLbl(r.sum.last):'not yet'}</p>
     ${r.sum?`<div class="ctiles st">
       <div><b>${w?w[0]:r.sum.m7||0}</b><span>minutes this week</span>${trend(w&&w[0],wp&&wp[0],' min')}</div>
@@ -275,11 +335,15 @@ function studentCard(c,mid){const r=classRows(c).find(x=>x.mid===mid);if(!r)retu
     <h5 class="skgrp">Recent mistakes</h5>${wr.length?`<ul class="weak">${wr.map(x=>`<li><div><b>${esc(x.p)}</b><small>answered <b>${esc(x.g)}</b> · right: <b>${esc(x.a)}</b></small></div></li>`).join('')}</ul>`:'<p class="note">No mistakes saved yet.</p>'}
     ${T.length?`<h5 class="skgrp">Tasks</h5><ul class="weak">${T.map(t=>{const d=r.sum.tasks&&r.sum.tasks[t.id];return `<li><div><b>${(t.isl||[]).map(id=>esc((isl.find(i=>i.id===id)||{}).name||id)).join(', ')}</b><small>${t.due?'due '+new Date(t.due+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'no due date'}</small></div><em class="${d?'ok':''}">${d?'Done':'Not yet'}</em></li>`}).join('')}</ul>`:''}`
     :'<p>No progress yet. It shows up after the first round.</p>'}
-    <div class="btnrow"><button class="go" type="button" id="stClose">Close</button></div></div>`,()=>{$('#stClose').onclick=closeOverlay})}
+    <div class="btnrow"><button class="go" type="button" id="stClose">Close</button>${r.sum?'<button class="go alt" type="button" id="stPrint">Print report</button>':''}</div></div>`,()=>{$('#stClose').onclick=closeOverlay;if($('#stPrint'))$('#stPrint').onclick=()=>{closeOverlay();printReports(c,[r])}})}
 function bindProgTab(c){document.querySelectorAll('[data-drill]').forEach(b=>b.onclick=()=>{TC.drill=TC.drill===b.dataset.drill?'':b.dataset.drill;renderTeach()});
   document.querySelectorAll('[data-subj]').forEach(b=>b.onclick=()=>{TC.subj=b.dataset.subj;renderTeach()});
   document.querySelectorAll('[data-stu]').forEach(b=>b.onclick=()=>studentCard(c,b.dataset.stu));
   const fl=()=>{const q=(TC.find||'').trim().toLowerCase();document.querySelectorAll('[data-row]').forEach(e=>e.hidden=!!q&&!e.dataset.row.includes(q))};
+  document.querySelectorAll('[data-assign]').forEach(b=>b.onclick=()=>assignSkill(c,b.dataset.assign,b));
+  document.querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>{TC.preWho=b.dataset.group.split(',');TC.tab='tasks';TC.autoTab=0;renderTeach();setTimeout(()=>{const t=$('#tNewTask');t&&t.scrollIntoView({behavior:'smooth',block:'start'})},60)});
+  document.querySelectorAll('[data-golive]').forEach(b=>b.onclick=()=>{TC.tab='tasks';TC.autoTab=0;renderTeach()});
+  if($('#rptAll'))$('#rptAll').onclick=()=>printReports(c,classRows(c));
   if($('#stuFind'))$('#stuFind').oninput=e=>{TC.find=e.target.value;fl()};if($('#stuSort'))$('#stuSort').onchange=e=>{TC.sort=e.target.value;renderTeach()};fl();
   if($('#csvSk'))$('#csvSk').onclick=()=>csvDownload(c,'skill');if($('#csvStd'))$('#csvStd').onclick=()=>csvDownload(c,'std')}
 const csvCell=v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
@@ -294,18 +358,31 @@ function csvDownload(c,kind){const rows=classRows(c),S=packSkills(c.pack);let he
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+txt],{type:'text/csv'}));a.download=`${c.name.replace(/[^\w-]+/g,'_')}-${kind==='skill'?'skills':'standards'}-${dayKey()}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
 
 /* --- tasks and topics in class now --- */
-function tasksTabHTML(c){const rows=classRows(c),isl=packIslands(c.pack),T=c.tasks||[],now=c.now||[];
+function tasksTabHTML(c){const rows=classRows(c),isl=packIslands(c.pack),T=realTasks(c),now=c.now||[];
   const who=t=>!t.to||!t.to.length?rows:rows.filter(r=>t.to.includes(r.mid));
   return `<div class="pcard wide"><h4>In class right now</h4><p class="note">Pick up to 4 topics you are teaching. Pip's Pick practices them first, and families see them.</p><div class="nowchips">${isl.map(i=>`<button type="button" class="nowchip${now.includes(i.id)?' on':''}" data-tnow="${i.id}" aria-pressed="${now.includes(i.id)}">${esc(i.topic)}</button>`).join('')}</div></div>
-    <div class="pcard wide"><h4>Tasks</h4>${T.length?`<ul class="tasks">${T.map(t=>{const W=who(t),d=W.filter(r=>r.sum&&r.sum.tasks&&r.sum.tasks[t.id]);return `<li><div><b>${(t.isl||[]).map(id=>esc((isl.find(i=>i.id===id)||{}).name||id)).join(', ')}</b><small>${t.due?'due '+new Date(t.due+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'no due date'} · ${!t.to||!t.to.length?'whole class':W.map(r=>esc(r.name)).join(', ')}${t.note?' · '+esc(t.note):''}</small></div><em title="${esc(W.filter(r=>!d.includes(r)).map(r=>r.name).join(', '))}">${d.length} of ${W.length} done</em><button type="button" class="linkbtn bad" data-tdel="${t.id}">Delete</button></li>`}).join('')}</ul>`:'<p class="note">No tasks yet.</p>'}
-      <h5 class="skgrp">New task</h5><p class="note">Students play one round on each island. A task is done when every island in it has a finished round.</p>
+    ${lessonHTML(c,rows,isl)}
+    <div class="pcard wide"><h4>Message to families</h4><p class="note">A short note families see in Grown-ups, for example "This week we are learning fractions."</p>
+      <div class="setrow col"><textarea id="fnote" rows="2" maxlength="200" placeholder="Write a note (up to 200 letters)">${esc((noteOf(c)||{}).text||'')}</textarea></div><div class="btnrow"><button type="button" class="go small" id="fnSave">Save note</button>${noteOf(c)?'<button type="button" class="go small alt" id="fnDel">Remove</button>':''}</div><p class="note" id="fnNote" role="status"></p></div>
+    <div class="pcard wide"><h4>Tasks</h4>${T.length?`<ul class="tasks">${T.map(t=>{const W=who(t),d=W.filter(r=>r.sum&&r.sum.tasks&&r.sum.tasks[t.id]),late=t.due&&t.due<dayKey()&&d.length<W.length;return `<li><div><b>${(t.isl||[]).map(id=>esc((isl.find(i=>i.id===id)||{}).name||id)).join(', ')}</b><small>${t.due?'due '+new Date(t.due+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'no due date'} · ${!t.to||!t.to.length?'whole class':W.map(r=>esc(r.name)).join(', ')}${t.note?' · '+esc(t.note):''}</small></div><em class="${late?'late':''}" title="${esc(W.filter(r=>!d.includes(r)).map(r=>r.name).join(', '))}">${late?'Overdue · ':''}${d.length} of ${W.length} done</em><button type="button" class="linkbtn bad" data-tdel="${t.id}">Delete</button></li>`}).join('')}</ul>`:'<p class="note">No tasks yet.</p>'}
+      <h5 class="skgrp" id="tNewTask">New task</h5><p class="note">Students play one round on each island. A task is done when every island in it has a finished round.</p>
       <div class="nowchips">${isl.map(i=>`<button type="button" class="nowchip" data-tisl="${i.id}" aria-pressed="false">${esc(i.name)}</button>`).join('')}</div>
       <div class="setrow"><label for="tDue">Due date</label><input type="date" id="tDue" value="${addDays(7)}"></div>
       <div class="setrow"><label for="tNoteIn">Note<small>Optional, shown to students</small></label><input type="text" id="tNoteIn" maxlength="60"></div>
-      <div class="setrow col"><label>Who</label><div class="nowchips"><button type="button" class="nowchip on" data-tall="1" aria-pressed="true">Whole class</button>${rows.map(r=>`<button type="button" class="nowchip" data-twho="${esc(r.mid)}" aria-pressed="false">${esc(r.name)}</button>`).join('')}</div></div>
+      <div class="setrow col"><label>Who</label><div class="nowchips">${(()=>{const pre=TC.preWho||[];TC.preWho=null;return `<button type="button" class="nowchip${pre.length?'':' on'}" data-tall="1" aria-pressed="${!pre.length}">Whole class</button>${rows.map(r=>`<button type="button" class="nowchip${pre.includes(r.mid)?' on':''}" data-twho="${esc(r.mid)}" aria-pressed="${pre.includes(r.mid)}">${esc(r.name)}</button>`).join('')}`})()}</div></div>
       <div class="btnrow"><button type="button" class="go small" id="tAdd">Send the task</button></div><p class="note" id="tNote2" role="status"></p></div>`}
 async function saveClass(c,patch,note){Object.assign(c,patch);lsSet('pip-classes-'+CL.uid,JSON.stringify(TC.classes));
   try{await CL.api.updateClass(c.cid,patch);return true}catch(e){if(note){note.className='note bad';note.textContent='Could not save. Check the internet and try again.'}return false}}
+function lessonHTML(c,rows,isl){const L=lessonOf(c);
+  if(!L)return `<div class="pcard wide"><h4>Lesson mode ${qhelp('lesson')}</h4><p class="note">For 10 to 30 minutes, every student's map points to the topic you are teaching, and you see who is playing, live.</p>
+    <div class="nowchips">${isl.map(i=>`<button type="button" class="nowchip" data-lisl="${i.id}" aria-pressed="false">${esc(i.name)}</button>`).join('')}</div>
+    <div class="setrow"><label for="lMin">How long</label><select id="lMin"><option value="10">10 minutes</option><option value="15">15 minutes</option><option value="20" selected>20 minutes</option><option value="30">30 minutes</option></select></div>
+    <div class="btnrow"><button type="button" class="go small leaf" id="lGo">Start the lesson</button></div><p class="note" id="lNote" role="status"></p></div>`;
+  const base=lsJSON('pip-lbase-'+c.cid)||{},left=Math.max(0,Math.round((L.until-Date.now())/60000));
+  const live=rows.map(r=>{const w=(r.sum&&r.sum.w)||[0,0,0],b=base[r.mid]||[w[1],w[2]],q=Math.max(0,w[1]-b[0]),ok=Math.max(0,w[2]-b[1]);return {r,q,ok,on:r.ts&&Date.now()-r.ts<3*60000&&q>0}});
+  return `<div class="pcard wide lessonlive"><h4>Lesson running: ${L.isl.map(id=>esc((isl.find(i=>i.id===id)||{}).name||id)).join(', ')}</h4><p class="note">${left} min left · updates every 20 seconds · students' devices pick it up within a minute.</p>
+    <ul class="live">${live.map(x=>`<li class="${x.on?'on':''}"><b>${esc(x.r.name)}</b><span>${x.q?`${x.q} puzzle${x.q>1?'s':''} · ${pct(x.ok,x.q)}% right`:'not started yet'}</span></li>`).join('')}</ul>
+    <div class="btnrow"><button type="button" class="go small alt" id="lStop">End the lesson</button></div></div>`}
 function bindTasksTab(c){const tog=b=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.classList.toggle('on',on);return on};
   document.querySelectorAll('[data-tnow]').forEach(b=>b.onclick=()=>{const L=(c.now||[]).slice(),id=b.dataset.tnow,k=L.indexOf(id);if(k>=0)L.splice(k,1);else{if(L.length>=4)L.shift();L.push(id)}saveClass(c,{now:L});renderTeach()});
   document.querySelectorAll('[data-tisl]').forEach(b=>b.onclick=()=>tog(b));
@@ -315,6 +392,16 @@ function bindTasksTab(c){const tog=b=>{const on=b.getAttribute('aria-pressed')!=
     if(!ids.length){n.className='note bad';n.textContent='Pick at least one island.';return}
     const t={id:'t'+Date.now().toString(36),isl:ids.slice(0,6),due:$('#tDue').value||'',note:$('#tNoteIn').value.trim().slice(0,60),to:[...document.querySelectorAll('[data-twho][aria-pressed="true"]')].map(b=>b.dataset.twho),ts:Date.now()};
     const T=[...(c.tasks||[]),t].slice(-40);$('#tAdd').disabled=true;if(await saveClass(c,{tasks:T},n)){toast('Task sent','Students see it on their map.','#38b98a');renderTeach()}else $('#tAdd').disabled=false};
+  document.querySelectorAll('[data-lisl]').forEach(b=>b.onclick=()=>{const on=tog(b);if(on&&document.querySelectorAll('[data-lisl][aria-pressed="true"]').length>3)tog(b)});
+  if($('#lGo'))$('#lGo').onclick=async()=>{const ids=[...document.querySelectorAll('[data-lisl][aria-pressed="true"]')].map(b=>b.dataset.lisl),n=$('#lNote');if(!ids.length){n.className='note bad';n.textContent='Pick 1 to 3 islands.';return}
+    const rows=classRows(c),base={};for(const r of rows){const w=(r.sum&&r.sum.w)||[0,0,0];base[r.mid]=[w[1],w[2]]}lsSet('pip-lbase-'+c.cid,JSON.stringify(base));
+    const L={id:'lesson',kind:'lesson',isl:ids,start:Date.now(),until:Date.now()+(+$('#lMin').value)*60000};$('#lGo').disabled=true;
+    if(await saveClass(c,{tasks:[...(c.tasks||[]).filter(t=>t.kind!=='lesson'),L].slice(-40)},n)){toast('Lesson started',"Students' maps now point to it.",'#38b98a');renderTeach()}else $('#lGo').disabled=false};
+  if($('#lStop'))$('#lStop').onclick=async()=>{await saveClass(c,{tasks:(c.tasks||[]).filter(t=>t.kind!=='lesson')});renderTeach()};
+  clearInterval(TC.liveT);if(lessonOf(c))TC.liveT=setInterval(()=>{if(curScreen!=='teach'||TC.tab!=='tasks'||!lessonOf(c)){clearInterval(TC.liveT);if(curScreen==='teach'&&TC.tab==='tasks')renderTeach();return}loadMembers(c.cid).then(()=>{if(curScreen==='teach'&&TC.tab==='tasks'&&!ovOpen)renderTeach()})},20000);
+  if($('#fnSave'))$('#fnSave').onclick=async()=>{const text=$('#fnote').value.trim().slice(0,200),T=(c.tasks||[]).filter(t=>t.kind!=='note');if(text)T.push({id:'note',kind:'note',text,ts:Date.now()});
+    if(await saveClass(c,{tasks:T.slice(-40)},$('#fnNote'))){toast(text?'Note saved':'Note removed',text?'Families see it in Grown-ups.':'','#38b98a');renderTeach()}};
+  if($('#fnDel'))$('#fnDel').onclick=async()=>{await saveClass(c,{tasks:(c.tasks||[]).filter(t=>t.kind!=='note')});renderTeach()};
   document.querySelectorAll('[data-tdel]').forEach(b=>b.onclick=()=>{if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again';return}saveClass(c,{tasks:(c.tasks||[]).filter(t=>t.id!==b.dataset.tdel)});renderTeach()})}
 
 /* --- class settings --- */

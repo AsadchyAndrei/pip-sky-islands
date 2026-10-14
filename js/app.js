@@ -476,6 +476,9 @@ function renderParent(){
   const sw=(id,on)=>`<button type="button" class="switch" role="switch" id="${id}" aria-checked="${on}"></button>`;
   const notes=[];{const mx=Math.max(...mins),di=mins.indexOf(mx);if(mx>60&&!+(G.settings.limit||0))notes.push(`<b>${Math.floor(mx/60)} h ${mx%60} min</b> played on ${new Date(last7[di]+'T12:00:00').toLocaleDateString('en-US',{weekday:'long'})}. That is a lot for one day. You can set a daily time limit in Settings below.`)}
   {const w=rows.find(r=>r.s.a>=10&&r.p<60);if(w){const ln=Object.keys(G.lessons||{}).filter(k=>LESSONS.some(L=>L.id===k&&L.isl===w.i.id)).length;notes.push(`<b>${esc(w.i.name)}</b> is the hardest topic right now: ${w.p}% right on the first try (${w.s.a} puzzles). ${lessonsFor(w.i.id).length?(ln?`${ln} of ${lessonsFor(w.i.id).length} Pip lessons done for it.`:`Pip has ${lessonsFor(w.i.id).length} short lessons for it; none done yet.`):''}`)}}
+  {const lastD=Object.keys(G.days||{}).filter(k=>(G.days[k].q||0)>0).sort().pop();const away=lastD?Math.floor((Date.now()-new Date(lastD+'T12:00'))/864e5):0;if(away>=4)notes.push(`${esc(G.name||'Your child')} has not played for <b>${away} days</b>. Even 10 minutes a day keeps skills fresh.`)}
+  {const od=typeof openTasks==='function'?openTasks().filter(t=>!t.done&&t.due&&t.due<dayKey()):[];if(od.length)notes.push(`<b>${od.length} class task${od.length>1?'s are':' is'} overdue</b> from ${esc((G.cls||{}).teacher||'the teacher')}. They are on the map, in the class card.`)}
+  if(new Date().getDay()===1&&!notes.length){const lw=weekHist(2)[0];if(lw[1])notes.push(`New week! Last week ${esc(G.name||'your child')} played <b>${lw[0]} minutes</b> and answered <b>${lw[1]} puzzles</b> (${Math.round(lw[2]/lw[1]*100)}% right on the first try).`)}
   if(G.review.length>=15)notes.push(`<b>${G.review.length} old mistakes</b> are waiting for practice (${G.fixed} fixed so far). One comes back in every round and up to five in the Daily Challenge.`);
   const kidsP=Object.keys(ROOT.profiles).filter(id=>!ROOT.profiles[id].roster);
   $('#parentBody').innerHTML=`${kidsP.length>1?`<div class="kidbar" role="tablist" aria-label="Child">${kidsP.map(id=>`<button type="button" role="tab" data-pk="${id}" aria-selected="${id===ROOT.current}"><span class="kav sm">${kidAvatar(ROOT.profiles[id])}</span>${esc(ROOT.profiles[id].name||'Player')}<small>${kidGrade(ROOT.profiles[id])}</small></button>`).join('')}</div>`:''}<div class="pgrid">${notes.length?`<div class="pcard wide pnotes"><h4>Pip's notes for grown-ups</h4><ul>${notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>`:''}
@@ -486,10 +489,14 @@ function renderParent(){
       return `<div class="pcard wide"><h4>This week</h4><div class="ctiles">
         <div><b>${w[0]}</b><span>minutes played</span>${tr(w[0],p[0],' min')}</div>
         <div><b>${w[1]}</b><span>puzzles answered</span>${tr(w[1],p[1])}</div>
-        <div><b>${ac==null?'–':ac+'%'}</b><span>right on the first try</span>${ac!=null&&acp!=null?tr(ac,acp,'%'):''}</div>
-        <div><b>${mast} <small>of ${SK.length}</small></b><span>skills mastered</span><small class="tr">${alm} almost there · ${tried} tried</small></div></div>
+        <div><b>${ac==null?'–':ac+'%'}</b><span>right on the first try ${qhelp('first')}</span>${ac!=null&&acp!=null?tr(ac,acp,'%'):''}</div>
+        <div><b>${mast} <small>of ${SK.length}</small></b><span>skills mastered ${qhelp('mastered')}</span><small class="tr">${alm} almost there ${qhelp('almost')} · ${tried} tried</small></div></div>
+        ${(()=>{const yp=yearPace();if(!yp||yp.st==='early'||!tried)return '';return `<p class="pace p-${yp.st}"><b>School-year pace ${qhelp('pace')}:</b> ${yp.st==='ahead'?'ahead of pace':yp.st==='on'?'on pace':'a bit behind pace'} (${Math.round(yp.have*100)}% of this grade's skills, ${Math.round(yp.f*100)}% of the school year so far).</p>`})()}
+        <div class="btnrow" style="justify-content:flex-start"><button type="button" class="go small alt" id="wkPrint">Print this week's report</button></div>
         <p class="note">A skill is mastered at 8 of 10 right on the first try. Settings, the school program and class topics are in the <b>Settings</b> tab.</p></div>`})()}
-    <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small></li>`).join('')}</ul><p>Tip: tap a topic below to play it together.</p>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
+    ${fromTeacherHTML()}
+    ${fgoalParentHTML()}
+    <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small>${homeTip(r.i.id)?`<p class="htip"><b>Try at home:</b> ${esc(homeTip(r.i.id))}</p>`:''}</li>`).join('')}</ul>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
       <p>Waiting at Fix-It Falls: <b>${G.review.length}</b> puzzle${G.review.length===1?'':'s'} (${reviewDue().length} due today).</p></div>
     <div class="pcard"><h4>Last 8 weeks</h4>${weeksHTML(weekHist(8))}</div>
     <div class="pcard"><h4>Last 7 days (minutes)</h4><div class="days7">${last7.map((k,i)=>`<div><em>${mins[i]}</em><i style="height:${Math.max(2,mins[i]/maxM*100)}%"></i><span>${DSHORT[new Date(k+'T12:00').getDay()]}</span></div>`).join('')}</div>
@@ -580,7 +587,7 @@ function renderParent(){
   if($('#aDel'))$('#aDel').onclick=deleteAccountFlow;
   if($('#bkNow'))$('#bkNow').onclick=async()=>{const n=$('#bkNote');save();n.textContent='Saving...';const p=G,t=new Date();
     try{await CL.api.writeBackup(ROOT.current,`${dayKey()}-m${String(t.getHours()).padStart(2,'0')}${String(t.getMinutes()).padStart(2,'0')}`,bkDoc(p));n.className='note ok';n.textContent='Backup saved.';loadBackups()}catch(e){n.className='note bad';n.textContent='Backups need the internet.'}};
-  bindClassParent();bindTeacherAcct();
+  bindClassParent();bindTeacherAcct();bindFGoal();if($("#wkPrint"))$("#wkPrint").onclick=printWeek;
   parentTabs(rows,allA);
   $('#chPin').onclick=()=>{pinBuf='';pinStage='create';overlay(pinHTML(),bindPin)};
   $('#copyCode').onclick=()=>{const ta=$('#codeOut');const ok=()=>$('#copyNote').textContent='Copied!';
@@ -1150,12 +1157,12 @@ function homeLayout(){
   if(!nu){nu=document.createElement('div');nu.id='nextUp';nu.className='nextup';pc.parentNode.insertBefore(nu,pc);nu.appendChild(pc)}
   let rw=$('#rewards');
   if(!rw){rw=document.createElement('div');rw.id='rewards';rw.className='rewards';rw.innerHTML='<div class="rwhead"><b>Rewards</b><div class="rwtabs" role="tablist" aria-label="Rewards"></div></div><div class="rwbody"></div>';
-    const ev=$('#eventCard');ev.parentNode.insertBefore(rw,ev);const body=rw.querySelector('.rwbody');['eventCard','goalCard','weekCard'].forEach(id=>{const e=$('#'+id);if(e)body.appendChild(e)})}
-  const tabs=[['eventCard',CUR_EV?CUR_EV.name.replace(/ Party| Festival| Fest/,''):'Event'],['goalCard','My goal'],['weekCard','This week']].filter(([id])=>{const e=$('#'+id);return e&&!e.hidden&&e.innerHTML.trim()});
+    const ev=$('#eventCard');ev.parentNode.insertBefore(rw,ev);const body=rw.querySelector('.rwbody');['eventCard','fgoalCard','goalCard','weekCard'].forEach(id=>{const e=$('#'+id);if(e)body.appendChild(e)})}
+  const tabs=[['eventCard',CUR_EV?CUR_EV.name.replace(/ Party| Festival| Fest/,''):'Event'],['fgoalCard','Family goal'],['goalCard','My goal'],['weekCard','This week']].filter(([id])=>{const e=$('#'+id);return e&&!e.hidden&&e.innerHTML.trim()});
   if(!tabs.some(t=>t[0]===rwTab))rwTab=tabs[0]?tabs[0][0]:'';
   rw.hidden=!tabs.length;
   rw.querySelector('.rwtabs').innerHTML=tabs.map(([id,n])=>`<button type="button" role="tab" aria-selected="${id===rwTab}" data-rw="${id}">${esc(n)}</button>`).join('');
-  ['eventCard','goalCard','weekCard'].forEach(id=>{const e=$('#'+id);if(e)e.classList.toggle('rwoff',id!==rwTab)});
+  ['eventCard','fgoalCard','goalCard','weekCard'].forEach(id=>{const e=$('#'+id);if(e)e.classList.toggle('rwoff',id!==rwTab)});
   rw.querySelectorAll('[data-rw]').forEach(b=>b.onclick=()=>{rwTab=b.dataset.rw;tone([523,659],.04);homeLayout()});
   const d=document.querySelector('#g-ch .isle[data-id="daily"]');if(d)d.classList.add('inplan');
 }

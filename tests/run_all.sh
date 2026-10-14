@@ -12,4 +12,5 @@ python3 check_tests.py
 python3 check_banks.py
 python3 check_newplayer.py
 python3 check_roles.py
+python3 check_family.py
 echo "All checks passed."

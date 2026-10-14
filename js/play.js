@@ -22,7 +22,7 @@ function card(isl,i){
 }
 function weekCard(){const tw=thisWeek(),lw=G.weeks[lastWeekKey()];
   const target=lw&&lw.c>0?lw.c:0;
-  renderPickCard();renderGoalCard();
+  renderPickCard();renderGoalCard();if(typeof renderFGoal==="function")renderFGoal();
   $('#weekCard').innerHTML=target?`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers. Last week: <b>${target}</b>. ${tw.c>target?'You beat it! Amazing!':`Beat it for <b>+${REW.week} coins</b>!`}</span><div class="bar warm"><i style="width:${Math.min(100,tw.c/(target+1)*100)}%"></i></div>`
     :`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers on the first try. Next week, try to beat this number for <b>+${REW.week} coins</b>!</span>`;
 }
