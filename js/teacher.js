@@ -59,7 +59,8 @@ function memberSum(){
   const all=Object.values(G.stats||{}).reduce((a,s)=>[a[0]+s.a,a[1]+s.c],[0,0]);
   const wrong=(G.wrongLog||[]).filter(w=>byId(w.i)).slice(0,15).map(w=>{const s=w.t!=null?skillOf(w.i,w.t):null;return {i:w.i,k:s&&CONTENT.skills[s.k]?s.k:'',p:String(w.p||'').slice(0,120),g:w.g||'',a:String(w.a||'').slice(0,40),d:w.d}});
   const lastDay=Object.keys(G.days||{}).filter(k=>(G.days[k].q||0)>0).sort().pop()||'';
-  return {v:1,sk,isl,a:all[0],c:all[1],m7,last:lastDay,tasks:G.taskDone||{},wrong}}
+  const wk=off=>{const D=[...Array(7)].map((_,k)=>addDays(k-6-off));return [Math.round(D.reduce((s,k)=>s+((G.days[k]||{}).sec||0),0)/60),D.reduce((s,k)=>s+((G.days[k]||{}).q||0),0),D.reduce((s,k)=>s+((G.days[k]||{}).c||0),0)]};
+  return {v:1,sk,isl,a:all[0],c:all[1],m7,w:wk(0),wp:wk(7),last:lastDay,tasks:G.taskDone||{},wrong}}
 function memberDoc(){const s=memberSum();return s&&{name:(G.name||'Player').slice(0,16),pack:G.pack,ts:Date.now(),sum:JSON.stringify(s),...(G.cls.code?{code:G.cls.code}:{})}}
 let clsPushT=0,clsPushAt=0;
 function classPush(now){if(CL.mode!=='cloud'||!G.cls||!ROOT.current)return;clearTimeout(clsPushT);const wait=now?0:Math.max(0,clsPushAt+120000-Date.now());
@@ -181,7 +182,7 @@ function kidsTabHTML(c){const R=rosterOf(c.cid),H=homeMembers(c);
       :'<p class="note">No students yet. Add their first names or nicknames below.</p>'}
     <div class="setrow col"><label for="addNames">Add students<small>One first name or nickname per line (up to 16 letters each)</small></label><textarea id="addNames" rows="4" placeholder="Maya&#10;Leo&#10;Sam R."></textarea></div>
     <div class="btnrow"><button type="button" class="go small" id="addGo">Add students</button>${R.length?'<button type="button" class="go small leaf" id="cardsGo">Print login cards</button><button type="button" class="go small alt" id="devGo">Use this device for the class</button>':''}</div><p class="note" id="addNote" role="status"></p></div>
-    <div class="pcard wide"><h4>Students who joined from home</h4><p class="note">Families type the class code <b class="ccode">${esc(c.code)}</b> in Grown-ups → Progress → "Join a teacher's class". Their child's progress then shows here.</p>
+    <div class="pcard wide"><h4>Students who joined from home</h4><p class="note">Families type the class code <b class="ccode">${esc(c.code)}</b> in Grown-ups → Settings → "Join a teacher's class". Their child's progress then shows here.</p>
       ${H.length?`<ul class="roster">${H.map(m=>`<li><b>${esc(m.name)}</b><small>${m.ts?'updated '+new Date(m.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}</small><button type="button" class="linkbtn bad" data-mdel="${esc(m.mid)}">Remove from class</button></li>`).join('')}</ul>`:'<p>No one yet.</p>'}</div>`}
 function bindKidsTab(c){const n=$('#addNote');
   $('#addGo').onclick=()=>{const names=[...new Set($('#addNames').value.split(/\n|,/).map(s=>s.trim().replace(/\s+/g,' ').slice(0,16)).filter(Boolean))];if(!names.length){n.className='note bad';n.textContent='Type at least one name.';return}
@@ -213,21 +214,65 @@ const skSt=(r,k)=>((r.sum&&r.sum.sk||{})[k]||[0,0,0]);
 function weakSkills(c,rows){const N=rows.length;if(!N)return [];const focus=new Set([...(c.now||[]),...(c.tasks||[]).flatMap(t=>t.isl||[])]);
   return packSkills(c.pack).map(s=>{let T=0,M=0;for(const r of rows){const v=skSt(r,s.id);if(v[2])T++;if(v[0]===2)M++}return {s,T,M,share:M/N}})
     .filter(x=>x.share<.6&&(focus.has(x.s.isl)||x.T>=Math.max(2,N*.3))).sort((a,b)=>a.share-b.share||b.T-a.T).slice(0,8)}
-function progTabHTML(c){const rows=classRows(c),isl=packIslands(c.pack),P=CONTENT.packs[c.pack];
+/* ---- progress helpers: one student's numbers ---- */
+const SUBJ=[['all','All'],['math','Math'],['ela','English'],['sci','Science & social']];
+const islSubj=i=>{const k=(i.skills||[])[0],sj=(CONTENT.skills[k]||{}).subject||'math';return sj==='science'||sj==='social'?'sci':sj};
+const pct=(a,b)=>b?Math.round(a/b*100):null;
+const wkOf=r=>r.sum&&r.sum.w?r.sum.w:r.sum?[r.sum.m7||0,0,0]:null;
+const accOf=r=>{const w=wkOf(r);if(w&&w[1]>=5)return pct(w[2],w[1]);return r.sum&&r.sum.a>=5?pct(r.sum.c,r.sum.a):null};
+const lastLbl=d=>{if(!d)return '–';const t=dayKey(),y=addDays(-1);if(d===t)return 'Today';if(d===y)return 'Yesterday';const dt=new Date(d+'T12:00'),days=(Date.now()-dt)/864e5;return days<7?dt.toLocaleDateString('en-US',{weekday:'short'}):dt.toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+function islState(r,i){const v=(r.sum&&r.sum.isl||{})[i.id],tot=v?v[2]:i.skills.length,d=v?v[1]:0;let ok=0,n=0;for(const k of i.skills){const x=skSt(r,k);ok+=x[1];n+=x[2]}
+  const acc=pct(ok,n);if(!n)return {st:'none',d,tot,acc};if(d>=tot&&tot)return {st:'done',d,tot,acc};return {st:n>=5&&acc<60?'hard':'go',d,tot,acc}}
+function studentNeeds(r,c,max){return packSkills(c.pack).map(s=>({s,v:skSt(r,s.id)})).filter(x=>x.v[2]>=3&&x.v[0]<2).sort((a,b)=>a.v[1]/a.v[2]-b.v[1]/b.v[2]).slice(0,max)}
+const stdShort=L=>L.length>3?L.slice(0,3).join(', ')+' …':L.join(', ');
+const trend=(a,b,unit='')=>{if(a==null||b==null)return '';const d=a-b;return d===0?'<small class="tr">same as last week</small>':`<small class="tr ${d>0?'up':'dn'}">${d>0?'▲':'▼'} ${Math.abs(d)}${unit} vs last week</small>`};
+function progTabHTML(c){const rows=classRows(c),allIsl=packIslands(c.pack);
   if(!rows.length)return `<div class="pcard wide"><h4>Progress</h4><p>Add students first. Their progress shows up here after they play.</p></div>`;
-  const drill=TC.drill&&isl.find(i=>i.id===TC.drill);
-  const cell=(r,i)=>{const v=(r.sum&&r.sum.isl||{})[i.id];const tot=i.skills.length;if(!v){const tried=i.skills.some(k=>skSt(r,k)[2]);return `<td class="hm n${tried?' t':''}" title="${tried?'Practicing':'Not started'}">${tried?'·':''}</td>`}
-    const f=v[1]/(v[2]||tot);return `<td class="hm" style="--f:${f.toFixed(2)}" title="${v[1]} of ${v[2]} skills mastered · ${v[0]} stars">${v[1]}/${v[2]}</td>`};
-  const W=weakSkills(c,rows),act=rows.filter(r=>r.sum&&r.sum.m7>0).length;
-  return `<div class="pcard wide"><h4>Students × islands</h4><p class="note">Each cell: skills mastered of the island's skills (8 of 10 right on the first try). Darker = more mastered. Tap an island for its skills. ${act} of ${rows.length} students played this week.</p>
-    <div class="tscroll"><table class="heat"><thead><tr><th>Student</th><th title="minutes this week">Min</th>${isl.map(i=>`<th><button type="button" class="hmh${TC.drill===i.id?' on':''}" data-drill="${i.id}" style="--c:${i.color}" title="${esc(i.topic)}">${esc(i.name)}</button></th>`).join('')}</tr></thead>
-    <tbody>${rows.map(r=>`<tr><th>${esc(r.name)}${r.roster?'':' <small>home</small>'}</th><td class="num">${r.sum?r.sum.m7:'–'}</td>${isl.map(i=>cell(r,i)).join('')}</tr>`).join('')}</tbody></table></div></div>
+  const sub=TC.subj||'math',isl=sub==='all'?allIsl:allIsl.filter(i=>islSubj(i)===sub),drill=TC.drill&&allIsl.find(i=>i.id===TC.drill);
+  const W=weakSkills(c,rows),played=rows.filter(r=>wkOf(r)&&wkOf(r)[0]>0),mins=rows.reduce((s,r)=>s+((wkOf(r)||[0])[0]),0);
+  const wq=rows.reduce((s,r)=>s+((wkOf(r)||[0,0])[1]),0),wc=rows.reduce((s,r)=>s+((wkOf(r)||[0,0,0])[2]),0),cacc=pct(wc,wq);
+  const idle=rows.filter(r=>!wkOf(r)||!wkOf(r)[0]);
+  const cell=(r,i)=>{const x=islState(r,i);const t=x.st==='none'?'Not started':`${x.d} of ${x.tot} skills mastered${x.acc!=null?` · ${x.acc}% right`:''}`;
+    return `<td class="hm s-${x.st}" title="${esc(i.name)}: ${t}">${x.st==='none'?'':x.st==='done'?'✓':`${x.acc}%`}${x.st!=='none'&&x.st!=='done'?`<small>${x.d}/${x.tot}</small>`:''}</td>`};
+  const nameBtn=r=>`<button type="button" class="sname" data-stu="${esc(r.mid)}">${esc(r.name)}</button>${r.roster?'':' <small>home</small>'}`;
+  return `<div class="pcard wide csum"><h4>This week</h4><div class="ctiles">
+      <div><b>${played.length} <small>of ${rows.length}</small></b><span>students played</span></div>
+      <div><b>${mins}</b><span>minutes in all</span></div>
+      <div><b>${cacc==null?'–':cacc+'%'}</b><span>right on the first try</span></div>
+      <div><b>${W.length}</b><span>skills that need help</span></div></div>
+      ${W.length?`<p class="cneed"><b>Needs help most:</b> ${W.slice(0,3).map(x=>esc(x.s.name)).join(', ')}</p>`:''}
+      ${idle.length&&idle.length<rows.length?`<p class="note">Did not play this week: ${idle.map(r=>esc(r.name)).join(', ')}</p>`:''}</div>
+    <div class="pcard wide"><h4>Students</h4>
+      <div class="subjf" role="tablist" aria-label="Subject">${SUBJ.map(([k,t])=>`<button type="button" role="tab" data-subj="${k}" aria-selected="${sub===k}">${t}</button>`).join('')}</div>
+      <p class="hlegend"><span class="hm s-none"></span>not started <span class="hm s-hard">45%</span>struggling (under 60% right) <span class="hm s-go">80%</span>practicing <span class="hm s-done">✓</span>all skills mastered. <span class="note">The small number is skills mastered (8 of 10 right on the first try). Tap a name for details, an island for its skills.</span></p>
+      <div class="tscroll heatwrap"><table class="heat"><thead><tr><th>Student</th><th title="minutes this week">Min</th><th title="right on the first try, this week">Right</th><th>Last</th>${isl.map(i=>`<th><button type="button" class="hmh${TC.drill===i.id?' on':''}" data-drill="${i.id}" style="--c:${i.color}" title="${esc(i.topic)}">${esc(i.name)}</button></th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r=>{const a=accOf(r);return `<tr><th>${nameBtn(r)}</th><td class="num">${wkOf(r)?wkOf(r)[0]:'–'}</td><td class="num${a!=null&&a<60?' low':''}">${a==null?'–':a+'%'}</td><td class="num last">${lastLbl(r.sum&&r.sum.last)}</td>${isl.map(i=>cell(r,i)).join('')}</tr>`}).join('')}</tbody></table></div>
+      <ul class="scards">${rows.map(r=>{const a=accOf(r),nd=studentNeeds(r,c,2),done=isl.filter(i=>islState(r,i).st!=='none');return `<li><button type="button" class="scard" data-stu="${esc(r.mid)}"><b>${esc(r.name)}${r.roster?'':' <small>home</small>'}</b>
+        <span class="sline"><span>${wkOf(r)?wkOf(r)[0]:0} min</span><span class="${a!=null&&a<60?'low':''}">${a==null?'–':a+'% right'}</span><span>${lastLbl(r.sum&&r.sum.last)}</span></span>
+        <span class="smap">${isl.map(i=>{const x=islState(r,i);return `<i class="s-${x.st}" title="${esc(i.name)}"></i>`}).join('')}</span>
+        ${nd.length?`<span class="sneed">Needs: ${nd.map(x=>esc(x.s.name)).join(', ')}</span>`:done.length?'':'<span class="sneed">Not started yet</span>'}</button></li>`}).join('')}</ul></div>
     ${drill?`<div class="pcard wide"><h4>${esc(drill.name)}: skills</h4><div class="tscroll"><table class="heat sk"><thead><tr><th>Student</th>${drill.skills.map(k=>CONTENT.skills[k]).filter(Boolean).map(s=>`<th title="${esc(s.std.join(', '))}"><span>${esc(s.name)}</span></th>`).join('')}</tr></thead>
       <tbody>${rows.map(r=>`<tr><th>${esc(r.name)}</th>${drill.skills.map(k=>{const v=skSt(r,k);return `<td class="skc" title="${v[2]?`${v[1]} of ${v[2]} right lately`:'Not tried'}">${SK_DOT(v[0])}${v[2]?`<small>${v[1]}/${v[2]}</small>`:''}</td>`}).join('')}</tr>`).join('')}</tbody></table></div></div>`:''}
-    <div class="pcard wide"><h4>Where the class needs help</h4>${W.length?`<p class="note">Skills that fewer than 60% of the class have mastered, among the topics in class now, the tasks, and skills many students have tried.</p><ul class="weak">${W.map(x=>{const ex=rows.flatMap(r=>((r.sum&&r.sum.wrong)||[]).filter(w=>w.k===x.s.id&&w.g).map(w=>({...w,n:r.name}))).slice(0,3);
-      return `<li><div><b>${esc(x.s.name)}</b><small>${esc((isl.find(i=>i.id===x.s.isl)||{}).name||'')} · ${esc(x.s.std.join(', '))}</small></div><em>${x.M} of ${rows.length} mastered · ${x.T} tried</em>${ex.length?`<ul class="wex">${ex.map(w=>`<li>${esc(w.p)} <span>answered <b>${esc(w.g)}</b>, right: <b>${esc(w.a)}</b></span></li>`).join('')}</ul>`:''}</li>`}).join('')}</ul>`:`<p>${rows.some(r=>r.sum)?'No weak spots right now: every skill in play is mastered by at least 60% of the class.':'Not enough play yet.'}</p>`}</div>
+    <div class="pcard wide"><h4>Where the class needs help</h4>${W.length?`<p class="note">Skills that fewer than 60% of the class have mastered, among the topics in class now, the tasks, and skills many students have tried.</p><ul class="weak">${W.map(x=>{const ex=[];const seen=new Set();for(const r of rows)for(const w of (r.sum&&r.sum.wrong)||[])if(w.k===x.s.id&&!seen.has(w.p+w.g)&&ex.length<2){seen.add(w.p+w.g);ex.push(w)}
+      return `<li><div><b>${esc(x.s.name)}</b><small>${esc((allIsl.find(i=>i.id===x.s.isl)||{}).name||'')} · ${esc(stdShort(x.s.std))}</small></div><em>${x.M} of ${rows.length} mastered · ${x.T} tried</em>${ex.length?`<ul class="wex">${ex.map(w=>`<li>${esc(w.p)} <small>answered <b>${esc(w.g)}</b>, right: <b>${esc(w.a)}</b></small></li>`).join('')}</ul>`:''}</li>`}).join('')}</ul>`:'<p class="note">Nothing stands out yet. Skills show up here once several students have tried them.</p>'}</div>
     <div class="pcard wide"><h4>Download</h4><p class="note">Spreadsheet files (CSV) for your gradebook: one row per student.</p><div class="btnrow"><button type="button" class="go small alt" id="csvSk">By skill</button><button type="button" class="go small alt" id="csvStd">By standard</button></div></div>`}
+function studentCard(c,mid){const r=classRows(c).find(x=>x.mid===mid);if(!r)return;const w=r.sum&&r.sum.w,wp=r.sum&&r.sum.wp,S=packSkills(c.pack);
+  const acc=w&&w[1]?pct(w[2],w[1]):null,accP=wp&&wp[1]?pct(wp[2],wp[1]):null,mast=S.filter(s=>skSt(r,s.id)[0]===2).length,tried=S.filter(s=>skSt(r,s.id)[2]).length;
+  const nd=studentNeeds(r,c,5),wr=((r.sum&&r.sum.wrong)||[]).slice(0,5),T=(c.tasks||[]).filter(t=>!t.to||!t.to.length||t.to.includes(mid)),isl=packIslands(c.pack);
+  overlay(`<div class="stucard"><div class="eyebrow">${esc(c.name)}${r.roster?'':' · joined from home'}</div><h2>${esc(r.name)}</h2><p class="note">Last played: ${r.sum&&r.sum.last?lastLbl(r.sum.last):'not yet'}</p>
+    ${r.sum?`<div class="ctiles st">
+      <div><b>${w?w[0]:r.sum.m7||0}</b><span>minutes this week</span>${trend(w&&w[0],wp&&wp[0],' min')}</div>
+      <div><b>${w?w[1]:'–'}</b><span>puzzles this week</span>${trend(w&&w[1],wp&&wp[1])}</div>
+      <div><b>${acc==null?'–':acc+'%'}</b><span>right on the first try</span>${acc!=null&&accP!=null?trend(acc,accP,'%'):''}</div>
+      <div><b>${mast} <small>of ${S.length}</small></b><span>skills mastered</span><small class="tr">${tried} tried</small></div></div>
+    <h5 class="skgrp">Needs practice</h5>${nd.length?`<ul class="weak">${nd.map(x=>`<li><div><b>${esc(x.s.name)}</b><small>${esc((isl.find(i=>i.id===x.s.isl)||{}).name||'')} · ${esc(stdShort(x.s.std))}</small></div><em>${x.v[1]} of ${x.v[2]} right</em></li>`).join('')}</ul>`:'<p class="note">Nothing yet: a skill shows up here after 3 tries without mastering it.</p>'}
+    <h5 class="skgrp">Recent mistakes</h5>${wr.length?`<ul class="weak">${wr.map(x=>`<li><div><b>${esc(x.p)}</b><small>answered <b>${esc(x.g)}</b> · right: <b>${esc(x.a)}</b></small></div></li>`).join('')}</ul>`:'<p class="note">No mistakes saved yet.</p>'}
+    ${T.length?`<h5 class="skgrp">Tasks</h5><ul class="weak">${T.map(t=>{const d=r.sum.tasks&&r.sum.tasks[t.id];return `<li><div><b>${(t.isl||[]).map(id=>esc((isl.find(i=>i.id===id)||{}).name||id)).join(', ')}</b><small>${t.due?'due '+new Date(t.due+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'no due date'}</small></div><em class="${d?'ok':''}">${d?'Done':'Not yet'}</em></li>`}).join('')}</ul>`:''}`
+    :'<p>No progress yet. It shows up after the first round.</p>'}
+    <div class="btnrow"><button class="go" type="button" id="stClose">Close</button></div></div>`,()=>{$('#stClose').onclick=closeOverlay})}
 function bindProgTab(c){document.querySelectorAll('[data-drill]').forEach(b=>b.onclick=()=>{TC.drill=TC.drill===b.dataset.drill?'':b.dataset.drill;renderTeach()});
+  document.querySelectorAll('[data-subj]').forEach(b=>b.onclick=()=>{TC.subj=b.dataset.subj;renderTeach()});
+  document.querySelectorAll('[data-stu]').forEach(b=>b.onclick=()=>studentCard(c,b.dataset.stu));
   if($('#csvSk'))$('#csvSk').onclick=()=>csvDownload(c,'skill');if($('#csvStd'))$('#csvStd').onclick=()=>csvDownload(c,'std')}
 const csvCell=v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
 function csvDownload(c,kind){const rows=classRows(c),S=packSkills(c.pack);let head,body;
