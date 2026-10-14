@@ -1484,18 +1484,10 @@ html body.big .pzcard small,html body.big .pztag{font-size:16px}html body.big .p
 .nextup #mapsay::before{display:none}
 .nextup #pickCard{margin:0;box-shadow:none;border:0;border-radius:0;outline:0}
 #g-ch .isle.inplan{display:none}
-#g-ch.islands.four{grid-template-columns:repeat(3,minmax(0,1fr))}
+#g-ch.islands.four{grid-template-columns:repeat(4,minmax(0,1fr))}
 #g-ch .isle svg.isl{max-width:150px}
 @media (max-width:760px){
-  #g-ch.islands.four{gap:8px}
-  #g-ch .isle{padding:2px 0 4px}
-  #g-ch .isle svg.isl{max-width:76px}
-  #g-ch .isle .plaque{padding:6px 4px 6px;width:100%}
-  #g-ch .isle .plaque b{font-size:15px;line-height:1.1}
-  #g-ch .isle .plaque small{display:none}
-  #g-ch .isle .status{font-size:11.5px;padding:2px 6px 1px;white-space:normal;line-height:1.2}
-  #g-ch .isle .stars .st{width:14px;height:14px}
-  html body.big #g-ch .isle .plaque b{font-size:16px}html body.big #g-ch .isle .status{font-size:12.5px}
+  #g-ch.islands.four{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 header.top .pill{white-space:nowrap}
 .rewards{background:var(--card);border-radius:24px;box-shadow:0 6px 0 var(--line);padding:14px 16px 16px;margin-top:16px;order:20}
