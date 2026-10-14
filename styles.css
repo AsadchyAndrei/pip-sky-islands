@@ -1622,3 +1622,13 @@ table.heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabu
 }
 @media (max-width:440px){.islbox .itabs button{font-size:16px;gap:5px;padding-inline:4px;white-space:nowrap}.islbox .itabs button .ico{width:22px;height:22px}}
 @media (max-width:360px){.islbox .itabs button{font-size:14px;gap:4px}.islbox .itabs button .ico{width:20px;height:20px}}
+
+/* island card skill progress: one segment per skill inside a bar that always fits the card */
+.skbar{gap:6px;padding:0 8px;width:100%;box-sizing:border-box}
+.sksegs{display:flex;gap:3px;flex:0 1 88px;width:88px;min-width:0;height:8px}
+.sksegs.meter{gap:0;background:#dfe6ef;border-radius:99px;overflow:hidden}
+.sksegs.meter i{min-width:0;border-radius:0}
+.sksegs i{flex:1 1 0;min-width:2px;border-radius:99px;background:#dfe6ef}
+.sksegs i.s1{background:#ffc23d}.sksegs i.s2{background:#38b98a}
+.skbar em{margin-left:0;flex:none}
+@media (max-width:760px){.sksegs{flex-basis:64px;width:64px;height:7px;gap:2px}}
