@@ -228,7 +228,8 @@ function packSwitch(to,P=G){if(!P.pack)P.pack=PACK_DEFAULT;if(P.pack===to)return
   P.pack=to;P.packSince=Date.now()}
 const packReady=P=>P&&(P.status!=='draft'||(()=>{try{return localStorage.getItem('pip-dev-packs')==='1'}catch(e){return false}})());
 /* the page runs one pack at a time: if this player's pack is another one, reload with it */
-function ensurePack(){const id=G.pack||PACK_DEFAULT;if(id!==PACK.id&&CONTENT.packs[id]){try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return true}return false}
+/* after the reload the same player comes straight back (no second "Who's playing?") */
+function ensurePack(){const id=G.pack||PACK_DEFAULT;if(id!==PACK.id&&CONTENT.packs[id]){try{localStorage.setItem('pip-pack',id);if(ROOT.current)sessionStorage.setItem('pip-resume',ROOT.current)}catch(e){}location.reload();return true}return false}
 function packParentHTML(){
   if(G.cls)return `<div class="pcard wide"><h4>School program</h4><p>${esc(G.name||'Your child')} plays <b>${esc(PACK.stateName)}, ${GRADE_WORD(PACK.grade).toLowerCase()}</b>, the grade of ${G.roster?'the class':`${esc(G.cls.teacher||'the teacher')}'s class <b>${esc(G.cls.name||'')}</b>`}.</p><p class="note">${G.roster?'The teacher sets the grade for the whole class.':'The class decides the grade, so the teacher sees the right skills. To choose another grade, leave the class first (below).'}</p></div>`;
   const st=G.settings.state||PACK.state,gr=G.settings.grade!=null?+G.settings.grade:PACK.grade,ready=packReady(CONTENT.packs[packKey(st,gr)]);

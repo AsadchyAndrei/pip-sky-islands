@@ -248,7 +248,10 @@ function showConsent(){
     afterConsent(Object.assign({},CL.userDoc,ud))};
 }
 
-function openKids(){stopTimers();stopSpeak();if(ROOT.current){ROOT.profiles[ROOT.current]=G;cloudFlush()}show('kids');renderKids()}
+function openKids(){stopTimers();stopSpeak();if(ROOT.current){ROOT.profiles[ROOT.current]=G;cloudFlush()}
+  let rs=null;try{rs=sessionStorage.getItem('pip-resume');sessionStorage.removeItem('pip-resume')}catch(e){}
+  if(rs&&ROOT.profiles[rs]&&(ROOT.profiles[rs].pack||PACK_DEFAULT)===PACK.id)return selectKid(rs);
+  show('kids');renderKids()}
 function renderKids(){
   const el=$('#kids');if(!el)return;
   const cdev=classDevice(),cdevCls=cdev&&(lsJSON('pip-classes-'+CL.uid)||[]).find(c=>c.cid===cdev);
@@ -298,9 +301,23 @@ function selectKid(id){
   if(G.cls){classCheck();classPush()}
 }
 function newPlayer(then){
+  /* the school program is picked right away, so nobody plays the wrong grade by accident; default = the last child added */
+  const last=Object.values(ROOT.profiles).filter(p=>!p.roster&&p.pack&&CONTENT.packs[p.pack]).sort((a,b)=>(b._u||0)-(a._u||0))[0];
+  let dk=lsGet('pip-newpack')||(last&&last.pack)||PACK_DEFAULT;if(!packReady(CONTENT.packs[dk]))dk=PACK_DEFAULT;
+  const D=CONTENT.packs[dk],opt=(v,t,on,off)=>`<option value="${v}"${on?' selected':''}${off?' disabled':''}>${esc(t)}</option>`;
+  const stOpts=st=>US_STATES.map(([c,n])=>{const ok=Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P));return opt(c,n+(ok?'':' (coming soon)'),c===st,!ok)}).join('');
+  const grOpts=(st,gr)=>GRADES.map(([g,n])=>{const ok=packReady(CONTENT.packs[packKey(st,g)]);return opt(g,n+(ok?'':' (coming soon)'),g===gr,!ok)}).join('');
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New player</div><h2>What's the player's name?</h2><p>A first name or nickname is perfect.</p>
-    <input type="text" id="nameIn" maxlength="16" autocomplete="off" aria-label="Player name"><label class="limchk"><input type="checkbox" id="limIn" checked> Limit play to 45 minutes a day <small>Recommended. Grown-ups can change it any time.</small></label><div class="btnrow"><button class="go" type="button" id="nameOk">Add player</button><button class="go alt" type="button" id="nameNo">Cancel</button></div>`,
-    ()=>{const i=$('#nameIn');setTimeout(()=>i.focus(),100);const ok=()=>{const n=i.value.trim().slice(0,16);if(!n){i.focus();return}const p=freshProfile();p.name=n;if($('#limIn')&&$('#limIn').checked)p.settings.limit='45';const id=addKid(p);closeOverlay();then&&then(id)};
+    <input type="text" id="nameIn" maxlength="16" autocomplete="off" aria-label="Player name">
+    <div class="npschool"><b>School program</b><small>The islands follow this state's standards for this grade. You can change it later in Grown-ups.</small>
+      <div class="setrow"><label for="npState">State</label><select id="npState">${stOpts(D.state)}</select></div>
+      <div class="setrow"><label for="npGrade">Grade</label><select id="npGrade">${grOpts(D.state,D.grade)}</select></div></div>
+    <label class="limchk"><input type="checkbox" id="limIn" checked> Limit play to 45 minutes a day <small>Recommended. Grown-ups can change it any time.</small></label><div class="btnrow"><button class="go" type="button" id="nameOk">Add player</button><button class="go alt" type="button" id="nameNo">Cancel</button></div>`,
+    ()=>{const i=$('#nameIn'),sS=$('#npState'),sG=$('#npGrade');setTimeout(()=>i.focus(),100);
+      sS.onchange=()=>{const st=sS.value,cur=+sG.value,ok=g=>packReady(CONTENT.packs[packKey(st,g)]);const g=ok(cur)?cur:(GRADES.map(x=>x[0]).find(ok)??cur);sG.innerHTML=grOpts(st,g)};
+      const ok=()=>{const n=i.value.trim().slice(0,16);if(!n){i.focus();return}const key=packKey(sS.value,+sG.value);if(!packReady(CONTENT.packs[key])){sG.focus();return}
+        const p=freshProfile();p.name=n;p.pack=key;p.settings=Object.assign({},p.settings,{state:CONTENT.packs[key].state,grade:CONTENT.packs[key].grade});
+        if($('#limIn')&&$('#limIn').checked)p.settings.limit='45';lsSet('pip-newpack',key);const id=addKid(p);closeOverlay();then&&then(id)};
       $('#nameOk').onclick=ok;i.onkeydown=e=>{if(e.key==='Enter')ok()};$('#nameNo').onclick=closeOverlay});
 }
 function pinPad(title,sub,onDone){let buf='';

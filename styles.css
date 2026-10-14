@@ -1632,3 +1632,9 @@ table.heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabu
 .sksegs i.s1{background:#ffc23d}.sksegs i.s2{background:#38b98a}
 .skbar em{margin-left:0;flex:none}
 @media (max-width:760px){.sksegs{flex-basis:64px;width:64px;height:7px;gap:2px}}
+
+/* new player: school program picker */
+.npschool{display:grid;gap:8px;text-align:left;background:#f4f8fc;border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin:12px 0 4px}
+.npschool>b{font-size:16px}.npschool>small{color:var(--ink-soft);font-weight:700;font-size:13px;line-height:1.35}
+.npschool .setrow{display:flex;align-items:center;gap:10px}.npschool .setrow label{width:52px;font-weight:800}
+.npschool select{flex:1;min-width:0;font:700 16px var(--body);padding:8px 10px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}

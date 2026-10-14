@@ -10,4 +10,5 @@ python3 check_packs.py
 python3 check_classes.py
 python3 check_tests.py
 python3 check_banks.py
+python3 check_newplayer.py
 echo "All checks passed."
