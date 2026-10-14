@@ -200,7 +200,7 @@ function startSkill(isl,s){if(limitGate(()=>startSkill(isl,s)))return;beginRound
   const nm2=$('#iname');const sp=document.createElement('span');sp.className='idiff';sp.textContent=` · ${s.name}`;nm2.appendChild(sp);say($('#say'),`Let's practice <b>${esc(s.name)}</b>${nm()}! Six puzzles, all on this one skill.`)}
 const SK_DOT=st=>`<i class="skd s${st}"></i>`;
 function skillBar(id){const L=skillsOf(id);if(L.length<2)return '';const d=skillsDone(id);
-  return `<span class="skbar" title="${d} of ${L.length} skills mastered" aria-label="${d} of ${L.length} skills mastered">${L.length<=8?`<span class="sksegs">${L.map(s=>`<i class="s${skStat(s.k).st}"></i>`).join('')}</span>`:(()=>{const st=L.map(s=>skStat(s.k).st),pc=v=>Math.round(st.filter(x=>x===v).length/L.length*100);return `<span class="sksegs meter"><i class="s2" style="flex:0 0 ${pc(2)}%"></i><i class="s1" style="flex:0 0 ${pc(1)}%"></i></span>`})()}<em>${d}/${L.length}</em></span>`}
+  return `<span class="skbar" title="${d} of ${L.length} skills mastered" aria-label="${d} of ${L.length} skills mastered">${(()=>{const st=L.map(s=>skStat(s.k).st),pc=v=>Math.round(st.filter(x=>x===v).length/L.length*100);return `<span class="sksegs meter"><i class="s2" style="flex:0 0 ${pc(2)}%"></i><i class="s1" style="flex:0 0 ${pc(1)}%"></i></span>`})()}<em>${d}/${L.length}</em></span>`}
 function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone(isl.id);
   if(L.length<2||isl.flash)return start(isl);
   const third=b>=2&&!allSkills(isl.id)&&!(G.star3||{})[isl.id];
