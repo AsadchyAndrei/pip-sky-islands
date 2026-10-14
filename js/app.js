@@ -305,8 +305,8 @@ function newPlayer(then){
   const last=Object.values(ROOT.profiles).filter(p=>!p.roster&&p.pack&&CONTENT.packs[p.pack]).sort((a,b)=>(b._u||0)-(a._u||0))[0];
   let dk=lsGet('pip-newpack')||(last&&last.pack)||PACK_DEFAULT;if(!packReady(CONTENT.packs[dk]))dk=PACK_DEFAULT;
   const D=CONTENT.packs[dk],opt=(v,t,on,off)=>`<option value="${v}"${on?' selected':''}${off?' disabled':''}>${esc(t)}</option>`;
-  const stOpts=st=>US_STATES.map(([c,n])=>{const ok=Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P));return opt(c,n+(ok?'':' (coming soon)'),c===st,!ok)}).join('');
-  const grOpts=(st,gr)=>GRADES.map(([g,n])=>{const ok=packReady(CONTENT.packs[packKey(st,g)]);return opt(g,n+(ok?'':' (coming soon)'),g===gr,!ok)}).join('');
+  const stOpts=st=>US_STATES.map(([c,n])=>{const ok=Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P));return opt(c,n+(ok?'':' (planned)'),c===st,!ok)}).join('');
+  const grOpts=(st,gr)=>GRADES.map(([g,n])=>{const ok=packReady(CONTENT.packs[packKey(st,g)]);return opt(g,n+(ok?'':' (planned)'),g===gr,!ok)}).join('');
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New player</div><h2>What's the player's name?</h2><p>A first name or nickname is perfect.</p>
     <input type="text" id="nameIn" maxlength="16" autocomplete="off" aria-label="Player name">
     <div class="npschool"><b>School program</b><small>The islands follow this state's standards for this grade. You can change it later in Grown-ups.</small>

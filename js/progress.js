@@ -235,9 +235,9 @@ function packParentHTML(){
   const st=G.settings.state||PACK.state,gr=G.settings.grade!=null?+G.settings.grade:PACK.grade,ready=packReady(CONTENT.packs[packKey(st,gr)]);
   const opt=(v,t,on)=>`<option value="${v}"${on?' selected':''}>${esc(t)}</option>`;
   return `<div class="pcard wide"><h4>School program</h4><p class="note">Choose the state and grade of ${esc(G.name||'your child')}'s school. The islands and skills follow that state's standards for that grade.</p>
-    <div class="setrow"><label for="setState">State</label><select id="setState">${US_STATES.map(([c,n])=>opt(c,n+(Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P))?'':' (coming soon)'),c===st)).join('')}</select></div>
-    <div class="setrow"><label for="setGrade">Grade</label><select id="setGrade">${GRADES.map(([g,n])=>opt(g,n+(packReady(CONTENT.packs[packKey(st,g)])?'':' (coming soon)'),g===gr)).join('')}</select></div>
-    <p class="note${ready?' ok':''}" id="packNote">${ready?`Playing: <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>.`:`${esc((US_STATES.find(x=>x[0]===st)||['',st])[1])}, ${esc(GRADES.find(x=>x[0]===gr)[1].toLowerCase())} is coming soon. Until then the islands follow <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>; most math and English skills are the same from state to state.`}</p></div>`}
+    <div class="setrow"><label for="setState">State</label><select id="setState">${US_STATES.map(([c,n])=>opt(c,n+(Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P))?'':' (planned)'),c===st)).join('')}</select></div>
+    <div class="setrow"><label for="setGrade">Grade</label><select id="setGrade">${GRADES.map(([g,n])=>opt(g,n+(packReady(CONTENT.packs[packKey(st,g)])?'':' (planned)'),g===gr)).join('')}</select></div>
+    <p class="note${ready?' ok':''}" id="packNote">${ready?`Playing: <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>.`:`${esc((US_STATES.find(x=>x[0]===st)||['',st])[1])}, ${esc(GRADES.find(x=>x[0]===gr)[1].toLowerCase())} is planned but not ready yet. Until then the islands follow <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>; most math and English skills are the same from state to state.`}</p></div>`}
 function setPack(st,gr){if(G.cls)return renderParent();G.settings.state=st;G.settings.grade=gr;const id=packKey(st,gr);
   if(packReady(CONTENT.packs[id])&&id!==PACK.id){packSwitch(id);save();try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return}save();renderParent()}
 const SUBJ_NAMES={math:'Math',ela:'English',science:'Science',social:'Social studies'};
