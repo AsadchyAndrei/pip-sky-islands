@@ -1,7 +1,10 @@
 rules_version = '2';
 // Pip's Sky Islands: every grown-up account can read and write ONLY its own data.
 // Classes: a teacher owns a class; a child's grown-up shares a small progress summary with that class
-// by knowing its class code; only the teacher (and the child's own grown-up) can read that summary.
+// by knowing its class code; only the class's teachers (and the child's own grown-up) can read that summary.
+// A class may have co-teachers (list "co"); they join with an invite code through a server function,
+// see progress and manage tasks, but only the owner manages the roster, codes and deletion.
+// Server-only data (mailstate, invites) is written by Cloud Functions with admin rights, never by apps.
 service cloud.firestore {
   match /databases/{database}/documents {
     function isOwner(uid) {
@@ -9,20 +12,25 @@ service cloud.firestore {
     }
     function okKid() {
       let d = request.resource.data;
-      return d.keys().hasOnly(['data', 'name', 'ts', 'v', 'deleted'])
+      return d.keys().hasOnly(['data', 'name', 'ts', 'v', 'deleted', 'mail'])
         && (!('data' in d) || (d.data is string && d.data.size() < 900000))
+        && (!('mail' in d) || (d.mail is string && d.mail.size() < 12000))
         && (!('name' in d) || (d.name is string && d.name.size() <= 16));
     }
 
     function signedIn() { return request.auth != null; }
     function str(v, n) { return v is string && v.size() <= n; }
-    function okClass() {
+    function okClassShape() {
       let d = request.resource.data;
-      return d.keys().hasOnly(['owner', 'name', 'teacher', 'pack', 'code', 'ts', 'now', 'tasks', 'v'])
-        && d.owner == request.auth.uid && str(d.name, 40) && str(d.teacher, 40) && str(d.pack, 12)
+      return d.keys().hasOnly(['owner', 'name', 'teacher', 'pack', 'code', 'ts', 'now', 'tasks', 'v', 'co', 'coNames'])
+        && str(d.name, 40) && str(d.teacher, 40) && str(d.pack, 12)
         && str(d.code, 8) && (!('now' in d) || (d.now is list && d.now.size() <= 8))
-        && (!('tasks' in d) || (d.tasks is list && d.tasks.size() <= 40));
+        && (!('tasks' in d) || (d.tasks is list && d.tasks.size() <= 40))
+        && (!('co' in d) || (d.co is list && d.co.size() <= 6))
+        && (!('coNames' in d) || (d.coNames is map && d.coNames.size() <= 6));
     }
+    function okClass() { return okClassShape() && request.resource.data.owner == request.auth.uid; }
+    function coList(d) { return d.get('co', []); }
     function okMember() {
       let d = request.resource.data;
       return d.keys().hasOnly(['owner', 'kid', 'name', 'pack', 'code', 'ts', 'sum', 'removed'])
@@ -30,6 +38,11 @@ service cloud.firestore {
         && (!('sum' in d) || str(d.sum, 60000)) && d.get('removed', false) == false;
     }
     function classOwner(cid) { return get(/databases/$(database)/documents/classes/$(cid)).data.owner; }
+    // the owner or a co-teacher of the class
+    function classTeacher(cid) {
+      let c = get(/databases/$(database)/documents/classes/$(cid)).data;
+      return c.owner == request.auth.uid || request.auth.uid in c.get('co', []);
+    }
 
     // class codes are looked up one at a time (never listed); a code can only point at the writer's own class
     match /codes/{code} {
@@ -44,15 +57,25 @@ service cloud.firestore {
     // a class holds no student data: its name, the teacher's display name, grade pack, topics and tasks
     match /classes/{cid} {
       allow get: if signedIn();
-      allow list: if signedIn() && resource.data.owner == request.auth.uid;
-      allow create: if signedIn() && okClass();
-      allow update: if signedIn() && resource.data.owner == request.auth.uid && okClass();
+      allow list: if signedIn() && (resource.data.owner == request.auth.uid || request.auth.uid in resource.data.get('co', []));
+      allow create: if signedIn() && okClass() && coList(request.resource.data).size() == 0;
+      // the owner edits anything, and may remove co-teachers (never add: adding goes through an invite code)
+      allow update: if signedIn() && resource.data.owner == request.auth.uid && okClass()
+        && coList(request.resource.data).toSet().difference(coList(resource.data).toSet()).size() == 0;
+      // a co-teacher manages topics, tasks, lessons and the note to families
+      allow update: if signedIn() && request.auth.uid in coList(resource.data) && okClassShape()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['now', 'tasks', 'ts', 'v']);
+      // a co-teacher may leave the class
+      allow update: if signedIn() && request.auth.uid in coList(resource.data) && okClassShape()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['co', 'coNames'])
+        && coList(request.resource.data).toSet() == coList(resource.data).toSet().difference([request.auth.uid].toSet())
+        && !(request.auth.uid in request.resource.data.get('coNames', {}));
       allow delete: if signedIn() && resource.data.owner == request.auth.uid;
 
       // one child's summary; the id is "<grown-up uid>_<child id>"
       match /members/{mid} {
-        allow get: if signedIn() && (resource == null || resource.data.owner == request.auth.uid || classOwner(cid) == request.auth.uid);
-        allow list: if signedIn() && classOwner(cid) == request.auth.uid;
+        allow get: if signedIn() && (resource == null || resource.data.owner == request.auth.uid || classTeacher(cid));
+        allow list: if signedIn() && classTeacher(cid);
         // joining needs the class code (the teacher adds roster children without it)
         allow create: if signedIn() && mid.matches(request.auth.uid + '_.+') && okMember()
           && (classOwner(cid) == request.auth.uid
@@ -61,17 +84,32 @@ service cloud.firestore {
         allow update: if signedIn() && resource.data.owner == request.auth.uid
           && resource.data.get('removed', false) == false && okMember()
           && request.resource.data.get('code', '') == resource.data.get('code', '');
-        // the teacher may only mark a child as removed
-        allow update: if signedIn() && classOwner(cid) == request.auth.uid
+        // a teacher may only mark a child as removed
+        allow update: if signedIn() && classTeacher(cid)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['removed'])
           && request.resource.data.removed == true;
         // the grown-up may always delete the child's own summary (also after a removal, so the child can join again)
-        allow delete: if signedIn() && (classOwner(cid) == request.auth.uid || resource.data.owner == request.auth.uid);
+        allow delete: if signedIn() && (classTeacher(cid) || resource.data.owner == request.auth.uid);
       }
+    }
+
+    // co-teacher invite codes: made and seen by the class owner; redeemed only by the joinCoTeacher function
+    match /tinv/{code} {
+      allow get, delete: if signedIn() && resource.data.owner == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['cid', 'owner', 'exp'])
+        && request.resource.data.owner == request.auth.uid && request.resource.data.exp is int
+        && get(/databases/$(database)/documents/classes/$(request.resource.data.cid)).data.owner == request.auth.uid;
     }
 
     match /users/{uid} {
       allow read, write: if isOwner(uid);
+
+      // this account's devices that get notifications (one document per device token)
+      match /push/{tok} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) && request.resource.data.keys().hasOnly(['t', 'ts', 'ua'])
+          && str(request.resource.data.t, 600) && (!('ua' in request.resource.data) || str(request.resource.data.ua, 120));
+      }
 
       match /kids/{kid} {
         allow read, delete: if isOwner(uid);

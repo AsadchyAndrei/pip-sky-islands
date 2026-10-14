@@ -1,2 +1,5 @@
 __pycache__/
 tests/fonts/
+functions/node_modules/
+tests/server/node_modules/
+*.log

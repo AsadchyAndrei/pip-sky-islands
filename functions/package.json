@@ -1,0 +1,11 @@
+{
+  "name": "pip-sky-islands-functions",
+  "private": true,
+  "description": "Server functions for Pip's Sky Islands: weekly emails, reminders, push notifications, co-teachers",
+  "main": "index.js",
+  "engines": { "node": "22" },
+  "dependencies": {
+    "firebase-admin": "^13.4.0",
+    "firebase-functions": "^6.4.0"
+  }
+}

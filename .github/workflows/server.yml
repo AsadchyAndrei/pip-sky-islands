@@ -1,0 +1,57 @@
+name: server
+# Tests the Firestore rules and server functions on the Firebase emulators, then deploys them
+# (rules + functions) to the pip-sky-islands project. Deploying signs in to Google Cloud with
+# Workload Identity Federation: no keys are stored in GitHub. tools/setup-server.sh sets it up once.
+on:
+  push:
+    branches: [main]
+    paths: ['functions/**', 'firestore.rules', 'firebase.json', 'tests/server/**', '.github/workflows/server.yml']
+  pull_request:
+    paths: ['functions/**', 'firestore.rules', 'tests/server/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: tests/server/run.sh
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: auth
+        continue-on-error: true
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/911404168229/locations/global/workloadIdentityPools/github/providers/github
+          service_account: pip-deployer@pip-sky-islands.iam.gserviceaccount.com
+      - name: Not set up yet
+        if: steps.auth.outcome != 'success'
+        run: echo "::notice::Deploy skipped - run tools/setup-server.sh in Google Cloud Shell once to allow deploys from GitHub."
+      - uses: google-github-actions/setup-gcloud@v2
+        if: steps.auth.outcome == 'success'
+      - name: Prepare the project (APIs and the functions' own permissions)
+        if: steps.auth.outcome == 'success'
+        run: tools/prepare-project.sh
+      - name: Deploy rules and functions
+        if: steps.auth.outcome == 'success'
+        run: |
+          (cd functions && npm install --no-audit --no-fund --silent)
+          npx --yes firebase-tools@14 deploy --only firestore:rules,functions --project pip-sky-islands --force --non-interactive
