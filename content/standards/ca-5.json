@@ -74,7 +74,7 @@
   {"code": "RI.5.9", "subject": "ela", "domain": "Reading: Informational Text", "summary": "Combine information from several texts on the same topic."},
   {"code": "RI.5.10", "subject": "ela", "domain": "Reading: Informational Text", "summary": "Read and understand grade 4–5 informational texts by the end of the year (reading range over the whole year).", "app": false},
   {"code": "RF.5.3", "subject": "ela", "domain": "Reading: Foundational Skills", "summary": "Use letter-sound knowledge, syllables and word parts (roots and affixes) to read unfamiliar words."},
-  {"code": "RF.5.4", "subject": "ela", "domain": "Reading: Foundational Skills", "summary": "Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in For Parents).", "app": false},
+  {"code": "RF.5.4", "subject": "ela", "domain": "Reading: Foundational Skills", "summary": "Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in Parents).", "app": false},
   {"code": "W.5.1", "subject": "ela", "domain": "Writing", "summary": "Write opinion pieces with a clear claim, logically ordered reasons, facts and details, and a conclusion."},
   {"code": "W.5.2", "subject": "ela", "domain": "Writing", "summary": "Write informative texts with a clear focus, grouped information, precise words, transitions and a conclusion."},
   {"code": "W.5.3", "subject": "ela", "domain": "Writing", "summary": "Write narratives with dialogue, description, pacing, transitions and a resolution."},

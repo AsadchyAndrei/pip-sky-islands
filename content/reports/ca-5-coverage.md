@@ -69,7 +69,7 @@ A standard counts as covered when at least one skill on this pack's islands prac
 | RI.5.9 | Combine information from several texts on the same topic. | covered | reading: Short passages; reading: Choose two answers |
 | RI.5.10 | Read and understand grade 4–5 informational texts by the end of the year (reading range over the whole year). | not checked in the game | — |
 | RF.5.3 | Use letter-sound knowledge, syllables and word parts (roots and affixes) to read unfamiliar words. | covered | words: Greek and Latin roots |
-| RF.5.4 | Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in For Parents). | not checked in the game | — |
+| RF.5.4 | Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in Parents). | not checked in the game | — |
 | W.5.1 | Write opinion pieces with a clear claim, logically ordered reasons, facts and details, and a conclusion. | covered | write: Opinion writing |
 | W.5.2 | Write informative texts with a clear focus, grouped information, precise words, transitions and a conclusion. | covered | write: Informative writing |
 | W.5.3 | Write narratives with dialogue, description, pacing, transitions and a resolution. | covered | write: Narrative writing |

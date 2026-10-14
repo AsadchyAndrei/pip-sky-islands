@@ -1,6 +1,6 @@
 /* Pip's Sky Islands: weekly emails, reminders and notifications (the server side is functions/index.js).
    - kidDigest(): a small summary of the current player saved with the player, so the weekly email can be written
-   - For Parents → Account: "Emails and notifications" (weekly email, reminders, notifications on this device, test email)
+   - Parents → Account: "Emails and notifications" (weekly email, reminders, notifications on this device, test email)
    - a one-time question on the Progress tab, and a "Weekly class email" switch on the teacher desk */
 const taskName=t=>{const s=t.sk&&CONTENT.skills[t.sk]?CONTENT.skills[t.sk].name:'';return ((t.isl||[]).map(id=>(byId(id)||{}).name||id).join(', ')+(s?': '+s:'')).slice(0,80)};
 function kidDigest(){if(G.roster||G.pack!==PACK.id)return null;

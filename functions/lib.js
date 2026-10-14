@@ -59,7 +59,7 @@ function page(title, body, unsubUrl) {
 <h1 style="font-size:24px;margin:6px 0 4px;color:${C.ink}">${title}</h1>
 ${body}
 </td></tr></table>
-<p style="font-size:12px;color:${C.soft};max-width:560px;line-height:1.45;margin:14px auto">You get this email because it is turned on in For Parents → Account on <a href="${SITE}" style="color:${C.soft}">pipskyislands.com</a>. ${unsubUrl ? `<a href="${unsubUrl}" style="color:${C.soft}">Turn off these emails</a>.` : ''} Questions: hello@pipskyislands.com</p>
+<p style="font-size:12px;color:${C.soft};max-width:560px;line-height:1.45;margin:14px auto">You get this email because it is turned on in Parents → Account on <a href="${SITE}" style="color:${C.soft}">pipskyislands.com</a>. ${unsubUrl ? `<a href="${unsubUrl}" style="color:${C.soft}">Turn off these emails</a>.` : ''} Questions: hello@pipskyislands.com</p>
 </td></tr></table></body></html>`;
 }
 const textOf = (html) => html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<(br|\/p|\/h\d|\/li|\/tr|\/div)>/gi, '\n').replace(/<li>/gi, '• ').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\n\s*\n\s*\n+/g, '\n\n').trim();
@@ -82,7 +82,7 @@ function kidSection(k, today) {
   if (k.goal) {
     const g = k.goal, expired = !g.done && g.end && g.end < today;
     s += box(g.done ? `<b>Family goal reached!</b> ${esc(g.t)}${g.reward ? `. Reward: <b>${esc(g.reward)}</b>` : ''}`
-      : expired ? `The family goal "${esc(g.t)}" ended at ${g.have} of ${g.need}. You can set a new one in For Parents.`
+      : expired ? `The family goal "${esc(g.t)}" ended at ${g.have} of ${g.need}. You can set a new one in Parents.`
         : `<b>Family goal:</b> ${esc(g.t)}: ${g.have} of ${g.need} so far${g.end ? `, until ${niceDay(g.end)}` : ''}${g.reward ? `. Reward: ${esc(g.reward)}` : ''}.`, g.done ? C.leaf : C.sky);
   }
   if (k.cls) {

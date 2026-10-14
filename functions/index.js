@@ -2,7 +2,7 @@
    - hourly:          at 5 pm local time: the weekly email on Sundays, reminders (push or email) on any day
    - classChanged:    a teacher sent a new task or a note → a push notification to the families in the class
    - joinCoTeacher:   a teacher joins a colleague's class with an invite code
-   - sendTestEmail:   "Send me this week's email now" in For Parents → Account
+   - sendTestEmail:   "Send me this week's email now" in Parents → Account
    - unsub:           one-click "turn off these emails" link
    Data the apps never write: mailstate/{uid} (what was sent and when, and the unsubscribe token). */
 const { onSchedule } = require('firebase-functions/v2/scheduler');
@@ -218,10 +218,10 @@ const unsubPage = (t, b) => `<!doctype html><meta name="viewport" content="width
 exports.unsub = onRequest({ maxInstances: 2 }, async (req, res) => {
   const uid = String(req.query.u || ''), tok = String(req.query.t || '');
   const s = uid ? await db.collection('mailstate').doc(uid).get() : null;
-  if (!s || !s.exists || !tok || s.get('tok') !== tok) { res.status(400).send(unsubPage('This link does not work', '<p>You can turn emails off in For Parents → Account on pipskyislands.com.</p>')); return; }
+  if (!s || !s.exists || !tok || s.get('tok') !== tok) { res.status(400).send(unsubPage('This link does not work', '<p>You can turn emails off in Parents → Account on pipskyislands.com.</p>')); return; }
   if (req.method === 'POST') {
     await db.collection('users').doc(uid).set({ notify: { weekly: false, remind: false } }, { merge: true });
-    res.send(unsubPage('Emails are off', '<p>You will not get weekly emails or reminders any more. You can turn them on again in For Parents → Account.</p>'));
+    res.send(unsubPage('Emails are off', '<p>You will not get weekly emails or reminders any more. You can turn them on again in Parents → Account.</p>'));
     return;
   }
   res.send(unsubPage('Turn off emails from Pip?', `<p>Weekly emails and reminders will stop.</p><form method="post"><button style="font-size:16px;padding:10px 18px;border-radius:999px;border:0;background:#2f9fe0;color:#fff">Turn off emails</button></form>`));

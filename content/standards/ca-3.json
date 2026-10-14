@@ -76,7 +76,7 @@
   {"code": "RI.3.9", "subject": "ela", "domain": "Reading: Informational Text", "summary": "Compare the most important points of two texts on the same topic."},
   {"code": "RI.3.10", "subject": "ela", "domain": "Reading: Informational Text", "summary": "Read and understand grade 2–3 informational texts by the end of the year (reading range over the whole year).", "app": false},
   {"code": "RF.3.3", "subject": "ela", "domain": "Reading: Foundational Skills", "summary": "Read words using prefixes, suffixes and syllables, and spell common irregular words."},
-  {"code": "RF.3.4", "subject": "ela", "domain": "Reading: Foundational Skills", "summary": "Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in For Parents).", "app": false},
+  {"code": "RF.3.4", "subject": "ela", "domain": "Reading: Foundational Skills", "summary": "Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in Parents).", "app": false},
   {"code": "W.3.1", "subject": "ela", "domain": "Writing", "summary": "Write opinion pieces: state an opinion, give reasons, use linking words, and end with a conclusion."},
   {"code": "W.3.2", "subject": "ela", "domain": "Writing", "summary": "Write informative texts: introduce a topic, give facts and details, use linking words, conclude."},
   {"code": "W.3.3", "subject": "ela", "domain": "Writing", "summary": "Write stories with characters, dialogue, feelings, time-order words and an ending."},
