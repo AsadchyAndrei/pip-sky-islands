@@ -17,7 +17,7 @@ const TOURS={
     {el:['#parentBtn','#gearBtn'],t:'For grown-ups',x:'Parents: progress, settings and weekly emails, safe behind a PIN.',skip:()=>!!(G.roster||(typeof classDevice==='function'&&classDevice()))},
     {el:['#gearBtn'],t:'Help any time',x:'Open this menu and tap "How Pip works" to see this tour again.'},
     {end:1,t:"You're ready to fly!",x:'Have fun on the islands. I will be right here!'}]},
-  parent:{steps:[
+  parent:{start:()=>{const b=document.querySelector('.ptabs [data-pt="prog"]');if(b&&b.getAttribute('aria-selected')!=='true')b.click();scrollTo({top:0})},steps:[
     {intro:1,t:"Welcome to Parents' Corner",x:'A 1-minute tour of where to see progress, change settings and get the weekly email?',yes:'Show me'},
     {el:['.kidbar'],t:'One child at a time',x:'Switch between your kids here. Everything below is about the child you pick.'},
     {el:['.ptabs'],t:'Three tabs',x:'Progress, Settings, and Account & data. Most of what you need is on Progress.'},
@@ -57,12 +57,13 @@ function tourMark(id){lsSet(tourKey(id),'1');
   if(CL.mode==='cloud'){CL.userDoc=Object.assign({},CL.userDoc,{tours:Object.assign({},(CL.userDoc||{}).tours,{[id]:1})});CL.api.setUserDoc({tours:{[id]:1}}).catch(()=>{})}}
 /* start a tour on its own the first time (never during automated checks, never over a pop-up) */
 function maybeTour(id,delay=900){if(navigator.webdriver&&!window.__tourTest)return;if(tourSeen(id)||TR.on)return;
-  clearTimeout(maybeTour.t);maybeTour.t=setTimeout(()=>{if(TR.on||tourSeen(id)||ovOpen)return;const want={map:'map',parent:'parent',desk:'teach',class:'teach'}[id];if(curScreen!==want)return;
+  clearTimeout(maybeTour.t);maybeTour.t=setTimeout(()=>{if(TR.on||tourSeen(id))return;if(ovOpen){if(delay<20000)maybeTour(id,delay+1500);return} // wait for the pop-up to closeconst want={map:'map',parent:'parent',desk:'teach',class:'teach'}[id];if(curScreen!==want)return;
     if(id==='class'&&!TC.cur||id==='desk'&&TC.cur)return;startTour(id)},delay)}
 
 const TR={on:false,id:'',i:0,steps:[]};
 function startTour(id){const T=TOURS[id];if(!T)return;closeTour(true);
-  TR.on=true;TR.id=id;TR.i=0;TR.steps=T.steps.filter(s=>!(s.skip&&s.skip()));
+  if(T.start)T.start();
+  TR.on=true;TR.id=id;TR.i=0;TR.scr=curScreen;TR.steps=T.steps.filter(s=>!(s.skip&&s.skip()));
   const L=document.createElement('div');L.id='tourL';L.className='tourL';
   L.innerHTML=`<div class="tspot"></div><div class="tbub" role="dialog" aria-modal="true" aria-labelledby="tbT" aria-describedby="tbX"><i class="tarrow"></i>
     <div class="tpip" data-fox></div><div class="tbody"><div class="tstep" id="tbS"></div><h3 id="tbT"></h3><p id="tbX"></p><div class="tdots" id="tbD"></div>
@@ -70,7 +71,13 @@ function startTour(id){const T=TOURS[id];if(!T)return;closeTour(true);
   document.body.appendChild(L);refreshFoxes();document.body.classList.add('touring');
   $('#tbSkip').onclick=()=>endTour(false);$('#tbBack').onclick=()=>tourGo(TR.i-1,-1);$('#tbNext').onclick=()=>tourGo(TR.i+1,1);
   L.addEventListener('click',e=>{if(e.target===L||e.target.classList.contains('tspot'))$('#tbNext').focus()});
-  TR.key=e=>{if(!TR.on)return;if(e.key==='Escape'){e.preventDefault();endTour(false)}else if(e.key==='ArrowRight')tourGo(TR.i+1,1);else if(e.key==='ArrowLeft'&&TR.i>0)tourGo(TR.i-1,-1)};
+  TR.key=e=>{if(!TR.on||ovOpen)return;
+    if(e.key==='Tab'){const B=[...document.querySelectorAll('#tourL .tbtns button')].filter(b=>!b.hidden);if(!B.length)return;e.preventDefault(); // keep the keyboard inside the bubble
+      const k=B.indexOf(document.activeElement);B[(k+(e.shiftKey?-1:1)+B.length)%B.length].focus();return}
+    if(e.key==='Escape'){e.preventDefault();endTour(false)}else if(e.key==='ArrowRight')tourGo(TR.i+1,1);else if(e.key==='ArrowLeft'&&TR.i>0)tourGo(TR.i-1,-1)};
+  /* a pop-up opened meanwhile: step aside until it closes; the screen changed: the tour is over */
+  clearInterval(TR.tick);TR.tick=setInterval(()=>{const L=$('#tourL');if(!TR.on||!L){clearInterval(TR.tick);return}
+    if(curScreen!==TR.scr){tourMark(TR.id);closeTour();return}L.style.display=ovOpen?'none':'';if(!ovOpen)tourPlace()},400);
   TR.re=()=>{if(TR.on)tourPlace()};addEventListener('keydown',TR.key);addEventListener('resize',TR.re);addEventListener('scroll',TR.re,{passive:true,capture:true});
   tourShow()}
 function tourGo(i,dir){if(i<0)return;if(i>=TR.steps.length)return endTour(true);TR.i=i;
@@ -87,36 +94,49 @@ function tourShow(){const s=TR.steps[TR.i],L=$('#tourL');if(!L)return;
   const bub=L.querySelector('.tbub');bub.classList.remove('pop');void bub.offsetWidth;bub.classList.add('pop');
   if(s.end){setTimeout(()=>{const r=bub.getBoundingClientRect();if(typeof burst==='function')burst(r.left+r.width/2,r.top+30,70)},200);if(typeof tone==='function')try{tone([523,659,784],.05)}catch(e){}}
   const el=s.intro||s.end?null:tourEl(s);TR.el=el;
-  if(el){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-40)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+  if(el){const r=el.getBoundingClientRect(),beh=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+    if(r.height>innerHeight*.55)scrollBy({top:r.top-Math.min(90,innerHeight*.12),behavior:beh}); // a tall box: show its top, the bubble sits lower
+    else if(r.top<70||r.bottom>innerHeight-40)el.scrollIntoView({block:'center',behavior:beh})}
   tourPlace();const t0=performance.now();cancelAnimationFrame(TR.raf);const follow=()=>{if(!TR.on)return;tourPlace();if(performance.now()-t0<1100)TR.raf=requestAnimationFrame(follow)};TR.raf=requestAnimationFrame(follow);setTimeout(()=>{const n=$('#tbNext');n&&n.focus({preventScroll:true})},60)}
-function tourPlace(){const L=$('#tourL');if(!L)return;const sp=L.querySelector('.tspot'),bub=L.querySelector('.tbub'),ar=L.querySelector('.tarrow'),el=TR.el;
+function tourPlace(){const L=$('#tourL');if(!L)return;const sp=L.querySelector('.tspot'),bub=L.querySelector('.tbub'),ar=L.querySelector('.tarrow');
+  const s=TR.steps[TR.i];if(TR.el&&!TR.el.isConnected&&s&&!s.intro&&!s.end)TR.el=tourEl(s); // the screen was redrawn: find the element again
+  const el=TR.el;
   const W=innerWidth,H=innerHeight,bw=Math.min(380,W-24);bub.style.width=bw+'px';
   if(!el||!L.isConnected||L.classList.contains('center')){sp.style.cssText=`left:${W/2}px;top:${H/2}px;width:0;height:0;opacity:0`;bub.style.left=((W-bw)/2)+'px';bub.style.top=Math.max(12,(H-bub.offsetHeight)/2)+'px';ar.hidden=true;return}
   const r=el.getBoundingClientRect(),pad=8,x=Math.max(4,r.left-pad),y=Math.max(4,r.top-pad),w=Math.min(W-8,r.width+pad*2),h=Math.min(H-8,r.height+pad*2);
   sp.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px;opacity:1`;
-  const bh=bub.offsetHeight,below=H-(y+h),above=y;let top,dir;
-  if(below>=bh+18){top=y+h+14;dir='up'}else if(above>=bh+18){top=y-bh-14;dir='down'}else{top=Math.max(12,H-bh-12);dir=''}
-  const left=Math.min(W-bw-12,Math.max(12,x+w/2-bw/2));bub.style.left=left+'px';bub.style.top=top+'px';
-  ar.hidden=!dir;ar.className='tarrow '+dir;ar.style.left=Math.min(bw-28,Math.max(16,x+w/2-left-8))+'px'}
+  const bh=bub.offsetHeight,below=H-(y+h),above=y,rightS=W-(x+w),leftS=x;let top,left,dir;
+  const vy=Math.min(H-bh-12,Math.max(12,y+Math.min(h,H-y)/2-bh/2)); // beside the box, level with its visible middle
+  if(below>=bh+18){top=y+h+14;dir='up'}else if(above>=bh+18){top=y-bh-14;dir='down'}
+  else if(rightS>=bw+26){left=x+w+14;top=vy;dir='left'}else if(leftS>=bw+26){left=x-bw-14;top=vy;dir='right'}
+  else{top=Math.max(12,H-bh-12);dir=''} // no room anywhere: at the bottom, over the lower part of a big box
+  if(left==null)left=Math.min(W-bw-12,Math.max(12,x+w/2-bw/2));bub.style.left=left+'px';bub.style.top=top+'px';
+  ar.hidden=!dir;ar.className='tarrow '+dir;
+  if(dir==='up'||dir==='down'){ar.style.left=Math.min(bw-28,Math.max(16,x+w/2-left-8))+'px';ar.style.top=''}
+  else if(dir){ar.style.top=Math.min(bh-28,Math.max(16,y+Math.min(h,H-y)/2-top-8))+'px';ar.style.left=''}}
 function endTour(done){const id=TR.id;if(!TR.on)return;tourMark(id);closeTour();if(!done&&id==='map')toast('Tour skipped','Replay it any time: Settings → How Pip works.','#2f9fe0')}
-function closeTour(){TR.on=false;const L=$('#tourL');if(L)L.remove();document.body.classList.remove('touring');
+function closeTour(){TR.on=false;clearInterval(TR.tick);cancelAnimationFrame(TR.raf);const L=$('#tourL');if(L)L.remove();document.body.classList.remove('touring');
   if(TR.key){removeEventListener('keydown',TR.key);removeEventListener('resize',TR.re);removeEventListener('scroll',TR.re,{capture:true})}}
 
 /* "How Pip works": tours to replay and the guide */
-function openHelp(sec){const tours=[['map','The islands','For kids and grown-ups: the map, stars, coins and rewards'],['parent',"Parents' Corner",'Progress, family goal, settings and emails']].concat(isTeacher()?[['desk','Teacher desk','Classes, co-teaching and the weekly email'],['class','A class','Students, progress, tasks and settings']]:[]);
+const teachTours=()=>isTeacher()&&(!classDevice()||curScreen==='teach');
+function openHelp(sec){const tours=[['map','The islands','For kids and grown-ups: the map, stars, coins and rewards'],['parent',"Parents' Corner",'Progress, family goal, settings and emails']].concat(teachTours()?[['desk','Teacher desk','Classes, co-teaching and the weekly email'],['class','A class','Students, progress, tasks and settings']]:[]);
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Help</div><h2>How Pip works</h2>
     <div class="trlist">${tours.map(([id,t,d])=>`<button type="button" class="trbtn" data-replay="${id}"><b>${t}</b><small>${d}</small><span class="trgo">Take the tour</span></button>`).join('')}</div>
-    <div class="gd" id="gdBox">${guideHTML(sec||(isTeacher()?'teachers':'parents'),true)}</div>
+    <div class="gd" id="gdBox">${guideHTML(sec||(isTeacher()?'teachers':'parents'),canTour)}</div>
     <div class="btnrow"><button type="button" class="go alt" id="hClose">Close</button></div>`,bindHelp)}
 function bindHelp(){$('#hClose').onclick=closeOverlay;
-  const bind=()=>{document.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{$('#gdBox').innerHTML=guideHTML(b.dataset.gd,true);bind()});
+  const bind=()=>{document.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{$('#gdBox').innerHTML=guideHTML(b.dataset.gd,canTour);bind()});
     document.querySelectorAll('[data-gtour],[data-replay]').forEach(b=>b.onclick=()=>replayTour(b.dataset.gtour||b.dataset.replay))};bind()}
+const canTour=id=>id==='map'||id==='parent'?true:teachTours();
 /* replay: go to the right screen first; the screen starts the tour once it is drawn (tourHook) */
-function replayTour(id){closeOverlay();TR.pending=id;
+function replayTour(id){closeOverlay();TR.pending=id;TR.pendAt=Date.now();
   if(id==='map'){if(!ROOT.current){TR.pending='';toast('Pick a player first','Then open How Pip works again.','#2f9fe0');return}if(curScreen==='map')return tourHook('map');renderMap();return}
   if(id==='parent'){if(!ROOT.current){TR.pending='';toast('Pick a player first',"Parents' Corner shows one child at a time.",'#2f9fe0');return}if(curScreen==='parent')return tourHook('parent');openParent();return}
-  if(id==='desk'){TC.cur='';openTeach();return}
-  if(id==='class'){const c=(TC.classes||[])[0];if(!c){TR.pending='';toast('Make a class first','Then the class tour can show its tabs.','#2f9fe0');return}if(!TC.cur)TC.cur=c.cid;TC.tab='prog';openTeach(TC.cur)}}
+  if(!teachTours()){TR.pending='';return}
+  if(id==='desk'){if(curScreen==='teach'&&!TC.cur)return tourHook('desk');teacherGate(()=>{TC.cur='';openTeach()});return}
+  if(id==='class'){if(curScreen==='teach'&&TC.cur)return tourHook('class');const c=(TC.classes||[])[0];if(!c){TR.pending='';toast('Make a class first','Then the class tour can show its tabs.','#2f9fe0');return}teacherGate(()=>openTeach(c.cid))}}
 /* called when a screen has been drawn */
-function tourHook(id){if(TR.pending===id){TR.pending='';setTimeout(()=>startTour(id),550);return}
+function tourHook(id){if(TR.pending&&Date.now()-(TR.pendAt||0)>60000)TR.pending=''; // a replay that was not finished (PIN closed) is forgotten
+  if(TR.pending===id){TR.pending='';setTimeout(()=>startTour(id),550);return}
   if(id==='map'&&document.body.classList.contains('newbie'))return;maybeTour(id)}
