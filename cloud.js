@@ -39,6 +39,7 @@ if (window.PipCloud) {
     } catch (e) {
       db = FS.getFirestore(app); // private browsing etc.: memory cache only (the game still keeps its own copy)
     }
+    const appleProvider = () => { const p = new AU.OAuthProvider('apple.com'); p.addScope('email'); p.addScope('name'); p.setCustomParameters({ locale: 'en' }); return p; };
     const me = () => {
       const u = auth.currentUser;
       if (!u) throw Object.assign(new Error('Not signed in'), { code: 'auth/no-user' });
@@ -60,6 +61,16 @@ if (window.PipCloud) {
       async signInGoogle() {
         const p = new AU.GoogleAuthProvider();
         p.setCustomParameters({ prompt: 'select_account' });
+        try { await AU.signInWithPopup(auth, p); }
+        catch (e) {
+          if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') return AU.signInWithRedirect(auth, p);
+          throw e;
+        }
+      },
+      // Sign in with Apple (shown only when firebase-config.js says the Apple provider is turned on)
+      appleOn: !!(cfg && cfg.apple),
+      async signInApple() {
+        const p = appleProvider();
         try { await AU.signInWithPopup(auth, p); }
         catch (e) {
           if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') return AU.signInWithRedirect(auth, p);
@@ -239,7 +250,7 @@ if (window.PipCloud) {
         const u = auth.currentUser;
         // confirm identity first, so we never wipe data and then fail to delete the login
         if (password != null) await AU.reauthenticateWithCredential(u, AU.EmailAuthProvider.credential(u.email, password));
-        else await AU.reauthenticateWithPopup(u, new AU.GoogleAuthProvider());
+        else await AU.reauthenticateWithPopup(u, (u.providerData[0] || {}).providerId === 'apple.com' ? appleProvider() : new AU.GoogleAuthProvider());
         for (const c of await api.myClasses()) {
           if (c.owner === u.uid) await api.deleteClass(c.cid, c.code);
           else await api.leaveCo(c.cid).catch(() => {});

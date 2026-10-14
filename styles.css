@@ -1781,3 +1781,6 @@ table.heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabu
 .gclist{display:flex;flex-direction:column;gap:8px;margin:10px 0}.gclist .go{text-align:left}.gclist small{font-weight:700;color:var(--ink-soft)}
 .coinv{font-size:18px;margin:10px 0 4px}
 .tasks li{flex-wrap:wrap}
+/* Sign in with Apple: Apple's style (black, white logo and text) */
+.gbtn.apple{background:#000;color:#fff;border-color:#000}
+.gbtn.apple svg{flex:none}

@@ -6,5 +6,6 @@ window.PIP_FIREBASE_CONFIG = {
   projectId: "pip-sky-islands",
   storageBucket: "pip-sky-islands.firebasestorage.app",
   messagingSenderId: "911404168229",
-  appId: "1:911404168229:web:ec625067030bbb17963bcc"
+  appId: "1:911404168229:web:ec625067030bbb17963bcc",
+  apple: false // true once "Sign in with Apple" is set up in Firebase > Authentication (shows the Apple button)
 };

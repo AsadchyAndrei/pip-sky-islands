@@ -65,7 +65,7 @@ const send = {
 async function emailOf(uid) {
   try {
     const u = await admin.auth().getUser(uid);
-    const google = (u.providerData || []).some((p) => p.providerId === 'google.com');
+    const google = (u.providerData || []).some((p) => p.providerId === 'google.com' || p.providerId === 'apple.com');
     return u.email && (u.emailVerified || google) ? u.email : '';
   } catch (e) { return ''; }
 }

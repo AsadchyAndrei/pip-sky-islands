@@ -156,6 +156,7 @@ $('#storyBtn').onclick=()=>{tone([523,784]);openStory()};
 
 /* ================= sign-in, consent, players ================= */
 const CLOUD_ICON='<svg viewBox="0 0 24 16" width="20" height="14" aria-hidden="true"><path d="M6 15h12a4.5 4.5 0 0 0 .6-8.96A6 6 0 0 0 7.1 5.2 4.9 4.9 0 0 0 6 15z" fill="currentColor"/></svg>';
+const APPLE_ICON='<svg viewBox="0 0 17 20" width="20" height="22" aria-hidden="true"><path fill="currentColor" d="M14.2 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.5 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1zM11.7 3c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.1.1 2.3-.6 3-1.5z"/></svg>';
 const G_ICON='<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.6 28.6A14.4 14.4 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.2 0-11.5-4.1-13.4-9.8l-8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
 const LOCK=ICON.lock;
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
@@ -167,7 +168,7 @@ const kidAvatar=p=>foxSVG({char:p.char,hat:p.hat,balloon:p.balloon,pet:p.pet,bas
 const AUTH_ERR={'auth/invalid-email':'That email address doesn\'t look right.','auth/missing-password':'Please type a password.','auth/weak-password':'Password needs at least 6 characters.',
   'auth/email-already-in-use':'This email already has an account. Tap "Sign in" instead.','auth/invalid-credential':'Email or password is not right. Try again, or tap "Forgot password?".',
   'auth/wrong-password':'That password is not right.','auth/user-not-found':'No account with this email yet. Tap "Create account".','auth/too-many-requests':'Too many tries. Please wait a few minutes.',
-  'auth/popup-closed-by-user':'The Google window was closed. Try again.','auth/cancelled-popup-request':'','auth/network-request-failed':'No internet connection. Check it and try again.',
+  'auth/popup-closed-by-user':'The sign-in window was closed. Try again.','auth/cancelled-popup-request':'','auth/network-request-failed':'No internet connection. Check it and try again.',
   'auth/unauthorized-domain':'This website address is not allowed yet. (Grown-up setup: add it in Firebase > Authentication > Settings > Authorized domains.)',
   'auth/operation-not-allowed':'This sign-in method is turned off. (Setup: enable it in Firebase > Authentication > Sign-in method.)','auth/requires-recent-login':'For safety, please sign in again first.'};
 const authMsg=e=>AUTH_ERR[e&&e.code]!=null?AUTH_ERR[e.code]:'Something went wrong. Please try again.';
@@ -218,6 +219,7 @@ function showGate(){
   gateShell(`<p class="gsub">Math, reading, science and social studies puzzles for grades 3 to 5.</p>
   <div class="gcard"><h3>Parents and teachers: sign in once</h3><p>Then kids just tap their name. Progress is saved in the cloud and follows you to any device.</p>
     <button class="gbtn" type="button" id="gGoogle">${G_ICON}<span>Continue with Google</span></button>
+    ${CL.api.appleOn?`<button class="gbtn apple" type="button" id="gApple">${APPLE_ICON}<span>Continue with Apple</span></button>`:''}
     <div class="or"><span>or with email</span></div>
     <input class="gin" type="email" id="gEmail" placeholder="Email" autocomplete="email" aria-label="Email">
     <input class="gin" type="password" id="gPass" placeholder="Password (6 or more characters)" autocomplete="current-password" aria-label="Password">
@@ -231,6 +233,7 @@ function showGate(){
   const run=async(fn)=>{note('');busy(true);CL.interactive=true;try{await fn()}catch(e){CL.interactive=false;const m=authMsg(e);if(m)note(m)}busy(false)};
   const em=()=>$('#gEmail').value.trim(),pw=()=>$('#gPass').value;
   $('#gGoogle').onclick=()=>run(()=>CL.api.signInGoogle());
+  if($('#gApple'))$('#gApple').onclick=()=>run(()=>CL.api.signInApple());
   $('#gIn').onclick=()=>run(()=>CL.api.signInEmail(em(),pw()));
   $('#gUp').onclick=()=>run(()=>CL.api.signUpEmail(em(),pw()));
   $('#gPass').onkeydown=e=>{if(e.key==='Enter')$('#gIn').click()};
@@ -620,7 +623,7 @@ async function downloadData(){let data;
 function deleteAccountFlow(){
   const pw=CL.provider==='password';
   overlay(`<div class="eyebrow" style="color:#c9473a">Delete account</div><h2 style="font-size:28px">Delete everything?</h2><p>This permanently deletes your account, all ${Object.keys(ROOT.profiles).length} player${Object.keys(ROOT.profiles).length===1?'':'s'}, their progress and all backups. It can't be undone. Tip: tap "Download all data" first if you want a copy.</p>
-    ${pw?'<input type="password" id="delPw" placeholder="Your password" autocomplete="current-password" aria-label="Password">':'<p class="note">Google will ask you to confirm your account.</p>'}
+    ${pw?'<input type="password" id="delPw" placeholder="Your password" autocomplete="current-password" aria-label="Password">':`<p class="note">${CL.provider==='apple.com'?'Apple':'Google'} will ask you to confirm your account.</p>`}
     <label class="chk"><input type="checkbox" id="delOk"><span>Yes, delete my account and all data.</span></label>
     <div class="btnrow"><button class="go" type="button" id="delGo" disabled style="background:#c9473a;box-shadow:0 6px 0 #9c3329">Delete forever</button><button class="go alt" type="button" id="delNo">Cancel</button></div><p class="note bad" id="delNote"></p>`,
   ()=>{$('#delOk').onchange=e=>$('#delGo').disabled=!e.target.checked;$('#delNo').onclick=closeOverlay;
