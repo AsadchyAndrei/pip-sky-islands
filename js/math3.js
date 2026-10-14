@@ -171,7 +171,7 @@ const GCATS3=[['Mon','Tue','Wed','Thu','books read'],['Cats','Dogs','Fish','Bird
 function genGraph3(t){
   if(t<=1){const key=pick([2,5]),vals=shuffle([1,2,3,4,5,6]).slice(0,4).map(v=>v*key),cats=['Ana','Ben','Cy','Dee'],i=R(0,3);let j;do{j=R(0,3)}while(j===i);
     const vis=picGraph(cats,vals,key,'book');
-    if(t===0)return {prompt:`The picture graph shows books each friend read. How many books did <b>${cats[i]}</b> read?`,visual:vis,...numChoices(vals[i],[vals[i]/key,vals[i]+key,vals[i]-key].filter(x=>x>0&&x!==vals[i])),hint:`Check the key! Each book picture stands for ${key} books.`,explain:`${cats[i]} has ${vals[i]/key} pictures. ${vals[i]/key} × ${key} = <b>${vals[i]}</b> books.`};
+    if(t===0)return {prompt:`The picture graph shows books each friend read. How many books did <b>${cats[i]}</b> read?`,visual:vis,...numChoices(vals[i],[vals[i]/key,vals[i]+key,vals[i]-key].filter(x=>x>0&&x!==vals[i])),hint:`Check the key! Each book picture stands for ${key} books.`,explain:`${cats[i]} has ${vals[i]/key} ${vals[i]/key===1?'picture':'pictures'}. ${vals[i]/key} × ${key} = <b>${vals[i]}</b> books.`};
     const a=Math.max(vals[i],vals[j]),b=Math.min(vals[i],vals[j]),A=cats[vals.indexOf(a)],B=cats[vals.indexOf(b)];
     return {prompt:`How many <b>more</b> books did <b>${A}</b> read than <b>${B}</b>?`,visual:vis,...numChoices(a-b,[(a-b)/key,a,a+b,a-b+key].filter(x=>x>0&&x!==a-b)),hint:`Find each total using the key, then subtract.`,explain:`${A}: ${a}. ${B}: ${b}. ${a} − ${b} = <b>${a-b}</b>.`}}
   if(t<=3){const set=pick(GCATS3),step=pick([2,5,10]),vals=[0,1,2,3].map(()=>R(1,8)*step),top=Math.max(...vals)+step,vis=barGraphScaled(set.slice(0,4),vals,step,top,set[4]),i=R(0,3);

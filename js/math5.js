@@ -43,7 +43,7 @@ function genPlace5(t){
   if(t===4){let a,b;do{a=R(100,999);b=pick([Math.floor(a/10)*10,a+R(-40,40),Math.floor(a/10)])}while(b<=0||a===b||dk(a)===dk(b));
     const A=dk(a),B=dk(b),big=a>b?A:B;return {prompt:`Which decimal is <b>greater</b>?`,choices:shuffle([A,B]),answer:big,hint:`Line up the decimal points and compare place by place: tenths, then hundredths, then thousandths.`,explain:`Line up the decimal points and compare place by place: <b>${big}</b> is greater.`}}
   if(t===5){const n=R(1001,9999),pl=pick([['whole number',1000],['tenth',100],['hundredth',10]]),r=Math.round(n/pl[1])*pl[1];if(r===n)return genPlace5(5);
-    return {prompt:`Round <b>${dk(n)}</b> to the nearest <b>${pl[0]}</b>.`,...strChoices(dk(r),[dk(Math.floor(n/pl[1])*pl[1]===r?r+pl[1]:Math.floor(n/pl[1])*pl[1]),dk(Math.round(n/(pl[1]*10))*pl[1]*10),dk(n-n%pl[1])].filter(x=>x!==dk(r))),hint:`Look at the digit just to the right of the ${pl[0]} place. 5 or more? Round up.`,explain:`${dk(n)} rounded to the nearest ${pl[0]} is <b>${dk(r)}</b>.`}}
+    return {prompt:`Round <b>${dk(n)}</b> to the nearest <b>${pl[0]}</b>.`,...strChoices(dk(r),[dk(Math.floor(n/pl[1])*pl[1]===r?r+pl[1]:Math.floor(n/pl[1])*pl[1]),dk(Math.round(n/(pl[1]/10))*pl[1]/10),dk(r+(r>n?-2:2)*pl[1])].filter(x=>x!==dk(r))),hint:`Look at the digit just to the right of the ${pl[0]} place. 5 or more? Round up.`,explain:`${dk(n)} rounded to the nearest ${pl[0]} is <b>${dk(r)}</b>.`}}
   const w=R(1,9),th=R(11,99),ans=dk(w*1000+th);
   return {prompt:`Which number is <b>${DW[w]} and ${numWords(th)} thousandths</b>?`,...strChoices(ans,[dk(w*1000+th*10),dk(th*1000+w),dk(w*10000+th)].filter(x=>x!==ans)),hint:`Thousandths means 3 digits after the decimal point.`,explain:`${DW[w]} and ${th} thousandths = <b>${ans}</b>.`}}
 
