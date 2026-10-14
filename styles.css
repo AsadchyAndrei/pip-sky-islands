@@ -1606,3 +1606,19 @@ table.heat{border-collapse:separate;border-spacing:3px;font-variant-numeric:tabu
 @media (max-width:374px){header.top #coinPill,header.top #starPill{font-size:16px;padding:4px 8px 2px;gap:4px;min-height:38px}header.top #coinPill svg,header.top #starPill svg{width:17px;height:17px}#playerBtn{height:40px}}
 
 .sxwrap{max-width:100%;overflow-x:auto}.sxtab{font-size:16px}.sxtab th,.sxtab td{padding:6px 10px}.sxcycle{font-size:18px;font-weight:700;text-align:center}
+
+/* ===== Islands panel: the subject tabs are folder tabs on top of the island grid they control ===== */
+.islbox{margin-top:22px}
+.islbox .isltitle{margin-top:8px}
+.islbox .itabs{margin:6px 0 0;padding:0;gap:6px;background:transparent;box-shadow:none;border-radius:0}
+.islbox .itabs button{border-radius:18px 18px 0 0;min-height:52px;background:rgba(255,255,255,.6);box-shadow:none}
+.islbox .itabs button[aria-selected=false]:hover{background:rgba(255,255,255,.9)}
+.islbox .itabs button[aria-selected=true]{background:var(--ocean-d);color:#fff;box-shadow:none}
+.islbox .tabp{border-top:5px solid var(--ocean-d);background:rgba(255,255,255,.35);border-radius:0 0 20px 20px;padding:20px 10px 14px}
+.islbox .foot{margin:12px 4px 2px}
+@media (max-width:760px){
+  .islbox .tabp{padding:16px 6px 10px}
+  .islbox .itabs button{min-height:48px}
+}
+@media (max-width:440px){.islbox .itabs button{font-size:16px;gap:5px;padding-inline:4px;white-space:nowrap}.islbox .itabs button .ico{width:22px;height:22px}}
+@media (max-width:360px){.islbox .itabs button{font-size:14px;gap:4px}.islbox .itabs button .ico{width:20px;height:20px}}
