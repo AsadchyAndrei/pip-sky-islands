@@ -15,4 +15,5 @@ python3 check_roles.py
 python3 check_family.py
 python3 check_server_ui.py
 python3 check_tour.py
+python3 check_demo.py
 echo "All checks passed."

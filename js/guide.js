@@ -24,6 +24,7 @@ const HOWTO=[
   {q:"Joining a teacher's class",a:`If your child's teacher uses Pip, type the 6-character <b>class code</b> in Parents → Settings → "Join a teacher's class". The teacher then sees a progress summary for your child (never your email or other children), can send tasks, and you see the teacher's tasks and messages in Parents. You can leave the class at any time.`},
   {q:'Install as an app, play offline',a:`Pip works in any browser. To install it: in Chrome on Android or a computer, Parents → Settings → "Install the app" (or the install icon in the address bar); on iPhone or iPad, Safari → Share → "Add to Home Screen". It keeps working without internet and saves when you're back online.`}]},
 {id:'teachers',title:'For teachers',items:[
+  {q:'Try it first: the teacher demo',a:`Open <a href="./?demo=teacher"><b>the teacher demo</b></a>: a sample class of 12 students with a week of progress, groups, tasks, a lesson mode and printable family reports. No sign-up, nothing is saved. You can also turn on "Use this device for the class" there and log in as a student with the picture cards.`},
   {q:'Getting started',a:`<ol><li>Sign in and choose <b>Teacher</b>, with the name students see (like "Ms. Rivera").</li>
     <li>On the <b>teacher desk</b>, make a class: a name and a grade.</li>
     <li>Add students, or give families the <b>class code</b> to join from home. Both can be in one class.</li></ol>`,tour:'desk'},

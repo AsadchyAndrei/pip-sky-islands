@@ -227,6 +227,7 @@ function showGate(){
     <button class="linkbtn" type="button" id="gForgot">Forgot password?</button>
     <p class="note" id="gNote" role="status"></p></div>
   <button class="linkbtn" type="button" id="gGuest">Play without an account (saved on this device only)</button>
+  <a class="gdemo" href="?demo=teacher"><b>Teachers: try the teacher desk</b><span>A sample class with progress, groups and reports. No sign-up.</span></a>
   <a class="linkbtn" href="guide.html" target="_blank" rel="noopener">How Pip works</a>
   <a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>`);
   const note=(t,ok)=>{const n=$('#gNote');n.className='note '+(ok?'ok':'bad');n.textContent=t};

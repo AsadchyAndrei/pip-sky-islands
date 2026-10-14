@@ -39,13 +39,13 @@ function bindNotify(){if(!$('#nWeekly'))return;const note=(t,ok)=>{const e=$('#n
   const flip=async(id,key)=>{const b=$('#'+id),on=b.getAttribute('aria-checked')!=='true';b.setAttribute('aria-checked',on);if(!(await saveNotify({[key]:on}))){b.setAttribute('aria-checked',!on);note('Could not save. Check the internet and try again.',false)}else note(on?'Saved. ':'Turned off.',true)};
   $('#nWeekly').onclick=()=>flip('nWeekly','weekly');$('#nRemind').onclick=()=>flip('nRemind','remind');
   $('#nPush').onclick=async()=>{const b=$('#nPush'),on=b.getAttribute('aria-checked')!=='true';b.disabled=true;
-    try{if(on){const r=await CL.api.enablePush();if(!r.ok){note(r.why==='unsupported'?(/iPhone|iPad/.test(navigator.userAgent)?'On iPhone and iPad: first add Pip to the Home Screen (Share → Add to Home Screen), open it from there, then turn this on.':'This browser cannot show notifications.'):r.why==='denied'?'Notifications are blocked for this site. Allow them in the browser settings, then try again.':'Notifications were not turned on.',false);b.disabled=false;return}
+    try{if(on){const r=await CL.api.enablePush();if(!r.ok){note(r.why==='unsupported'?(/iPhone|iPad/.test(navigator.userAgent)?'On iPhone and iPad: first add Pip to the Home Screen (Share → Add to Home Screen), open it from there, then turn this on.':'This browser cannot show notifications.'):r.why==='demo'?'Notifications are turned off in the demo.':r.why==='denied'?'Notifications are blocked for this site. Allow them in the browser settings, then try again.':'Notifications were not turned on.',false);b.disabled=false;return}
         b.setAttribute('aria-checked',true);note('Notifications are on for this device.',true)}
       else{await CL.api.disablePush();b.setAttribute('aria-checked',false);note('Notifications are off for this device.',true)}}
     catch(e){note('Could not change notifications right now. Try again in a minute.',false)}b.disabled=false};
   $('#nTest').onclick=async()=>{const b=$('#nTest');b.disabled=true;note('Sending...');
     try{await CL.api.sendTestEmail();note(`Sent to ${CL.email}. It can take a minute; check the spam folder too.`,true)}
-    catch(e){const m=String((e&&e.message)||'');note(/no-email/.test(m)?'Confirm your email address first (the link in the sign-up email).':/nothing/.test(m)?'Nothing to send yet: play a few puzzles first.':/wait/.test(m)?'One test email every 5 minutes, please.':'Emails are not available yet. Try again later.',false)}
+    catch(e){const m=String((e&&e.message)||'');note(/demo/.test(m)?'Emails are not sent in the demo.':/no-email/.test(m)?'Confirm your email address first (the link in the sign-up email).':/nothing/.test(m)?'Nothing to send yet: play a few puzzles first.':/wait/.test(m)?'One test email every 5 minutes, please.':'Emails are not available yet. Try again later.',false)}
     setTimeout(()=>{b.disabled=false},4000)}}
 /* asked once on the Progress tab */
 function notifyAskHTML(){if(CL.mode!=='cloud'||notifyOf()||lsGet('pip-nask-'+CL.uid))return '';
