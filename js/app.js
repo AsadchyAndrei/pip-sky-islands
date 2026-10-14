@@ -227,6 +227,7 @@ function showGate(){
     <button class="linkbtn" type="button" id="gForgot">Forgot password?</button>
     <p class="note" id="gNote" role="status"></p></div>
   <button class="linkbtn" type="button" id="gGuest">Play without an account (saved on this device only)</button>
+  <a class="linkbtn" href="guide.html" target="_blank" rel="noopener">How Pip works</a>
   <a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>`);
   const note=(t,ok)=>{const n=$('#gNote');n.className='note '+(ok?'ok':'bad');n.textContent=t};
   const busy=on=>document.querySelectorAll('#gate button').forEach(b=>b.disabled=on);
@@ -593,7 +594,7 @@ function renderParent(){
   if($('#bkNow'))$('#bkNow').onclick=async()=>{const n=$('#bkNote');save();n.textContent='Saving...';const p=G,t=new Date();
     try{await CL.api.writeBackup(ROOT.current,`${dayKey()}-m${String(t.getHours()).padStart(2,'0')}${String(t.getMinutes()).padStart(2,'0')}`,bkDoc(p));n.className='note ok';n.textContent='Backup saved.';loadBackups()}catch(e){n.className='note bad';n.textContent='Backups need the internet.'}};
   bindClassParent();bindTeacherAcct();bindFGoal();bindNotify();bindNotifyAsk();if($("#wkPrint"))$("#wkPrint").onclick=printWeek;
-  parentTabs(rows,allA);
+  parentTabs(rows,allA);if(typeof tourHook==='function')tourHook('parent');
   $('#chPin').onclick=()=>{pinBuf='';pinStage='create';overlay(pinHTML(),bindPin)};
   $('#copyCode').onclick=()=>{const ta=$('#codeOut');const ok=()=>$('#copyNote').textContent='Copied!';
     try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();$('#copyNote').textContent='Selected. Press Ctrl+C / ⌘C to copy.'})}catch(e){ta.select();$('#copyNote').textContent='Selected. Press Ctrl+C / ⌘C to copy.'}};
@@ -846,6 +847,8 @@ $('#gearBtn').onclick=e=>{e.stopPropagation();const m=$('#tmenu'),o=m.hidden;m.h
 /* on phones the Parents button lives inside the Settings menu */
 (()=>{const b=document.createElement('button');b.type='button';b.className='tbtn menuonly';b.innerHTML=ICON.family+'<span>Parents</span>';b.onclick=()=>{$('#tmenu').hidden=true;$('#gearBtn').setAttribute('aria-expanded','false');$('#parentBtn').click()};$('#tmenu').appendChild(b)})();
 document.querySelectorAll('.ico-slot[data-ico]').forEach(e=>{e.outerHTML=ICON[e.dataset.ico]});
+$('#helpBtn').onclick=()=>{$('#tmenu').hidden=true;$('#gearBtn').setAttribute('aria-expanded','false');openHelp()};
+$('#pHelp').onclick=()=>openHelp('parents');
 /* ================= inside the house: rooms you decorate ================= */
 /* the room is a doll-house cut-away: a wall with 2 rows of slots and a floor with 3 rows of cells.
    Every thing snaps to cells, so it never overlaps and is easy to move with a finger. */

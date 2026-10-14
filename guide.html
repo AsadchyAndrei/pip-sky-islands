@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Pip works · Pip's Sky Islands</title>
+<meta name="description" content="How Pip's Sky Islands works for parents and teachers: getting started, the islands, Parents' Corner, classes, tasks and reports.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1f3557;--ink-soft:#506686;--line:#d3e3f2;--card:#fff;--sun:#ffc23d;--coral:#ff6b57;--ocean:#2f9fe0;--pale-sky:#eaf6ff;
+  --display:'Lilita One','Arial Rounded MT Bold','Trebuchet MS',sans-serif;--body:'Baloo 2','Trebuchet MS','Segoe UI',sans-serif}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:17px/1.5 var(--body);background:linear-gradient(180deg,#86d8f8 0,#d4f1ff 320px,#fff0c4 100%) fixed}
+main{max-width:780px;margin:0 auto;padding:28px 16px 60px}
+.hero{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.hero img{width:84px;height:84px;flex:none}
+h1{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(30px,6vw,42px);line-height:1.05;text-wrap:balance}h1 span{color:var(--coral)}
+.sub{margin:4px 0 0;font-weight:700;color:var(--ink-soft)}
+.card{background:var(--card);border-radius:24px;padding:18px 20px;box-shadow:0 6px 0 var(--line)}
+.gdtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.gdtabs button{border:0;border-radius:999px;padding:7px 16px 6px;background:var(--pale-sky);font:800 16px var(--body);color:var(--ink);cursor:pointer}
+.gdtabs button[aria-selected=true]{background:var(--ocean);color:#fff}
+.gditem{border-bottom:1px solid var(--line);padding:10px 2px}
+.gditem summary{cursor:pointer;font-weight:800;font-size:18px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.gditem summary::-webkit-details-marker{display:none}
+.gditem summary::after{content:'+';font-size:24px;line-height:1;color:var(--ocean)}.gditem[open] summary::after{content:'−'}
+.gda{font-weight:600;color:var(--ink-soft);line-height:1.5;padding:6px 0 4px}.gda b{color:var(--ink)}.gda ol,.gda ul{padding-left:22px;margin:6px 0}.gda li{margin:4px 0}
+a{color:#1a73b0;font-weight:800}
+.cta{display:inline-block;margin:18px 0 0;background:var(--coral);color:#fff;text-decoration:none;font-family:var(--display);font-size:22px;padding:10px 22px 8px;border-radius:999px;box-shadow:0 5px 0 #c94a38}
+.foot{font-size:14px;color:var(--ink-soft);margin-top:18px}
+</style>
+</head>
+<body>
+<main>
+  <div class="hero"><img src="icon-192.png" alt=""><div><h1>How <span>Pip</span> works</h1><p class="sub">A free learning game for grades 3 to 5. Here is everything parents and teachers need to know.</p></div></div>
+  <div class="card" id="gdBox"></div>
+  <a class="cta" href="./">Open Pip's Sky Islands</a>
+  <p class="foot">Inside the game, open <b>Settings → How Pip works</b> for short guided tours of every screen. · <a href="privacy.html">Privacy notice</a> · hello@pipskyislands.com</p>
+</main>
+<script src="js/guide.js"></script>
+<script>
+(function(){const box=document.getElementById('gdBox');const pick=new URLSearchParams(location.search).get('for')||location.hash.slice(1)||'parents';
+  const draw=id=>{box.innerHTML=guideHTML(id,false);box.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{draw(b.dataset.gd);history.replaceState(null,'','#'+b.dataset.gd)})};draw(pick)})();
+</script>
+</body>
+</html>

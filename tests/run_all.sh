@@ -14,4 +14,5 @@ python3 check_newplayer.py
 python3 check_roles.py
 python3 check_family.py
 python3 check_server_ui.py
+python3 check_tour.py
 echo "All checks passed."

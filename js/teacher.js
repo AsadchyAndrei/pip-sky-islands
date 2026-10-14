@@ -153,12 +153,14 @@ function teacherGate(fn){if(CL.unlockUntil>Date.now()||!ROOT.pin&&!classDevice()
 
 /* ---------- teacher desk ---------- */
 function openTeach(cid){stopTimers();if(cid){TC.cur=cid;TC.tab=tabFor(cid);TC.autoTab=1}show('teach');renderTeach();loadClasses(true).then(()=>{if(TC.cur&&!curClass())TC.cur='';if(!TC.cur&&!TC.seen&&(TC.classes||[]).length===1){TC.cur=TC.classes[0].cid;TC.tab=tabFor(TC.cur);TC.autoTab=1}TC.seen=1;renderTeach();const c=curClass();if(c)loadMembers(c.cid).then(()=>{if(TC.autoTab&&TC.cur===c.cid)TC.tab=tabFor(c.cid);if(curScreen==='teach'&&TC.cur===c.cid)renderTeach()})})}
-function teachHead(sub){return `<div class="playhead"><button class="back" type="button" id="tBack">${ICON.back}${TC.cur?'All classes':'My own kids'}</button><div class="ihead"><div class="iname">Teacher desk</div><div class="qnum">${esc(sub)}</div></div></div>`}
+function teachHead(sub){return `<div class="playhead"><button class="back" type="button" id="tBack">${ICON.back}${TC.cur?'All classes':'My own kids'}</button><div class="ihead"><div class="iname">Teacher desk</div><div class="qnum">${esc(sub)}</div></div><button class="helpbtn" id="tHelp" type="button">${Q_ICO}<span>How it works</span></button></div>`}
+const Q_ICO='<svg class="qico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#fff" stroke="currentColor" stroke-width="2.4"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2.9-1.2 1.8v.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.4" r="1.4" fill="currentColor"/></svg>';
 function renderTeach(){const el=$('#teach');if(!el)return;const c=curClass();
   if(!c)el.innerHTML=teachHead(CL.email||'')+classListHTML();
   else el.innerHTML=teachHead(`${c.name} · ${packLabel(c.pack)}`)+classHTML(c);
   $('#tBack').onclick=()=>{if(TC.cur){TC.cur='';renderTeach()}else openKids()};
-  if(!c)bindClassList();else bindClass(c)}
+  if(!c)bindClassList();else bindClass(c);
+  $('#tHelp').onclick=()=>openHelp('teachers');if(typeof tourHook==='function')tourHook(c?'class':'desk')}
 function classListHTML(){const L=TC.classes;
   const ready=Object.values(CONTENT.packs).filter(packReady).sort((a,b)=>a.state.localeCompare(b.state)||a.grade-b.grade);
   return `<p class="tkidsnote">Your classes are here. Your <b>own children</b> play under <b>My own kids</b> (top left), separate from your classes.</p><div class="pgrid">${L==null?'<div class="pcard wide"><p>Loading your classes...</p></div>':''}
