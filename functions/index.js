@@ -25,9 +25,14 @@ const FN_URL = 'https://us-central1-pip-sky-islands.cloudfunctions.net/';
 /* ---------- sending (swappable in tests) ---------- */
 const send = {
   async mail(to, m, unsubUrl) {
-    let key = '';
-    try { key = RESEND.value() || ''; } catch (e) { key = ''; }
-    if (!/^re_/.test(key)) { logger.warn('No Resend API key: email not sent', { to: to.replace(/^(.).*@/, '$1***@') }); return false; }
+    let raw = '';
+    try { raw = RESEND.value() || ''; } catch (e) { raw = ''; }
+    const key = (String(raw).match(/re_[A-Za-z0-9_-]{8,}/) || [''])[0];
+    if (!key) {
+      const why = !raw ? 'empty' : raw.trim() === 'none' ? 'placeholder (no key was pasted in setup)' : `not a Resend key (length ${raw.length})`;
+      logger.warn('No Resend API key: email not sent', { why, to: to.replace(/^(.).*@/, '$1***@') });
+      return false;
+    }
     const headers = unsubUrl ? { 'List-Unsubscribe': `<${unsubUrl}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } : {};
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
