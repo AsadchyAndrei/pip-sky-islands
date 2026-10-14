@@ -101,14 +101,16 @@ async function cloudPush(){
     const merged=mergeProfiles(local,rem&&rem.p);
     if(rem&&rem.p&&sameProfile(merged,rem.p))continue;
     CL.remote[id]={p:merged,ts:Date.now()};CL.waiting++;
-    const dg=!local.roster&&typeof digestFor==='function'?digestFor(id):'';
-    let pr;try{pr=CL.api.saveKid(id,{data:JSON.stringify(merged),name:(merged.name||'Player').slice(0,16),ts:Date.now(),v:1,...(dg&&dg.length<11000?{mail:dg}:{})})}catch(e){pr=Promise.reject(e)}
-    pr.then(()=>{CL.waiting--;CL.err='';setSync()},e=>{CL.waiting--;CL.err=(e&&e.code)||'error';
+    let pr;try{pr=CL.api.saveKid(id,{data:JSON.stringify(merged),name:(merged.name||'Player').slice(0,16),ts:Date.now(),v:1})}catch(e){pr=Promise.reject(e)}
+    pr.then(()=>{CL.waiting--;CL.err='';setSync();saveDigest(id,local)},e=>{CL.waiting--;CL.err=(e&&e.code)||'error';
       if(e&&e.code==='permission-denied'){CL.remote[id]={deleted:true};dropKid(id)}else{CL.dirty[id]=1;cloudSchedule(30000)}setSync()});
     dailyBackup(id,merged);
   }
   CL.busy=false;setSync();if(CL.pending){CL.pending=false;cloudSchedule(3000)}
 }
+/* the small summary for the weekly email goes in its own write: if it is refused, the player's save is never affected */
+function saveDigest(id,p){if(p.roster||typeof digestFor!=='function'||!CL.api.saveKidMail)return;const dg=digestFor(id);if(!dg||dg.length>11000)return;
+  CL.api.saveKidMail(id,dg).catch(()=>{})} // after every save: the save replaces the whole document
 function dailyBackup(id,p){const day=dayKey(),k='pip-bk-'+CL.uid+'-'+id;let last='';try{last=localStorage.getItem(k)||''}catch(e){}if(last===day)return;
   try{localStorage.setItem(k,day)}catch(e){}
   CL.api.writeBackup(id,day,{data:JSON.stringify(p),name:(p.name||'Player').slice(0,16),ts:Date.now(),xp:p.xp,stars:STAR_ISLANDS.reduce((s,i)=>s+(p.best[i.id]||0),0),coins:p.coins})

@@ -37,6 +37,7 @@ const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(fal
   await check(assertSucceeds(as('T1').doc('classes/C1').update({ co: [], coNames: {} })), 'the owner removes co-teachers');
   await check(assertSucceeds(as('P1').doc('users/P1/kids/k1').set({ data: '{}', name: 'Maya', ts: 1, v: 1, mail: '{"v":1}' })), 'a child save may carry the email summary');
   await check(assertFails(as('P1').doc('users/P1/kids/k2').set({ data: '{}', name: 'Leo', ts: 1, v: 1, mail: 'x'.repeat(13000) })), 'the email summary is size-limited');
+  await check(assertSucceeds(as('P1').doc('users/P1/kids/k1').update({ mail: '{"v":1,"name":"Maya"}' })), 'the email summary is saved as its own small update');
   await check(assertSucceeds(as('P1').doc('users/P1/push/abc').set({ t: 'token', ts: 1, ua: 'Chrome' })), 'a device token is saved');
   await check(assertFails(as('P2').doc('users/P1/push/abc').get()), "no one else reads a family's device tokens");
   await check(assertFails(as('P1').doc('users/P1/push/abd').set({ t: 'token', evil: 1 })), 'device token documents hold only known fields');

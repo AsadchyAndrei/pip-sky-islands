@@ -86,6 +86,8 @@ if (window.PipCloud) {
         }, onErr);
       },
       saveKid: (id, d) => FS.setDoc(kidRef(id), d),
+      // the weekly-email summary: a separate small update, so a refused summary can never block saving progress
+      saveKidMail: (id, mail) => FS.updateDoc(kidRef(id), { mail }),
       async deleteKid(id) {
         await api.pruneBackups(id, 0);
         await FS.setDoc(kidRef(id), { deleted: true, ts: Date.now() });

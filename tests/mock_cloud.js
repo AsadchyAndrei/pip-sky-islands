@@ -23,6 +23,7 @@
     setUserDoc: async (d) => put(`users/${me()}`, { ...(get(`users/${me()}`) || {}), ...d }),
     watchKids(cb) { kidWatch = cb; tellKids(); return () => { kidWatch = null; }; },
     saveKid: async (id, d) => { const old = get(`users/${me()}/kids/${id}`); if (old && old.deleted) throw deny(); put(`users/${me()}/kids/${id}`, d); },
+    saveKidMail: async (id, mail) => { const old = get(`users/${me()}/kids/${id}`); if (!old || old.deleted) throw deny(); put(`users/${me()}/kids/${id}`, { ...old, mail }); },
     deleteKid: async (id) => { put(`users/${me()}/kids/${id}`, { deleted: true, ts: Date.now() }); },
     writeBackup: async () => {}, listBackups: async () => [], pruneBackups: async () => {},
     async myClasses() { return under('classes/').filter(([k, v]) => k.split('/').length === 2 && (v.owner === me() || (v.co || []).includes(me()))).map(([k, v]) => ({ cid: k.split('/')[1], ...v })); },
