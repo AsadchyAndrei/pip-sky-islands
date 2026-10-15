@@ -20,14 +20,32 @@ with sync_playwright() as p:
         pg.evaluate("openHelp()"); until(pg, "!!document.querySelector('[data-replay=map]')")
         pg.click('[data-replay=map]'); until(pg, "TR.on && TR.id==='map'", 4000)
         seen = []
-        for i in range(14):
+        for i in range(25):
             if not pg.evaluate("TR.on"): break
             pg.wait_for_timeout(900)
             seen.append(pg.inner_text('#tbT'))
-            if i > 0 and i < 13 and not pg.evaluate("TR.steps[TR.i].intro||TR.steps[TR.i].end"):
+            if i > 0 and not pg.evaluate("TR.steps[TR.i].intro||TR.steps[TR.i].end"):
                 c.ok(pg.evaluate("(()=>{const s=document.querySelector('.tspot').getBoundingClientRect(),b=document.querySelector('.tbub').getBoundingClientRect();return s.width>10&&b.top>=0&&b.bottom<=innerHeight+1&&b.left>=0&&b.right<=innerWidth+1})()"), f'{w}: step "{seen[-1]}" is lit and its bubble is on screen')
             pg.click('#tbNext'); pg.wait_for_timeout(250)
         c.ok(seen[0] == "Hi, I'm Pip!" and seen[-1] == "You're ready to fly!" and len(seen) >= 8, f'{w}: map tour steps {seen}')
+        c.ok(pg.evaluate("G.tourCoins") == 1, f'{w}: finishing the islands tour gives coins once')
+        # tap-it-yourself step: only the lit-up tab can be tapped, and tapping it moves on
+        pg.evaluate("startTour('map')"); pg.click('#tbNext'); pg.wait_for_timeout(300)
+        while pg.evaluate("TR.on && !TR.steps[TR.i].act"): pg.click('#tbNext'); pg.wait_for_timeout(250)
+        pg.wait_for_timeout(700)
+        c.ok(pg.evaluate("document.elementFromPoint(5,innerHeight-5).classList.contains('tblk')"), f'{w}: the rest of the screen is blocked on a tap-it step')
+        pg.evaluate("TR.el.click()"); pg.wait_for_timeout(1000)
+        c.ok(pg.evaluate("TR.steps[TR.i].t") == 'And back to Math' and pg.evaluate("mapTab") == 'world', f'{w}: tapping the lit-up tab switches it and moves on')
+        pg.keyboard.press('Escape'); until(pg, "!TR.on")
+        # a round: its tour starts on the first puzzle, once
+        pg.evaluate("start(byId('mult'))"); until(pg, "TR.on && TR.id==='play'", 6000)
+        pg.keyboard.press('Escape'); until(pg, "!TR.on")
+        c.ok(pg.evaluate("tourSeen('play')"), f'{w}: the round tour is remembered')
+        pg.evaluate("openHelp()"); until(pg, "!!document.querySelector('[data-replay=play]')")
+        c.ok('Seen' in pg.text_content('[data-replay=map]'), f'{w}: help shows which tours were seen')
+        pg.click('[data-replay=play]'); pg.wait_for_timeout(300)
+        c.ok(not pg.evaluate("tourSeen('play')"), f'{w}: replaying the round tour sets it for the next round')
+        pg.evaluate("renderMap()"); pg.wait_for_timeout(300)
         # Parents' Corner: starts on its own the first time
         pg.evaluate("CL.unlockUntil=Date.now()+600000;openParent()")
         until(pg, "TR.on && TR.id==='parent'", 6000)
@@ -72,7 +90,11 @@ with sync_playwright() as p:
     c.ok(st['users/T1'].get('tours', {}).get('desk') == 1, 'a finished tour is saved in the account')
     pg.click('[data-cls="C1"]'); until(pg, "TR.on && TR.id==='class'", 6000)
     c.ok(pg.inner_text('#tbT') == 'Your class', 'the class tour starts when a class opens')
-    pg.click('#tbSkip'); until(pg, "!TR.on")
+    tabs = set()
+    for i in range(25):
+        if not pg.evaluate("TR.on"): break
+        pg.click('#tbNext'); pg.wait_for_timeout(700); tabs.add(pg.evaluate("TC.tab"))
+    c.ok(tabs >= {'kids', 'prog', 'tasks', 'set'} and pg.evaluate("TC.tab") == 'prog', f'the class tour walks through every tab and ends on Progress: {tabs}')
     # replaying the desk tour from a class device asks for the PIN first
     pg.evaluate("ROOT.pin='1234';CL.unlockUntil=0;lsSet('pip-classdev-'+CL.uid,'C1');TC.cur='';openKids()"); pg.wait_for_timeout(400)
     pg.evaluate("openHelp()"); pg.wait_for_timeout(300)

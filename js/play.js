@@ -158,6 +158,7 @@ function showQ(){
   $('#speakBtn').hidden=!canSpeak;
   $('#howBtn').hidden=S.mode==='boss'||S.mode==='test'||!(q.how||q.hint);
   armNudge();
+  if(S.i===0&&S.mode==='island'&&typeof tourHook==='function')tourHook('play');
   if(q.kind==='setclock')return setupClock(q);
   if(q.kind==='order')return setupOrder(q);
   if(q.kind==='angle')return setupAngle(q);
