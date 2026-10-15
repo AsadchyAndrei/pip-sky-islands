@@ -1863,3 +1863,18 @@ body.demo #mapSpacer{min-height:70px}
 .trbtn{position:relative}.trbtn.seen{background:#fff;border-color:#cfe9db}
 .trrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}.trrow .trgo{margin:0}.trrow em{font-style:normal;font-size:12px;font-weight:800;color:var(--ink-soft)}
 .trbtn.seen .trgo{background:var(--pale-leaf);color:#1f8a5f}
+/* ===== sign-in screen: try first ===== */
+.gtry{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+.gplay{display:flex;align-items:center;gap:14px;width:100%;max-width:420px;border:0;cursor:pointer;text-align:left;background:var(--coral);color:#fff;border-radius:22px;padding:14px 18px;box-shadow:0 6px 0 #c94a38;font-family:var(--body);transition:transform .1s}
+.gplay:hover{transform:translateY(-1px)}.gplay:active{transform:translateY(3px);box-shadow:0 3px 0 #c94a38}
+.gplay:focus-visible{outline:3px solid var(--ocean);outline-offset:3px}
+.gpico{width:52px;height:52px;flex:none;border-radius:50%;background:#fff;color:var(--coral);display:grid;place-items:center;animation:gpPulse 2s ease-in-out infinite}
+.gpico svg{width:30px;height:30px;margin-left:3px}
+@keyframes gpPulse{50%{box-shadow:0 0 0 8px rgba(255,255,255,.28)}}
+.gptx{display:flex;flex-direction:column;min-width:0}.gptx b{font-family:var(--display);font-weight:400;font-size:28px;line-height:1.05}.gptx small{font-weight:700;font-size:15px;opacity:.95}
+.gtry .gdemo{margin:0}
+.gbub{position:relative;max-width:340px;background:#fff;border-radius:18px;padding:10px 14px;font-weight:700;color:var(--ink);box-shadow:0 6px 18px rgba(31,53,87,.18);opacity:0;transform:translateY(6px) scale(.96);transition:opacity .35s,transform .35s cubic-bezier(.3,1.5,.5,1)}
+.gbub::after{content:'';position:absolute;left:50%;bottom:-8px;width:16px;height:16px;background:#fff;transform:translateX(-50%) rotate(45deg)}
+.gbub b{color:var(--coral)}
+.gbub.in{opacity:1;transform:none}.gbub.out{opacity:0;transform:translateY(-4px);pointer-events:none}
+@media (prefers-reduced-motion:reduce){.gpico{animation:none}.gbub{transition:none}}

@@ -186,7 +186,8 @@ async function boot(){
 function startGuest(){CL.mode='guest';CL.uid='';ROOT=readGuestRoot();ROOT.current='';G=freshProfile();CL.loaded=true;prune();openKids()}
 function loadCache(){const r=lsJSON('pip-cloud-'+CL.uid)||{};ROOT={profiles:{},current:'',pin:r.pin||'',ts:r.ts||0,gone:r.gone||{}};for(const k in (r.profiles||{}))ROOT.profiles[k]=normalizeProfile(r.profiles[k]);G=freshProfile();CL.loaded=true;prune()}
 async function onAuthChange(u){
-  if(!u){if(CL.mode==='cloud')leaveCloud();if(CL.wantGuest)return startGuest();return showGate()}
+  if(!u){if(CL.mode==='cloud')leaveCloud();if(CL.wantGuest||lsGet('pip-guest'))return startGuest();return showGate()}
+  leaveGuest();
   if(CL.mode==='cloud'&&CL.uid===u.uid)return;
   CL.mode='cloud';CL.uid=u.uid;CL.email=u.email||'';CL.provider=u.provider||'';CL.verified=u.verified!==false;CL.synced=false;CL.remote={};CL.dirty={};CL.err='';
   loadCache();show('gate');gateLoading();
@@ -213,11 +214,26 @@ function gateShell(inner){show('gate');$('#gate').innerHTML=`<div class="gatebox
 function gateLoading(){gateShell(`<p class="gsub">Getting the balloons ready...</p>`)}
 function gateOffline(){gateShell(`<div class="gcard"><h3>Can't reach the sign-in service</h3><p>Check the internet connection and try again.</p><div class="btnrow"><button class="go" type="button" id="gRetry">Try again</button></div>
   <button class="linkbtn" type="button" id="gGuest">Play without an account (saved on this device only)</button></div>`);
-  $('#gRetry').onclick=()=>location.reload();$('#gGuest').onclick=()=>startGuest()}
+  $('#gRetry').onclick=()=>location.reload();$('#gGuest').onclick=()=>playAsGuest()}
+/* a guest who has played a few rounds is invited (twice at most) to save the progress with a free account */
+function guestNudge(){if(CL.mode!=='guest'||!(CL.api&&CL.api.configured)||ovOpen)return;
+  const n=(+lsGet('pip-guest-rounds')||0)+1,asked=+lsGet('pip-guest-asked')||0;lsSet('pip-guest-rounds',String(n));
+  if(!((n===3&&asked<1)||(n===10&&asked<2)))return;lsSet('pip-guest-asked',String(asked+1));
+  overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Nice work${nm()}!</div><h2>Keep your stars safe</h2>
+    <p>${(()=>{const st=starTotal(),have=[st?`<b>${st} star${st>1?'s':''}</b>`:'',G.coins?`<b>${fmt(G.coins)} coins</b>`:''].filter(Boolean);return have.length?`You have ${have.join(' and ')}. Right now they live only on this device.`:'Right now your progress lives only on this device.'})()} A grown-up can sign in for free, and everything comes along: stars, coins, outfits and the island, on any phone, tablet or computer.</p>
+    <div class="btnrow"><button type="button" class="go" id="gnSave">Sign in to save</button><button type="button" class="go alt" id="gnLater">Maybe later</button></div>`,
+    ()=>{$('#gnSave').onclick=()=>{closeOverlay();leaveGuest();showGate()};$('#gnLater').onclick=closeOverlay})}
+/* "Play now": no account; the game remembers the choice, so the next visit opens straight away */
+function playAsGuest(){lsSet('pip-guest','1');lsSet('pip-gate-hint','1');CL.wantGuest=true;startGuest()}
+function leaveGuest(){try{localStorage.removeItem('pip-guest')}catch(e){}CL.wantGuest=false}
 function showGate(){
   if(!(CL.api&&CL.api.configured))return startGuest();
-  gateShell(`<p class="gsub">Math, reading, science and social studies puzzles for grades 3 to 5.</p>
-  <div class="gcard"><h3>Parents and teachers: sign in once</h3><p>Then kids just tap their name. Progress is saved in the cloud and follows you to any device.</p>
+  const hint=!lsGet('pip-gate-hint');
+  gateShell(`<p class="gsub">Math, reading, science and social studies puzzles for grades 3 to 5. Free, no ads.</p>
+  <div class="gtry">${hint?`<div class="gbub" id="gHint" role="note"><b>Just looking?</b> Try a few puzzles first. No account needed!</div>`:''}
+    <button class="gplay" type="button" id="gPlay"><span class="gpico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></span><span class="gptx"><b>Play now</b><small>No sign-up. Kids can start right away.</small></span></button>
+    <a class="gdemo" href="?demo=teacher"><b>Teachers: try the teacher desk</b><span>A sample class with progress, groups and reports. No sign-up.</span></a></div>
+  <div class="gcard"><h3>Save progress: sign in</h3><p>For parents and teachers (kids never need an email). Progress is saved in the cloud and follows you to any device. Free.</p>
     <button class="gbtn" type="button" id="gGoogle">${G_ICON}<span>Continue with Google</span></button>
     ${CL.api.appleOn?`<button class="gbtn apple" type="button" id="gApple">${APPLE_ICON}<span>Continue with Apple</span></button>`:''}
     <div class="or"><span>or with email</span></div>
@@ -226,8 +242,6 @@ function showGate(){
     <div class="btnrow"><button class="go small" type="button" id="gIn">Sign in</button><button class="go small alt" type="button" id="gUp">Create account</button></div>
     <button class="linkbtn" type="button" id="gForgot">Forgot password?</button>
     <p class="note" id="gNote" role="status"></p></div>
-  <button class="linkbtn" type="button" id="gGuest">Play without an account (saved on this device only)</button>
-  <a class="gdemo" href="?demo=teacher"><b>Teachers: try the teacher desk</b><span>A sample class with progress, groups and reports. No sign-up.</span></a>
   <a class="linkbtn" href="guide.html" target="_blank" rel="noopener">How Pip works</a>
   <a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy notice</a>`);
   const note=(t,ok)=>{const n=$('#gNote');n.className='note '+(ok?'ok':'bad');n.textContent=t};
@@ -241,7 +255,8 @@ function showGate(){
   $('#gPass').onkeydown=e=>{if(e.key==='Enter')$('#gIn').click()};
   $('#gForgot').onclick=async()=>{if(!em()){note('Type your email first, then tap "Forgot password?".');return}
     try{await CL.api.resetPassword(em());note('If that email has an account, a reset link is on its way. Check your inbox.',true)}catch(e){note(authMsg(e))}};
-  $('#gGuest').onclick=()=>{const b=$('#gGuest');if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again: progress will be saved only on this device and can be lost if browser data is cleared';return}CL.wantGuest=true;startGuest()};
+  $('#gPlay').onclick=playAsGuest;
+  if(hint){const off=()=>{lsSet('pip-gate-hint','1');const h=$('#gHint');if(h)h.classList.add('out')};setTimeout(()=>{const h=$('#gHint');if(h)h.classList.add('in')},700);$('#gate').addEventListener('pointerdown',off,{once:true})}
 }
 const ROLE_ICO={parent:`<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="14" r="7" fill="#ffd8a8" stroke="#1f3557" stroke-width="2.5"/><path d="M5 42c0-9 6-15 13-15s13 6 13 15" fill="#7cc4ff" stroke="#1f3557" stroke-width="2.5" stroke-linejoin="round"/><circle cx="35" cy="22" r="5" fill="#ffd8a8" stroke="#1f3557" stroke-width="2.5"/><path d="M27 42c0-7 4-11 8-11s8 4 8 11" fill="#ffc23d" stroke="#1f3557" stroke-width="2.5" stroke-linejoin="round"/></svg>`,
   teacher:`<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="6" width="40" height="26" rx="3" fill="#38b98a" stroke="#1f3557" stroke-width="2.5"/><path d="M10 14h14M10 20h20M10 26h10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M16 32l-4 10M32 32l4 10" stroke="#1f3557" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="16" r="4" fill="#ffc23d"/></svg>`};
@@ -305,7 +320,7 @@ function renderKids(){
   if($('#kBack'))$('#kBack').onclick=()=>renderMap();
   if($('#kTeach'))$('#kTeach').onclick=()=>teacherGate(()=>openTeach());
   if($('#kOut'))$('#kOut').onclick=signOutNow;
-  if($('#kIn'))$('#kIn').onclick=()=>{CL.wantGuest=false;showGate()};
+  if($('#kIn'))$('#kIn').onclick=()=>{leaveGuest();showGate()};
   if($('#kImp'))$('#kImp').onclick=()=>{const done=JSON.parse(lsGet('pip-imported-'+CL.uid)||'[]');for(const [gid,p] of importable()){addKid(p);done.push(gid)}lsSet('pip-imported-'+CL.uid,JSON.stringify(done));toast('Progress saved!','It is now in your account and safe in the cloud.','#38b98a');renderKids()};
 }
 /* a classroom device: only this class's students, each with a picture password; leaving needs the grown-up PIN */
@@ -589,7 +604,7 @@ function renderParent(){
   $('#kPin').onclick=()=>{let first='';pinPad('New player PIN','4 digits the player will type to start.',v=>{if(!first){first=v;$('#ocard h2').textContent='Type it again';return}if(v!==first){first='';$('#ocard h2').textContent='New player PIN';return false}G.kidPin=v;save();closeOverlay();renderParent();toast('Player PIN set',`${esc(G.name||'Player')} will type it to start.`,'#38b98a')})};
   if($('#kPinOff'))$('#kPinOff').onclick=()=>{G.kidPin='';save();renderParent()};
   if($('#aOut'))$('#aOut').onclick=signOutNow;
-  if($('#aIn'))$('#aIn').onclick=()=>{CL.wantGuest=false;CL.mode==='guest'&&showGate()};
+  if($('#aIn'))$('#aIn').onclick=()=>{leaveGuest();CL.mode==='guest'&&showGate()};
   if($('#aDl'))$('#aDl').onclick=downloadData;
   if($('#aDel'))$('#aDel').onclick=deleteAccountFlow;
   if($('#bkNow'))$('#bkNow').onclick=async()=>{const n=$('#bkNote');save();n.textContent='Saving...';const p=G,t=new Date();

@@ -1,0 +1,38 @@
+"""First visit without an account: Play now is easy to find (with Pip's hint once), the choice is remembered,
+and after a few rounds a guest is invited to save the progress with a free account."""
+import pathlib
+from serve import *
+MOCK = (pathlib.Path(__file__).parent / 'mock_cloud.js').read_text()
+c = Check('play without an account')
+with sync_playwright() as p:
+    b = launch(p)
+    for w in (1280, 390):
+        ctx = b.new_context(viewport={'width': w, 'height': 900}, service_workers='block'); ctx.route('**/*', router)
+        ctx.add_init_script("if(!sessionStorage.getItem('s')){localStorage.clear();sessionStorage.setItem('s','1')}" + MOCK)
+        pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
+        pg.goto(ORIGIN); pg.wait_for_function("!!document.querySelector('#gPlay')", timeout=15000)
+        c.ok(pg.locator('#gHint').count() == 1, f'{w}: Pip hints at playing without an account')
+        box = pg.locator('#gPlay').bounding_box()
+        c.ok(box['y'] + box['height'] < 900, f'{w}: Play now is visible without scrolling')
+        pg.click('#gPlay'); pg.wait_for_function("curScreen==='kids'", timeout=5000)
+        c.ok(pg.evaluate("CL.mode") == 'guest' and pg.evaluate("localStorage.getItem('pip-guest')") == '1', f'{w}: one tap starts the game')
+        pg.reload(); pg.wait_for_function("typeof curScreen!=='undefined'&&curScreen==='kids'", timeout=15000)
+        c.ok(pg.locator('#gPlay').count() == 0, f'{w}: next visit opens the game straight away')
+        pg.evaluate("const p=freshProfile();p.name='Max';p.pack=PACK.id;const id=addKid(p);ROOT.current=id;G=ROOT.profiles[id];save()")
+        pg.evaluate("guestNudge();guestNudge()"); pg.wait_for_timeout(300)
+        c.ok(not pg.evaluate("ovOpen"), f'{w}: no invitation after 2 rounds')
+        pg.evaluate("guestNudge()"); pg.wait_for_timeout(500)
+        c.ok(pg.evaluate("ovOpen") and pg.locator('#gnSave').is_visible() and 'stars' in pg.text_content('#ocard'), f'{w}: invitation to save after 3 rounds')
+        pg.click('#gnSave'); pg.wait_for_function("!!document.querySelector('#gPlay')", timeout=5000)
+        c.ok(pg.evaluate("localStorage.getItem('pip-guest')") is None and pg.locator('#gHint').count() == 0, f'{w}: "Sign in to save" opens sign-in (no hint again)')
+        pg.click('#gPlay'); pg.wait_for_function("curScreen==='kids'", timeout=5000)
+        pg.evaluate("for(let i=0;i<6;i++)guestNudge()"); pg.wait_for_timeout(300)
+        c.ok(not pg.evaluate("ovOpen"), f'{w}: quiet between the invitations')
+        pg.evaluate("guestNudge()"); pg.wait_for_timeout(400)
+        c.ok(pg.evaluate("ovOpen") and pg.locator('#gnSave').is_visible(), f'{w}: asked a second time after 10 rounds')
+        pg.click('#gnLater'); pg.wait_for_timeout(400)
+        pg.evaluate("for(let i=0;i<30;i++)guestNudge()"); pg.wait_for_timeout(300)
+        c.ok(not pg.evaluate("ovOpen"), f'{w}: and never more than twice')
+        c.ok(not errs, f'{w}: page errors {errs[:3]}')
+        ctx.close()
+c.done()

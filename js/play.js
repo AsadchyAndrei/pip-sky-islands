@@ -645,7 +645,7 @@ function done(st,line,o={}){
   if(S.mode==='island'&&S.chapter==null&&S.score<=3&&lessonsFor(isl.id).length){nb.hidden=false;nb.textContent='Learn the trick (3 min)';nb.onclick=()=>start(lessonIsland(lessonFor(isl.id)))}
   else if(isl.id==='write'&&S.mode==='island'&&S.chapter==null){nb.hidden=false;nb.textContent='Write my own story';nb.onclick=()=>openDesk()}
   $('#again').hidden=S.mode==='review'&&!reviewDue().length;
-  show('done');dropBadgeToasts();refreshFoxes();
+  show('done');dropBadgeToasts();refreshFoxes();if(typeof guestNudge==='function')setTimeout(guestNudge,1600);
   if(st>0){sWin();setTimeout(()=>burst(innerWidth/2,innerHeight/3,120),300)}
   setTimeout(()=>{foxMove(st>=2?'spin':st>0?'hop':'wobble');if(st===0)foxClass('sad',1500)},400);
   if(S.storyWin!=null){const ch=CHAPTERS[S.storyWin],bk=ch.book||1,B=BOOKS[bk],last=S.storyWin===B.start+3,b2=bk>=2;
