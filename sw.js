@@ -2,7 +2,7 @@
    Own files: network first (always fresh when online), but never wait long: offline or on a weak
    connection the saved copy opens right away. Fonts and the Firebase library: saved at install and
    cache first, so the game looks the same offline. Sign-in and cloud saving go straight to the network. */
-const V='pip-v37',RT='pip-rt-v2';
+const V='pip-v38',RT='pip-rt-v2';
 const CORE=['./','index.html','js/demo.js','styles.css','js/content.js','js/core.js','js/math.js','js/math3.js','js/math3x.js','js/math5.js','js/math5x.js','js/english.js','js/english3.js','js/english3x.js','js/english5.js','js/english5x.js','js/homehelp.js','js/islands.js','js/progress.js','js/play.js','js/teacher.js','js/family.js','js/notify.js','js/guide.js','js/tour.js','guide.html','js/app.js','favicon.svg','firebase-config.js','cloud.js','privacy.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png'];
 const FONT_CSS='https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Lilita+One&family=Lexend:wght@400;600;700&display=swap';
 /* save the font sheet and every font file it points to, so text never falls back to a plain font offline */

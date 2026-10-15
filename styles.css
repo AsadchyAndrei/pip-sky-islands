@@ -640,7 +640,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
 .or::before,.or::after{content:"";flex:1;height:3px;background:var(--line);border-radius:3px}
 .gin{width:100%;border:3px solid var(--line);border-radius:14px;padding:10px 12px;font-size:18px;font-weight:700;color:var(--ink);background:#fff}
 .gin:focus,.gbtn:focus-visible{outline:3px solid var(--ocean);outline-offset:1px}
-.gcard .btnrow{justify-content:flex-start}
+.gcard .btnrow{justify-content:center;align-items:center}
 .linkbtn{background:none;border:0;padding:4px 2px;color:var(--ocean);font-weight:800;text-decoration:underline;cursor:pointer;font-size:15px}
 .glist{margin:0;padding-left:20px;font-weight:700;color:var(--ink-soft);line-height:1.45;display:flex;flex-direction:column;gap:4px}
 .chk{display:flex;gap:10px;align-items:flex-start;font-weight:700;line-height:1.4;background:var(--pale-sun);border-radius:14px;padding:10px 12px}
