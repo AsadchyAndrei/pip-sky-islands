@@ -1948,3 +1948,12 @@ body.ev-wind[data-screen=play] #pipfly .pipbob{animation:evblown 1.6s ease-in-ou
 .evbubble span{width:30px;height:30px;display:block}.evbubble svg{width:100%;height:100%}
 @keyframes evfloat{0%{transform:translateY(30px) scale(.4);opacity:0}12%{transform:translateY(0) scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(-170px) translateX(-20px) scale(1.05);opacity:0}}
 @media (prefers-reduced-motion:reduce){.evbird{animation-duration:22s}.evbubble{animation:none}body.ev-wind[data-screen=play] #pipfly .pipbob{animation:none;transform:translateX(26px) rotate(14deg)}}
+/* scene: two clocks */
+.sc-clocks{display:flex;align-items:center;gap:10px;justify-content:center}
+.sc-ck{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;color:var(--ink)}
+.sc-ck small{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em}
+.sc-ck .clock{width:96px!important;max-height:none!important}
+.sc-qclock{width:96px;height:96px;border-radius:50%;border:3px dashed #e2453a;display:grid;place-items:center;font:400 40px var(--display,inherit);color:#e2453a;background:#fff}
+.sc-ar{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;color:var(--ink)}
+.sc-ar i{display:block;width:54px;height:3px;background:var(--ink);position:relative}.sc-ar i::after{content:"";position:absolute;right:-2px;top:-5px;border:6.5px solid transparent;border-left:9px solid var(--ink);border-right:0}
+.sc-ar span{background:#fff7d6;border:1.5px solid var(--ink);border-radius:11px;padding:1px 9px;font-size:14px;white-space:nowrap}

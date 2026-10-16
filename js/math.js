@@ -756,7 +756,7 @@ function genMeasure(t){
     return {prompt:`Which is <b>more</b>?`,visual:`<div class="seq"><span>${A}</span><span>${B}</span></div>`,choices:shuffle([A,B,'They are the same']),answer:ans,
       hint:`Change ${A} into ${c.small} first: ${n} × ${fmt(c.f)}.`,explain:`${A} = ${fmt(n*c.f)} ${c.small}. Compare with ${B}: ${eq?'they are <b>the same</b>':`<b>${ans}</b> is more`}.`};}
   if(t===2){const n=R(3,Dv(5,8,12)),cut=R(5,n*12-5),ans=n*12-cut;
-    return {prompt:`Pip's rope is <b>${n} feet</b> long. He cuts off <b>${cut} inches</b>. How many inches of rope are left?`,unit:'in',...numChoices(ans,[n*12+cut,Math.abs(n*10-cut),ans+12,ans-12]),
+    return {visual:sceneRope(`${n} ft`,`${cut} in`,'cut'),prompt:`Pip's rope is <b>${n} feet</b> long. He cuts off <b>${cut} inches</b>. How many inches of rope are left?`,unit:'in',...numChoices(ans,[n*12+cut,Math.abs(n*10-cut),ans+12,ans-12]),
       hint:`First change ${n} feet into inches: ${n} × 12.`,explain:`${n} feet = ${n*12} inches. ${n*12} − ${cut} = <b>${ans} inches</b>.`};}
   if(t===3){const [what,u,g]=pick(UNITQ);
     return {prompt:`Which unit is best to measure <b>${what}</b>?`,...strChoices(u,shuffle(UNITGROUPS[g].filter(x=>x!==u)).concat(shuffle(Object.values(UNITGROUPS).flat()))),

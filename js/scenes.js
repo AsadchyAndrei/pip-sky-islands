@@ -28,8 +28,9 @@ const SC_BOX={
   bag:(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-18-8q-4 26 18 26t18-26z" fill="#d9b48a" stroke="${SC_INK}" stroke-width="1.6"/><path d="M-12-10q12-8 24 0" fill="none" stroke="${SC_INK}" stroke-width="1.6"/></g>`};
 /* equal groups: "b buses with a students each", "b rows with a tulips each" */
 function sceneGroups(kind,b,a,icon){const per=Math.min(b,5),cw=66,W=Math.max(220,Math.min(b,9)*cw/ (b>5?1.6:1)+20);let g='';
-  if(kind==='row'){const H=Math.min(b,9)*25+12,W2=250;for(let r=0;r<b;r++){const y=18+r*25;for(let i=0;i<6;i++)g+=SC_ICON.tulip(20+i*20,y,.8);g+=`<text x="${20+6*20}" y="${y+4}" font-size="13" ${FONT} fill="${SC_INK}">…</text>`;g+=scTag(205,y,a,{fill:'#e8fbf2'})}
-    return scSvg(W2,H,`<rect x="6" y="4" width="166" height="${H-8}" rx="8" fill="#c8ecc0" opacity=".6"/>${g}`,`${b} rows with ${a} in each row`)}
+  if(kind==='row'){const H=Math.min(b,9)*25+12+(b>9?18:0),W2=250;for(let r=0;r<Math.min(b,9);r++){const y=18+r*25;for(let i=0;i<Math.min(a,6);i++)g+=SC_ICON[icon||'tulip'](20+i*20,y,.8);if(a>6)g+=`<text x="${20+6*20}" y="${y+4}" font-size="13" ${FONT} fill="${SC_INK}">…</text>`;g+=scTag(205,y,a,{fill:'#e8fbf2'})}
+    if(b>9)g+=`<text x="90" y="${H-8}" text-anchor="middle" font-size="13" ${FONT} fill="${SC_INK}">… ${b} rows in all</text>`;
+    return scSvg(W2,H,`<rect x="6" y="4" width="166" height="${Math.min(b,9)*25+4}" rx="8" fill="${icon==='seat'?'#ffe3dd':'#c8ecc0'}" opacity=".6"/>${g}`,`${b} rows with ${a} in each row`)}
   const n=Math.min(b,9),cols=n>5?Math.ceil(n/2):n,rows=n>5?2:1,W3=cols*cw+14,H3=rows*72+18;
   for(let i=0;i<n;i++){const c=i%cols,r=Math.floor(i/cols),x=14+cw/2+c*cw-7,y=44+r*72;g+=SC_BOX[kind](x,y);if(icon)g+=scCluster(icon,Math.min(a,3),x,y+2,3,.75);g+=scTag(x,y-27,a)}
   return scSvg(W3,H3,g,`${b} groups with ${a} in each`)}
@@ -63,3 +64,50 @@ function sceneBagsGive(b,p,give){const n=Math.min(b,6),W=Math.max(230,n*50+120),
   if(b>6)g+=`<text x="${30+n*50-12}" y="60" font-size="16" ${FONT} fill="${SC_INK}">…</text>`;
   const sx=30+n*50+40;g+=`<g transform="translate(${sx} 52) scale(1.35)"><ellipse cx="0" cy="10" rx="14" ry="11" fill="#b5824f" stroke="${SC_INK}" stroke-width="1.3"/><circle cx="-6" cy="-6" r="8" fill="#b5824f" stroke="${SC_INK}" stroke-width="1.3"/><path d="M12 14q16-8 6-26" fill="none" stroke="#b5824f" stroke-width="7" stroke-linecap="round"/><circle cx="-9" cy="-8" r="1.4" fill="${SC_INK}"/></g>`+scTag(sx,96,`−${give}`,{fill:'#ffe3dd'});
   return scSvg(W,H,g,`${b} bags of ${p} acorns, ${give} given to a squirrel`)}
+/* ---- more scenes: ropes and ribbons, two clocks, rectangles, boxes, packing and pouring ---- */
+const scArrowDef=id=>`<defs><marker id="${id}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${SC_INK}"/></marker></defs>`;
+/* a rope cut into equal pieces (the first piece is marked), or a piece cut off the end */
+function sceneRope(total,piece,mode='pieces',color='#d9a066'){const W=300,H=96,x0=14,x1=286;let g='';
+  const rope=(a,b,c=color)=>`<path d="M${a} 48H${b}" stroke="${SC_INK}" stroke-width="11" stroke-linecap="round"/><path d="M${a} 48H${b}" stroke="${c}" stroke-width="7" stroke-linecap="round"/>`;
+  g+=`<path d="M${x0} 20h${x1-x0}M${x0} 15v10M${x1} 15v10" stroke="${SC_INK}" stroke-width="1.5"/>`+scTag((x0+x1)/2,20,total);
+  if(mode==='pieces'){const pw=58;g+=rope(x0,x0+pw-4,'#ffc23d')+rope(x0+pw+4,x1);for(let x=x0+pw*2;x<x1-8;x+=pw)g+=`<path d="M${x} 38v20" stroke="${SC_INK}" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+    g+=`<path d="M${x0} 72h${pw-4}M${x0} 67v10M${x0+pw-4} 67v10" stroke="${SC_INK}" stroke-width="1.5"/>`+scTag(x0+pw/2,78,piece,{fill:'#fff3c4'})+scTag((x0+pw+x1)/2,78,'? pieces',{q:1})}
+  else{const cw=74;g+=rope(x0,x1-cw-6)+rope(x1-cw+6,x1,'#c9cfe3')+`<g transform="translate(${x1-cw} 48) rotate(-90)"><circle cx="-6" cy="-5" r="4" fill="none" stroke="${SC_INK}" stroke-width="1.6"/><circle cx="6" cy="-5" r="4" fill="none" stroke="${SC_INK}" stroke-width="1.6"/><path d="M-4-2 4 10M4-2-4 10" stroke="${SC_INK}" stroke-width="1.6"/></g>`;
+    g+=scTag(x1-cw/2,78,`cut ${piece}`,{fill:'#ffe3dd'})+scTag((x0+x1-cw)/2,78,'? left',{q:1})}
+  return scSvg(W,H,g,mode==='pieces'?`A ${total} rope cut into ${piece} pieces`:`A ${total} rope, ${piece} cut off`)}
+/* two clocks: start → end, with the minutes between; one of the three can be the unknown "?" */
+function sceneClocks(start,end,mins,unknown){const clk=t=>{if(t==null)return `<div class="sc-qclock">?</div>`;const [h,m]=String(t).split(':').map(Number);return clockSVG(h,m,96)};
+  const lab=(t,cap)=>`<div class="sc-ck">${clk(unknown===cap?null:t)}<b>${unknown===cap?'?':t}</b><small>${cap}</small></div>`;
+  return `<div class="scene sc-clocks" role="img" aria-label="Start and end clocks">${lab(start,'start')}<div class="sc-ar"><span>${unknown==='mins'?'? min':mins+' min'}</span><i></i></div>${lab(end,'end')}</div>`}
+/* a rectangle with its side lengths ("?" for an unknown side) */
+function sceneRect(w,h,unit,o={}){const k=Math.min(26,Math.max(10,170/Math.max(w,h))),W2=Math.max(60,w*k),H2=Math.max(46,h*k),W=W2+80,H=H2+60;
+  const fill=o.fill||'#c8ecc0';let g=`<rect x="62" y="18" width="${W2}" height="${H2}" rx="4" fill="${fill}" stroke="${SC_INK}" stroke-width="2"/>`;
+  g+=scTag(62+W2/2,18+H2+20,o.qw?'?':`${w} ${unit}`,o.qw?{q:1}:{})+scTag(32,18+H2/2,o.qh?'?':`${h} ${unit}`,o.qh?{q:1}:{});
+  if(o.label)g+=`<text x="${62+W2/2}" y="${18+H2/2+5}" text-anchor="middle" font-size="14" ${FONT} fill="${SC_INK}">${esc(o.label)}</text>`;
+  return scSvg(W,H,g,`A rectangle ${w} by ${h} ${unit}`)}
+/* a box in 3D with its edges; or layers of unit cubes */
+const scTagW=t=>Math.max(26,String(t).length*8.6+14);
+function sceneBox(l,w,h,o={}){const sx=Math.min(30,150/(l+w*.6)),u=sx,dx=w*u*.55,dy=w*u*.38,L=l*u,Hh=h*u,hl=o.lab?o.lab[2]:h,lw=hl===''?0:scTagW(hl),X=Math.max(30,lw+14),Y=20+dy,rw=o.layers?scTagW(o.layers)+10:0,W=X+L+dx+Math.max(70,rw+20),H=Y+Hh+48;
+  let g=`<path d="M${X} ${Y}h${L}l${dx}-${dy}h-${L}z" fill="#ffe6a8" stroke="${SC_INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M${X+L} ${Y}l${dx}-${dy}v${Hh}l-${dx} ${dy}z" fill="#f5c76a" stroke="${SC_INK}" stroke-width="1.6" stroke-linejoin="round"/><rect x="${X}" y="${Y}" width="${L}" height="${Hh}" fill="#ffd56b" stroke="${SC_INK}" stroke-width="1.6"/>`;
+  if(o.layers)for(let i=1;i<h;i++)g+=`<path d="M${X} ${Y+i*u}h${L}l${dx}-${dy}" fill="none" stroke="${SC_INK}" stroke-width="1" stroke-dasharray="4 3"/>`;
+  if(o.base)g+=scTag(X+L/2+dx/2,Y-dy/2,o.base,{fill:'#fff'});
+  else{const a=o.lab?o.lab[0]:l,b=o.lab?o.lab[1]:w;if(a!=='')g+=scTag(X+L/2,Y+Hh+22,a);if(b!=='')g+=scTag(X+L+dx/2+22,Y-dy/2+6,b)}
+  if(hl!=='')g+=scTag(X-lw/2-6,Y+Hh/2,hl);if(o.layers)g+=scTag(X+L+dx+rw/2+4,Y+Hh/2-dy/2,o.layers,{fill:'#e8f6ff'});
+  return scSvg(W,H,g,'A box with its length, width and height')}
+/* packing into groups (cupcakes in boxes, students in vans, kids at tables) */
+function scenePackInto(n,d,icon,word){const W=290,H=100;let g=scCluster(icon,n,50,44,9,1)+scTag(50,86,n);
+  g+=`<path d="M100 46h20" stroke="${SC_INK}" stroke-width="2" marker-end="url(#scC)"/>`;
+  for(let i=0;i<3;i++){const x=150+i*42;g+=`<g opacity="${1-i*.25}">${SC_BOX.sbox(x,48)}</g>`;if(i===0)g+=scCluster(icon,Math.min(d,3),x,50,3,.7)}
+  g+=scTag(192,86,`${d} ${word}`,{fill:'#e8f6ff'})+`<text x="262" y="54" font-size="18" ${FONT} fill="${SC_INK}">…</text>`;
+  return scSvg(W,H,scArrowDef('scC')+g,`${n} into groups of ${d}`)}
+/* pouring or sharing into containers: liters into buckets, pizzas to friends */
+SC_ICON.drop=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M0-7C3-2 5 1 5 3.5a5 5 0 0 1-10 0C-5 1-3-2 0-7z" fill="#5fc3f0" stroke="${SC_INK}" stroke-width="1.1"/></g>`;
+SC_ICON.pizza=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><circle r="7.5" fill="#f5c26b" stroke="${SC_INK}" stroke-width="1.1"/><circle r="5.5" fill="#f08a5d"/><circle cx="-2" cy="-1.5" r="1.2" fill="#c0392b"/><circle cx="2.3" cy="1.8" r="1.2" fill="#c0392b"/><path d="M0-7.5V7.5M-7.5 0H7.5" stroke="#f5c26b" stroke-width="1"/></g>`;
+SC_ICON.seat=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><rect x="-5" y="-7" width="10" height="9" rx="2" fill="#e2453a" stroke="${SC_INK}" stroke-width="1.1"/><rect x="-6" y="1" width="12" height="4" rx="1.5" fill="#c0392b" stroke="${SC_INK}" stroke-width="1.1"/></g>`;
+SC_ICON.corn=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 9V-1" stroke="#2c9a5b" stroke-width="1.8"/><ellipse cy="-3" rx="2.8" ry="5.5" fill="#ffd56b" stroke="${SC_INK}" stroke-width="1.1"/><path d="M0 4q-6-2-6-9M0 4q6-2 6-9" fill="none" stroke="#2c9a5b" stroke-width="1.4"/></g>`;
+function scenePour(total,n,icon,unit,to){const k=Math.min(n,8),fw=36,W=Math.max(240,k*fw+140),H=100;let g=scCluster(icon,Math.min(total,9),52,44,9,1)+scTag(52,86,`${total}${unit?' '+unit:''}`);
+  g+=`<path d="M100 46h16" stroke="${SC_INK}" stroke-width="2" marker-end="url(#scD)"/>`;
+  for(let i=0;i<k;i++){const x=138+i*fw;g+=to==='bucket'?`<path d="M${x-11} 32h22l-3 26h-16z" fill="#dff3ff" stroke="${SC_INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M${x-11} 32q11-12 22 0" fill="none" stroke="${SC_INK}" stroke-width="1.2"/>`:SC_ICON.student(x,44,1.6);
+    g+=`<text x="${x}" y="80" text-anchor="middle" font-size="12" ${FONT} fill="#e2453a">?</text>`}
+  if(n>8)g+=`<text x="${138+k*fw-12}" y="50" font-size="16" ${FONT} fill="${SC_INK}">…</text>`;
+  return scSvg(W,H,scArrowDef('scD')+g,`${total} shared into ${n}`)}

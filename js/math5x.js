@@ -42,7 +42,7 @@ X5.mult5=[
  {sk:'math.mult5.multiplying-four-digit-numbers',f(){const a=R(1,9)*1000+R(0,0)*100+R(1,9)*10+R(1,9),b=R(3,9),p=a*b;
   return {prompt:`${fmt(a)} × ${b} = ?`,...numChoices(p,[p-1000*b+100*b,p+b*10,p-b,(a+100)*b]),hint:`There is a 0 in the hundreds place. ${b} × 0 hundreds = 0 hundreds, plus anything you carried.`,explain:`${fmt(a)} × ${b} = <b>${fmt(p)}</b>.`}}},
  {sk:'math.mult5.multiplication-word-problems',f(){const r=R(18,42),s=R(24,56),p=r*s;
-  return {prompt:`A theater has <b>${r}</b> rows with <b>${s}</b> seats in each row. How many seats are there?`,...numChoices(p,[r+s,p+s,p-r,r*(s-10)]),hint:`Rows × seats in each row.`,explain:`${r} × ${s} = <b>${fmt(p)}</b> seats.`}}},
+  return {visual:sceneGroups('row',r,s,'seat'),prompt:`A theater has <b>${r}</b> rows with <b>${s}</b> seats in each row. How many seats are there?`,...numChoices(p,[r+s,p+s,p-r,r*(s-10)]),hint:`Rows × seats in each row.`,explain:`${r} × ${s} = <b>${fmt(p)}</b> seats.`}}},
  {sk:'math.mult5.estimating-products',f(){const a=R(31,89)*10+R(1,9),b=R(18,29),est=Math.round(a/100)*100*Math.round(b/10)*10,p=a*b,line=Math.round(est/1000)*1000||est;const more=p>line;
   return {prompt:`Without multiplying exactly: is <b>${a} × ${b}</b> more or less than <b>${fmt(line)}</b>?`,choices:['more','less'],answer:more?'more':'less',hint:`Round both numbers and multiply: about ${Math.round(a/100)*100} × ${Math.round(b/10)*10}. Then think about which way you rounded.`,explain:`${a} × ${b} = ${fmt(p)}, which is <b>${more?'more':'less'}</b> than ${fmt(line)}.`}}},
  {sk:'math.mult5.multiplying-by-two-digit-numbers',f(){const a=R(2,9)*100,b=R(2,9)*10,p=a*b;
@@ -55,8 +55,8 @@ X5.div5=[
  {sk:'math.div5.dividing-by-two-digit-numbers',f(){const d=R(12,35),q=R(21,69),n=d*q;
   return {prompt:`Which multiplication checks that <b>${fmt(n)} ÷ ${d} = ${q}</b>?`,...strChoices(`${q} × ${d} = ${fmt(n)}`,[`${q} + ${d} = ${q+d}`,`${fmt(n)} × ${d} = ${q}`,`${q} × ${fmt(n)} = ${d}`]),hint:`Quotient × divisor should give the dividend.`,explain:`<b>${q} × ${d} = ${fmt(n)}</b>, so the division is right.`}}},
  {sk:'math.div5.interpreting-remainders',f(){const per=R(12,24),full=R(8,30),extra=R(1,per-1),n=per*full+extra,k=coin();
-  return k?{prompt:`A factory packs <b>${n}</b> crayons into boxes of <b>${per}</b>. How many <b>full</b> boxes can it make?`,...numChoices(full,[full+1,extra,per].filter(x=>x!==full)),hint:`Divide. The crayons left over do not fill a box.`,explain:`${n} ÷ ${per} = ${full} R ${extra}. <b>${full}</b> full boxes.`}
-   :{prompt:`<b>${n}</b> crayons go into boxes of <b>${per}</b>. How many crayons are <b>left over</b>?`,...numChoices(extra,[full,per-extra,extra+1].filter(x=>x!==extra)),hint:`Find how many full boxes, then what is left.`,explain:`${per} × ${full} = ${per*full}. ${n} − ${per*full} = <b>${extra}</b> left over.`}}},
+  return k?{visual:scenePackInto(n,per,'crayon','in a box'),prompt:`A factory packs <b>${n}</b> crayons into boxes of <b>${per}</b>. How many <b>full</b> boxes can it make?`,...numChoices(full,[full+1,extra,per].filter(x=>x!==full)),hint:`Divide. The crayons left over do not fill a box.`,explain:`${n} ÷ ${per} = ${full} R ${extra}. <b>${full}</b> full boxes.`}
+   :{visual:scenePackInto(n,per,'crayon','in a box'),prompt:`<b>${n}</b> crayons go into boxes of <b>${per}</b>. How many crayons are <b>left over</b>?`,...numChoices(extra,[full,per-extra,extra+1].filter(x=>x!==extra)),hint:`Find how many full boxes, then what is left.`,explain:`${per} × ${full} = ${per*full}. ${n} − ${per*full} = <b>${extra}</b> left over.`}}},
  {sk:'math.div5.estimating-quotients',f(){const d=R(3,8),q=R(4,9),n=d*q*100+R(-40,40),dv=d*10+R(-3,3);
   return {prompt:`Which is the best estimate for <b>${fmt(n)} ÷ ${dv}</b>?`,...numChoices(q*10,[q,q*100,q*10+10]),hint:`Use friendly numbers: ${fmt(d*q*100)} ÷ ${d*10}.`,explain:`${fmt(d*q*100)} ÷ ${d*10} = ${q*10}, so about <b>${q*10}</b>.`}}},
  {sk:'math.div5.dividing-unit-fractions',f(){const k=pick([2,3,4]),c=R(2,6),ans=c*k;
@@ -77,7 +77,7 @@ X5.dec5=[
  {sk:'math.dec5.dividing-decimals',f(){const w=R(2,9),d=pick([5,25]),dv=dk(d*(d===5?100:10)),ans=w*(d===5?2:4);
   return {prompt:`${w} ÷ ${dv} = ?`,...numChoices(ans,[w*2===ans?w*4:w*2,w,ans*10].filter(x=>x!==ans)),hint:`How many ${dv}s fit in 1? Then in ${w}?`,explain:`There are ${d===5?2:4} pieces of ${dv} in 1, so ${w} × ${d===5?2:4} = <b>${ans}</b>.`}}},
  {sk:'math.dec5.money-problems-with-decimals',f(){const p=[R(105,499),R(105,499),R(105,499)].map(x=>x*10),s=p.reduce((a,b)=>a+b,0),pay=Math.ceil((s+1)/10000)*10000,ch=pay-s,m=money5;
-  return {prompt:`Pip buys a book for <b>${m(p[0])}</b>, a pen for <b>${m(p[1])}</b> and a snack for <b>${m(p[2])}</b>. He pays with <b>${m(pay)}</b>. How much change does he get?`,...strChoices(m(ch),[m(ch+100),m(s),m(Math.abs(ch-100))].filter(x=>x!==m(ch))),hint:`Add the three prices, then subtract from what he paid.`,explain:`Total: ${m(s)}. ${m(pay)} − ${m(s)} = <b>${m(ch)}</b>.`}}}];
+  return {visual:sceneShop([['book',m(p[0])],['pen',m(p[1])],['snack',m(p[2])]],m(pay)),prompt:`Pip buys a book for <b>${m(p[0])}</b>, a pen for <b>${m(p[1])}</b> and a snack for <b>${m(p[2])}</b>. He pays with <b>${m(pay)}</b>. How much change does he get?`,...strChoices(m(ch),[m(ch+100),m(s),m(Math.abs(ch-100))].filter(x=>x!==m(ch))),hint:`Add the three prices, then subtract from what he paid.`,explain:`Total: ${m(s)}. ${m(pay)} − ${m(s)} = <b>${m(ch)}</b>.`}}}];
 
 /* Pie Peak */
 X5.frac5=[
@@ -97,10 +97,10 @@ X5.frac5=[
 /* Fence Farm (volume) */
 X5.vol5=[
  {sk:'math.vol5.volume-with-unit-cubes',f(){const l=R(2,5),w=R(2,4),h=R(2,6),layer=l*w;
-  return {prompt:`Each layer of a box holds <b>${layer}</b> unit cubes. The box has <b>${h}</b> layers. What is its volume?`,unit:'cubic units',...numChoices(layer*h,[layer+h,layer*h+layer,2*(layer+h)]),hint:`Layers × cubes in each layer.`,explain:`${h} × ${layer} = <b>${layer*h} cubic units</b>.`}}},
- {sk:'math.vol5.volume-formulas',f(){const e=R(2,6);return {prompt:`A cube has edges that are <b>${e} cm</b> long. What is its volume?`,unit:'cubic cm',...numChoices(e**3,[e*e,e*3,6*e*e].filter(x=>x!==e**3)),hint:`Volume = length × width × height. All three are ${e}.`,explain:`${e} × ${e} × ${e} = <b>${e**3} cubic cm</b>.`}}},
+  return {visual:sceneBox(2,2,Math.min(h,6),{layers:`${layer} cubes each`,lab:['','',`${h} layers`]}),prompt:`Each layer of a box holds <b>${layer}</b> unit cubes. The box has <b>${h}</b> layers. What is its volume?`,unit:'cubic units',...numChoices(layer*h,[layer+h,layer*h+layer,2*(layer+h)]),hint:`Layers × cubes in each layer.`,explain:`${h} × ${layer} = <b>${layer*h} cubic units</b>.`}}},
+ {sk:'math.vol5.volume-formulas',f(){const e=R(2,6);return {visual:sceneBox(e,e,e,{lab:[`${e} cm`,`${e} cm`,`${e} cm`]}),prompt:`A cube has edges that are <b>${e} cm</b> long. What is its volume?`,unit:'cubic cm',...numChoices(e**3,[e*e,e*3,6*e*e].filter(x=>x!==e**3)),hint:`Volume = length × width × height. All three are ${e}.`,explain:`${e} × ${e} × ${e} = <b>${e**3} cubic cm</b>.`}}},
  {sk:'math.vol5.volume-formulas',f(){const l=R(4,10),w=R(3,6),h=R(2,5),V=l*w*h;
-  return {prompt:`A storage box is <b>${l} ft</b> long, <b>${w} ft</b> wide and <b>${h} ft</b> tall. How many 1-foot cubes fit inside?`,unit:'cubes',...numChoices(V,[l*w,l+w+h,V+l*w]),hint:`Volume = length × width × height.`,explain:`${l} × ${w} × ${h} = <b>${V}</b> cubes.`}}},
+  return {visual:sceneBox(l,w,h,{lab:[`${l} ft`,`${w} ft`,`${h} ft`]}),prompt:`A storage box is <b>${l} ft</b> long, <b>${w} ft</b> wide and <b>${h} ft</b> tall. How many 1-foot cubes fit inside?`,unit:'cubes',...numChoices(V,[l*w,l+w+h,V+l*w]),hint:`Volume = length × width × height.`,explain:`${l} × ${w} × ${h} = <b>${V}</b> cubes.`}}},
  {sk:'math.vol5.adding-volumes',f(){let a,b;do{a=[R(2,6),R(2,5),R(2,5)];b=[R(2,6),R(2,5),R(2,5)]}while(a[0]*a[1]*a[2]===b[0]*b[1]*b[2]);const va=a[0]*a[1]*a[2],vb=b[0]*b[1]*b[2];
   return {prompt:`Box A is <b>${a.join(' × ')}</b> cm. Box B is <b>${b.join(' × ')}</b> cm. Which box holds more, and by how much?`,...strChoices(`Box ${va>vb?'A':'B'}, by ${Math.abs(va-vb)} cubic cm`,[`Box ${va>vb?'B':'A'}, by ${Math.abs(va-vb)} cubic cm`,`Box ${va>vb?'A':'B'}, by ${Math.abs(a.reduce((x,y)=>x+y)-b.reduce((x,y)=>x+y))||1} cubic cm`,`They hold the same`]),hint:`Find each volume, then compare.`,explain:`A: ${va}. B: ${vb}. <b>Box ${va>vb?'A':'B'}</b> holds ${Math.abs(va-vb)} cubic cm more.`}}},
  {sk:'math.vol5.area-with-fraction-sides',f(){const [a,b]=pick([[1,2],[2,3],[3,4],[3,5],[1,4]]),ans=fStr(a*a,b*b);
