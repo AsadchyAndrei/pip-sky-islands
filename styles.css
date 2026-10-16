@@ -1893,3 +1893,12 @@ body.demo #mapSpacer{min-height:70px}
 @keyframes freshGlow{from{box-shadow:0 0 0 3px #ffd56b,0 0 10px 2px rgba(255,194,61,.5)}to{box-shadow:0 0 0 5px #ffd56b,0 0 26px 8px rgba(255,194,61,.85)}}
 body.lk-album #albumBtn,body.lk-album .bnav [data-go="albumBtn"]{display:none!important}
 body.lk-album .bnav{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+/* Parents' Corner: the top card, the week in three lines */
+#parent .pfocus .pfbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+#parent .pfocus h4{margin:0}
+#parent .pfocus .pfbody p{margin:0}
+.pglance{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;color:var(--ink);font-weight:600;line-height:1.4}
+.pglance li{padding-left:14px;position:relative}.pglance li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:50%;background:#f0a92e}
+.pglance.soon{font-weight:500}
+#parent .pfocus p.pfbtn{margin-top:4px}

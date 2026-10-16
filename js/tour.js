@@ -46,7 +46,7 @@ const TOURS={
     {intro:1,t:"Welcome to Parents' Corner",x:'A 2-minute tour of progress, settings and the weekly email?',yes:'Show me'},
     {need:()=>Object.values(ROOT.profiles||{}).filter(p=>!p.roster).length>1,el:['.kidbar'],t:'One child at a time',x:'Switch between your kids here. Everything below is about the child you pick.'},
     {el:['.ptabs'],t:'Three tabs',x:'Progress, Settings, and Account & data.'},
-    {ch:'Progress',go:pTabGo('prog'),el:['.pfocus'],t:"This week's tip",x:'Pip looks at the week and tells you the one thing that matters most.'},
+    {ch:'Progress',go:pTabGo('prog'),el:['.pfocus'],t:'The week at a glance',x:'How much your child played, what is going well, and the one topic to practice next.'},
     {ch:'Progress',el:[()=>cardWith('This week')],t:'This week',x:'Minutes, puzzles, accuracy and skills mastered. The "?" buttons explain each number. Print the report for the fridge.'},
     {ch:'Progress',need:()=>!!G.cls,el:[()=>cardWith('From ')],t:'From the teacher',x:'Messages and tasks from your child\'s teacher, when you join a class.'},
     {ch:'Progress',el:['.fgp'],t:'Family goal',x:'Set a goal for 7 days and a reward you choose. Your child sees it on the map.'},
