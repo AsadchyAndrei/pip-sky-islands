@@ -1884,3 +1884,12 @@ body.demo #mapSpacer{min-height:70px}
 .gbub b{color:var(--coral)}
 .gbub.in{opacity:1;transform:none}.gbub.out{opacity:0;transform:translateY(-4px);pointer-events:none}
 @media (prefers-reduced-motion:reduce){.gpico{animation:none}.gbub{transition:none}}
+/* ===== the map opens step by step (js/unlock.js) ===== */
+.isle.teaser svg.isl{filter:none;opacity:.85}
+.isle.teaser .plaque b{color:var(--ink-soft)}
+.isle.teaser .status.lock{display:inline-flex;align-items:center;gap:4px}
+.isle.teaser .status.lock svg{width:13px;height:13px}
+.isle.fresh .plaque{box-shadow:0 0 0 4px #ffd56b,0 0 22px 6px rgba(255,194,61,.75);animation:freshGlow 1.6s ease-in-out infinite alternate}
+@keyframes freshGlow{from{box-shadow:0 0 0 3px #ffd56b,0 0 10px 2px rgba(255,194,61,.5)}to{box-shadow:0 0 0 5px #ffd56b,0 0 26px 8px rgba(255,194,61,.85)}}
+body.lk-album #albumBtn,body.lk-album .bnav [data-go="albumBtn"]{display:none!important}
+body.lk-album .bnav{grid-template-columns:repeat(4,minmax(0,1fr))}

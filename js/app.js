@@ -547,6 +547,7 @@ function renderParent(){
       <div class="setrow"><label for="setGoal">Daily goal<small>Pip suggests a break when it's reached; after it, puzzles give fewer coins</small></label>${sel('setGoal',[['min10','10 minutes'],['min15','15 minutes'],['min20','20 minutes'],['min30','30 minutes'],['q30','30 puzzles'],['off','No goal']],G.settings.goal)}</div>
       <div class="setrow"><label for="setLimit">Daily time limit<small>After it, new puzzles wait until tomorrow. Your PIN can add 15 minutes.</small></label>${sel('setLimit',[['0','No limit'],['30','30 minutes'],['45','45 minutes'],['60','1 hour'],['90','1.5 hours'],['120','2 hours']],String(G.settings.limit||'0'))}</div>
       <div class="setrow"><label for="setDiff">Difficulty<small>Auto adjusts each island after every round</small></label>${sel('setDiff',[['auto','Auto (recommended)'],['1','Always Easy'],['2','Always Normal'],['3','Always Hard']],G.settings.diff)}</div>
+      <div class="setrow"><label>Show everything now<small>New players get places one by one as they play (Fix-It Falls, the Sticker Album, Thunder Tower, Test Practice), so the first days stay simple. Turn on to open them all now.</small></label>${sw('setAll',!!G.settings.showAll)}</div>
       ${canSpeak?`<div class="setrow"><label for="setVoice">Pip's voice<small>Voices come from this device. Ones marked "Natural" or "Enhanced" sound best.</small></label><select id="setVoice" style="max-width:100%"></select></div>
       <div class="setrow"><label for="setVstyle">Voice style</label>${sel('setVstyle',[['fox','Cheerful fox (higher, bouncy)'],['calm','Gentle fox (softer, slower)'],['plain','Normal voice']],G.settings.vstyle)}</div>
       <div class="setrow"><label>Try it</label><button type="button" class="go small" id="testVoice">Hear Pip</button></div>`:'<div class="setrow"><small>This browser has no voices available for reading aloud.</small></div>'}
@@ -594,7 +595,7 @@ function renderParent(){
   fillVoiceSelect();
   if($('#setVoice')){$('#setVoice').onchange=e=>{G.settings.voice=e.target.value;save();pickVoice();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
     $('#setVstyle').onchange=e=>{G.settings.vstyle=e.target.value;save();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
-    $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);bindSw('setDys','dys',applySettings);
+    $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);bindSw('setAll','showAll');bindSw('setDys','dys',applySettings);
   $('#setName').onchange=e=>{G.name=e.target.value.trim().slice(0,16);save();updateStats()};
   document.querySelectorAll('[data-sw],[data-pk]').forEach(b=>b.onclick=()=>parentSwitch(b.dataset.sw||b.dataset.pk));
   $('#addP').onclick=()=>newPlayer(id=>{save();ROOT.current=id;G=ROOT.profiles[id];persistLocal();if(ensurePack())return;applySettings();renderParent()});

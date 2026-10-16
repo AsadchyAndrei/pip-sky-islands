@@ -18,7 +18,7 @@ const TOURS={
     {el:[()=>firstVisible('.islbox .isle')],t:'An island',x:'The stars show how well you did. The little bar fills up as you master its skills.'},
     {el:['.islbox [data-tab="world"]'],act:1,t:'Your turn: tap it!',x:'Tap "Words & World" to see the reading, writing, science and history islands.',done:'Great!'},
     {el:['.islbox [data-tab="math"]'],act:1,t:'And back to Math',x:'Tap "Math" to go back. You can switch any time.'},
-    {el:['#g-ch'],up:'.chbox',t:'Challenges',x:'Quick games that change every day: fix old mistakes, beat the clock, defeat the boss!'},
+    {el:['#g-ch'],up:'.chbox',t:'Challenges',x:'Quick games that change every day: fix old mistakes, beat the clock, defeat the boss! Secret ones open as you play.'},
     {el:['.lvl'],t:'Your level',x:'Every right answer gives you points. Fill the bar to reach the next level.'},
     {el:['#coinPill','.stats'],t:'Coins',x:'Coins come from right answers. Spend them in the Closet and on your island.'},
     {el:['#starPill'],t:'Stars',x:'All your island stars. Some islands open when you have enough stars.'},

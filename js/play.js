@@ -7,7 +7,8 @@ function show(id){curScreen=id;document.body.classList.toggle('nogame',id==='gat
 let EXPLORE=new Set();
 function pickExplore(){EXPLORE=new Set();for(const g of ['math','world'])ISLANDS.filter(i=>i.group===g&&i.gen&&!i.retired&&!G.visited[i.id]).slice(0,2).forEach(i=>EXPLORE.add(i.id))}
 function card(isl,i){
-  const b=starFor(isl.id);let status='',cls='',rib='';
+  if(unlockOf(isl.id)&&!isOpen(isl.id))return teaserCard(isl,i);
+  const b=starFor(isl.id);let status='',cls=unlockFresh.has(isl.id)?' fresh':'',rib='';
   if(isl.special==='daily'){status=dailyDone()?`<span class="status ok">Done today! Back tomorrow</span>`:`<span class="status go">+${REW.daily} coins</span>`;if(!dailyDone())rib='<span class="ribbon">NEW!</span>'}
   else if(isl.special==='review'){const due=reviewDue().length,all=G.review.length;
     status=due?`<span class="status go">${due} puzzle${due>1?'s':''} to fix</span>`:all?`<span class="status lock">${all} coming back later</span>`:`<span class="status ok">No mistakes to fix!</span>`;if(due)rib=`<span class="ribbon blue">${due}</span>`}
@@ -70,11 +71,11 @@ document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.onclick=()=>{setTab(
 function renderMap(){setTimeout(homeLayout,0);setTimeout(()=>{if(typeof tourHook==='function'&&curScreen==='map')tourHook('map')},0);{const f=$('#mapFoot');if(f)f.textContent=`${PACK.stateName}, ${GRADE_WORD(PACK.grade).toLowerCase()}: `+ISLANDS.filter(i=>i.gen&&!i.retired).map(i=>i.topic.toLowerCase()).join(', ')+'.'}{const sp=$('#mapSpacer');if(sp)sp.style.height=''}
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
   adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();renderClassCard();if(G.cls)classCheck();setTimeout(maybeYearOffer,700);CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
-  pickExplore();const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
+  unlockCheck();unlockNav();pickExplore();const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
   for(const [g,sel] of Object.entries(groups))$(sel).innerHTML=ISLANDS.map((isl,i)=>isl.group===g&&!isl.retired?card(isl,i):'').join('');
   $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'All 3 books done! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
   $('#albumSub').textContent=`${Object.keys(G.stickers).length} of ${STK.length} stickers`;
-  document.querySelectorAll('.isle').forEach(b=>b.onclick=()=>{const isl=byId(b.dataset.id);
+  document.querySelectorAll('.isle').forEach(b=>b.onclick=()=>{if(b.dataset.teaser)return teaserTap(b.dataset.id);const isl=byId(b.dataset.id);
     if(isl.special==='boss'&&starTotal()<BOSS_NEED){say($('#maptext'),`Boss Island is locked! Collect <b>${BOSS_NEED-starTotal()} more stars</b> first. You can do it!`);$('#mapact').hidden=true;foxMove('wobble');sNo();scrollTo({top:0,behavior:'smooth'});return}
     tone([523,784]);isl.gen&&!isl.special?openIsland(isl):start(isl)});
   show('map');
@@ -85,7 +86,7 @@ function renderMap(){setTimeout(homeLayout,0);setTimeout(()=>{if(typeof tourHook
     say($('#maptext'),G.xp===0?`Hi${nm()}! I'm <b>Pip</b>, a balloon-flying ${heroName()}! Solve puzzles on the islands to earn <b>stars, coins and stickers</b>. ${G.placed?'Want to start with Story Mode?':'First, a <b>quick 2-minute check</b> so I can pick puzzles that fit you just right!'}`:`Welcome back${nm()}! I missed you! ${!dailyDone()?'A brand new <b>Daily Challenge</b> is waiting!':''}`);
     const b=$('#mapact');if(G.xp===0){b.hidden=false;if(G.placed){b.textContent='Start Story Mode';b.onclick=openStory}else{b.textContent='Quick check';b.onclick=startPlacement}}else b.hidden=true}
   else showTip();
-  lockBubble();
+  lockBubble();unlockCelebrate();
   setTimeout(()=>foxClass('waving',2000),300);
   clearInterval(tipTimer);if(!newbie)tipTimer=setInterval(()=>{if(!$('#map').hidden&&$('#overlay').hidden){showTip();if(rand()<.5)foxClass('waving',1800);else foxMove('hop')}},10000);
 }
@@ -623,7 +624,7 @@ function dropSticker(chance){
 function done(st,line,o={}){
   stopTimers();removeEventListener('keydown',window._keyH||(()=>{}));
   const isl=S.isl,hasStars=STAR_ISLANDS.includes(isl)&&S.chapter==null,prev=G.best[isl.id]||0,newBest=hasStars&&st>prev;
-  G.visited[isl.id]=1;award('first');
+  G.visited[isl.id]=1;G.rounds=(G.rounds||0)+1;award('first');
   if(newBest)G.best[isl.id]=st;
   let bonus=taper(st*REW.star+(newBest?REW.best:0));gain(bonus,st,$('#dstars'));
   const tot=starTotal();if(tot>=20)award('stars20');if(tot>=40)award('stars40');if(tot>=MAX)award('stars60');
@@ -641,7 +642,7 @@ function done(st,line,o={}){
   const nb=$('#nextIsl');
   if(S.mode==='place'){nb.hidden=false;nb.textContent='Start Story Mode';nb.onclick=openStory}
   else if(S.chapter!=null){nb.hidden=false;nb.textContent='Back to Story';nb.onclick=openStory}
-  else if(reviewDue().length&&S.mode!=='review'){nb.hidden=false;nb.textContent=`Fix ${reviewDue().length} mistake${reviewDue().length>1?'s':''}`;nb.onclick=()=>start(byId('review'))}
+  else if(reviewDue().length&&S.mode!=='review'&&isOpen('review')){nb.hidden=false;nb.textContent=`Fix ${reviewDue().length} mistake${reviewDue().length>1?'s':''}`;nb.onclick=()=>start(byId('review'))}
   else if(sugg){nb.hidden=false;nb.textContent=`Next: ${sugg.name}`;nb.onclick=()=>start(sugg)}else nb.hidden=true;
   if(S.mode==='island'&&S.chapter==null&&S.score<=3&&lessonsFor(isl.id).length){nb.hidden=false;nb.textContent='Learn the trick (3 min)';nb.onclick=()=>start(lessonIsland(lessonFor(isl.id)))}
   else if(isl.id==='write'&&S.mode==='island'&&S.chapter==null){nb.hidden=false;nb.textContent='Write my own story';nb.onclick=()=>openDesk()}
