@@ -639,12 +639,13 @@ function done(st,line,o={}){
   $('#dbadges').innerHTML=S.badges.map(id=>{const b=BADGES.find(x=>x[0]===id);return `<div class="badge">${MEDAL(b[3])}<span>${b[1]}</span></div>`}).join('');
   const sugg=STAR_ISLANDS.filter(i=>i.id!==isl.id&&i.gen).sort((a,b)=>starFor(a.id)-starFor(b.id)||(Math.random()-.5))[0];
   const nb=$('#nextIsl');
-  if(S.chapter!=null){nb.hidden=false;nb.textContent='Back to Story';nb.onclick=openStory}
+  if(S.mode==='place'){nb.hidden=false;nb.textContent='Start Story Mode';nb.onclick=openStory}
+  else if(S.chapter!=null){nb.hidden=false;nb.textContent='Back to Story';nb.onclick=openStory}
   else if(reviewDue().length&&S.mode!=='review'){nb.hidden=false;nb.textContent=`Fix ${reviewDue().length} mistake${reviewDue().length>1?'s':''}`;nb.onclick=()=>start(byId('review'))}
   else if(sugg){nb.hidden=false;nb.textContent=`Next: ${sugg.name}`;nb.onclick=()=>start(sugg)}else nb.hidden=true;
   if(S.mode==='island'&&S.chapter==null&&S.score<=3&&lessonsFor(isl.id).length){nb.hidden=false;nb.textContent='Learn the trick (3 min)';nb.onclick=()=>start(lessonIsland(lessonFor(isl.id)))}
   else if(isl.id==='write'&&S.mode==='island'&&S.chapter==null){nb.hidden=false;nb.textContent='Write my own story';nb.onclick=()=>openDesk()}
-  $('#again').hidden=S.mode==='review'&&!reviewDue().length;
+  $('#again').hidden=S.mode==='place'||S.mode==='review'&&!reviewDue().length;
   show('done');dropBadgeToasts();refreshFoxes();if(typeof guestNudge==='function')setTimeout(guestNudge,1600);
   if(st>0){sWin();setTimeout(()=>burst(innerWidth/2,innerHeight/3,120),300)}
   setTimeout(()=>{foxMove(st>=2?'spin':st>0?'hop':'wobble');if(st===0)foxClass('sad',1500)},400);

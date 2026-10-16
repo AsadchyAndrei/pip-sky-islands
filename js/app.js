@@ -303,17 +303,17 @@ function renderKids(){
   const guest=CL.mode==='cloud'?importable():[];
   const acct=CL.mode==='cloud'?`<span>Signed in as <b>${esc(CL.email||'grown-up')}</b></span><button class="linkbtn" type="button" id="kOut">Sign out</button>`
     :CL.mode==='offline'?`<span>Offline: saved on this device, uploads next time</span>`
-    :CL.api&&CL.api.configured?`<span>Not signed in: progress is saved on this device only.</span><button class="linkbtn" type="button" id="kIn">Grown-up sign in</button>`:`<span>Progress is saved on this device.</span>`;
+    :CL.api&&CL.api.configured?`<span>Not signed in: progress is saved on this device only.</span><button class="linkbtn" type="button" id="kIn">Parent or teacher sign in</button>`:`<span>Progress is saved on this device.</span>`;
   el.innerHTML=`<div class="kidshead"><div class="kfox" data-fox></div><div><div class="eyebrow">${isTeacher()?'My own kids · not a class':"Who's playing?"}</div><h2>${ids.length?'Tap your name!':isTeacher()?'Add your own child':'Add the first player!'}</h2></div>${ROOT.current&&ROOT.profiles[ROOT.current]&&!ROOT.profiles[ROOT.current].roster?'<button class="go small alt" type="button" id="kBack">Back to the game</button>':''}${isTeacher()?`<button class="go small leaf" type="button" id="kTeach">${BOARD_ICO}<span>Teacher desk</span></button>`:''}</div>
     <div class="kidgrid">${ids.map(id=>{const p=ROOT.profiles[id],stars=STAR_ISLANDS.reduce((s,i)=>s+(p.best[i.id]||0),0);
       return `<button type="button" class="kid${id===ROOT.current?' cur':''}" data-kid="${id}"><span class="kav">${kidAvatar(p)}</span><b>${esc(p.name||'Player')}${p.kidPin?` <i class="klock" title="Has a PIN">${LOCK}</i>`:''}</b><small>${kidGrade(p)} · Level ${levelOf(p.xp)+1} · ${stars} ${starsMini(1)}</small></button>`}).join('')}
       <button type="button" class="kid add" id="kAdd"><span class="plus">+</span><b>Add a player</b><small>Just a first name or nickname</small></button></div>
     ${isTeacher()?`<p class="tkidsnote">This is for <b>your own children</b>, at home or anywhere. They are not part of any class. Your students are in the <b>Teacher desk</b>.</p>`:''}
-    ${ids.length||isTeacher()?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for grades 3 to 5, built on each grade's California standards: math, reading, grammar, science and social studies. A grown-up picks the grade. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A grown-up can sign in to save progress and see what to practice</li></ul></div>`}
+    ${ids.length||isTeacher()?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for grades 3 to 5, built on each grade's California standards: math, reading, grammar, science and social studies. A parent or teacher picks the grade. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A parent can sign in to save progress and see what to practice</li></ul></div>`}
     ${guest.length?`<div class="kimport"><p>This device has progress from before you signed in: <b>${guest.map(([,p])=>esc(p.name||'Player')).join(', ')}</b>. Keep it safe in your account?</p><button class="go small leaf" type="button" id="kImp">Add to my account</button></div>`:''}
     <div class="kidfoot">${acct}${isStandalone()?'':'<button class="linkbtn" type="button" id="kInst">Install app</button>'}<a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy</a></div>`;
   if($('#kInst'))$('#kInst').onclick=async()=>{if(installEvt){const e=installEvt;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderKids();return}
-    overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">For grown-ups</div><h2>Install Pip as an app</h2><p>It opens full screen, like an app, and works without internet.</p>${/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p><p class="note">The installed app keeps its own copy. Sign in once inside it (Parents → account) and the progress comes back from the cloud.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<button class="go alt" type="button" style="align-self:center" onclick="closeOverlay()">Close</button>`)};
+    overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">For parents</div><h2>Install Pip as an app</h2><p>It opens full screen, like an app, and works without internet.</p>${/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'<p><b>iPhone / iPad:</b> open this site in <b>Safari</b>, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p><p class="note">The installed app keeps its own copy. Sign in once inside it (Parents → account) and the progress comes back from the cloud.</p>':'<p><b>Android:</b> Chrome menu (⋮) → <b>Install app</b> or <b>Add to Home screen</b>. <b>Computer:</b> the install icon at the right end of the address bar.</p>'}<button class="go alt" type="button" style="align-self:center" onclick="closeOverlay()">Close</button>`)};
   refreshFoxes();
   el.querySelectorAll('[data-kid]').forEach(b=>b.onclick=()=>{const id=b.dataset.kid,p=ROOT.profiles[id];tone([523,784]);if(p.kidPin&&id!==ROOT.current)kidPinPrompt(p,()=>selectKid(id));else selectKid(id)});
   $('#kAdd').onclick=()=>newPlayer(id=>selectKid(id));
@@ -349,8 +349,10 @@ function newPlayer(then){
   const last=Object.values(ROOT.profiles).filter(p=>!p.roster&&p.pack&&CONTENT.packs[p.pack]).sort((a,b)=>(b._u||0)-(a._u||0))[0];
   let dk=lsGet('pip-newpack')||(last&&last.pack)||PACK_DEFAULT;if(!packReady(CONTENT.packs[dk]))dk=PACK_DEFAULT;
   const D=CONTENT.packs[dk],opt=(v,t,on,off)=>`<option value="${v}"${on?' selected':''}${off?' disabled':''}>${esc(t)}</option>`;
-  const stOpts=st=>US_STATES.map(([c,n])=>{const ok=Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P));return opt(c,n+(ok?'':' (planned)'),c===st,!ok)}).join('');
-  const grOpts=(st,gr)=>GRADES.map(([g,n])=>{const ok=packReady(CONTENT.packs[packKey(st,g)]);return opt(g,n+(ok?'':' (planned)'),g===gr,!ok)}).join('');
+  /* only what can be played now, then one quiet line (a long list of "planned" states was noise here; Parents can still record a planned state) */
+  const soon=t=>`<option value="" disabled>${t}</option>`;
+  const stOpts=st=>{const ok=US_STATES.filter(([c])=>Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P)));return ok.map(([c,n])=>opt(c,n,c===st)).join('')+(ok.length<US_STATES.length?soon('More states coming soon'):'')};
+  const grOpts=(st,gr)=>{const ok=GRADES.filter(([g])=>packReady(CONTENT.packs[packKey(st,g)]));return ok.map(([g,n])=>opt(g,n,g===gr)).join('')+(ok.length<GRADES.length?soon('More grades coming soon'):'')};
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New player</div><h2>What's the player's name?</h2><p>A first name or nickname is perfect.</p>
     <input type="text" id="nameIn" maxlength="16" autocomplete="off" aria-label="Player name">
     <div class="npschool"><b>School program</b><small>The islands follow this state's standards for this grade. You can change it later in Parents.</small>
@@ -434,7 +436,7 @@ function openParent(){
   stopTimers();if(CL.unlockUntil>Date.now()){renderParent();return}pinBuf='';pinStage=ROOT.pin?'enter':'create';pinFirst='';
   overlay(pinHTML(),bindPin);
 }
-function pinHTML(){const t={enter:'Enter your grown-up PIN',create:'Create a 4-digit PIN',confirm:'Type the PIN again'}[pinStage];
+function pinHTML(){const t={enter:'Enter the parents\' PIN',create:'Create a 4-digit PIN',confirm:'Type the PIN again'}[pinStage];
   return `<div class="eyebrow">Parents only</div><h2 style="font-size:28px">${t}</h2>${pinStage==='create'?'<p>Kids won\'t know it, so this page stays private.</p>':''}
   <div class="pinbox" id="pinbox">${[0,1,2,3].map(i=>`<i class="${i<pinBuf.length?'on':''}"></i>`).join('')}</div>
   <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-pk="${n}">${n}</button>`).join('')}<button type="button" class="del" data-pk="x" aria-label="Cancel">${ICON.close}</button><button type="button" data-pk="0">0</button><button type="button" class="del" data-pk="del" aria-label="Delete">${ICON.del}</button></div>
@@ -556,7 +558,7 @@ function renderParent(){
     <div class="pcard"><h4>Players</h4><p>Each player has their own stars, coins and progress. Tap a name to switch.</p>
       <div class="profs">${Object.keys(ROOT.profiles).filter(id=>!ROOT.profiles[id].roster||id===ROOT.current).map(id=>`<button type="button" class="prof${id===ROOT.current?' cur':''}" data-sw="${id}">${esc(ROOT.profiles[id].name||'Player')}</button>`).join('')}</div>
       <div class="actrow" style="justify-content:flex-start"><button type="button" class="go small" id="addP">Add player</button>${Object.keys(ROOT.profiles).length>1?'<button type="button" class="go small alt" id="delP">Remove this player</button>':''}</div><p class="note" id="pNote"></p>
-      <h4 style="margin-top:8px">Grown-up PIN</h4><div class="actrow" style="justify-content:flex-start"><button type="button" class="go small alt" id="chPin">Set a new PIN</button></div></div>
+      <h4 style="margin-top:8px">Parents\' PIN</h4><div class="actrow" style="justify-content:flex-start"><button type="button" class="go small alt" id="chPin">Set a new PIN</button></div></div>
     ${notifyHTML()}
     ${teacherAcctHTML()}
     <div class="pcard wide"><h4>Account and saving</h4><p class="note" id="cloudNote"></p>

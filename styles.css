@@ -665,6 +665,7 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
 .kimport p{margin:0;font-weight:700;flex:1 1 240px}
 .kabout{margin-top:18px;background:var(--card);border-radius:22px;padding:14px 18px;box-shadow:0 5px 0 var(--line);font-weight:600;line-height:1.45}
 .kabout b{font-family:var(--display);font-weight:400;font-size:22px}.kabout p{margin:6px 0}.kabout ul{margin:4px 0 0;padding-left:20px}
+.kidfoot .linkbtn{display:inline-flex;align-items:center;justify-content:center}
 .kidfoot{margin-top:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;font-weight:700;color:var(--ink-soft);text-align:center}
 .bklist{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none;max-height:340px;overflow-y:auto}
 .bklist li{display:flex;align-items:center;gap:10px;background:var(--pale-sky);border-radius:14px;padding:8px 10px 6px 12px;font-weight:700}
@@ -803,14 +804,15 @@ textarea.code{width:100%;min-height:76px;border:3px solid var(--line);border-rad
   body:not([data-screen=play]) .playhead .ihead{flex:1 1 220px}
   /* 1. Next stays reachable at the bottom of the screen after an answer */
   body[data-screen=play] #next{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:6;align-self:stretch;box-shadow:0 6px 0 var(--coral-dd),0 8px 22px rgba(31,53,87,.25)}
-  /* 4. question text full width: tip buttons float to the right, passages start below them */
-  body[data-screen=play] .qtop{display:block}
-  body[data-screen=play] .prompt{text-wrap:pretty}
-  body[data-screen=play] .qtop::after{content:"";display:block;clear:both}
-  body[data-screen=play] .qtop .howbtn,body[data-screen=play] .qtop .speak{float:right;margin:0 0 6px 8px}
+  /* 4. question text full width: the tip buttons sit in a small row under the question (above a reading passage,
+        so "read aloud" is where the reading starts); floating them beside the text squeezed it into a narrow column */
+  body[data-screen=play] .qtop{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px}
+  body[data-screen=play] .prompt{text-wrap:pretty;flex:1 1 100%;min-width:0}
+  body[data-screen=play] .qtop .howbtn,body[data-screen=play] .qtop .speak{float:none;margin:0;order:1}
+  body[data-screen=play] .card.reading .qtop .prompt{order:2}
   body[data-screen=play] .qtop .howbtn{display:flex}
   body[data-screen=play] .qtop .howbtn[hidden],body[data-screen=play] .qtop .speak[hidden]{display:none}
-  body[data-screen=play] .qtop .prompt .passage{clear:both;margin-bottom:8px}
+  body[data-screen=play] .qtop .prompt .passage{margin-bottom:8px}
   body[data-screen=play] .qtop .howbtn,body[data-screen=play] .qtop .speak{height:44px;font-size:15px}
   body[data-screen=play] .qtop .speak{width:44px}
   /* Pip's speech strip: clipped lines never peek out under the bubble */
@@ -1040,6 +1042,10 @@ body[data-screen=play] .sky *,body[data-screen=play] .isle svg.isl{animation-pla
 /* ===== phone polish for every block (same approach as the event card) ===== */
 @media (max-width:760px){
   /* section headers: back button and title on one line, the description underneath at full width */
+  /* ...and readable over the sky: a smaller sun in the corner, no birds crossing the words, the description on a soft card */
+  body:is([data-screen=closet],[data-screen=home],[data-screen=inside],[data-screen=albumS],[data-screen=story],[data-screen=parent]) .sun{width:120px;height:120px;top:-46px;right:-34px}
+  body:is([data-screen=closet],[data-screen=home],[data-screen=inside],[data-screen=albumS],[data-screen=story],[data-screen=parent]) .bird{display:none}
+  body:not([data-screen=play]):not([data-screen=done]) .playhead .qnum:not(:empty){background:rgba(255,255,255,.78);border-radius:12px;padding:7px 12px 6px;color:var(--ink)}
   body:not([data-screen=play]):not([data-screen=done]) .playhead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
   body:not([data-screen=play]):not([data-screen=done]) .playhead .ihead{display:contents}
   body:not([data-screen=play]):not([data-screen=done]) .playhead .iname{flex:1 1 0;min-width:0;font-size:24px}

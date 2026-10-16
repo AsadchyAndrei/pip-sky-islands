@@ -29,7 +29,7 @@ const TOURS={
     {el:['#homeBtn','#bnav [data-go="homeBtn"]'],t:'Your island',x:'Build and decorate your very own island home.'},
     {el:['#rewards','#weekCard'],t:'Rewards',x:'Events, the weekly challenge and your goals live here.'},
     {el:['#playerBtn'],t:'Who is playing?',x:'Tap your name to switch to another player.',skip:()=>Object.keys(ROOT.profiles||{}).length<2},
-    {el:['#parentBtn','#gearBtn'],t:'For grown-ups',x:'Parents: progress, settings and weekly emails, safe behind a PIN.',skip:()=>!!(G.roster||(typeof classDevice==='function'&&classDevice()))},
+    {el:['#parentBtn','#gearBtn'],t:'For parents',x:'Parents: progress, settings and weekly emails, safe behind a PIN.',skip:()=>!!(G.roster||(typeof classDevice==='function'&&classDevice()))},
     {el:['#gearBtn'],t:'Help any time',x:'Open this menu and tap "How Pip works" to see this tour again.'},
     {end:1,t:"You're ready to fly!",x:'Have fun on the islands. I will be right here!'}]},
   play:{title:'Playing a round',who:'kids',steps:[
