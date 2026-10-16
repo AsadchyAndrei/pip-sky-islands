@@ -15,7 +15,7 @@ function genRiddle(t){
     return {prompt:`${a} is taller than ${b}. ${b} is taller than ${c}. Who is the <b>${tall?'tallest':'shortest'}</b>?`,choices:shuffle([a,b,c]),answer:tall?a:c,
       hint:`Line them up from tallest to shortest, one clue at a time.`,explain:`From tallest to shortest: ${a}, ${b}, ${c}. So the ${tall?'tallest':'shortest'} is <b>${tall?a:c}</b>.`};}
   if(t===3){const b=R(3,6),p=R(6,Dv(9,12,25)),g=R(3,9),ans=b*p-g;
-    return {prompt:`Pip has <b>${b} bags</b> with <b>${p} acorns</b> in each bag. He gives <b>${g}</b> acorns to a squirrel. How many acorns are left?`,...numChoices(ans,[b*p,b*p+g,b+p-g,ans-1]),
+    return {visual:sceneBagsGive(b,p,g),prompt:`Pip has <b>${b} bags</b> with <b>${p} acorns</b> in each bag. He gives <b>${g}</b> acorns to a squirrel. How many acorns are left?`,...numChoices(ans,[b*p,b*p+g,b+p-g,ans-1]),
       hint:`Two steps! First multiply to find all the acorns, then subtract.`,explain:`${b} × ${p} = ${b*p}. ${b*p} − ${g} = <b>${ans}</b>.`};}
   if(t===4){if(coin()){const ev=shuffle([...Array(20)].map((_,i)=>(i+6)*2).filter(n=>n%10!==0)).slice(0,3),odd=R(5,24)*2+1;
       return {prompt:`Which number does <b>not belong</b>?`,visual:`<div class="seq">${shuffle([...ev,odd]).map(x=>`<span>${x}</span>`).join('')}</div>`,...numChoices(odd,ev),

@@ -545,9 +545,10 @@ function genMult(t){
     return {how:['mult1',a,b],prompt:`${a} × ${b} = ?`,...numChoices(ans,[a*ones+a*(tens/10),ans+10,ans-a,ans+b]),anim:multAnim(b,[tens,ones],a),
       hint:`Split ${b} into ${tens} + ${ones}. Find ${a} × ${tens} and ${a} × ${ones}.`,explain:`${a} × ${tens} = ${fmt(a*tens)}. ${a} × ${ones} = ${a*ones}. ${fmt(a*tens)} + ${a*ones} = <b>${fmt(ans)}</b>.`};}
   if(t===2){const a=R(Dv(11,13,105),Dv(30,68,350)),b=R(3,9),ans=a*b;
-    const story=pick([`A school bus holds ${a} students. How many students ride in ${b} full buses?`,`Each box has ${a} crayons. How many crayons are in ${b} boxes?`,`A garden has ${b} rows with ${a} tulips in each row. How many tulips in all?`,`Pip flies ${a} miles every day. How far does Pip fly in ${b} days?`]);
+    const k=R(0,3),story=[`A school bus holds ${a} students. How many students ride in ${b} full buses?`,`Each box has ${a} crayons. How many crayons are in ${b} boxes?`,`A garden has ${b} rows with ${a} tulips in each row. How many tulips in all?`,`Pip flies ${a} miles every day. How far does Pip fly in ${b} days?`][k];
+    const visual=k===0?sceneGroups('bus',b,a,'student'):k===1?sceneGroups('box',b,a,'crayon'):k===2?sceneGroups('row',b,a):undefined;
     const s=String(a),parts=[...s].map((c,i)=>+c*10**(s.length-1-i)).filter(x=>x>0);
-    return {how:['mult2',a,b],prompt:story,...numChoices(ans,[a+b,ans+10,ans-b,a*(b+1)]),anim:multAnim(a,parts,b),hint:`Equal groups means multiply: ${b} groups of ${a}.`,explain:`${b} groups of ${a}: ${a} × ${b} = <b>${fmt(ans)}</b>.`};}
+    return {how:['mult2',a,b],prompt:story,visual,...numChoices(ans,[a+b,ans+10,ans-b,a*(b+1)]),anim:multAnim(a,parts,b),hint:`Equal groups means multiply: ${b} groups of ${a}.`,explain:`${b} groups of ${a}: ${a} × ${b} = <b>${fmt(ans)}</b>.`};}
   const a=R(2,9),z=pick(Dv([10],[10,100,1000],[100,1000])),c=R(2,9),b=c*z,ans=a*b,zeros=String(z).length-1;
   return {how:['mult3',a,c,z],prompt:`${a} × ${fmt(b)} = ?`,...numChoices(ans,[ans*10,ans/10,a*c,ans+b]),hint:`Do ${a} × ${c} first, then think about the zeros.`,explain:`${a} × ${c} = ${a*c}. Then add ${zeros} zero${zeros>1?'s':''}: <b>${fmt(ans)}</b>.`};
 }
@@ -556,13 +557,13 @@ function genDiv(t){
   if(t===0){const d=R(Dv(2,3,4),Dv(6,9,9)),q=R(Dv(4,12,100),Dv(12,99,450)),n=q*d;
     return {how:['div0',n,d],prompt:`${fmt(n)} ÷ ${d} = ?`,...numChoices(q,[q+1,q-1,q+10,q-10]),anim:divAnim(n,d),hint:`Ask yourself: ${d} times what number equals ${fmt(n)}?`,explain:`${d} × ${fmt(q)} = ${fmt(n)}. So ${fmt(n)} ÷ ${d} = <b>${fmt(q)}</b>.`};}
   if(t===1){const d=R(3,Dv(5,8,9)),q=R(Dv(3,4,15),Dv(9,15,60)),r=R(1,d-1),n=q*d+r;
-    return {how:['div1',n,d],prompt:`${n} stickers are shared equally by ${d} friends. How many does each friend get, and how many are left over?`,
+    return {how:['div1',n,d],prompt:`${n} stickers are shared equally by ${d} friends. How many does each friend get, and how many are left over?`,visual:sceneShare('sticker',n,d),
       ...strChoices(`${q} R ${r}`,[`${q+1} R ${r}`,`${q-1} R ${r+d}`,`${q} R 0`,`${q+1} R 0`]),anim:divAnim(n,d),
       hint:`Find the biggest number that times ${d} stays under ${n}. The leftover is the R.`,explain:`${d} × ${q} = ${q*d}. ${n} − ${q*d} = ${r} left over. Answer: <b>${q} R ${r}</b>.`};}
   if(t===2){const a=R(Dv(2,3,6),Dv(9,12,15)),b=R(Dv(2,3,6),Dv(9,12,15));
     return {how:['div2',a*b,b],prompt:`What number goes in the box? <b>□ × ${b} = ${a*b}</b>`,...numChoices(a,[a+1,a-1,b,a+2]),hint:`Divide: ${a*b} ÷ ${b}.`,explain:`${a*b} ÷ ${b} = ${a}. And ${a} × ${b} = ${a*b}. The box is <b>${a}</b>.`};}
   const d=R(4,9),q=R(5,Dv(8,12,25)),r=R(1,d-1),n=q*d+r,needAll=coin(),ans=needAll?q+1:q;
-  return {how:['div3',n,d],prompt:`Pip packs ${n} cupcakes into boxes that hold ${d} each. ${needAll?'How many boxes does Pip need for <b>all</b> the cupcakes?':'How many boxes can Pip fill <b>all the way</b>?'}`,
+  return {how:['div3',n,d],visual:scenePack(n,d),prompt:`Pip packs ${n} cupcakes into boxes that hold ${d} each. ${needAll?'How many boxes does Pip need for <b>all</b> the cupcakes?':'How many boxes can Pip fill <b>all the way</b>?'}`,
     ...numChoices(ans,[needAll?q:q+1,r,q-1,q+2]),anim:divAnim(n,d),hint:`${n} ÷ ${d} has a leftover. Think about what to do with the leftover cupcakes.`,
     explain:`${n} ÷ ${d} = ${q} R ${r}. ${needAll?`The ${r} leftover cupcakes need one more box, so <b>${ans}</b> boxes.`:`Only ${q} boxes are full. The ${r} leftovers don't fill a box. Answer: <b>${ans}</b>.`}`};
 }
@@ -702,10 +703,10 @@ function genMoney(t){
     return {prompt:`How much money is this?`,visual:`<div class="coins">${set.map(v=>coinSVG(v,72)).join('')}</div>`,...strChoices(fmtM(tot),[fmtM(tot+5),fmtM(tot+10),fmtM(Math.max(1,tot-10)),fmtM(tot+25),fmtM(tot+1)]),
       hint:`Count the biggest coins first, then keep counting on: 25, 50, 75... then 10s, 5s, and 1s.`,explain:`${set.map(v=>v===100?'$1':v+'¢').join(' + ')} = <b>${fmtM(tot)}</b>.`};}
   if(t===2){const pay=pick(Dv([100,500],[500,1000],[1000,2000])),p=R(Math.floor(pay*.21),Math.floor(pay*.95)),ch=pay-p;
-    return {prompt:`Pip buys ${pick(ITEMS)} for <b>${fmtM(p)}</b>. He pays with <b>${fmtM(pay)}</b>. How much change does he get?`,...strChoices(fmtM(ch),[fmtM(ch+10),fmtM(ch-10>0?ch-10:ch+5),fmtM(ch+100),fmtM(p)]),
+    const it=pick(ITEMS);return {visual:sceneShop([[it.replace(/^an? /,''),fmtM(p)]],fmtM(pay)),prompt:`Pip buys ${it} for <b>${fmtM(p)}</b>. He pays with <b>${fmtM(pay)}</b>. How much change does he get?`,...strChoices(fmtM(ch),[fmtM(ch+10),fmtM(ch-10>0?ch-10:ch+5),fmtM(ch+100),fmtM(p)]),
       hint:`Change = money paid − price. Or count up from ${fmtM(p)} to ${fmtM(pay)}.`,explain:`${fmtM(pay)} − ${fmtM(p)} = <b>${fmtM(ch)}</b>.`};}
   if(t===3){const a=R(35,Dv(150,350,950)),b=R(25,Dv(150,299,899)),s=a+b;const i1=pick(ITEMS);let i2;do{i2=pick(ITEMS)}while(i2===i1);
-    return {prompt:`Pip buys ${i1} for <b>${fmtM(a)}</b> and ${i2} for <b>${fmtM(b)}</b>. How much does he spend in all?`,...strChoices(fmtM(s),[fmtM(s+100),fmtM(s-10),fmtM(s+10),fmtM(Math.abs(a-b))]),
+    return {visual:sceneShop([[i1.replace(/^an? /,''),fmtM(a)],[i2.replace(/^an? /,''),fmtM(b)]]),prompt:`Pip buys ${i1} for <b>${fmtM(a)}</b> and ${i2} for <b>${fmtM(b)}</b>. How much does he spend in all?`,...strChoices(fmtM(s),[fmtM(s+100),fmtM(s-10),fmtM(s+10),fmtM(Math.abs(a-b))]),
       hint:`Add the dollars and the cents. Remember: 100¢ makes $1.`,explain:`${fmtM(a)} + ${fmtM(b)} = <b>${fmtM(s)}</b>.`};}
   const p=R(3,19)*5,n=R(2,Dv(4,6,9)),s=p*n;
   return {prompt:`One sticker costs <b>${p}¢</b>. How much do <b>${n} stickers</b> cost?`,...strChoices(fmtM(s),[fmtM(s+p),fmtM(s-p),fmtM(p+n),fmtM(s+10)]),
@@ -848,14 +849,14 @@ const CMP_THINGS=[['stickers','has','does','have'],['shells','found','did','find
 function genMultCmp(t){
   const [a,b]=shuffle([...NAMES]).slice(0,2),[thing,verb,aux,base]=pick(CMP_THINGS),n=R(Dv(2,3,3),Dv(5,8,9));let small,g=0;do{small=R(Dv(2,4,12),Dv(9,12,40))}while(small===n&&g++<20);const big=small*n;
   if(t===4){
-    if(coin())return {how:['mult4',n,small],prompt:`${a} ${verb} <b>${small}</b> ${thing}. ${b} ${verb} <b>${n} times as many</b>. How many ${thing} ${aux} ${b} ${base}?`,
+    if(coin())return {how:['mult4',n,small],visual:sceneTimes(thing,a,small,b,big,n,true),prompt:`${a} ${verb} <b>${small}</b> ${thing}. ${b} ${verb} <b>${n} times as many</b>. How many ${thing} ${aux} ${b} ${base}?`,
       ...numChoices(big,[small+n,big+small,big-small,small*(n+1)]),anim:tapeSVG([{label:a,n:1,val:small},{label:b,n,val:small,color:'#8fd3f7'}]),
       hint:`"${n} times as many" means ${n} groups of ${small}. Multiply!`,explain:`${b} has ${n} groups of ${small}: ${n} × ${small} = <b>${big}</b>. (Not ${small} + ${n}: "times as many" means multiply.)`};
     const eq=`${n} × ${small} = ${big}`;
     return {how:['mult4e'],prompt:`Which equation shows: "<b>${big}</b> is <b>${n} times as many</b> as <b>${small}</b>"?`,
       ...strChoices(eq,[`${n} + ${small} = ${n+small}`,`${big} + ${n} = ${big+n}`,`${big} − ${small} = ${big-small}`,`${small} + ${small} = ${small*2}`]),
       hint:`"Times as many" is multiplying. Which choice multiplies?`,explain:`"${big} is ${n} times as many as ${small}" means ${n} groups of ${small}: <b>${eq}</b>.`};}
-  if(coin())return {how:['mult5',n,big],prompt:`${b} ${verb} <b>${big}</b> ${thing}. That is <b>${n} times as many</b> as ${a}. How many ${thing} ${aux} ${a} ${base}?`,
+  if(coin())return {how:['mult5',n,big],visual:sceneTimes(thing,a,small,b,big,n,false),prompt:`${b} ${verb} <b>${big}</b> ${thing}. That is <b>${n} times as many</b> as ${a}. How many ${thing} ${aux} ${a} ${base}?`,
     ...numChoices(small,[big-n,big+n,big*n,small+1]),anim:tapeSVG([{label:b,n,val:small,color:'#8fd3f7'},{label:a,n:1,val:'?'}]),
     hint:`${b}'s ${big} is ${n} equal groups. ${a} has one group. Divide!`,explain:`${big} ÷ ${n} = <b>${small}</b>. Check: ${n} × ${small} = ${big}.`};
   return {how:['mult5',n,big],prompt:`A big boat is <b>${big} feet</b> long. That is <b>${n} times as long</b> as a small boat. How long is the small boat?`,
