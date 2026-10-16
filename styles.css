@@ -1902,3 +1902,34 @@ body.lk-album .bnav{grid-template-columns:repeat(4,minmax(0,1fr))}
 .pglance li{padding-left:14px;position:relative}.pglance li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:50%;background:#f0a92e}
 .pglance.soon{font-weight:500}
 #parent .pfocus p.pfbtn{margin-top:4px}
+/* ===== a livelier round (js/alive.js) ===== */
+#dots{position:relative}
+.dotflag{display:inline-flex;align-items:flex-end;width:16px;height:18px;margin-left:2px;align-self:center}
+.dotflag svg{width:16px;height:18px}
+.dotpip{position:absolute;left:0;top:0;width:20px;height:25px;pointer-events:none;z-index:2;transition:left .55s cubic-bezier(.4,1.4,.5,1),top .55s ease;filter:drop-shadow(0 2px 2px rgba(31,53,87,.25))}
+.dotpip svg{width:100%;height:100%;display:block;animation:dpbob 2.4s ease-in-out infinite}
+.dotpip.home svg{animation:dphome .6s ease-out 2}
+@keyframes dpbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes dphome{50%{transform:translateY(-6px) rotate(-8deg)}}
+body[data-screen=play] .dot.now{transform:none}
+.starfly{position:absolute;width:34px;height:34px;z-index:9500;pointer-events:none;will-change:transform}
+.starfly.small{width:24px;height:24px}.starfly svg{width:100%;height:100%;display:block}
+.pipbob.catch{animation:pcatch .45s ease-out}
+@keyframes pcatch{30%{transform:scale(1.12,.9) translateY(3px)}65%{transform:scale(.96,1.06) translateY(-3px)}}
+/* streak glow: warm at 3 in a row; sparkles and a brighter sun at 5 */
+#pipfly{position:relative}
+#pipfly::before{content:"";position:absolute;inset:-22%;border-radius:50%;background:radial-gradient(circle,rgba(255,200,60,.95) 0,rgba(255,180,40,.55) 42%,rgba(255,170,30,.18) 60%,transparent 72%);opacity:0;transform:scale(.7);transition:opacity .4s,transform .4s;z-index:-1;pointer-events:none}
+body.al-s3[data-screen=play] #pipfly::before,body.al-s5[data-screen=play] #pipfly::before{opacity:1;transform:scale(1);animation:alglow 1.4s ease-in-out infinite alternate}
+@keyframes alglow{to{transform:scale(1.12)}}
+#pipfly::after{content:"";position:absolute;inset:-22%;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:radial-gradient(circle at 50% 3%,#fff 0 4px,transparent 5px),radial-gradient(circle at 85% 15%,#ffc23d 0 4.5px,transparent 5.5px),radial-gradient(circle at 97% 50%,#fff 0 3.5px,transparent 4.5px),radial-gradient(circle at 85% 85%,#ffc23d 0 4.5px,transparent 5.5px),radial-gradient(circle at 50% 97%,#fff 0 4px,transparent 5px),radial-gradient(circle at 15% 85%,#ffc23d 0 4.5px,transparent 5.5px),radial-gradient(circle at 3% 50%,#fff 0 3.5px,transparent 4.5px),radial-gradient(circle at 15% 15%,#ffc23d 0 4.5px,transparent 5.5px)}
+body.al-s5[data-screen=play] #pipfly::after{opacity:1;animation:spin 3.5s linear infinite}
+body.al-s5[data-screen=play] .sun{filter:brightness(1.08) drop-shadow(0 0 22px rgba(255,213,107,.9));transition:filter .6s}
+body.al-s5[data-screen=play] .sun .rays{animation-duration:8s}
+/* a miss: a small grey cloud passes over the sun, then the sky clears */
+body[data-screen=play] .sky .alcloud{animation-play-state:running!important}
+.alcloud{position:absolute;top:34px;right:-140px;width:120px;height:52px;z-index:1;animation:alcloud 2.8s ease-in-out forwards;pointer-events:none}
+.alcloud i{position:absolute;bottom:0;background:#b9c2d6;border-radius:50%;box-shadow:inset 0 -5px 0 rgba(31,53,87,.12)}
+.alcloud i:nth-child(1){left:0;width:58px;height:34px}.alcloud i:nth-child(2){left:28px;bottom:12px;width:56px;height:44px}.alcloud i:nth-child(3){left:62px;width:58px;height:32px}
+@keyframes alcloud{0%{transform:translateX(0);opacity:0}25%{transform:translateX(-150px);opacity:.95}70%{transform:translateX(-170px);opacity:.95}100%{transform:translateX(-320px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.dotpip,.dotpip svg{transition:none;animation:none}#pipfly::before,#pipfly::after{animation:none!important}}

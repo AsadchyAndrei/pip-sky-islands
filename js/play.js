@@ -130,7 +130,7 @@ function beginRound(isl,mode,qs){
   stopTimers();S=freshState(isl,mode);S.qs=qs;S.d=diffFor(isl);
   {const nm=$('#iname');nm.textContent=isl.name;if(mode==='island'){const d=document.createElement('span');d.className='idiff';d.textContent=` · ${DIFF_NAME[S.d]}`;nm.appendChild(d)}}$('#timer').hidden=true;$('#bossbar').hidden=true;$('#dots').hidden=false;$('#combo').hidden=true;
   $('#dots').innerHTML=qs.map(()=>'<span class="dot"></span>').join('');setAlt(0);
-  show('play');refreshFoxes();
+  show('play');refreshFoxes();aliveRound();
   say($('#say'),mode==='daily'?`Daily Challenge! 8 surprise puzzles from all over the sky. Let's go${nm()}!`:mode==='review'?`Fix-It Falls! These are puzzles that tricked you before. Let's beat them this time!`
     :pick([`Welcome to ${isl.name}! Let's go${nm()}!`,`Buckle up! ${isl.name}, here we come!`,`6 puzzles on ${isl.name}. You've got this!`,`Ready, set, THINK!`]));
   foxClass('waving',1500);showQ();
@@ -151,7 +151,7 @@ function showQ(){
   const q=S.qs[S.i];S.tries=0;S.locked=false;
   const c=$('#card');c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
-  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i))}
+  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i));aliveStep(S.i)}
   $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);
   if(S.mode==='lesson'&&S.i>0){const pv=S.qs[S.i-1];if(q.guided&&!pv.guided)say($('#say'),`Now let's do one <b>together</b>, step by step!`);else if(!q.teach&&!q.guided&&(pv.guided||pv.teach))say($('#say'),`Your turn! Try these <b>on your own</b>. Use the trick!`)}
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;if(q.listen)wireListen();$('#card').classList.toggle('lp',!!q.longp);
@@ -486,7 +486,7 @@ function judge(ok,btn){
     S.bestStreak=Math.max(S.bestStreak,S.streak);if(S.bestStreak>G.bestCombo)G.bestCombo=S.bestStreak;
     let c=first?REW.ans:REW.ans2;if(first&&S.streak>=3)c+=Math.min(S.streak,8)-1;if(S.mode==='island'){const pk=pickToday();if(pk&&pk.id===S.isl.id)c*=2}c=taper(c);if(S.mode==='island'&&S.d===3)c=Math.round(c*1.5);
     if(S.mode==='review'||q.rv)reviewResult(q,first);
-    sYes();burstAt(btn||$('#card'));foxMove(S.streak>=5&&S.streak%5===0?'spin':'hop');setAlt(S.score);
+    sYes();burstAt(btn||$('#card'));foxMove(S.streak>=5&&S.streak%5===0?'spin':'hop');setAlt(S.score);aliveRight(btn||$('#entry')||$('#check')||$('#card'),first);
     gain(c,first?2:1,btn||$('#prompt'));
     if(S.mode==='boss')bossHit();
     say($('#say'),COMBO_MSG[S.streak]||(first?pick(YES):pick(SECOND)));
@@ -497,7 +497,7 @@ function judge(ok,btn){
     $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback';fb.innerHTML=explainHTML(q,true);fb.hidden=false;finishQ();
   }else{
     const given=btn&&!q.kind?btn.textContent.trim():q.kind==='keypad'?String(S.entry||''):'';
-    S.tries++;sNo();foxMove('wobble');foxClass('sad',1400);S.streak=0;comboUI();
+    S.tries++;sNo();foxMove('wobble');foxClass('sad',1400);S.streak=0;comboUI();aliveWrong();
     if(btn){if(!q.kind){btn.classList.add('wrong');btn.disabled=true}else{btn.classList.remove('nope');void btn.offsetWidth;btn.classList.add('nope')}}
     if(q.kind==='money')renderTray();
     if(q.kind==='keypad'){S.entry='';const t=$('#entryTxt');if(t)t.textContent=''}
@@ -524,7 +524,7 @@ function finishQ(){
   if(S.mode==='boss')n.textContent=S.hp<=0?'Victory!':S.hearts<=0?'See results':'Next attack';
   else if(S.mode==='lesson')n.textContent=S.i===S.qs.length-1?'Finish the lesson':S.qs[S.i+1]&&!S.qs[S.i+1].teach&&!S.qs[S.i+1].guided?'Now try it alone!':'Next';
   else n.textContent=S.bonus?'Bonus game!':S.i===S.qs.length-1?'See my results':'Next puzzle';
-  n.hidden=false;setTimeout(()=>{try{n.focus({preventScroll:true})}catch(e){}},50);
+  n.hidden=false;setTimeout(()=>{try{n.focus({preventScroll:true})}catch(e){}},50);if(S.i===S.qs.length-1&&S.mode!=='boss')setTimeout(()=>aliveStep(S.qs.length),400);
   setTimeout(showAnswerArea,120);
 }
 /* after an answer, gently scroll so the explanation (and the Next button) are on screen; never scroll past the top of the explanation */

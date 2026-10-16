@@ -1,0 +1,32 @@
+/* Pip's Sky Islands: a livelier round. Pip does things, not only says them:
+   - a little balloon rides along the progress dots toward a flag, one dot per puzzle
+   - a right answer sends a star flying into Pip's basket
+   - a streak makes Pip glow (3 in a row), then sparkle while the sun shines brighter (5 in a row)
+   - a miss: a small grey cloud drifts over the sun for a moment, then the sky clears again (gentle, never a penalty)
+   Everything is decoration: no game rule depends on it, and it stays still for "reduce motion". */
+const AL_PIP=`<svg viewBox="0 0 24 30" aria-hidden="true"><path d="M12 1.5a8.5 8.5 0 0 0-8.5 8.6c0 4.6 4.6 8.4 7 10h3c2.4-1.6 7-5.4 7-10A8.5 8.5 0 0 0 12 1.5z" fill="#ff6b57" stroke="#1f3557" stroke-width="1.5"/><path d="M12 1.5c-2.6 2.4-3.6 5.6-3.6 8.6 0 3.6 1.2 7 2.1 10h3c.9-3 2.1-6.4 2.1-10 0-3-1-6.2-3.6-8.6z" fill="#ffc23d"/><path d="M10.5 20.1 9.6 23.4M13.5 20.1l.9 3.3" stroke="#1f3557" stroke-width="1.2"/><rect x="8.4" y="23.2" width="7.2" height="5.3" rx="1.2" fill="#b07a45" stroke="#1f3557" stroke-width="1.4"/></svg>`;
+const AL_FLAG=`<svg viewBox="0 0 20 22" aria-hidden="true"><path d="M5 21V2" stroke="#1f3557" stroke-width="2" stroke-linecap="round"/><path d="M5.5 2.5h11l-3 4 3 4h-11z" fill="#38b98a" stroke="#1f3557" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+const AL_STAR=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" fill="#ffc23d" stroke="#1f3557" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+const alOn=()=>S&&!['boss','flash'].includes(S.mode);
+/* the balloon on the dots */
+function aliveRound(){document.body.classList.remove('al-s3','al-s5');const d=$('#dots');if(!d||!alOn())return;
+  d.insertAdjacentHTML('beforeend',`<span class="dotflag" aria-hidden="true">${AL_FLAG}</span><span class="dotpip" aria-hidden="true">${AL_PIP}</span>`);
+  const p=d.querySelector('.dotpip');p.style.transition='none';aliveStep(0);void p.offsetWidth;p.style.transition=''}
+function aliveStep(i){const d=$('#dots'),p=d&&d.querySelector('.dotpip');if(!p)return;
+  const dots=d.querySelectorAll('.dot'),t=i>=dots.length?d.querySelector('.dotflag'):dots[i];if(!t)return;
+  p.style.left=(t.offsetLeft+t.offsetWidth/2-p.offsetWidth/2)+'px';p.style.top=(t.offsetTop+t.offsetHeight/2-p.offsetHeight+5)+'px';
+  p.classList.toggle('home',i>=dots.length)}
+/* a right answer: a star flies from the answer into Pip's basket */
+function aliveRight(from,first){if(!alOn())return;aliveStreak();
+  const pip=document.querySelector('#pipfly .pipbob');if(!pip||reduce||!from)return;
+  const a=from.getBoundingClientRect(),b=pip.getBoundingClientRect();if(!a.width||!b.width)return;
+  const s=document.createElement('div');s.className='starfly'+(first?'':' small');s.innerHTML=AL_STAR;document.body.appendChild(s);
+  const x0=a.left+a.width/2,y0=a.top+a.height/2,x1=b.left+b.width/2,y1=b.top+b.height*.72,dx=x1-x0,dy=y1-y0,lift=Math.min(140,Math.abs(dx)*.4+60);
+  s.style.left=(x0+scrollX)+'px';s.style.top=(y0+scrollY)+'px'; // page coordinates: the star keeps its course if the page scrolls to the explanation
+  const an=s.animate([{transform:'translate(-50%,-50%) scale(.5)',opacity:.4},{transform:`translate(calc(${dx*.45}px - 50%),calc(${dy*.45-lift}px - 50%)) scale(1.25)`,opacity:1,offset:.45},{transform:`translate(calc(${dx}px - 50%),calc(${dy}px - 50%)) scale(.45)`,opacity:.95}],{duration:720,easing:'cubic-bezier(.45,.05,.4,1)'});
+  an.onfinish=()=>{s.remove();pip.classList.remove('catch');void pip.offsetWidth;pip.classList.add('catch');const r=pip.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)burst(r.left+r.width/2,r.top+r.height*.72,14)}}
+/* streak: glow at 3, sparkles and a brighter sun at 5 */
+function aliveStreak(){const n=S?S.streak:0;document.body.classList.toggle('al-s3',n>=3&&n<5);document.body.classList.toggle('al-s5',n>=5)}
+/* a miss: a small cloud passes over the sun */
+function aliveWrong(){if(!alOn())return;aliveStreak();if(reduce)return;const sky=document.querySelector('.sky');if(!sky||sky.querySelector('.alcloud'))return;
+  sky.insertAdjacentHTML('beforeend','<div class="alcloud"><i></i><i></i><i></i></div>');const c=sky.querySelector('.alcloud');setTimeout(()=>c.remove(),2800)}
