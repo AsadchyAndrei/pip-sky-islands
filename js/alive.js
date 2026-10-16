@@ -11,7 +11,7 @@ const alOn=()=>S&&!['boss','flash'].includes(S.mode);
 /* the balloon on the dots */
 function aliveRound(){document.body.classList.remove('al-s3','al-s5');const d=$('#dots');if(!d||!alOn())return;
   d.insertAdjacentHTML('beforeend',`<span class="dotflag" aria-hidden="true">${AL_FLAG}</span><span class="dotpip" aria-hidden="true">${AL_PIP}</span>`);
-  const p=d.querySelector('.dotpip');p.style.transition='none';aliveStep(0);void p.offsetWidth;p.style.transition=''}
+  const p=d.querySelector('.dotpip');p.style.transition='none';aliveStep(0);void p.offsetWidth;p.style.transition='';aliveEventEnd();aliveEventPlan()}
 function aliveStep(i){const d=$('#dots'),p=d&&d.querySelector('.dotpip');if(!p)return;
   const dots=d.querySelectorAll('.dot'),t=i>=dots.length?d.querySelector('.dotflag'):dots[i];if(!t)return;
   p.style.left=(t.offsetLeft+t.offsetWidth/2-p.offsetWidth/2)+'px';p.style.top=(t.offsetTop+t.offsetHeight/2-p.offsetHeight+5)+'px';
@@ -30,3 +30,27 @@ function aliveStreak(){const n=S?S.streak:0;document.body.classList.toggle('al-s
 /* a miss: a small cloud passes over the sun */
 function aliveWrong(){if(!alOn())return;aliveStreak();if(reduce)return;const sky=document.querySelector('.sky');if(!sky||sky.querySelector('.alcloud'))return;
   sky.insertAdjacentHTML('beforeend','<div class="alcloud"><i></i><i></i><i></i></div>');const c=sky.querySelector('.alcloud');setTimeout(()=>c.remove(),2800)}
+/* ---------- mini-events: sometimes, once in a round, something happens in the sky ----------
+   wind: a gust pushes Pip's balloon away; a right first answer catches it (+coins)
+   bird: a bird carries a star across the sky; answer before it is gone (+coins)
+   bubble: a treasure bubble floats up; tap it before it floats away (+coins, no puzzle needed)
+   Only a bonus: a miss or a slow answer costs nothing. Not in tests, lessons, the quick check, bosses or the first rounds. */
+const EV_BONUS=10,EV_KINDS=['wind','bird','bubble'];
+function aliveEventPlan(){S.ev=null;if(!['island','daily','review'].includes(S.mode)||S.qs.length<5||(G.rounds||0)<2||S.chapter!=null&&S.mode!=='island')return;
+  if(Math.random()>=.4)return;S.ev={at:2+Math.floor(Math.random()*Math.min(3,S.qs.length-3)),kind:EV_KINDS[Math.floor(Math.random()*EV_KINDS.length)],on:false,done:false}}
+function aliveEventEnd(){document.querySelectorAll('.evbird,.evbubble,.evgust').forEach(e=>e.remove());document.body.classList.remove('ev-wind');if(S&&S.ev){clearTimeout(S.ev.t);S.ev.on=false}}
+function evWin(el,msg){if(!S||!S.ev)return;S.ev.done=true;const c=taper(EV_BONUS);gain(c,0,el||$('#prompt'));updateStats("#coinPill");say($('#say'),msg);foxMove('spin');aliveEventEnd()}
+function aliveEvent(){if(!S||!S.ev)return;if(S.ev.on&&S.i!==S.ev.at)aliveEventEnd();if(S.i!==S.ev.at||S.ev.done)return;
+  const e=S.ev;e.on=true;e.done=true;
+  if(e.kind==='wind'){document.body.classList.add('ev-wind');{const f=$('#pipfly');if(f)f.insertAdjacentHTML('beforeend','<i class="evgust" aria-hidden="true"></i>')}e.done=false;say($('#say'),`Whoosh! A <b>gust of wind</b> pushed my balloon away! Get this one right on the first try to catch it!`);return}
+  if(e.kind==='bird'){e.done=false;document.body.insertAdjacentHTML('beforeend',`<div class="evbird" aria-hidden="true"><svg viewBox="0 0 64 40"><path d="M6 22 Q18 6 30 20 Q42 6 54 22" fill="none" stroke="#1f3557" stroke-width="4" stroke-linecap="round"/><g transform="translate(22 22)">${AL_STAR.replace('<svg viewBox="0 0 24 24" aria-hidden="true">','<svg width="20" height="20" viewBox="0 0 24 24">')}</g></svg></div>`);
+    say($('#say'),`Look, a <b>star bird</b>! Solve this one before it flies away and it drops a bonus!`);e.t=setTimeout(()=>{if(S&&S.ev===e&&!e.done){e.done=true;aliveEventEnd();say($('#say'),`The bird flew off. No worries, it comes back another day!`)}},22000);return}
+  if(e.kind==='bubble'){const card=$('#card');document.body.insertAdjacentHTML('beforeend',`<button type="button" class="evbubble" aria-label="Treasure bubble: tap it for bonus coins"><span>${COIN_ICON}</span></button>`);
+    const b=document.querySelector('.evbubble'),r=card.getBoundingClientRect();b.style.left=(r.left+14+scrollX)+'px';b.style.top=(r.top+70+scrollY)+'px'; // left side: never over the How? and read-aloud buttons
+    say($('#say'),`A <b>treasure bubble</b>! Tap it before it floats away!`);
+    b.onclick=()=>{burstAt(b,24);tone([784,1047],.05);evWin(b,`Pop! <b>+${taper(EV_BONUS)} bonus coins</b>! Now, back to the puzzle!`)};
+    e.t=setTimeout(()=>{if(document.querySelector('.evbubble'))aliveEventEnd()},6000)}}
+/* the answer to the event puzzle */
+function aliveEventAnswer(ok,first,el){const e=S&&S.ev;if(!e||!e.on||e.done||S.i!==e.at)return;
+  if(e.kind==='wind'){if(ok&&first)evWin(el,`You caught my balloon! <b>+${taper(EV_BONUS)} bonus coins!</b>`);else{e.done=true;setTimeout(()=>{aliveEventEnd();say($('#say'),`Phew, the wind calmed down and my balloon floated back. Keep going!`)},900)}}
+  if(e.kind==='bird'){if(ok&&first){evWin(el,`The star bird dropped its star! <b>+${taper(EV_BONUS)} bonus coins!</b>`)}else if(!ok){/* a second try still counts while the bird is here */}else{e.done=true;aliveEventEnd()}}}

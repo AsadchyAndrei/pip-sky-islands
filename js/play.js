@@ -3,7 +3,7 @@
 let S=null,tipTimer=0,tips=[],tipI=0;
 const SCREENS=['gate','kids','map','play','done','closet','albumS','story','parent','home','inside','teach'];
 let curScreen='';
-function show(id){curScreen=id;document.body.classList.toggle('nogame',id==='gate'||id==='kids'||id==='teach');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);document.body.dataset.screen=id;scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
+function show(id){if(id!=='play'&&typeof aliveEventEnd==='function')aliveEventEnd();curScreen=id;document.body.classList.toggle('nogame',id==='gate'||id==='kids'||id==='teach');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);document.body.dataset.screen=id;scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
 let EXPLORE=new Set();
 function pickExplore(){EXPLORE=new Set();for(const g of ['math','world'])ISLANDS.filter(i=>i.group===g&&i.gen&&!i.retired&&!G.visited[i.id]).slice(0,2).forEach(i=>EXPLORE.add(i.id))}
 function card(isl,i){
@@ -151,7 +151,7 @@ function showQ(){
   const q=S.qs[S.i];S.tries=0;S.locked=false;
   const c=$('#card');c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
-  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i));aliveStep(S.i)}
+  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i));aliveStep(S.i);aliveEvent()}
   $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);
   if(S.mode==='lesson'&&S.i>0){const pv=S.qs[S.i-1];if(q.guided&&!pv.guided)say($('#say'),`Now let's do one <b>together</b>, step by step!`);else if(!q.teach&&!q.guided&&(pv.guided||pv.teach))say($('#say'),`Your turn! Try these <b>on your own</b>. Use the trick!`)}
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;if(q.listen)wireListen();$('#card').classList.toggle('lp',!!q.longp);
@@ -486,7 +486,7 @@ function judge(ok,btn){
     S.bestStreak=Math.max(S.bestStreak,S.streak);if(S.bestStreak>G.bestCombo)G.bestCombo=S.bestStreak;
     let c=first?REW.ans:REW.ans2;if(first&&S.streak>=3)c+=Math.min(S.streak,8)-1;if(S.mode==='island'){const pk=pickToday();if(pk&&pk.id===S.isl.id)c*=2}c=taper(c);if(S.mode==='island'&&S.d===3)c=Math.round(c*1.5);
     if(S.mode==='review'||q.rv)reviewResult(q,first);
-    sYes();burstAt(btn||$('#card'));foxMove(S.streak>=5&&S.streak%5===0?'spin':'hop');setAlt(S.score);aliveRight(btn||$('#entry')||$('#check')||$('#card'),first);
+    sYes();burstAt(btn||$('#card'));foxMove(S.streak>=5&&S.streak%5===0?'spin':'hop');setAlt(S.score);aliveRight(btn||$('#entry')||$('#check')||$('#card'),first);aliveEventAnswer(true,first,btn||$('#prompt'));
     gain(c,first?2:1,btn||$('#prompt'));
     if(S.mode==='boss')bossHit();
     say($('#say'),COMBO_MSG[S.streak]||(first?pick(YES):pick(SECOND)));
@@ -497,7 +497,7 @@ function judge(ok,btn){
     $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback';fb.innerHTML=explainHTML(q,true);fb.hidden=false;finishQ();
   }else{
     const given=btn&&!q.kind?btn.textContent.trim():q.kind==='keypad'?String(S.entry||''):'';
-    S.tries++;sNo();foxMove('wobble');foxClass('sad',1400);S.streak=0;comboUI();aliveWrong();
+    S.tries++;sNo();foxMove('wobble');foxClass('sad',1400);S.streak=0;comboUI();aliveWrong();aliveEventAnswer(false,false);
     if(btn){if(!q.kind){btn.classList.add('wrong');btn.disabled=true}else{btn.classList.remove('nope');void btn.offsetWidth;btn.classList.add('nope')}}
     if(q.kind==='money')renderTray();
     if(q.kind==='keypad'){S.entry='';const t=$('#entryTxt');if(t)t.textContent=''}

@@ -18,4 +18,5 @@ python3 check_tour.py
 python3 check_demo.py
 python3 check_guest.py
 python3 check_unlock.py
+python3 check_alive.py
 echo "All checks passed."
