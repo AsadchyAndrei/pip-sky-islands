@@ -27,7 +27,7 @@ const SC_BOX={
   sbox:(x,y)=>`<g transform="translate(${x} ${y})"><rect x="-18" y="-14" width="36" height="30" rx="4" fill="#e6b980" stroke="${SC_INK}" stroke-width="1.6"/><path d="M-18-6h36" stroke="${SC_INK}" stroke-width="1.2"/></g>`,
   bag:(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-18-8q-4 26 18 26t18-26z" fill="#d9b48a" stroke="${SC_INK}" stroke-width="1.6"/><path d="M-12-10q12-8 24 0" fill="none" stroke="${SC_INK}" stroke-width="1.6"/></g>`};
 /* equal groups: "b buses with a students each", "b rows with a tulips each" */
-function sceneGroups(kind,b,a,icon){const per=Math.min(b,5),cw=66,W=Math.max(220,Math.min(b,9)*cw/ (b>5?1.6:1)+20);let g='';
+function sceneGroups(kind,b,a,icon){const per=Math.min(b,5),cw=62,W=Math.max(220,Math.min(b,9)*cw/ (b>5?1.6:1)+20);let g='';
   if(kind==='row'){const H=Math.min(b,9)*25+12+(b>9?18:0),W2=250;for(let r=0;r<Math.min(b,9);r++){const y=18+r*25;for(let i=0;i<Math.min(a,6);i++)g+=SC_ICON[icon||'tulip'](20+i*20,y,.8);if(a>6)g+=`<text x="${20+6*20}" y="${y+4}" font-size="13" ${FONT} fill="${SC_INK}">…</text>`;g+=scTag(205,y,a,{fill:'#e8fbf2'})}
     if(b>9)g+=`<text x="90" y="${H-8}" text-anchor="middle" font-size="13" ${FONT} fill="${SC_INK}">… ${b} rows in all</text>`;
     return scSvg(W2,H,`<rect x="6" y="4" width="166" height="${Math.min(b,9)*25+4}" rx="8" fill="${icon==='seat'?'#ffe3dd':'#c8ecc0'}" opacity=".6"/>${g}`,`${b} rows with ${a} in each row`)}
@@ -35,10 +35,10 @@ function sceneGroups(kind,b,a,icon){const per=Math.min(b,5),cw=66,W=Math.max(220
   for(let i=0;i<n;i++){const c=i%cols,r=Math.floor(i/cols),x=14+cw/2+c*cw-7,y=44+r*72;g+=SC_BOX[kind](x,y);if(icon)g+=scCluster(icon,Math.min(a,3),x,y+2,3,.75);g+=scTag(x,y-27,a)}
   return scSvg(W3,H3,g,`${b} groups with ${a} in each`)}
 /* sharing: a pile of n items, d friends, each gets "?" */
-function sceneShare(icon,n,d){const fr=Math.min(d,9),fw=34,W=Math.max(240,fr*fw+130),H=96;let g=`<g>${scCluster(icon,n,52,46,9,1)}</g>`+scTag(52,84,n);
-  g+=`<path d="M100 46h16" stroke="${SC_INK}" stroke-width="2" marker-end="url(#scA)"/>`;
-  for(let i=0;i<fr;i++){const x=134+i*fw;g+=SC_ICON.student(x,44,1.6)+`<circle cx="${x}" cy="74" r="8" fill="#fff" stroke="${SC_INK}" stroke-width="1.2"/><text x="${x}" y="78" text-anchor="middle" font-size="11" ${FONT} fill="#e2453a">?</text>`}
-  return scSvg(W,H,`<defs><marker id="scA" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${SC_INK}"/></marker></defs>${g}`,`${n} shared by ${d} friends`)}
+function sceneShare(icon,n,d){const fr=Math.min(d,10),per=Math.min(fr,5),rows=Math.ceil(fr/per),fw=38,W=Math.max(220,per*fw+140),H=Math.max(100,rows*64+14);let g=`<g>${scCluster(icon,n,52,H/2-4,9,1)}</g>`+scTag(52,H/2+36,n);
+  g+=`<path d="M100 ${H/2-4}h16" stroke="${SC_INK}" stroke-width="2" marker-end="url(#scA)"/>`;
+  for(let i=0;i<fr;i++){const x=140+(i%per)*fw,y=10+Math.floor(i/per)*64;g+=SC_ICON.student(x,y+26,1.7)+`<circle cx="${x}" cy="${y+52}" r="9.5" fill="#fff" stroke="${SC_INK}" stroke-width="1.3"/><text x="${x}" y="${y+57}" text-anchor="middle" font-size="14" ${FONT} fill="#e2453a">?</text>`}
+  return scSvg(W,H,scArrowDef('scA')+g,`${n} shared by ${d} friends`)}
 /* packing: n cupcakes into boxes of d */
 function scenePack(n,d){const W=282,H=100;let g=scCluster('cupcake',n,50,44,9,1)+scTag(50,86,n);
   g+=`<path d="M100 46h20" stroke="${SC_INK}" stroke-width="2" marker-end="url(#scB)"/>`;
@@ -54,15 +54,15 @@ function sceneTimes(icon,nameA,a,nameB,b,n,unknownB){const W=290,H=118;const ic=
   g+=scTag(200,100,unknownB?'?':b,unknownB?{q:1}:{})+`<text x="200" y="88" text-anchor="middle" font-size="11" ${FONT} fill="#5b6b86">${n} times as many</text>`;
   return scSvg(W,H,g,`${nameA} and ${nameB}: ${n} times as many`)}
 /* shopping: price tags and the money paid */
-function sceneShop(items,pay){const W=Math.max(200,items.length*110+(pay?110:0)),H=96;let g='',x=55;
-  for(const [name,price] of items){g+=`<g transform="translate(${x} 40)"><path d="M-34-20h52l16 20-16 20h-52z" fill="#fff7d6" stroke="${SC_INK}" stroke-width="1.5" stroke-linejoin="round"/><circle cx="24" cy="0" r="3" fill="#fff" stroke="${SC_INK}"/><text x="-8" y="6" text-anchor="middle" font-size="17" ${FONT} fill="${SC_INK}">${price}</text></g><text x="${x}" y="84" text-anchor="middle" font-size="12" ${FONT} fill="#5b6b86">${esc(name)}</text>`;x+=110}
-  if(pay)g+=`<g transform="translate(${x} 40)"><rect x="-36" y="-18" width="72" height="36" rx="5" fill="#bfe8c9" stroke="${SC_INK}" stroke-width="1.5"/><circle r="10" fill="#e8fbf2" stroke="#2c9a5b"/><text y="5" text-anchor="middle" font-size="12" ${FONT} fill="#2c7a4b">$</text><text x="0" y="34" text-anchor="middle" font-size="13" ${FONT} fill="${SC_INK}">pays ${pay}</text></g>`;
+function sceneShop(items,pay){const all=items.map(([name,price])=>({name,price})).concat(pay?[{pay}]:[]),cols=all.length>2?2:all.length,rows=Math.ceil(all.length/cols),W=Math.max(200,cols*130+10),H=rows*92+4;let g='';
+  all.forEach((it,i)=>{const x=70+(i%cols)*130,y=38+Math.floor(i/cols)*92;
+    if(it.pay)g+=`<g transform="translate(${x} ${y})"><rect x="-40" y="-20" width="80" height="40" rx="5" fill="#bfe8c9" stroke="${SC_INK}" stroke-width="1.5"/><circle r="11" fill="#e8fbf2" stroke="#2c9a5b"/><text y="5" text-anchor="middle" font-size="13" ${FONT} fill="#2c7a4b">$</text><text x="0" y="40" text-anchor="middle" font-size="15" ${FONT} fill="${SC_INK}">pays ${it.pay}</text></g>`;
+    else g+=`<g transform="translate(${x} ${y})"><path d="M-46-21h60l17 21-17 21h-60z" fill="#fff7d6" stroke="${SC_INK}" stroke-width="1.5" stroke-linejoin="round"/><circle cx="20" cy="0" r="3" fill="#fff" stroke="${SC_INK}"/><text x="-14" y="6" text-anchor="middle" font-size="18" ${FONT} fill="${SC_INK}">${it.price}</text><text x="-8" y="40" text-anchor="middle" font-size="15" ${FONT} fill="#5b6b86">${esc(it.name)}</text></g>`});
   return scSvg(W,H,g,'Price tags'+(pay?' and the money paid':''))}
 /* bags of acorns, some given away */
-function sceneBagsGive(b,p,give){const n=Math.min(b,6),W=Math.max(230,n*50+120),H=110;let g='';
-  for(let i=0;i<n;i++){const x=30+i*50;g+=SC_BOX.bag(x,52)+scCluster('acorn',2,x,58,2,.8)+scTag(x,22,p)}
-  if(b>6)g+=`<text x="${30+n*50-12}" y="60" font-size="16" ${FONT} fill="${SC_INK}">…</text>`;
-  const sx=30+n*50+40;g+=`<g transform="translate(${sx} 52) scale(1.35)"><ellipse cx="0" cy="10" rx="14" ry="11" fill="#b5824f" stroke="${SC_INK}" stroke-width="1.3"/><circle cx="-6" cy="-6" r="8" fill="#b5824f" stroke="${SC_INK}" stroke-width="1.3"/><path d="M12 14q16-8 6-26" fill="none" stroke="#b5824f" stroke-width="7" stroke-linecap="round"/><circle cx="-9" cy="-8" r="1.4" fill="${SC_INK}"/></g>`+scTag(sx,96,`−${give}`,{fill:'#ffe3dd'});
+function sceneBagsGive(b,p,give){const n=Math.min(b,6),per=n>4?Math.ceil(n/2):n,rows=Math.ceil(n/per),W=per*52+110,H=rows*76+30;let g='';
+  for(let i=0;i<n;i++){const x=32+(i%per)*52,y=56+Math.floor(i/per)*76;g+=SC_BOX.bag(x,y)+scCluster('acorn',2,x,y+6,2,.8)+scTag(x,y-30,p)}
+  const sx=32+per*52+30,sy=H/2;g+=`<g transform="translate(${sx} ${sy-6}) scale(1.35)"><ellipse cx="0" cy="10" rx="14" ry="11" fill="#b5824f" stroke="${SC_INK}" stroke-width="1.3"/><circle cx="-6" cy="-6" r="8" fill="#b5824f" stroke="${SC_INK}" stroke-width="1.3"/><path d="M12 14q16-8 6-26" fill="none" stroke="#b5824f" stroke-width="7" stroke-linecap="round"/><circle cx="-9" cy="-8" r="1.4" fill="${SC_INK}"/></g>`+scTag(sx,sy+40,`−${give}`,{fill:'#ffe3dd'});
   return scSvg(W,H,g,`${b} bags of ${p} acorns, ${give} given to a squirrel`)}
 /* ---- more scenes: ropes and ribbons, two clocks, rectangles, boxes, packing and pouring ---- */
 const scArrowDef=id=>`<defs><marker id="${id}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${SC_INK}"/></marker></defs>`;
@@ -105,9 +105,8 @@ SC_ICON.drop=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d
 SC_ICON.pizza=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><circle r="7.5" fill="#f5c26b" stroke="${SC_INK}" stroke-width="1.1"/><circle r="5.5" fill="#f08a5d"/><circle cx="-2" cy="-1.5" r="1.2" fill="#c0392b"/><circle cx="2.3" cy="1.8" r="1.2" fill="#c0392b"/><path d="M0-7.5V7.5M-7.5 0H7.5" stroke="#f5c26b" stroke-width="1"/></g>`;
 SC_ICON.seat=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><rect x="-5" y="-7" width="10" height="9" rx="2" fill="#e2453a" stroke="${SC_INK}" stroke-width="1.1"/><rect x="-6" y="1" width="12" height="4" rx="1.5" fill="#c0392b" stroke="${SC_INK}" stroke-width="1.1"/></g>`;
 SC_ICON.corn=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 9V-1" stroke="#2c9a5b" stroke-width="1.8"/><ellipse cy="-3" rx="2.8" ry="5.5" fill="#ffd56b" stroke="${SC_INK}" stroke-width="1.1"/><path d="M0 4q-6-2-6-9M0 4q6-2 6-9" fill="none" stroke="#2c9a5b" stroke-width="1.4"/></g>`;
-function scenePour(total,n,icon,unit,to){const k=Math.min(n,8),fw=36,W=Math.max(240,k*fw+140),H=100;let g=scCluster(icon,Math.min(total,9),52,44,9,1)+scTag(52,86,`${total}${unit?' '+unit:''}`);
-  g+=`<path d="M100 46h16" stroke="${SC_INK}" stroke-width="2" marker-end="url(#scD)"/>`;
-  for(let i=0;i<k;i++){const x=138+i*fw;g+=to==='bucket'?`<path d="M${x-11} 32h22l-3 26h-16z" fill="#dff3ff" stroke="${SC_INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M${x-11} 32q11-12 22 0" fill="none" stroke="${SC_INK}" stroke-width="1.2"/>`:SC_ICON.student(x,44,1.6);
-    g+=`<text x="${x}" y="80" text-anchor="middle" font-size="12" ${FONT} fill="#e2453a">?</text>`}
-  if(n>8)g+=`<text x="${138+k*fw-12}" y="50" font-size="16" ${FONT} fill="${SC_INK}">…</text>`;
+function scenePour(total,n,icon,unit,to){const k=Math.min(n,10),per=Math.min(k,5),rows=Math.ceil(k/per),fw=40,W=Math.max(220,per*fw+140),H=Math.max(100,rows*66+12);let g=scCluster(icon,Math.min(total,9),52,H/2-6,9,1)+scTag(52,H/2+34,`${total}${unit?' '+unit:''}`);
+  g+=`<path d="M100 ${H/2-6}h16" stroke="${SC_INK}" stroke-width="2" marker-end="url(#scD)"/>`;
+  for(let i=0;i<k;i++){const x=140+(i%per)*fw,y=8+Math.floor(i/per)*66;g+=to==='bucket'?`<path d="M${x-12} ${y+12}h24l-3 28h-18z" fill="#dff3ff" stroke="${SC_INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M${x-12} ${y+12}q12-12 24 0" fill="none" stroke="${SC_INK}" stroke-width="1.2"/>`:SC_ICON.student(x,y+26,1.7);
+    g+=`<text x="${x}" y="${y+58}" text-anchor="middle" font-size="15" ${FONT} fill="#e2453a">?</text>`}
   return scSvg(W,H,scArrowDef('scD')+g,`${total} shared into ${n}`)}
