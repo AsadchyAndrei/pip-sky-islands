@@ -2,8 +2,8 @@
    Own files: network first (always fresh when online), but never wait long: offline or on a weak
    connection the saved copy opens right away. Fonts and the Firebase library: saved at install and
    cache first, so the game looks the same offline. Sign-in and cloud saving go straight to the network. */
-const V='pip-v53',RT='pip-rt-v2';
-const CORE=['./','index.html','js/demo.js','styles.css','js/content.js','js/core.js','js/scenes.js','js/math.js','js/math3.js','js/math3x.js','js/math5.js','js/math5x.js','js/english.js','js/english3.js','js/english3x.js','js/english5.js','js/english5x.js','js/homehelp.js','js/islands.js','js/progress.js','js/unlock.js','js/alive.js','js/challenge.js','js/play.js','js/teacher.js','js/family.js','js/notify.js','js/guide.js','js/tour.js','guide.html','js/es.js','js/app.js','favicon.svg','firebase-config.js','cloud.js','privacy.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png'];
+const V='pip-v54',RT='pip-rt-v2',VC='pip-voice-v1',TTS='https://us-central1-pip-sky-islands.cloudfunctions.net/tts';
+const CORE=['./','index.html','js/demo.js','styles.css','js/content.js','js/core.js','js/scenes.js','js/math.js','js/math3.js','js/math3x.js','js/math5.js','js/math5x.js','js/english.js','js/english3.js','js/english3x.js','js/english5.js','js/english5x.js','js/homehelp.js','js/islands.js','js/progress.js','js/voice.js','voice/pack.json','js/unlock.js','js/alive.js','js/challenge.js','js/play.js','js/teacher.js','js/family.js','js/notify.js','js/guide.js','js/tour.js','guide.html','js/es.js','js/app.js','favicon.svg','firebase-config.js','cloud.js','privacy.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png'];
 const FONT_CSS='https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Lilita+One&family=Lexend:wght@400;600;700&display=swap';
 /* save the font sheet and every font file it points to, so text never falls back to a plain font offline */
 async function saveFonts(){try{const c=await caches.open(RT);const res=await fetch(FONT_CSS,{mode:'cors'});if(!res.ok)return;
@@ -11,12 +11,23 @@ async function saveFonts(){try{const c=await caches.open(RT);const res=await fet
   const urls=[...new Set((css.match(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/g)||[]).map(m=>m.slice(4,-1)))];
   await Promise.all(urls.map(u=>c.match(u).then(m=>m||fetch(u,{mode:'cors'}).then(r=>{if(r.ok)return c.put(u,r)}).catch(()=>{}))))}catch(e){}}
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(CORE.map(u=>c.add(new Request(u,{cache:'reload'})).catch(()=>{})))).then(saveFonts).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V&&k!==RT).map(k=>caches.delete(k)))).then(()=>self.clients.claim()).then(saveFonts))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V&&k!==RT&&k!==VC).map(k=>caches.delete(k)))).then(()=>self.clients.claim()).then(saveFonts).then(saveVoice))});
+/* Pip's voice: the everyday lines that come with the game are saved after install (in the background), so Pip talks offline.
+   Files are named by their content, so a saved file never changes; lines no longer in the pack are removed. */
+async function saveVoice(){try{const r=await fetch('voice/pack.json',{cache:'no-cache'});if(!r.ok)return;const files=new Set(Object.values((await r.json()).lines||{}).map(f=>new URL('voice/'+f,location).href));
+  const c=await caches.open(VC);for(const k of await c.keys()){if(k.url.startsWith(location.origin+'/')&&k.url.includes('/voice/')&&!files.has(k.url))await c.delete(k)}
+  for(const u of files){if(!(await c.match(u)))await fetch(u).then(x=>{if(x.ok)return c.put(u,x)}).catch(()=>{})}}catch(e){}}
+/* sentences made by the server (questions...): kept on this device too, the newest 600 */
+async function trimVoice(c){const ks=(await c.keys()).filter(k=>k.url.startsWith(TTS));if(ks.length>600)for(const k of ks.slice(0,ks.length-600))await c.delete(k)}
 const RT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 const fromCache=r=>caches.match(r,{ignoreSearch:true,ignoreVary:true}).then(m=>m||(r.mode==='navigate'?caches.match('index.html'):undefined));
 self.addEventListener('fetch',e=>{
   const r=e.request;if(r.method!=='GET')return;
   const u=new URL(r.url);
+  const voiceFile=u.origin===location.origin&&/\/voice\/[^/]+\.mp3$/.test(u.pathname);
+  if(voiceFile||r.url.startsWith(TTS+'?')){
+    e.respondWith(caches.open(VC).then(c=>c.match(r).then(m=>m||fetch(r).then(res=>{if(res.ok){c.put(r,res.clone()).then(()=>voiceFile||trimVoice(c))}return res}))));
+    return}
   if(u.origin===location.origin){
     const net=fetch(r).then(res=>{if(res.ok){const cp=res.clone();caches.open(V).then(c=>c.put(r.mode==='navigate'?'index.html':r,cp))}return res});
     e.respondWith((async()=>{

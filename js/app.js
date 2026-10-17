@@ -561,10 +561,10 @@ function renderParent(){
       <div class="setrow"><label for="setLimit">Daily time limit<small>After it, new puzzles wait until tomorrow. Your PIN can add 15 minutes.</small></label>${sel('setLimit',[['0','No limit'],['30','30 minutes'],['45','45 minutes'],['60','1 hour'],['90','1.5 hours'],['120','2 hours']],String(G.settings.limit||'0'))}</div>
       <div class="setrow"><label for="setDiff">Difficulty<small>Auto adjusts each island after every round</small></label>${sel('setDiff',[['auto','Auto (recommended)'],['1','Always Easy'],['2','Always Normal'],['3','Always Hard']],G.settings.diff)}</div>
       <div class="setrow"><label>Show everything now<small>New players get places one by one as they play (Fix-It Falls, the Sticker Album, Thunder Tower, Test Practice), so the first days stay simple. Turn on to open them all now.</small></label>${sw('setAll',!!G.settings.showAll)}</div>
-      ${canSpeak?`<div class="setrow"><label for="setVoice">Pip's voice<small>Voices come from this device. Ones marked "Natural" or "Enhanced" sound best.</small></label><select id="setVoice" style="max-width:100%"></select></div>
-      <div class="setrow"><label for="setVstyle">Voice style</label>${sel('setVstyle',[['fox','Cheerful fox (higher, bouncy)'],['calm','Gentle fox (softer, slower)'],['plain','Normal voice']],G.settings.vstyle)}</div>
+      ${canTalk()?`<div class="setrow"><label for="setVoice">Pip's voice<small>Pip's own voice sounds like a real cartoon fox. It needs the internet for new questions; offline, the device voice reads them.</small></label><select id="setVoice" style="max-width:100%"></select></div>
+      <div class="setrow" id="vstyleRow"><label for="setVstyle">Voice style<small>For a device voice</small></label>${sel('setVstyle',[['fox','Cheerful fox (higher, bouncy)'],['calm','Gentle fox (softer, slower)'],['plain','Normal voice']],G.settings.vstyle)}</div>
       <div class="setrow"><label>Try it</label><button type="button" class="go small" id="testVoice">Hear Pip</button></div>`:'<div class="setrow"><small>This browser has no voices available for reading aloud.</small></div>'}
-      ${canSpeak?`<div class="setrow"><label>Read everything aloud<small>Pip reads each question, hints, explanations and his own lines by himself. Great for younger readers. The speaker button always works.</small></label>${sw('setRead',!!G.settings.read)}</div>`:''}
+      ${canTalk()?`<div class="setrow"><label>Read everything aloud<small>Pip reads each question, hints, explanations and his own lines by himself. Great for younger readers. The speaker button always works.</small></label>${sw('setRead',!!G.settings.read)}</div>`:''}
       <div class="setrow"><label for="setMvol">Music volume<small>On this device. Music can also be turned off in the menu.</small></label><input type="range" id="setMvol" min="0" max="100" step="5" value="${Math.round(mVol*100)}" aria-label="Music volume"></div>
       <div class="setrow"><label>Bigger text</label>${sw('setBig',G.settings.big)}</div>
       <div class="setrow"><label>Easy-to-read font<small>Wider letters and spacing, helpful for dyslexia</small></label>${sw('setDys',G.settings.dys)}</div>
@@ -608,7 +608,7 @@ function renderParent(){
   $('#setDiff').onchange=e=>{G.settings.diff=e.target.value;save()};
   const bindSw=(id,key,fx)=>{$('#'+id).onclick=e=>{G.settings[key]=!G.settings[key];e.currentTarget.setAttribute('aria-checked',G.settings[key]);save();fx&&fx()}};
   fillVoiceSelect();
-  if($('#setVoice')){$('#setVoice').onchange=e=>{G.settings.voice=e.target.value;save();pickVoice();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
+  if($('#setVoice')){$('#setVoice').onchange=e=>{const v=e.target.value;G.settings.pv=v==='__pip';if(v!=='__pip')G.settings.voice=v;save();pickVoice();fillVoiceSelect();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
     $('#setVstyle').onchange=e=>{G.settings.vstyle=e.target.value;save();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
     $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);if($('#setRead'))bindSw('setRead','read');if($('#setMvol'))$('#setMvol').oninput=e=>{setMusicVolume(+e.target.value/100);if(!mTimer&&musicOn)musicStart()};bindSw('setAll','showAll');bindSw('setDys','dys',applySettings);
   $('#setName').onchange=e=>{G.name=e.target.value.trim().slice(0,16);save();updateStats()};

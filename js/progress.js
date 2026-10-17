@@ -5,7 +5,7 @@
    Profiles from different devices are MERGED, never overwritten: stars/xp/stickers only go up, coins are
    counted per device, purchases are unioned. Only an explicit Reset or Restore (resetAt) replaces data. */
 const ROOT_KEY='pip-sky-islands-v3';
-const DEF_SETTINGS={goal:'min20',read:false,big:false,dys:false,diff:'auto',voice:'',vstyle:'fox',talk:false,sv:2};
+const DEF_SETTINGS={goal:'min20',read:false,big:false,dys:false,diff:'auto',voice:'',pv:true,vstyle:'fox',talk:false,sv:2};
 const DEF={name:'',best:{},xp:0,hats:['none'],balloons:['classic'],pets:['none'],home:{house:0,items:{},pos:{},hidden:{}},events:{},baskets:['classic'],basket:'classic',glasses:['none'],glass:'none',decos:['none'],deco:'none',chars:['fox'],charColor:{},char:'fox',hat:'none',balloon:'classic',pet:'none',badges:[],dstreak:0,lastDaily:'',visited:{},bestThunder:0,bestCombo:0,greeted:'',
   diff:{},hardMaster:{},stats:{},days:{},wrongLog:[],review:[],fixed:0,fixedSeeds:[],stickers:{},setsDone:{},story:{ch:0,seen:{}},weeks:{},weekRewarded:'',goalDone:'',kidPin:'',cdev:{},_u:0,resetAt:0,settings:{...DEF_SETTINGS}};
 const clone=o=>o===undefined?undefined:JSON.parse(JSON.stringify(o));
@@ -387,7 +387,9 @@ if(canSpeak){pickVoice();try{speechSynthesis.onvoiceschanged=()=>{pickVoice();fi
   addEventListener('offline',pickVoice);addEventListener('online',pickVoice)}
 const VSTYLE={fox:{pitch:1.45,rate:1.04},calm:{pitch:1.2,rate:.92},plain:{pitch:1,rate:.95}};
 function fillVoiceSelect(){const el=document.getElementById('setVoice');if(!el)return;const vs=sortedVoices();
-  el.innerHTML=`<option value="">Best voice (automatic)</option>`+vs.map(v=>`<option value="${esc(v.name)}"${v.name===G.settings.voice?' selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}
+  const pip=typeof pvOn==='function'&&G.settings.pv!==false;
+  el.innerHTML=(typeof canTalk==='function'?`<option value="__pip"${pip?' selected':''}>Pip's own voice (recommended)</option>`:'')+(canSpeak?`<option value=""${!pip&&!G.settings.voice?' selected':''}>Device voice: best one (automatic)</option>`+vs.map(v=>`<option value="${esc(v.name)}"${!pip&&v.name===G.settings.voice?' selected':''}>Device voice: ${esc(v.name)} (${esc(v.lang)})</option>`).join(''):'');
+  const st=document.getElementById('vstyleRow');if(st)st.hidden=pip}
 function htmlToSpeech(html){
   const d=document.createElement('div');d.innerHTML=html;
   d.querySelectorAll('.frac').forEach(f=>{const s=f.querySelectorAll('span');f.replaceWith(` ${s[0].textContent} over ${s[1].textContent} `)});
@@ -395,7 +397,12 @@ function htmlToSpeech(html){
   return d.textContent.replace(/×/g,' times ').replace(/÷/g,' divided by ').replace(/□/g,' blank ').replace(/−/g,' minus ').replace(/°/g,' degrees').replace(/(\d)¢/g,'$1 cents').replace(/\u00a0\?\u00a0/g,' blank ').replace(/___/g,' blank ').replace(/\s+/g,' ').trim();
 }
 function speak(html,o={}){
-  if(!canSpeak||!o.user)return;try{const txt=htmlToSpeech(html);if(!txt)return;if(!o.queue)speechSynthesis.cancel();if(!voice)pickVoice();
+  if(!o.user)return;const txt=htmlToSpeech(html);if(!txt)return;
+  /* Pip's own voice first (js/voice.js); the device voice when it cannot read this */
+  if(typeof pvSpeak==='function'){if(!o.queue&&canSpeak)try{speechSynthesis.cancel()}catch(e){}if(pvSpeak(txt,o))return}
+  deviceSpeak(txt,o)}
+function deviceSpeak(txt,o={}){
+  if(!canSpeak)return;try{if(!txt)return;if(!o.queue)speechSynthesis.cancel();if(!voice)pickVoice();
     const st=VSTYLE[G.settings.vstyle]||VSTYLE.fox;const u=new SpeechSynthesisUtterance(txt);u.lang=voice?voice.lang:'en-US';u.rate=st.rate;u.pitch=st.pitch;if(voice)u.voice=voice;
     if(o.pip&&!o.queue)tone([1046,1568],.045,'sine');
     u.onstart=()=>{setDuck(.3);$('#speakBtn')&&$('#speakBtn').classList.add('on')};u.onend=u.onerror=()=>{setDuck(1);$('#speakBtn')&&$('#speakBtn').classList.remove('on')};
@@ -403,11 +410,11 @@ function speak(html,o={}){
 }
 /* "Read everything aloud" (a parents' setting, per player): Pip reads his lines, each question, hints, explanations,
    pop-ups and tour bubbles by himself. Off by default; the speaker button always works. */
-const readOn=()=>!!(typeof G!=='undefined'&&G&&G.settings&&G.settings.read&&canSpeak&&curScreen!=='parent'&&curScreen!=='teach');
+const readOn=()=>!!(typeof G!=='undefined'&&G&&G.settings&&G.settings.read&&(typeof canTalk==='function'?canTalk():canSpeak)&&curScreen!=='parent'&&curScreen!=='teach');
 function autoSay(html,queue=true){if(readOn())speak(html,{user:true,queue})}
 function readAloud(box){if(!readOn()||!box||box.querySelector('#pinbox'))return;const h=box.querySelector('h2,h3'),p=[...box.querySelectorAll('p')].filter(x=>!x.classList.contains('note')).slice(0,2);
   const t=[h&&h.innerHTML,...p.map(x=>x.innerHTML)].filter(Boolean).join('. ');if(t)speak(t,{user:true})}
-function stopSpeak(){if(canSpeak)try{speechSynthesis.cancel()}catch(e){}setDuck(1)}
+function stopSpeak(){if(typeof pvStop==='function')pvStop();if(canSpeak)try{speechSynthesis.cancel()}catch(e){}setDuck(1)}
 let lastAct=Date.now();
 addEventListener('pointerdown',()=>{lastAct=Date.now();musicStart()});addEventListener('keydown',()=>{lastAct=Date.now();musicStart()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){musicStop();stopSpeak();persistLocal();cloudFlush()}else{musicStart();setSync();if(canAdopt())adoptRemote()}});
@@ -431,7 +438,7 @@ function dropBadgeToasts(){toastQ=toastQ.filter(x=>x[4]!=='badge');document.quer
 let ovQueue=[],ovOpen=false;
 function overlay(html,onOpen){ovQueue.push([html,onOpen]);if(!ovOpen)nextOverlay()}
 let ovReturn=null;
-function nextOverlay(){const it=ovQueue.shift();if(!it){$('#overlay').hidden=true;ovOpen=false;if(duck<1&&!(canSpeak&&speechSynthesis.speaking))setDuck(1);if(ovReturn&&document.contains(ovReturn))try{ovReturn.focus({preventScroll:true})}catch(e){}ovReturn=null;pumpToasts();return}
+function nextOverlay(){const it=ovQueue.shift();if(!it){$('#overlay').hidden=true;ovOpen=false;if(duck<1&&!(canSpeak&&speechSynthesis.speaking)&&!(typeof pvBusy==='function'&&pvBusy()))setDuck(1);if(ovReturn&&document.contains(ovReturn))try{ovReturn.focus({preventScroll:true})}catch(e){}ovReturn=null;pumpToasts();return}
   if(!ovOpen)ovReturn=document.activeElement;ovOpen=true;$('#ocard').innerHTML=it[0];$('#overlay').hidden=false;refreshFoxes();it[1]&&it[1]();
   if(curScreen==='play')setDuck(.4); // explanations and pop-ups during a round: the music steps back
   readAloud($('#ocard'));

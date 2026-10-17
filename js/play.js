@@ -154,11 +154,11 @@ function showQ(){
   const c=$('#card');c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
   else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i));aliveStep(S.i);aliveEvent()}
-  $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);if(typeof autoSay==='function')autoSay(q.speak||q.prompt);
+  $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);if(typeof autoSay==='function')autoSay(q.speak||q.prompt);{const nx=S.qs[S.i+1];if(nx&&typeof pvPrefetch==='function')setTimeout(()=>pvPrefetch(nx.speak||nx.prompt),1500)}
   if(S.mode==='lesson'&&S.i>0){const pv=S.qs[S.i-1];if(q.guided&&!pv.guided)say($('#say'),`Now let's do one <b>together</b>, step by step!`);else if(!q.teach&&!q.guided&&(pv.guided||pv.teach))say($('#say'),`Your turn! Try these <b>on your own</b>. Use the trick!`)}
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;if(q.listen)wireListen();$('#card').classList.toggle('lp',!!q.longp);
   $('#hint').hidden=$('#feedback').hidden=$('#next').hidden=true;
-  $('#speakBtn').hidden=!canSpeak;
+  $('#speakBtn').hidden=!canTalk();
   $('#howBtn').hidden=S.mode==='boss'||S.mode==='test'||!(q.how||q.hint);
   armNudge();
   if(S.i===0&&S.mode==='island'&&typeof tourHook==='function')tourHook('play');

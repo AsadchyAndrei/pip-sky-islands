@@ -23,4 +23,5 @@ python3 check_quest.py
 python3 check_challenge.py
 python3 check_es.py
 python3 check_audio.py
+python3 check_voice.py
 echo "All checks passed."

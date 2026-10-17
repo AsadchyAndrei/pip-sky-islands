@@ -53,6 +53,7 @@ a{color:#2f9fe0;font-weight:700}
 
 <h2>Where it is stored</h2>
 <p>Data is stored with Google Firebase (Firebase Authentication, Cloud Firestore, Cloud Functions and Cloud Messaging for notifications). Weekly emails and reminders are sent through <b>Resend</b>, an email delivery service, which receives only the email address and the email's text. Security rules allow each account to read and write only its own data; a class's progress summaries can be read only by that class's teacher and by each child's own grown-up. A copy of the progress is also kept in the browser on devices where the game is played, so it works without internet.</p>
+<p><b>Pip's voice:</b> to read questions aloud in Pip's own voice, the game sends the text of the question or of Pip's line to our server, which makes the audio with Google Cloud Text-to-Speech and keeps it so the same sentence plays at once next time. Names are removed from the text on the device before it is sent, and nothing about who is playing is sent with it. Parents can pick a device voice instead in Parents' Corner → Settings; then nothing is sent.</p>
 
 <h2>What we do with it</h2>
 <p>Only to run the game: save progress, show it on any device where you sign in, show the Parents' Corner progress page, and, if you turn them on, send the weekly email, reminders and notifications. No advertising, no profiling, no selling, no sharing with third parties (other than Google Firebase as the storage and server provider and Resend for sending emails you asked for).</p>

@@ -7,7 +7,7 @@ SITE = pathlib.Path(__file__).resolve().parent.parent
 FONTS = pathlib.Path(__file__).resolve().parent / 'fonts'
 ORIGIN = 'https://pip.test/'
 PROFILE = {'name': 'Alisa', 'coins': 7089, 'xp': 0, 'placed': 1, 'greeted': '', 'dstreak': 6,
-           'story': {'ch': 4, 'seen': {}}, 'settings': {'goal': 'min20', 'sv': 2}}
+           'story': {'ch': 4, 'seen': {}}, 'settings': {'goal': 'min20', 'sv': 2, 'pv': False}}
 FONT_CSS = """
 @font-face{font-family:'Baloo 2';font-weight:400 800;src:url(https://fonts.local/baloo2.ttf)}
 @font-face{font-family:'Lilita One';src:url(https://fonts.local/lilita.ttf)}

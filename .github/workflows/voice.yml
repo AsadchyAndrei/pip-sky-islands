@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       voices:
-        description: 'Chirp 3 HD voice names, separated by spaces'
+        description: 'Chirp 3 HD voice names separated by spaces (samples), "pack" (Pip''s everyday lines from voice/lines.txt), or "-" (delete the branch)'
         default: 'Puck Fenrir Leda Zephyr'
 permissions:
   contents: write
@@ -20,8 +20,10 @@ jobs:
           workload_identity_provider: projects/911404168229/locations/global/workloadIdentityPools/github/providers/github
           service_account: pip-deployer@pip-sky-islands.iam.gserviceaccount.com
       - uses: google-github-actions/setup-gcloud@v2
+      - run: tools/voice/pack.sh
+        if: github.event.inputs.voices == 'pack'
       - run: tools/voice/samples.sh
-        if: github.event.inputs.voices != '-'
+        if: github.event.inputs.voices != '-' && github.event.inputs.voices != 'pack'
         env:
           VOICES: ${{ github.event.inputs.voices }}
       - name: Keep only the MP3s and the voice list on the voice-samples branch (not on the site); "-" just deletes the branch
@@ -31,6 +33,6 @@ jobs:
           git config --global user.name 'voice bot' && git config --global user.email 'noreply@anthropic.com'
           git push -q origin --delete voice-samples || true
           [ "${{ github.event.inputs.voices }}" = "-" ] && exit 0
-          D=$(mktemp -d) && cp out/*.mp3 out/*.txt "$D"/ && cd "$D"
-          git init -q -b voice-samples && git add -- *.mp3 *.txt && git commit -qm "Voice samples"
+          D=$(mktemp -d) && cp out/*.mp3 "$D"/ && cp out/*.txt out/*.json "$D"/ 2>/dev/null || true; cd "$D"
+          git init -q -b voice-samples && git add -- *.mp3 $(ls *.txt *.json 2>/dev/null) && git commit -qm "Voice samples"
           git push -fq "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" voice-samples

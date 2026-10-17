@@ -132,6 +132,28 @@ const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(fal
   await T.runUser('T1', (await db.doc('users/T1').get()).data(), sunday);
   ok(mails.length === 1 && mails[0][2].includes('Room 12') && mails[0][2].includes('Maya'), 'the teacher gets the class summary: ' + JSON.stringify(mails.map((m) => m[1])));
 
+
+  /* ---------- Pip's voice ---------- */
+  const store = new Map(); let made = [];
+  Object.assign(T.voiceIO, { get: async (k) => store.get(k) || null, put: async (k, b) => { store.set(k, b); }, synth: async (t) => { made.push(t); return Buffer.from('mp3:' + t); } });
+  const call = async (q, method = 'GET', ip = '1.2.3.4') => { const r = { code: 200, h: {}, body: null, headersSent: false, set(k, v) { this.h[k] = v; return this; }, status(c) { this.code = c; return this; }, send(b) { this.body = b; this.headersSent = true; return this; } };
+    await T.ttsHandle({ method, query: q, ip, headers: {} }, r); return r; };
+  let r1 = await call({ t: '  A school bus holds 49 students.  ' });
+  ok(r1.code === 200 && r1.h['Content-Type'] === 'audio/mpeg' && String(r1.body) === 'mp3:A school bus holds 49 students.' && /max-age/.test(r1.h['Cache-Control']), 'tts: a new sentence is made: ' + r1.code);
+  r1 = await call({ t: 'A school bus holds 49 students.' });
+  ok(r1.code === 200 && made.length === 1, 'tts: the same sentence comes from the store, not made again');
+  ok((await call({ t: 'x'.repeat(T.TTS.maxLen + 1) })).code === 400 && (await call({ t: '<script>' })).code === 400 && (await call({ t: '' })).code === 400 && (await call({ t: 'see https://evil.example' })).code === 400, 'tts: long, empty, markup and links are refused');
+  ok((await call({ t: 'Hi' }, 'POST')).code === 405, 'tts: GET only');
+  made = []; let lim = 0;
+  for (let i = 0; i < T.TTS.perMin + 3; i++) if ((await call({ t: 'Sentence number ' + i + '.' }, 'GET', '9.9.9.9')).code === 429) lim++;
+  ok(lim >= 1 && made.length <= T.TTS.perMin, 'tts: too many new sentences a minute from one address are slowed down: ' + lim);
+  ok((await call({ t: 'A school bus holds 49 students.' }, 'GET', '9.9.9.9')).code === 200, 'tts: stored sentences still play while slowed down');
+  const day = await db.doc('ops/tts-' + new Date().toISOString().slice(0, 10)).get();
+  ok(day.exists && day.get('chars') > 0, 'tts: new characters are counted for the daily cap');
+  await db.doc('ops/tts-' + new Date().toISOString().slice(0, 10)).set({ chars: T.TTS.perDay });
+  ok((await call({ t: 'One more brand new line.' }, 'GET', '5.5.5.5')).code === 429, 'tts: past the daily cap nothing new is made');
+  await check(assertFails(as('P1').doc('ops/tts-x').get()), 'the voice counters are not readable by players');
+
   await env.cleanup();
   console.log((gh ? (bad ? '::error::' : '::notice::') : '') + (bad ? `FAIL server (${n} checks): ${bad} problem(s)` : `OK   server rules and functions (${n} checks)`));
   process.exit(bad ? 1 : 0);

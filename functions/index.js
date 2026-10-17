@@ -5,6 +5,7 @@
    - joinCoTeacher:   a teacher joins a colleague's class with an invite code
    - sendTestEmail:   "Send me this week's email now" in Parents → Account
    - unsub:           one-click "turn off these emails" link
+   - tts:             Pip's voice (Google Chirp 3 HD "Puck") for lines and questions; each sentence is made once and kept in Cloud Storage
    Data the apps never write: mailstate/{uid} (what was sent and when, and the unsubscribe token). */
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { onDocumentUpdated, onDocumentWritten } = require('firebase-functions/v2/firestore');
@@ -246,4 +247,65 @@ exports.unsub = onRequest({ maxInstances: 2 }, async (req, res) => {
   res.send(unsubPage('Turn off emails from Pip?', `<p>Weekly emails and reminders will stop.</p><form method="post"><button style="font-size:16px;padding:10px 18px;border-radius:999px;border:0;background:#2f9fe0;color:#fff">Turn off emails</button></form>`));
 });
 
-exports._test = { runHour, runUser, onClassChange, joinCo, send, updateQuest };
+/* ---------- Pip's voice: text to speech, made once per sentence and kept ----------
+   GET /tts?t=<text>  →  audio/mpeg. The app sends only puzzle text and Pip's lines, never a child's name
+   (it takes names out first). A sentence that was spoken before comes from the bucket; a new one is made
+   with Google Text-to-Speech, stored, then sent. Limits keep the cost small: short texts only, a few new
+   sentences a minute per address and a daily cap on new characters; past a limit the app uses the device voice. */
+const TTS = { voice: 'en-US-Chirp3-HD-Puck', rate: 1.0, bucket: 'pip-sky-islands-voice', maxLen: 900, perMin: 40, perDay: 400000 };
+const ttsKey = (t) => crypto.createHash('sha256').update(`${TTS.voice}|${TTS.rate}|${t}`).digest('hex').slice(0, 40);
+const ttsText = (t) => String(t || '').replace(/\s+/g, ' ').trim();
+const voiceIO = {
+  bucket() { return admin.storage().bucket(TTS.bucket); },
+  async get(key) { const f = this.bucket().file(`tts/${key}.mp3`); const [ok] = await f.exists(); if (!ok) return null; const [b] = await f.download(); return b; },
+  async put(key, buf) { await this.bucket().file(`tts/${key}.mp3`).save(buf, { contentType: 'audio/mpeg', resumable: false, metadata: { cacheControl: 'public, max-age=31536000' } }); },
+  async synth(text) {
+    voiceIO.cred = voiceIO.cred || admin.credential.applicationDefault();
+    const tok = await voiceIO.cred.getAccessToken();
+    const r = await fetch('https://texttospeech.googleapis.com/v1/text:synthesize', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tok.access_token}`, 'Content-Type': 'application/json', 'x-goog-user-project': 'pip-sky-islands' },
+      body: JSON.stringify({ input: { text }, voice: { languageCode: 'en-US', name: TTS.voice }, audioConfig: { audioEncoding: 'MP3', speakingRate: TTS.rate } }),
+    });
+    if (!r.ok) throw new Error(`tts ${r.status} ${(await r.text()).slice(0, 200)}`);
+    return Buffer.from((await r.json()).audioContent, 'base64');
+  },
+};
+const ttsHits = new Map();
+function ttsLimited(ip, now = Date.now()) {
+  const m = Math.floor(now / 60000), h = ttsHits.get(ip);
+  if (!h || h.m !== m) { if (ttsHits.size > 5000) ttsHits.clear(); ttsHits.set(ip, { m, n: 1 }); return false; }
+  return ++h.n > TTS.perMin;
+}
+async function ttsDay(chars) {
+  const ref = db.collection('ops').doc('tts-' + new Date().toISOString().slice(0, 10));
+  return db.runTransaction(async (tx) => {
+    const s = await tx.get(ref), have = (s.exists && s.get('chars')) || 0;
+    if (have + chars > TTS.perDay) return false;
+    tx.set(ref, { chars: have + chars, n: ((s.exists && s.get('n')) || 0) + 1 }, { merge: true });
+    return true;
+  });
+}
+async function ttsHandle(req, res) {
+  res.set('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') { res.set('Access-Control-Allow-Methods', 'GET'); res.status(204).send(''); return; }
+  if (req.method !== 'GET') { res.status(405).send('GET only'); return; }
+  const t = ttsText(req.query.t);
+  if (!t || t.length > TTS.maxLen || /[<>{}\\]|https?:/i.test(t) || !/[a-z]/i.test(t)) { res.status(400).send('bad text'); return; }
+  const key = ttsKey(t);
+  let buf = await voiceIO.get(key);
+  if (!buf) {
+    if (ttsLimited(String(req.ip || req.headers['x-forwarded-for'] || '?'))) { res.status(429).send('slow down'); return; }
+    if (!(await ttsDay(t.length))) { res.status(429).send('daily limit'); return; }
+    buf = await voiceIO.synth(t);
+    await voiceIO.put(key, buf);
+  }
+  res.set('Content-Type', 'audio/mpeg');
+  res.set('Cache-Control', 'public, max-age=31536000, immutable');
+  res.status(200).send(buf);
+}
+exports.tts = onRequest({ maxInstances: 5, concurrency: 40, timeoutSeconds: 30 }, async (req, res) => {
+  try { await ttsHandle(req, res); } catch (e) { logger.error('tts failed', { err: String(e).slice(0, 300) }); if (!res.headersSent) res.status(503).send('voice unavailable'); }
+});
+
+exports._test = { runHour, runUser, onClassChange, joinCo, send, updateQuest, ttsHandle, voiceIO, ttsKey, TTS };
