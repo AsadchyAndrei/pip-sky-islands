@@ -1965,3 +1965,8 @@ body.ev-wind[data-screen=play] #pipfly .pipbob{animation:evblown 1.6s ease-in-ou
 .cqhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.cqhead b{font-family:var(--display);font-weight:400;font-size:18px}.cqhead span{font-weight:800;color:var(--ink-soft);font-size:14px}
 .ccquest small{color:var(--ink-soft);font-weight:700;font-size:13.5px}
 .tquest .qbar{margin:6px 0}
+/* challenge a friend */
+.chalbtn{background:var(--ocean);box-shadow:0 5px 0 #1f7fb8}.chalbtn:active{box-shadow:0 2px 0 #1f7fb8}
+.chsibs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}.chsibs b{width:100%;text-align:center;font-size:15px}
+.chlink{display:block;width:100%;margin-top:6px;font:600 13px var(--body,inherit);padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:#fff;color:var(--ink)}
+.chres{display:block;background:#e8f6ff;border-radius:12px;padding:8px 12px;margin:0 auto 8px;max-width:520px}.chres.won{background:#e3f8ee}.chres.tie{background:#fff7d6}

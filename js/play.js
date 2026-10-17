@@ -86,7 +86,7 @@ function renderMap(){setTimeout(homeLayout,0);setTimeout(()=>{if(typeof tourHook
     say($('#maptext'),G.xp===0?`Hi${nm()}! I'm <b>Pip</b>, a balloon-flying ${heroName()}! Solve puzzles on the islands to earn <b>stars, coins and stickers</b>. ${G.placed?'Want to start with Story Mode?':'First, a <b>quick 2-minute check</b> so I can pick puzzles that fit you just right!'}`:`Welcome back${nm()}! I missed you! ${!dailyDone()?'A brand new <b>Daily Challenge</b> is waiting!':''}`);
     const b=$('#mapact');if(G.xp===0){b.hidden=false;if(G.placed){b.textContent='Start Story Mode';b.onclick=openStory}else{b.textContent='Quick check';b.onclick=startPlacement}}else b.hidden=true}
   else showTip();
-  lockBubble();unlockCelebrate();
+  lockBubble();unlockCelebrate();setTimeout(()=>{if(typeof chIncoming!=='function')return;if(ovOpen)setTimeout(chIncoming,4500);else chIncoming()},2400);
   setTimeout(()=>foxClass('waving',2000),300);
   clearInterval(tipTimer);if(!newbie)tipTimer=setInterval(()=>{if(!$('#map').hidden&&$('#overlay').hidden){showTip();if(rand()<.5)foxClass('waving',1800);else foxMove('hop')}},10000);
 }
@@ -633,7 +633,8 @@ function done(st,line,o={}){
   save();updateStats('#starPill');
   $('#dstars').innerHTML=[0,1,2].map(k=>starSVG(k<st)).join('');[...$('#dstars').children].forEach((s,k)=>s.style.animationDelay=(k*0.25)+'s');
   $('#dtitle').textContent=o.title||(st===3?`Sky Captain${G.name?', '+G.name:''}!`:st===2?'Great flying!':st===1?'Nice start!':'Keep practicing!');
-  $('#dmsg').innerHTML=line;
+  $('#dmsg').innerHTML=(typeof chDone==='function'?chDone():'')+line;if(S.chal&&S.score>S.chal.sc)$('#dtitle').textContent='Challenge won!';
+  {const cb=$('#chalBtn');if(cb){cb.hidden=!(typeof chFromRound==='function'&&chFromRound()&&!S.chal);cb.onclick=chOffer}}
   $('#drew').innerHTML=`<div class="pill">${COIN_ICON}<span id="cc">+0</span><small>coins</small></div><div class="pill">${starSVG(true)}<span>+${S.xp}</span><small>XP</small></div>${newBest&&prev>0?'<span class="newbest">New best!</span>':''}`;
   let k=0;const target=S.coins,iv=setInterval(()=>{k=Math.min(target,k+Math.ceil(target/25)||1);const e=$('#cc');if(e)e.textContent='+'+k;if(k>=target)clearInterval(iv)},40);
   $('#dsticker').innerHTML=drop?`<div class="reveal">${stickerSVG(drop.s)}<div><b>${drop.dup?'Double sticker!':'New sticker!'}</b><span>${esc(drop.s.name)} · <span class="r-${drop.s.rar}">${drop.s.rar.toUpperCase()}</span>${drop.dup?' · +10 coins':''}</span></div></div>`:'';
