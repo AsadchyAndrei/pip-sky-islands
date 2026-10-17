@@ -1975,3 +1975,25 @@ body.ev-wind[data-screen=play] #pipfly .pipbob{animation:evblown 1.6s ease-in-ou
 .plang{display:flex;justify-content:flex-end;gap:0;margin:0 0 10px auto;width:max-content;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:#fff}
 .plang button{border:0;background:#fff;color:var(--ink);font:800 14px var(--body,inherit);padding:6px 14px;cursor:pointer;min-height:36px}
 .plang button[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+/* missions: a scene above the puzzle that each answer moves forward (js/mission.js) */
+.mission{margin:4px auto 10px;max-width:400px;padding:0 4px;position:relative;z-index:3}
+.mstitle{display:flex;justify-content:space-between;align-items:center;font:800 13px var(--display,inherit);color:#1f3557;margin:0 6px 3px}
+.mstitle b{background:#fff;border-radius:999px;padding:1px 9px;box-shadow:0 1px 0 rgba(31,53,87,.15)}
+.msscene{display:block;width:100%;height:auto;border-radius:14px;box-shadow:0 3px 0 rgba(31,53,87,.12)}
+.msghost{fill:none;stroke:#8a6a44;stroke-width:1.2;stroke-dasharray:3 2;opacity:.55}
+.msplank.drop{animation:msdrop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes msdrop{from{transform:translateY(-26px);opacity:0}to{transform:none;opacity:1}}
+.mspip{transition:transform .7s cubic-bezier(.45,.05,.35,1)}
+.mspipin{animation:msbob 2.2s ease-in-out infinite}
+@keyframes msbob{50%{transform:translateY(-3px)}}
+.msslot.wob,.mslamp.wob{animation:mswob .5s}
+@keyframes mswob{25%{transform:translateX(-3px) rotate(-3deg)}75%{transform:translateX(3px) rotate(3deg)}}
+.msslot,.mslamp{transform-box:fill-box;transform-origin:center}
+.mslamp.lit .msjar{fill:#ffe9a8}.mslamp.lit .msflame{opacity:1}.mslamp.lit .msglow{opacity:.35;transition:opacity .6s}
+.mslamp.gold .msglow{opacity:.6}.mslamp.candle .msjar{fill:#c9b48a}.mslamp.candle .msglow{opacity:.15}
+.msroom{transition:opacity .8s}
+.msdone .msflag{animation:msflag 1s ease-in-out 2}
+@keyframes msflag{0%,100%{transform:translate(326px,22px)}50%{transform:translate(326px,16px) rotate(-6deg)}}
+body.has-mission .dotpip,body.has-mission .dotflag{display:none}
+@media (prefers-reduced-motion:reduce){.mspip,.msroom{transition:none}.mspipin,.msplank.drop,.msslot.wob,.mslamp.wob,.msdone .msflag{animation:none}}

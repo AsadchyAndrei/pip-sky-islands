@@ -26,4 +26,5 @@ python3 check_audio.py
 python3 check_voice.py
 python3 check_skillsplit.py
 python3 check_mathcheck.py
+python3 check_mission.py
 echo "All checks passed."
