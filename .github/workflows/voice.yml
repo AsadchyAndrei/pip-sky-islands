@@ -20,13 +20,19 @@ jobs:
           workload_identity_provider: projects/911404168229/locations/global/workloadIdentityPools/github/providers/github
           service_account: pip-deployer@pip-sky-islands.iam.gserviceaccount.com
       - uses: google-github-actions/setup-gcloud@v2
+      - name: Check the live voice server (voices=check)
+        if: github.event.inputs.voices == 'check'
+        run: |
+          for i in 1 2; do s=$(date +%s%N); r=$(curl -sS -o /tmp/q.mp3 -w '%{http_code} %{content_type} %{size_download}' 'https://us-central1-pip-sky-islands.cloudfunctions.net/tts?t=What%20is%207%20times%208%3F'); echo "::notice title=tts try $i::$r in $(( ($(date +%s%N)-s)/1000000 )) ms"; done
+          case "$r" in 200*) exit 0;; *) exit 1;; esac
       - run: tools/voice/pack.sh
         if: github.event.inputs.voices == 'pack'
       - run: tools/voice/samples.sh
-        if: github.event.inputs.voices != '-' && github.event.inputs.voices != 'pack'
+        if: github.event.inputs.voices != '-' && github.event.inputs.voices != 'pack' && github.event.inputs.voices != 'check'
         env:
           VOICES: ${{ github.event.inputs.voices }}
-      - name: Keep only the MP3s and the voice list on the voice-samples branch (not on the site); "-" just deletes the branch
+      - name: Keep only the MP3s
+        if: github.event.inputs.voices != 'check' and the voice list on the voice-samples branch (not on the site); "-" just deletes the branch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
