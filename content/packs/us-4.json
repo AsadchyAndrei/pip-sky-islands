@@ -1,0 +1,448 @@
+{
+ "id": "us-4",
+ "state": "US",
+ "stateName": "Common Core",
+ "grade": 4,
+ "standards": "us-4",
+ "test": "sbac",
+ "note": "Islands in map order. Common Core math and English and NGSS science, the same as California; social studies follows the C3 Framework (js/us.js). Offered to every state without its own pack.",
+ "islands": [
+  {
+   "id": "daily",
+   "name": "Daily Challenge",
+   "topic": "8 mixed puzzles, new every day",
+   "color": "#ff9f43",
+   "lm": "daily",
+   "group": "ch",
+   "special": "daily"
+  },
+  {
+   "id": "review",
+   "name": "Fix-It Falls",
+   "topic": "Fix your old mistakes",
+   "color": "#5ec3d6",
+   "lm": "review",
+   "group": "ch",
+   "special": "review"
+  },
+  {
+   "id": "ptest",
+   "name": "Test Practice",
+   "topic": "12 questions like the spring test",
+   "color": "#7b6cf0",
+   "lm": "test",
+   "group": "ch",
+   "special": "ptest"
+  },
+  {
+   "id": "flash",
+   "name": "Thunder Tower",
+   "topic": "60-second fact storm",
+   "color": "#7c8fb8",
+   "lm": "storm",
+   "group": "ch",
+   "flash": true
+  },
+  {
+   "id": "boss",
+   "name": "Boss Island",
+   "topic": "Defeat the Grumble Cloud",
+   "color": "#6b6f9e",
+   "lm": "boss",
+   "group": "ch",
+   "special": "boss"
+  },
+  {
+   "id": "place",
+   "name": "Digit Cliffs",
+   "topic": "Place value & rounding",
+   "color": "#38b98a",
+   "lm": "tower",
+   "group": "math",
+   "skills": [
+    "math.place.value-of-a-digit",
+    "math.place.rounding",
+    "math.place.expanded-form",
+    "math.place.comparing-and-ordering-numbers",
+    "math.place.each-place-is-10-times-bigger",
+    "math.place.numbers-in-words"
+   ]
+  },
+  {
+   "id": "addsub",
+   "name": "Carry Canyon",
+   "topic": "Adding & subtracting",
+   "color": "#4fb87a",
+   "lm": "canyon",
+   "group": "math",
+   "skills": [
+    "math.addsub.adding-with-regrouping",
+    "math.addsub.subtracting-with-borrowing",
+    "math.addsub.add-and-subtract-word-problems",
+    "math.addsub.missing-numbers",
+    "math.addsub.estimating",
+    "math.addsub.equations-with-a-letter"
+   ]
+  },
+  {
+   "id": "mult",
+   "name": "Times Meadow",
+   "topic": "Multiplying big numbers",
+   "color": "#7cc95a",
+   "lm": "meadow",
+   "group": "math",
+   "skills": [
+    "math.mult.multi-digit-x-1-digit",
+    "math.mult.2-digit-x-2-digit",
+    "math.mult.multiplication-word-problems",
+    "math.mult.multiplying-by-10s-and-100s",
+    "math.mult.times-as-many-problems",
+    "math.mult.area-model",
+    "math.mult.equal-expressions-yes-no",
+    "math.mult.times-as-many-or-more-than"
+   ]
+  },
+  {
+   "id": "div",
+   "name": "Sharing Shore",
+   "topic": "Division & leftovers",
+   "color": "#3fb8b5",
+   "lm": "shore",
+   "group": "math",
+   "skills": [
+    "math.div.dividing",
+    "math.div.remainders",
+    "math.div.what-to-do-with-the-leftover"
+   ]
+  },
+  {
+   "id": "frac",
+   "name": "Pie Peak",
+   "topic": "Fractions",
+   "color": "#5cc48c",
+   "lm": "pie",
+   "group": "math",
+   "skills": [
+    "math.frac.naming-fractions",
+    "math.frac.equivalent-fractions",
+    "math.frac.comparing-fractions",
+    "math.frac.adding-and-subtracting-fractions",
+    "math.frac.mixed-numbers",
+    "math.frac.fraction-x-whole-number",
+    "math.frac.fractions-on-a-number-line",
+    "math.frac.fraction-word-problems"
+   ]
+  },
+  {
+   "id": "dec",
+   "name": "Decimal Dock",
+   "topic": "Tenths & hundredths",
+   "color": "#4fbfd0",
+   "lm": "dock",
+   "group": "math",
+   "skills": [
+    "math.dec.tenths-and-hundredths",
+    "math.dec.comparing-decimals",
+    "math.dec.adding-tenths-and-hundredths",
+    "math.dec.decimals-on-a-number-line"
+   ]
+  },
+  {
+   "id": "area",
+   "name": "Fence Farm",
+   "topic": "Area & perimeter",
+   "color": "#8fcf4f",
+   "lm": "farm",
+   "group": "math",
+   "skills": [
+    "math.area.area",
+    "math.area.perimeter",
+    "math.area.finding-a-missing-side"
+   ]
+  },
+  {
+   "id": "angle",
+   "name": "Angle Arch",
+   "topic": "Angles & protractors",
+   "color": "#6cc3a0",
+   "lm": "angle",
+   "group": "math",
+   "skills": [
+    "math.angle.kinds-of-angles",
+    "math.angle.measuring-with-a-protractor",
+    "math.angle.adding-angles",
+    "math.angle.turns-and-degrees"
+   ]
+  },
+  {
+   "id": "shape",
+   "name": "Shape Shipyard",
+   "topic": "Shapes, lines & symmetry",
+   "color": "#4bb3c9",
+   "lm": "ship",
+   "group": "math",
+   "skills": [
+    "math.shape.right-angles-and-parallel-sides",
+    "math.shape.lines-of-symmetry",
+    "math.shape.parallel-and-perpendicular-lines",
+    "math.shape.naming-quadrilaterals",
+    "math.shape.points-lines-rays-segments",
+    "math.shape.kinds-of-triangles"
+   ]
+  },
+  {
+   "id": "money",
+   "name": "Money Market",
+   "topic": "Coins, change & prices",
+   "color": "#9bd15a",
+   "lm": "money",
+   "group": "math",
+   "skills": [
+    "math.money.counting-and-paying-exact-amounts",
+    "math.money.making-change",
+    "math.money.adding-prices",
+    "math.money.multiplying-money"
+   ]
+  },
+  {
+   "id": "measure",
+   "name": "Measure Mine",
+   "topic": "Units & conversions",
+   "color": "#a8b45c",
+   "lm": "ruler",
+   "group": "math",
+   "skills": [
+    "math.measure.converting-units",
+    "math.measure.measurement-word-problems",
+    "math.measure.choosing-the-right-unit",
+    "math.measure.fractions-of-a-unit",
+    "math.measure.measurement-on-a-number-line"
+   ]
+  },
+  {
+   "id": "pattern",
+   "name": "Pattern Pass",
+   "topic": "Patterns, factors & primes",
+   "color": "#56c47a",
+   "lm": "pattern",
+   "group": "math",
+   "skills": [
+    "math.pattern.number-patterns-and-rules",
+    "math.pattern.factors-and-factor-pairs",
+    "math.pattern.prime-and-composite",
+    "math.pattern.multiples",
+    "math.pattern.shape-patterns"
+   ]
+  },
+  {
+   "id": "graph",
+   "name": "Graph Garden",
+   "topic": "Bar graphs & line plots",
+   "color": "#7ccf6b",
+   "lm": "graph",
+   "group": "math",
+   "skills": [
+    "math.graph.reading-bar-graphs",
+    "math.graph.picture-graphs",
+    "math.graph.line-plots"
+   ]
+  },
+  {
+   "id": "time",
+   "name": "Clock Cove",
+   "topic": "Clocks, calendars & elapsed time",
+   "color": "#5ec3d6",
+   "lm": "clock",
+   "group": "math",
+   "skills": [
+    "math.time.telling-time",
+    "math.time.elapsed-time",
+    "math.time.calendar",
+    "math.time.time-units"
+   ]
+  },
+  {
+   "id": "week",
+   "name": "Week Woods",
+   "topic": "Days & calendar",
+   "color": "#4caf6e",
+   "lm": "week",
+   "group": "time",
+   "retired": true
+  },
+  {
+   "id": "season",
+   "name": "Season Summit",
+   "topic": "Months & seasons",
+   "color": "#a6c95a",
+   "lm": "season",
+   "group": "time",
+   "retired": true
+  },
+  {
+   "id": "riddle",
+   "name": "Riddle Reef",
+   "topic": "Logic & word problems",
+   "color": "#5ab8c4",
+   "lm": "riddle",
+   "group": "world",
+   "skills": [
+    "math.riddle.logic-puzzles",
+    "math.riddle.multi-step-word-problems",
+    "math.riddle.find-the-mistake",
+    "math.riddle.explain-your-thinking",
+    "math.riddle.big-tasks-4-steps"
+   ]
+  },
+  {
+   "id": "words",
+   "name": "Word Waterfall",
+   "topic": "Vocabulary & spelling",
+   "color": "#53bf91",
+   "lm": "words",
+   "group": "world",
+   "skills": [
+    "ela.words.synonyms",
+    "ela.words.antonyms",
+    "ela.words.prefixes",
+    "ela.words.suffixes",
+    "ela.words.spelling",
+    "ela.words.words-in-context",
+    "ela.words.using-a-dictionary"
+   ]
+  },
+  {
+   "id": "reading",
+   "name": "Bookworm Bay",
+   "topic": "Reading & understanding",
+   "color": "#e0b45a",
+   "lm": "book",
+   "group": "world",
+   "skills": [
+    "ela.reading.short-passages",
+    "ela.reading.main-idea-theme-and-word-meaning",
+    "ela.reading.evidence-part-a-part-b",
+    "ela.reading.choose-two-answers",
+    "ela.reading.find-the-sentence-in-the-text",
+    "ela.reading.text-structure",
+    "ela.reading.text-and-picture-or-performance"
+   ]
+  },
+  {
+   "id": "listen",
+   "name": "Listening Lagoon",
+   "topic": "Listen and answer",
+   "color": "#5bb6e8",
+   "lm": "ear",
+   "group": "world",
+   "skills": [
+    "ela.listen.listening-for-details"
+   ]
+  },
+  {
+   "id": "geo",
+   "name": "Map Mountain",
+   "topic": "Maps, directions & the world",
+   "color": "#8bbf6a",
+   "lm": "mountain",
+   "group": "world",
+   "skills": [
+    "social.us4.compass-directions",
+    "social.us4.map-grids",
+    "social.us4.u-s-and-world"
+   ],
+   "gen": "geous"
+  },
+  {
+   "id": "history",
+   "name": "Liberty Landing",
+   "topic": "U.S. regions, Native nations & government",
+   "color": "#d9a441",
+   "lm": "mission",
+   "group": "world",
+   "skills": [
+    "social.us4.regions-of-the-united-states",
+    "social.us4.states-and-capitals",
+    "social.us4.native-nations-of-the-regions",
+    "social.us4.government-and-citizenship",
+    "social.us4.economy-and-resources"
+   ],
+   "gen": "us4"
+  },
+  {
+   "id": "write",
+   "name": "Story Studio",
+   "topic": "Writing sentences & paragraphs",
+   "color": "#e58fb0",
+   "lm": "pencil",
+   "group": "world",
+   "skills": [
+    "ela.write.building-sentences",
+    "ela.write.topic-sentences",
+    "ela.write.transition-words",
+    "ela.write.combining-sentences",
+    "ela.write.supporting-details",
+    "ela.write.endings",
+    "ela.write.opinions-and-reasons",
+    "ela.write.putting-steps-in-order",
+    "ela.write.revising-what-does-not-belong",
+    "ela.write.precise-words",
+    "ela.write.research-choosing-sources",
+    "ela.write.research-using-evidence",
+    "ela.write.formal-and-informal-english",
+    "ela.write.punctuation-for-effect",
+    "ela.write.dialogue-and-showing-feelings"
+   ]
+  },
+  {
+   "id": "grammar",
+   "name": "Grammar Grove",
+   "topic": "Grammar & word meanings",
+   "color": "#38b98a",
+   "lm": "grammar",
+   "group": "world",
+   "skills": [
+    "ela.grammar.complete-sentences",
+    "ela.grammar.capital-letters",
+    "ela.grammar.commas",
+    "ela.grammar.quotation-marks",
+    "ela.grammar.who-which-whose",
+    "ela.grammar.verbs-ing-tenses-and-can-may-must",
+    "ela.grammar.similes-and-metaphors",
+    "ela.grammar.idioms-and-sayings",
+    "ela.grammar.greek-and-latin-roots",
+    "ela.grammar.fixing-sentences",
+    "ela.grammar.run-on-sentences",
+    "ela.grammar.adjective-order",
+    "ela.grammar.prepositional-phrases",
+    "ela.grammar.confusing-words-their-there",
+    "ela.grammar.where-when-why",
+    "ela.grammar.finding-prepositions",
+    "ela.grammar.nouns-verbs-adjectives"
+   ]
+  },
+  {
+   "id": "science",
+   "name": "Science Springs",
+   "topic": "4th grade science",
+   "color": "#47c2a8",
+   "lm": "science",
+   "group": "world",
+   "skills": [
+    "science.science.science-facts",
+    "science.science.reading-experiment-graphs",
+    "science.science.waves-and-sound",
+    "science.science.earthquakes-and-rock-layers",
+    "science.science.how-we-see",
+    "science.science.energy-sources",
+    "science.science.parts-of-a-plant",
+    "science.science.the-water-cycle",
+    "science.science.coded-messages",
+    "science.science.weathering-and-erosion",
+    "science.science.hazards-and-engineering",
+    "science.science.collisions-and-energy"
+   ]
+  }
+ ],
+ "testName": "state"
+}

@@ -309,7 +309,7 @@ function renderKids(){
       return `<button type="button" class="kid${id===ROOT.current?' cur':''}" data-kid="${id}"><span class="kav">${kidAvatar(p)}</span><b>${esc(p.name||'Player')}${p.kidPin?` <i class="klock" title="Has a PIN">${LOCK}</i>`:''}</b><small>${kidGrade(p)} · Level ${levelOf(p.xp)+1} · ${stars} ${starsMini(1)}</small></button>`}).join('')}
       <button type="button" class="kid add" id="kAdd"><span class="plus">+</span><b>Add a player</b><small>Just a first name or nickname</small></button></div>
     ${isTeacher()?`<p class="tkidsnote">This is for <b>your own children</b>, at home or anywhere. They are not part of any class. Your students are in the <b>Teacher desk</b>.</p>`:''}
-    ${ids.length||isTeacher()?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for grades 3 to 5, built on each grade's California standards: math, reading, grammar, science and social studies. A parent or teacher picks the grade. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A parent can sign in to save progress and see what to practice</li></ul></div>`}
+    ${ids.length||isTeacher()?'':`<div class="kabout"><b>What is Pip's Sky Islands?</b><p>A free learning game for grades 3 to 5, built on each grade's state standards (California, and Common Core for the other states): math, reading, grammar, science and social studies. A parent or teacher picks the grade. Kids solve short puzzles, get a hint and a "How?" explanation when stuck, and old mistakes come back for practice.</p><ul><li>No ads, no chat, nothing to buy</li><li>Only a first name or nickname</li><li>A parent can sign in to save progress and see what to practice</li></ul></div>`}
     ${guest.length?`<div class="kimport"><p>This device has progress from before you signed in: <b>${guest.map(([,p])=>esc(p.name||'Player')).join(', ')}</b>. Keep it safe in your account?</p><button class="go small leaf" type="button" id="kImp">Add to my account</button></div>`:''}
     <div class="kidfoot">${acct}${isStandalone()?'':'<button class="linkbtn" type="button" id="kInst">Install app</button>'}<a class="linkbtn" href="privacy.html" target="_blank" rel="noopener">Privacy</a></div>`;
   if($('#kInst'))$('#kInst').onclick=async()=>{if(installEvt){const e=installEvt;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderKids();return}
@@ -351,18 +351,18 @@ function newPlayer(then){
   const D=CONTENT.packs[dk],opt=(v,t,on,off)=>`<option value="${v}"${on?' selected':''}${off?' disabled':''}>${esc(t)}</option>`;
   /* only what can be played now, then one quiet line (a long list of "planned" states was noise here; Parents can still record a planned state) */
   const soon=t=>`<option value="" disabled>${t}</option>`;
-  const stOpts=st=>{const ok=US_STATES.filter(([c])=>Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P)));return ok.map(([c,n])=>opt(c,n,c===st)).join('')+(ok.length<US_STATES.length?soon('More states coming soon'):'')};
+  const stOpts=st=>{const ok=US_STATES.filter(([c])=>GRADES.some(([g])=>packReady(CONTENT.packs[packKey(c,g)])));return ok.map(([c,n])=>opt(c,n,c===st)).join('')+(ok.length<US_STATES.length?soon('More states coming soon'):'')};
   const grOpts=(st,gr)=>{const ok=GRADES.filter(([g])=>packReady(CONTENT.packs[packKey(st,g)]));return ok.map(([g,n])=>opt(g,n,g===gr)).join('')+(ok.length<GRADES.length?soon('More grades coming soon'):'')};
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New player</div><h2>What's the player's name?</h2><p>A first name or nickname is perfect.</p>
     <input type="text" id="nameIn" maxlength="16" autocomplete="off" aria-label="Player name">
     <div class="npschool"><b>School program</b><small>The islands follow this state's standards for this grade. You can change it later in Parents.</small>
-      <div class="setrow"><label for="npState">State</label><select id="npState">${stOpts(D.state)}</select></div>
+      <div class="setrow"><label for="npState">State</label><select id="npState">${stOpts(lsGet('pip-newstate')||(last&&last.settings&&last.settings.state&&last.settings.state!=='US'?last.settings.state:'')||(D.state==='US'?'':D.state))}</select></div>
       <div class="setrow"><label for="npGrade">Grade</label><select id="npGrade">${grOpts(D.state,D.grade)}</select></div></div>
     <label class="limchk"><input type="checkbox" id="limIn" checked> Limit play to 45 minutes a day <small>Recommended. Parents can change it any time.</small></label><div class="btnrow"><button class="go" type="button" id="nameOk">Add player</button><button class="go alt" type="button" id="nameNo">Cancel</button></div>`,
     ()=>{const i=$('#nameIn'),sS=$('#npState'),sG=$('#npGrade');setTimeout(()=>i.focus(),100);
       sS.onchange=()=>{const st=sS.value,cur=+sG.value,ok=g=>packReady(CONTENT.packs[packKey(st,g)]);const g=ok(cur)?cur:(GRADES.map(x=>x[0]).find(ok)??cur);sG.innerHTML=grOpts(st,g)};
       const ok=()=>{const n=i.value.trim().slice(0,16);if(!n){i.focus();return}const key=packKey(sS.value,+sG.value);if(!packReady(CONTENT.packs[key])){sG.focus();return}
-        const p=freshProfile();p.name=n;p.pack=key;p.settings=Object.assign({},p.settings,{state:CONTENT.packs[key].state,grade:CONTENT.packs[key].grade});
+        const p=freshProfile();p.name=n;p.pack=key;p.settings=Object.assign({},p.settings,{state:sS.value,grade:CONTENT.packs[key].grade});lsSet('pip-newstate',sS.value);
         if($('#limIn')&&$('#limIn').checked)p.settings.limit='45';lsSet('pip-newpack',key);const id=addKid(p);closeOverlay();then&&then(id)};
       $('#nameOk').onclick=ok;i.onkeydown=e=>{if(e.key==='Enter')ok()};$('#nameNo').onclick=closeOverlay});
 }

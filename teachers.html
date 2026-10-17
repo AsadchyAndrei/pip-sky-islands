@@ -54,7 +54,7 @@ a{color:#1a73b0;font-weight:800}
 </head>
 <body>
 <main>
-  <div class="hero"><img src="icon-192.png" alt=""><div><h1>Pip for <span>your class</span></h1><p class="sub">Free practice for grades 3 to 5, built on California standards. No ads, no student emails.</p></div></div>
+  <div class="hero"><img src="icon-192.png" alt=""><div><h1>Pip for <span>your class</span></h1><p class="sub">Free practice for grades 3 to 5, built on state standards: California and Common Core for every other state. No ads, no student emails.</p></div></div>
   <nav class="jump" aria-label="On this page"><a href="#setup">Set up in 2 minutes</a><a href="#letter">Letter to families</a><a href="#see">What you will see</a><a href="#facts">Good to know</a></nav>
 
   <section class="card" id="setup">
@@ -74,6 +74,7 @@ a{color:#1a73b0;font-weight:800}
     <p class="lead">Type your name and class code, pick the language, then copy or print.</p>
     <div class="fields">
       <label>Your name<input id="fT" maxlength="40" autocomplete="off" placeholder="Ms. Rivera"></label>
+      <label>State<select id="fS"></select></label>
       <label>Class code<input id="fC" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC234"></label>
     </div>
     <div class="lang" role="group" aria-label="Letter language"><button type="button" data-l="en" aria-pressed="true">English</button><button type="button" data-l="es" aria-pressed="false">Español</button><button type="button" data-l="both" aria-pressed="false">Both</button></div>
@@ -83,7 +84,7 @@ a{color:#1a73b0;font-weight:800}
 
   <section class="card" id="see">
     <h2>What you will see</h2>
-    <p class="lead">Your teacher desk, one class at a time. Everything is by skill and California standard.</p>
+    <p class="lead">Your teacher desk, one class at a time. Everything is by skill and standard code.</p>
     <ul class="see">
       <li><b>Who needs what</b><span>Students grouped into needs help, on track and ahead, with one-click practice for each group.</span></li>
       <li><b>Class heatmap</b><span>Every island and skill for every student, and "where the class needs help".</span></li>
@@ -116,14 +117,17 @@ a{color:#1a73b0;font-weight:800}
   try{const s=JSON.parse(localStorage.getItem('pip-tletter')||'{}');$('#fT').value=s.t||'';$('#fC').value=s.c||'';if(s.l)lang=s.l}catch(e){}
   if(q.get('t'))$('#fT').value=clean(q.get('t'),40);
   if(q.get('code'))$('#fC').value=clean(q.get('code'),6).toUpperCase();
+  const STATES='Alabama,Alaska,Arizona,Arkansas,California,Colorado,Connecticut,Delaware,District of Columbia,Florida,Georgia,Hawaii,Idaho,Illinois,Indiana,Iowa,Kansas,Kentucky,Louisiana,Maine,Maryland,Massachusetts,Michigan,Minnesota,Mississippi,Missouri,Montana,Nebraska,Nevada,New Hampshire,New Jersey,New Mexico,New York,North Carolina,North Dakota,Ohio,Oklahoma,Oregon,Pennsylvania,Rhode Island,South Carolina,South Dakota,Tennessee,Texas,Utah,Vermont,Virginia,Washington,West Virginia,Wisconsin,Wyoming'.split(',');$('#fS').innerHTML=STATES.map(s=>`<option>${s}</option>`).join('');
+  try{const s0=JSON.parse(localStorage.getItem('pip-tletter')||'{}');$('#fS').value=s0.s||'California'}catch(e){$('#fS').value='California'}
+  if(q.get('st')&&STATES.includes(q.get('st')))$('#fS').value=q.get('st');
   const T={
-    en:(t,c)=>`Dear families,
+    en:(t,c,s)=>`Dear families,
 
-This year our class practices math, reading and science with Pip's Sky Islands, a free learning game for grades 3 to 5. It follows the California standards for our grade, and there are no ads and nothing to buy.
+This year our class practices math, reading and science with Pip's Sky Islands, a free learning game for grades 3 to 5. It follows the standards for our grade (${s==='California'?'California':'Common Core'}), and there are no ads and nothing to buy.
 
 How to join our class at home (about 2 minutes):
 1. Open pipskyislands.com on a computer, tablet or phone.
-2. Sign in as a parent (Google or email) and add your child: first name, California, grade.
+2. Sign in as a parent (Google or email) and add your child: first name, ${s}, grade.
 3. Open Parents → Settings → "Join a teacher's class" and type our class code: ${c}
 
 I will see your child's first name and learning progress (skills, stars, minutes played) and nothing else from your account. You will see my tasks and short messages to families.
@@ -132,13 +136,13 @@ About 15 minutes a day is plenty. Pip picks what your child should practice next
 
 Thank you!
 ${t}`,
-    es:(t,c)=>`Estimadas familias:
+    es:(t,c,s)=>`Estimadas familias:
 
-Este año nuestra clase practica matemáticas, lectura y ciencias con Pip's Sky Islands, un juego educativo gratuito para 3.º a 5.º grado. Sigue los estándares de California de nuestro grado, no tiene anuncios y no hay nada que comprar. El juego está en inglés; la sección para padres también está en español.
+Este año nuestra clase practica matemáticas, lectura y ciencias con Pip's Sky Islands, un juego educativo gratuito para 3.º a 5.º grado. Sigue los estándares de nuestro grado (${s==='California'?'California':'Common Core'}), no tiene anuncios y no hay nada que comprar. El juego está en inglés; la sección para padres también está en español.
 
 Cómo unirse a nuestra clase desde casa (unos 2 minutos):
 1. Abran pipskyislands.com en una computadora, tableta o teléfono.
-2. Inicien sesión como padre o madre (Google o correo) y agreguen a su hijo o hija: nombre, California, grado.
+2. Inicien sesión como padre o madre (Google o correo) y agreguen a su hijo o hija: nombre, ${s}, grado.
 3. Abran Parents → Settings (Ajustes) → "Join a teacher's class" y escriban el código de nuestra clase: ${c}
 
 Yo veré solo el nombre de su hijo o hija y su progreso de aprendizaje (habilidades, estrellas, minutos de juego), nada más de su cuenta. Ustedes verán mis tareas y mensajes breves para las familias.
@@ -147,13 +151,13 @@ Unos 15 minutos al día son suficientes. Pip elige lo que su hijo o hija debe pr
 
 ¡Muchas gracias!
 ${t}`};
-  const text=()=>{const t=clean($('#fT').value,40)||'Your teacher',c=clean($('#fC').value,6).toUpperCase()||'______';
-    return lang==='both'?T.en(t,c)+'\n\n— — —\n\n'+T.es(t,c):T[lang](t,c)};
+  const text=()=>{const t=clean($('#fT').value,40)||'Your teacher',c=clean($('#fC').value,6).toUpperCase()||'______',s=$('#fS').value||'California';
+    return lang==='both'?T.en(t,c,s)+'\n\n— — —\n\n'+T.es(t,c,s):T[lang](t,c,s)};
   const draw=()=>{const c=clean($('#fC').value,6).toUpperCase()||'______',esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
     $('#letterBox').innerHTML=esc(text()).split(c).join(`<span class="code">${c}</span>`);
     document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===lang));
-    try{localStorage.setItem('pip-tletter',JSON.stringify({t:$('#fT').value,c:$('#fC').value,l:lang}))}catch(e){}};
-  $('#fT').oninput=draw;$('#fC').oninput=()=>{$('#fC').value=$('#fC').value.toUpperCase();draw()};
+    try{localStorage.setItem('pip-tletter',JSON.stringify({t:$('#fT').value,c:$('#fC').value,s:$('#fS').value,l:lang}))}catch(e){}};
+  $('#fT').oninput=draw;$('#fS').onchange=draw;$('#fC').oninput=()=>{$('#fC').value=$('#fC').value.toUpperCase();draw()};
   document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;draw()});
   const note=t=>{$('#copyNote').textContent=t;setTimeout(()=>{$('#copyNote').textContent=''},3000)};
   $('#copyBtn').onclick=()=>{const t=text();const sel=()=>{const r=document.createRange();r.selectNodeContents($('#letterBox'));const s=getSelection();s.removeAllRanges();s.addRange(r);note('Selected: press Ctrl+C (or ⌘C) to copy.')};

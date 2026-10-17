@@ -1,33 +1,1098 @@
-{"subject": "social", "skills": [
-  {"id": "social.geo.compass-directions", "name": "Compass directions", "grade": 4, "std": ["HSS.4.1.5"], "src": {"gen": "geo", "types": [0, 2]}, "legacy": "geo:0"},
-  {"id": "social.geo.map-grids", "name": "Map grids", "grade": 4, "std": ["HSS.4.1.1"], "src": {"gen": "geo", "types": [1]}, "legacy": "geo:1"},
-  {"id": "social.geo.california-facts", "name": "California facts", "grade": 4, "std": ["HSS.4.1.3", "HSS.4.1.4"], "src": {"gen": "geo", "types": [3]}, "legacy": "geo:2"},
-  {"id": "social.geo.u-s-and-world", "name": "U.S. and world", "grade": 4, "std": ["HSS.4.1.2"], "src": {"gen": "geo", "types": [4]}, "legacy": "geo:3"},
-  {"id": "social.geo.latitude-and-longitude", "name": "Latitude and longitude", "grade": 4, "std": ["HSS.4.1.1"], "src": {"gen": "geo", "types": [5]}, "legacy": "geo:4"},
-  {"id": "social.geo.california-regions", "name": "California regions", "grade": 4, "std": ["HSS.4.1.3", "HSS.4.1.4", "HSS.4.1.5"], "src": {"gen": "geo", "types": [6]}, "legacy": "geo:5"},
-  {"id": "social.geo.government", "name": "Government", "grade": 4, "std": ["HSS.4.5.1", "HSS.4.5.2", "HSS.4.5.3", "HSS.4.5.4", "HSS.4.5.5"], "src": {"gen": "geo", "types": [7]}, "legacy": "geo:6"},
-  {"id": "social.history.california-history", "name": "California history", "grade": 4, "std": ["HSS.4.2.1", "HSS.4.3.3", "HSS.4.4.1", "RI.4.3"], "src": {"gen": "history", "sel": "all"}, "legacy": "history:0", "retired": true},
-  {"id": "social.history.california-indians", "name": "California Indians", "grade": 4, "std": ["HSS.4.2.1"], "src": {"gen": "history", "types": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 57, 58, 59, 60, 61, 103, 107, 108, 109, 110, 111, 112]}, "was": "social.history.california-history"},
-  {"id": "social.history.explorers-and-missions", "name": "Explorers and missions", "grade": 4, "std": ["HSS.4.2.2", "HSS.4.2.3", "HSS.4.2.4", "HSS.4.2.5", "HSS.4.2.6"], "src": {"gen": "history", "types": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 62, 63, 64, 65, 66, 67, 68, 69, 113, 114, 115, 116, 117, 118, 119, 120]}, "was": "social.history.california-history"},
-  {"id": "social.history.mexican-california", "name": "Mexican California and the trails west", "grade": 4, "std": ["HSS.4.2.7", "HSS.4.2.8", "HSS.4.3.1", "HSS.4.3.2"], "src": {"gen": "history", "types": [26, 27, 28, 29, 30, 70, 71, 72, 73, 74, 75, 76, 77, 121, 122, 123, 124, 125, 126, 127, 128]}, "was": "social.history.california-history"},
-  {"id": "social.history.gold-rush-and-statehood", "name": "Gold Rush and statehood", "grade": 4, "std": ["HSS.4.3.3", "HSS.4.3.4", "HSS.4.3.5", "HSS.4.4.2"], "src": {"gen": "history", "types": [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 104, 105, 129, 130, 131, 132, 133]}, "was": "social.history.california-history"},
-  {"id": "social.history.connecting-california", "name": "Railroads, mail and immigrants", "grade": 4, "std": ["HSS.4.4.1", "HSS.4.4.3", "RI.4.3"], "src": {"gen": "history", "types": [42, 43, 44, 45, 46, 47, 48, 50, 88, 89, 93, 94, 134, 135, 136, 137, 138, 151, 152, 153, 154]}, "was": "social.history.california-history"},
-  {"id": "social.history.modern-california", "name": "Modern California", "grade": 4, "std": ["HSS.4.4.4", "HSS.4.4.5", "HSS.4.4.6", "HSS.4.4.7", "HSS.4.4.8", "HSS.4.4.9"], "src": {"gen": "history", "types": [49, 51, 52, 53, 54, 55, 56, 90, 91, 92, 95, 96, 97, 98, 99, 100, 101, 102, 106, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150]}, "was": "social.history.california-history"},
-  {"id": "social.geo3.maps-and-directions", "name": "Maps and directions", "grade": 3, "std": ["HSS.3.1"], "src": {"gen": "geo3", "sel": "tag", "arg": {"bank": "geo3", "tag": "maps"}}},
-  {"id": "social.geo3.land-and-water", "name": "Land and water", "grade": 3, "std": ["HSS.3.1"], "src": {"gen": "geo3", "sel": "tag", "arg": {"bank": "geo3", "tag": "land"}}},
-  {"id": "social.geo3.our-local-economy", "name": "Our local economy", "grade": 3, "std": ["HSS.3.5"], "src": {"gen": "geo3", "sel": "tag", "arg": {"bank": "geo3", "tag": "econ"}}},
-  {"id": "social.history3.american-indians-of-california", "name": "American Indians of California", "grade": 3, "std": ["HSS.3.2"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "native"}}},
-  {"id": "social.history3.how-communities-change", "name": "How communities change", "grade": 3, "std": ["HSS.3.3"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "change"}}},
-  {"id": "social.history3.rules-laws-and-government", "name": "Rules, laws and government", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "govt"}}},
-  {"id": "social.history3.american-symbols-and-landmarks", "name": "American symbols and landmarks", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "symbols"}}},
-  {"id": "social.history3.american-heroes", "name": "American heroes", "grade": 3, "std": ["HSS.3.4"], "src": {"gen": "history3", "sel": "tag", "arg": {"bank": "history3", "tag": "heroes"}}},
-  {"id": "social.geo5.native-nations", "name": "Native nations", "grade": 5, "std": ["HSS.5.1"], "src": {"gen": "geo5", "sel": "tag", "arg": {"bank": "geo5", "tag": "native5"}}},
-  {"id": "social.geo5.european-exploration", "name": "European exploration", "grade": 5, "std": ["HSS.5.2"], "src": {"gen": "geo5", "sel": "tag", "arg": {"bank": "geo5", "tag": "explore"}}},
-  {"id": "social.geo5.states-and-capitals", "name": "States and capitals", "grade": 5, "std": ["HSS.5.9"], "src": {"gen": "geo5", "sel": "tag", "arg": {"bank": "geo5", "tag": "states"}}},
-  {"id": "social.history5.the-thirteen-colonies", "name": "The thirteen colonies", "grade": 5, "std": ["HSS.5.4"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "colonies"}}},
-  {"id": "social.history5.colonists-and-native-nations", "name": "Colonists and Native nations", "grade": 5, "std": ["HSS.5.3"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "conflict"}}},
-  {"id": "social.history5.causes-of-the-revolution", "name": "Causes of the Revolution", "grade": 5, "std": ["HSS.5.5"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "revcause"}}},
-  {"id": "social.history5.the-revolutionary-war", "name": "The Revolutionary War", "grade": 5, "std": ["HSS.5.6"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "revwar"}}},
-  {"id": "social.history5.the-constitution", "name": "The Constitution", "grade": 5, "std": ["HSS.5.7"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "constitution"}}},
-  {"id": "social.history5.moving-west", "name": "Moving west", "grade": 5, "std": ["HSS.5.8"], "src": {"gen": "history5", "sel": "tag", "arg": {"bank": "history5", "tag": "westward"}}}
-]}
+{
+ "subject": "social",
+ "skills": [
+  {
+   "id": "social.geo.compass-directions",
+   "name": "Compass directions",
+   "grade": 4,
+   "std": [
+    "HSS.4.1.5"
+   ],
+   "src": {
+    "gen": "geo",
+    "types": [
+     0,
+     2
+    ]
+   },
+   "legacy": "geo:0"
+  },
+  {
+   "id": "social.geo.map-grids",
+   "name": "Map grids",
+   "grade": 4,
+   "std": [
+    "HSS.4.1.1"
+   ],
+   "src": {
+    "gen": "geo",
+    "types": [
+     1
+    ]
+   },
+   "legacy": "geo:1"
+  },
+  {
+   "id": "social.geo.california-facts",
+   "name": "California facts",
+   "grade": 4,
+   "std": [
+    "HSS.4.1.3",
+    "HSS.4.1.4"
+   ],
+   "src": {
+    "gen": "geo",
+    "types": [
+     3
+    ]
+   },
+   "legacy": "geo:2"
+  },
+  {
+   "id": "social.geo.u-s-and-world",
+   "name": "U.S. and world",
+   "grade": 4,
+   "std": [
+    "HSS.4.1.2"
+   ],
+   "src": {
+    "gen": "geo",
+    "types": [
+     4
+    ]
+   },
+   "legacy": "geo:3"
+  },
+  {
+   "id": "social.geo.latitude-and-longitude",
+   "name": "Latitude and longitude",
+   "grade": 4,
+   "std": [
+    "HSS.4.1.1"
+   ],
+   "src": {
+    "gen": "geo",
+    "types": [
+     5
+    ]
+   },
+   "legacy": "geo:4"
+  },
+  {
+   "id": "social.geo.california-regions",
+   "name": "California regions",
+   "grade": 4,
+   "std": [
+    "HSS.4.1.3",
+    "HSS.4.1.4",
+    "HSS.4.1.5"
+   ],
+   "src": {
+    "gen": "geo",
+    "types": [
+     6
+    ]
+   },
+   "legacy": "geo:5"
+  },
+  {
+   "id": "social.geo.government",
+   "name": "Government",
+   "grade": 4,
+   "std": [
+    "HSS.4.5.1",
+    "HSS.4.5.2",
+    "HSS.4.5.3",
+    "HSS.4.5.4",
+    "HSS.4.5.5"
+   ],
+   "src": {
+    "gen": "geo",
+    "types": [
+     7
+    ]
+   },
+   "legacy": "geo:6"
+  },
+  {
+   "id": "social.history.california-history",
+   "name": "California history",
+   "grade": 4,
+   "std": [
+    "HSS.4.2.1",
+    "HSS.4.3.3",
+    "HSS.4.4.1",
+    "RI.4.3"
+   ],
+   "src": {
+    "gen": "history",
+    "sel": "all"
+   },
+   "legacy": "history:0",
+   "retired": true
+  },
+  {
+   "id": "social.history.california-indians",
+   "name": "California Indians",
+   "grade": 4,
+   "std": [
+    "HSS.4.2.1"
+   ],
+   "src": {
+    "gen": "history",
+    "types": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     57,
+     58,
+     59,
+     60,
+     61,
+     103,
+     107,
+     108,
+     109,
+     110,
+     111,
+     112
+    ]
+   },
+   "was": "social.history.california-history"
+  },
+  {
+   "id": "social.history.explorers-and-missions",
+   "name": "Explorers and missions",
+   "grade": 4,
+   "std": [
+    "HSS.4.2.2",
+    "HSS.4.2.3",
+    "HSS.4.2.4",
+    "HSS.4.2.5",
+    "HSS.4.2.6"
+   ],
+   "src": {
+    "gen": "history",
+    "types": [
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     62,
+     63,
+     64,
+     65,
+     66,
+     67,
+     68,
+     69,
+     113,
+     114,
+     115,
+     116,
+     117,
+     118,
+     119,
+     120
+    ]
+   },
+   "was": "social.history.california-history"
+  },
+  {
+   "id": "social.history.mexican-california",
+   "name": "Mexican California and the trails west",
+   "grade": 4,
+   "std": [
+    "HSS.4.2.7",
+    "HSS.4.2.8",
+    "HSS.4.3.1",
+    "HSS.4.3.2"
+   ],
+   "src": {
+    "gen": "history",
+    "types": [
+     26,
+     27,
+     28,
+     29,
+     30,
+     70,
+     71,
+     72,
+     73,
+     74,
+     75,
+     76,
+     77,
+     121,
+     122,
+     123,
+     124,
+     125,
+     126,
+     127,
+     128
+    ]
+   },
+   "was": "social.history.california-history"
+  },
+  {
+   "id": "social.history.gold-rush-and-statehood",
+   "name": "Gold Rush and statehood",
+   "grade": 4,
+   "std": [
+    "HSS.4.3.3",
+    "HSS.4.3.4",
+    "HSS.4.3.5",
+    "HSS.4.4.2"
+   ],
+   "src": {
+    "gen": "history",
+    "types": [
+     31,
+     32,
+     33,
+     34,
+     35,
+     36,
+     37,
+     38,
+     39,
+     40,
+     41,
+     78,
+     79,
+     80,
+     81,
+     82,
+     83,
+     84,
+     85,
+     86,
+     87,
+     104,
+     105,
+     129,
+     130,
+     131,
+     132,
+     133
+    ]
+   },
+   "was": "social.history.california-history"
+  },
+  {
+   "id": "social.history.connecting-california",
+   "name": "Railroads, mail and immigrants",
+   "grade": 4,
+   "std": [
+    "HSS.4.4.1",
+    "HSS.4.4.3",
+    "RI.4.3"
+   ],
+   "src": {
+    "gen": "history",
+    "types": [
+     42,
+     43,
+     44,
+     45,
+     46,
+     47,
+     48,
+     50,
+     88,
+     89,
+     93,
+     94,
+     134,
+     135,
+     136,
+     137,
+     138,
+     151,
+     152,
+     153,
+     154
+    ]
+   },
+   "was": "social.history.california-history"
+  },
+  {
+   "id": "social.history.modern-california",
+   "name": "Modern California",
+   "grade": 4,
+   "std": [
+    "HSS.4.4.4",
+    "HSS.4.4.5",
+    "HSS.4.4.6",
+    "HSS.4.4.7",
+    "HSS.4.4.8",
+    "HSS.4.4.9"
+   ],
+   "src": {
+    "gen": "history",
+    "types": [
+     49,
+     51,
+     52,
+     53,
+     54,
+     55,
+     56,
+     90,
+     91,
+     92,
+     95,
+     96,
+     97,
+     98,
+     99,
+     100,
+     101,
+     102,
+     106,
+     139,
+     140,
+     141,
+     142,
+     143,
+     144,
+     145,
+     146,
+     147,
+     148,
+     149,
+     150
+    ]
+   },
+   "was": "social.history.california-history"
+  },
+  {
+   "id": "social.geo3.maps-and-directions",
+   "name": "Maps and directions",
+   "grade": 3,
+   "std": [
+    "HSS.3.1"
+   ],
+   "src": {
+    "gen": "geo3",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo3",
+     "tag": [
+      "maps",
+      "mapsca"
+     ]
+    }
+   }
+  },
+  {
+   "id": "social.geo3.land-and-water",
+   "name": "Land and water",
+   "grade": 3,
+   "std": [
+    "HSS.3.1"
+   ],
+   "src": {
+    "gen": "geo3",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo3",
+     "tag": [
+      "land",
+      "landca"
+     ]
+    }
+   }
+  },
+  {
+   "id": "social.geo3.our-local-economy",
+   "name": "Our local economy",
+   "grade": 3,
+   "std": [
+    "HSS.3.5"
+   ],
+   "src": {
+    "gen": "geo3",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo3",
+     "tag": "econ"
+    }
+   }
+  },
+  {
+   "id": "social.history3.american-indians-of-california",
+   "name": "American Indians of California",
+   "grade": 3,
+   "std": [
+    "HSS.3.2"
+   ],
+   "src": {
+    "gen": "history3",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3",
+     "tag": "native"
+    }
+   }
+  },
+  {
+   "id": "social.history3.how-communities-change",
+   "name": "How communities change",
+   "grade": 3,
+   "std": [
+    "HSS.3.3"
+   ],
+   "src": {
+    "gen": "history3",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3",
+     "tag": [
+      "change",
+      "changeca"
+     ]
+    }
+   }
+  },
+  {
+   "id": "social.history3.rules-laws-and-government",
+   "name": "Rules, laws and government",
+   "grade": 3,
+   "std": [
+    "HSS.3.4"
+   ],
+   "src": {
+    "gen": "history3",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3",
+     "tag": [
+      "govt",
+      "govtca"
+     ]
+    }
+   }
+  },
+  {
+   "id": "social.history3.american-symbols-and-landmarks",
+   "name": "American symbols and landmarks",
+   "grade": 3,
+   "std": [
+    "HSS.3.4"
+   ],
+   "src": {
+    "gen": "history3",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3",
+     "tag": [
+      "symbols",
+      "symbolsca"
+     ]
+    }
+   }
+  },
+  {
+   "id": "social.history3.american-heroes",
+   "name": "American heroes",
+   "grade": 3,
+   "std": [
+    "HSS.3.4"
+   ],
+   "src": {
+    "gen": "history3",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3",
+     "tag": [
+      "heroes",
+      "heroesca"
+     ]
+    }
+   }
+  },
+  {
+   "id": "social.geo5.native-nations",
+   "name": "Native nations",
+   "grade": 5,
+   "std": [
+    "HSS.5.1"
+   ],
+   "src": {
+    "gen": "geo5",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo5",
+     "tag": "native5"
+    }
+   }
+  },
+  {
+   "id": "social.geo5.european-exploration",
+   "name": "European exploration",
+   "grade": 5,
+   "std": [
+    "HSS.5.2"
+   ],
+   "src": {
+    "gen": "geo5",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo5",
+     "tag": "explore"
+    }
+   }
+  },
+  {
+   "id": "social.geo5.states-and-capitals",
+   "name": "States and capitals",
+   "grade": 5,
+   "std": [
+    "HSS.5.9"
+   ],
+   "src": {
+    "gen": "geo5",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo5",
+     "tag": "states"
+    }
+   }
+  },
+  {
+   "id": "social.history5.the-thirteen-colonies",
+   "name": "The thirteen colonies",
+   "grade": 5,
+   "std": [
+    "HSS.5.4"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "colonies"
+    }
+   }
+  },
+  {
+   "id": "social.history5.colonists-and-native-nations",
+   "name": "Colonists and Native nations",
+   "grade": 5,
+   "std": [
+    "HSS.5.3"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "conflict"
+    }
+   }
+  },
+  {
+   "id": "social.history5.causes-of-the-revolution",
+   "name": "Causes of the Revolution",
+   "grade": 5,
+   "std": [
+    "HSS.5.5"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "revcause"
+    }
+   }
+  },
+  {
+   "id": "social.history5.the-revolutionary-war",
+   "name": "The Revolutionary War",
+   "grade": 5,
+   "std": [
+    "HSS.5.6"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "revwar"
+    }
+   }
+  },
+  {
+   "id": "social.history5.the-constitution",
+   "name": "The Constitution",
+   "grade": 5,
+   "std": [
+    "HSS.5.7"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "constitution"
+    }
+   }
+  },
+  {
+   "id": "social.history5.moving-west",
+   "name": "Moving west",
+   "grade": 5,
+   "std": [
+    "HSS.5.8"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "westward"
+    }
+   }
+  },
+  {
+   "id": "social.us3.maps-and-directions",
+   "name": "Maps and directions",
+   "grade": 3,
+   "std": [
+    "D2.Geo.1.3-5",
+    "D2.Geo.3.3-5"
+   ],
+   "src": {
+    "gen": "geo3us",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo3us",
+     "tag": "maps"
+    }
+   }
+  },
+  {
+   "id": "social.us3.land-and-water",
+   "name": "Land and water",
+   "grade": 3,
+   "std": [
+    "D2.Geo.2.3-5"
+   ],
+   "src": {
+    "gen": "geo3us",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo3us",
+     "tag": "land"
+    }
+   }
+  },
+  {
+   "id": "social.us3.our-local-economy",
+   "name": "Our local economy",
+   "grade": 3,
+   "std": [
+    "D2.Eco.1.3-5",
+    "D2.Eco.3.3-5",
+    "D2.Eco.4.3-5"
+   ],
+   "src": {
+    "gen": "geo3us",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo3us",
+     "tag": "econ"
+    }
+   }
+  },
+  {
+   "id": "social.us3.native-peoples-of-north-america",
+   "name": "Native peoples of North America",
+   "grade": 3,
+   "std": [
+    "D2.Geo.4.3-5",
+    "D2.His.2.3-5"
+   ],
+   "src": {
+    "gen": "history3us",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3us",
+     "tag": "nativeus"
+    }
+   }
+  },
+  {
+   "id": "social.us3.how-communities-change",
+   "name": "How communities change",
+   "grade": 3,
+   "std": [
+    "D2.His.2.3-5",
+    "D2.His.9.3-5"
+   ],
+   "src": {
+    "gen": "history3us",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3us",
+     "tag": "change"
+    }
+   }
+  },
+  {
+   "id": "social.us3.rules-laws-and-government",
+   "name": "Rules, laws and government",
+   "grade": 3,
+   "std": [
+    "D2.Civ.1.3-5",
+    "D2.Civ.3.3-5"
+   ],
+   "src": {
+    "gen": "history3us",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3us",
+     "tag": "govt"
+    }
+   }
+  },
+  {
+   "id": "social.us3.american-symbols-and-landmarks",
+   "name": "American symbols and landmarks",
+   "grade": 3,
+   "std": [
+    "D2.Civ.8.3-5"
+   ],
+   "src": {
+    "gen": "history3us",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3us",
+     "tag": "symbols"
+    }
+   }
+  },
+  {
+   "id": "social.us3.american-heroes",
+   "name": "American heroes",
+   "grade": 3,
+   "std": [
+    "D2.His.3.3-5"
+   ],
+   "src": {
+    "gen": "history3us",
+    "sel": "tag",
+    "arg": {
+     "bank": "history3us",
+     "tag": "heroes"
+    }
+   }
+  },
+  {
+   "id": "social.us4.compass-directions",
+   "name": "Compass directions",
+   "grade": 4,
+   "std": [
+    "D2.Geo.1.3-5"
+   ],
+   "src": {
+    "gen": "geous",
+    "types": [
+     0,
+     2
+    ]
+   }
+  },
+  {
+   "id": "social.us4.map-grids",
+   "name": "Map grids",
+   "grade": 4,
+   "std": [
+    "D2.Geo.1.3-5",
+    "D2.Geo.3.3-5"
+   ],
+   "src": {
+    "gen": "geous",
+    "types": [
+     1
+    ]
+   }
+  },
+  {
+   "id": "social.us4.u-s-and-world",
+   "name": "U.S. and world",
+   "grade": 4,
+   "std": [
+    "D2.Geo.3.3-5"
+   ],
+   "src": {
+    "gen": "geous",
+    "types": [
+     3
+    ]
+   }
+  },
+  {
+   "id": "social.us4.regions-of-the-united-states",
+   "name": "Regions of the United States",
+   "grade": 4,
+   "std": [
+    "D2.Geo.2.3-5",
+    "D2.Geo.6.3-5"
+   ],
+   "src": {
+    "gen": "us4",
+    "sel": "tag",
+    "arg": {
+     "bank": "us4",
+     "tag": "regions"
+    }
+   }
+  },
+  {
+   "id": "social.us4.states-and-capitals",
+   "name": "States and capitals",
+   "grade": 4,
+   "std": [
+    "D2.Geo.3.3-5"
+   ],
+   "src": {
+    "gen": "us4",
+    "sel": "tag",
+    "arg": {
+     "bank": "us4",
+     "tag": "usstates"
+    }
+   }
+  },
+  {
+   "id": "social.us4.native-nations-of-the-regions",
+   "name": "Native nations of the regions",
+   "grade": 4,
+   "std": [
+    "D2.Geo.4.3-5",
+    "D2.His.2.3-5"
+   ],
+   "src": {
+    "gen": "us4",
+    "sel": "tag",
+    "arg": {
+     "bank": "us4",
+     "tag": "native4"
+    }
+   }
+  },
+  {
+   "id": "social.us4.government-and-citizenship",
+   "name": "Government and citizenship",
+   "grade": 4,
+   "std": [
+    "D2.Civ.1.3-5",
+    "D2.Civ.2.3-5",
+    "D2.Civ.3.3-5",
+    "D2.Civ.5.3-5"
+   ],
+   "src": {
+    "gen": "us4",
+    "sel": "tag",
+    "arg": {
+     "bank": "us4",
+     "tag": "govt4"
+    }
+   }
+  },
+  {
+   "id": "social.us4.economy-and-resources",
+   "name": "Economy and resources",
+   "grade": 4,
+   "std": [
+    "D2.Eco.1.3-5",
+    "D2.Eco.3.3-5",
+    "D2.Eco.4.3-5",
+    "D2.Eco.5.3-5",
+    "D2.Geo.8.3-5"
+   ],
+   "src": {
+    "gen": "us4",
+    "sel": "tag",
+    "arg": {
+     "bank": "us4",
+     "tag": "econ4"
+    }
+   }
+  },
+  {
+   "id": "social.us5.native-nations",
+   "name": "Native nations",
+   "grade": 5,
+   "std": [
+    "D2.Geo.4.3-5",
+    "D2.His.2.3-5"
+   ],
+   "src": {
+    "gen": "geo5",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo5",
+     "tag": "native5"
+    }
+   }
+  },
+  {
+   "id": "social.us5.european-exploration",
+   "name": "European exploration",
+   "grade": 5,
+   "std": [
+    "D2.His.14.3-5",
+    "D2.Geo.7.3-5"
+   ],
+   "src": {
+    "gen": "geo5",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo5",
+     "tag": "explore"
+    }
+   }
+  },
+  {
+   "id": "social.us5.states-and-capitals",
+   "name": "States and capitals",
+   "grade": 5,
+   "std": [
+    "D2.Geo.3.3-5"
+   ],
+   "src": {
+    "gen": "geo5",
+    "sel": "tag",
+    "arg": {
+     "bank": "geo5",
+     "tag": "states"
+    }
+   }
+  },
+  {
+   "id": "social.us5.the-thirteen-colonies",
+   "name": "The thirteen colonies",
+   "grade": 5,
+   "std": [
+    "D2.His.1.3-5",
+    "D2.Geo.8.3-5"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "colonies"
+    }
+   }
+  },
+  {
+   "id": "social.us5.colonists-and-native-nations",
+   "name": "Colonists and Native nations",
+   "grade": 5,
+   "std": [
+    "D2.His.4.3-5"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "conflict"
+    }
+   }
+  },
+  {
+   "id": "social.us5.causes-of-the-revolution",
+   "name": "Causes of the Revolution",
+   "grade": 5,
+   "std": [
+    "D2.His.14.3-5"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "revcause"
+    }
+   }
+  },
+  {
+   "id": "social.us5.the-revolutionary-war",
+   "name": "The Revolutionary War",
+   "grade": 5,
+   "std": [
+    "D2.His.1.3-5",
+    "D2.His.3.3-5"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "revwar"
+    }
+   }
+  },
+  {
+   "id": "social.us5.the-constitution",
+   "name": "The Constitution",
+   "grade": 5,
+   "std": [
+    "D2.Civ.3.3-5",
+    "D2.Civ.5.3-5"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "constitution"
+    }
+   }
+  },
+  {
+   "id": "social.us5.moving-west",
+   "name": "Moving west",
+   "grade": 5,
+   "std": [
+    "D2.His.14.3-5",
+    "D2.Geo.7.3-5"
+   ],
+   "src": {
+    "gen": "history5",
+    "sel": "tag",
+    "arg": {
+     "bank": "history5",
+     "tag": "westward"
+    }
+   }
+  }
+ ]
+}

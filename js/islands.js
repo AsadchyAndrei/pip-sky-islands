@@ -555,7 +555,7 @@ function finishTest(){const dots=[...document.querySelectorAll('#dots .dot')],by
   done(st,`${s} of ${n} right. Practice level: <b>${lvl}</b>.<br>${Object.entries(by).map(([k,v])=>`${k}: <b>${v[0]}/${v[1]}</b>`).join(' · ')}${weak.length?`<br>Practice more: <b>${weak.join(', ')}</b>.`:'<br>Strong in every area!'}`,{sticker:st/3})}
 function testParentHTML(){const L=G.tests||[],nm=esc(G.name||'your child');
   const rows=L.slice(0,6).map(x=>`<li><div><b>${esc(TEST_SECTIONS[x.sec]?TEST_SECTIONS[x.sec].name:x.sec)}: ${x.s} of ${x.n}</b> <small>${new Date(x.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${esc(x.lvl)}</small></div><p>${Object.entries(x.by).map(([k,v])=>`${esc(k)} ${v[0]}/${v[1]}`).join(' · ')}</p></li>`).join('');
-  return `<div class="pcard wide"><h4>Test Practice</h4><p class="note">12-question practice sets in the style of the spring CAASPP test (Math, English). No hints, one try. The "practice level" is only a rough guide: the real test has more questions and is scored differently.</p>${L.length?`<ul class="dklist">${rows}</ul>`:`<p>${nm} has not taken a practice test yet. It is in the Challenges row on the map.</p>`}</div>`}
+  return `<div class="pcard wide"><h4>Test Practice</h4><p class="note">12-question practice sets in the style of the spring ${PACK.state==='CA'?'CAASPP':'state'} test (Math, English). No hints, one try. The "practice level" is only a rough guide: the real test has more questions and is scored differently.</p>${L.length?`<ul class="dklist">${rows}</ul>`:`<p>${nm} has not taken a practice test yet. It is in the Challenges row on the map.</p>`}</div>`}
 function genWrite(t){
   if(t>=13)return genLang(t);
   if(t>=8)return genWriteX(t);
@@ -608,7 +608,7 @@ const GEN={
   listen3:{gen:genListen3,types:LISTEN3_Q.length,round:listenRound3,noDiff:true},
   words3:{gen:bankGen('words3'),types:BANK3.words3.length,noDiff:true},grammar3:{gen:bankGen('grammar3'),types:BANK3.grammar3.length,noDiff:true},
   write3:{gen:bankGen('write3'),types:BANK3.write3.length,noDiff:true},science3:{gen:bankGen('science3'),types:bankN('science3'),noDiff:true},
-  geo3:{gen:bankGen('geo3'),types:BANK3.geo3.length,noDiff:true},history3:{gen:bankGen('history3'),types:BANK3.history3.length,noDiff:true},
+  geo3:{gen:bankGen('geo3'),types:BANK3.geo3.length,noDiff:true},geo3us:{gen:bankGen('geo3us'),types:BANK3.geo3us.length,noDiff:true},history3us:{gen:bankGen('history3us'),types:BANK3.history3us.length,noDiff:true},us4:{gen:bankGen('us4'),types:BANK3.us4.length,noDiff:true},geous:{gen:t=>genGeo([0,1,2,4][t%4]),types:4},history3:{gen:bankGen('history3'),types:BANK3.history3.length,noDiff:true},
   /* 5th grade (js/math5.js, js/english5.js) */
   place5:{gen:extGen(genPlace5,7,X5.place5),types:7+X5.place5.length},expr5:{gen:extGen(genExpr5,5,X5.expr5),types:5+X5.expr5.length},mult5:{gen:extGen(genMult5,5,X5.mult5),types:5+X5.mult5.length},div5:{gen:extGen(genDiv5,7,X5.div5),types:7+X5.div5.length},dec5:{gen:extGen(genDec5,7,X5.dec5),types:7+X5.dec5.length},
   frac5:{gen:extGen(genFrac5,8,X5.frac5),types:8+X5.frac5.length},vol5:{gen:extGen(genVol5,6,X5.vol5),types:6+X5.vol5.length},shape5:{gen:extGen(genShape5,4,X5.shape5),types:4+X5.shape5.length},graph5:{gen:extGen(genGraph5,5,X5.graph5),types:5+X5.graph5.length},pattern5:{gen:extGen(genPattern5,4,X5.pattern5),types:4+X5.pattern5.length},
@@ -677,6 +677,8 @@ const CHAPTERS=[
     intro:['The Eclipse Dragon swallowed the last color and the sun! It wants the sky to stay dark forever.','Clocks, patterns, big numbers and riddles. Everything we learned together will light the way!'],
     outro:'THE RAINBOW BRIDGE IS COMPLETE! The sun is back, and every island is connected. Thank you for being the best sky partner ever!'}
 ];
+/* outside California the last chapter of Book 2 is about our country instead of the Golden State */
+if(PACK.state!=='CA'){const c=CHAPTERS.find(x=>x.name==='The Golden State');if(c)Object.assign(c,{name:'Land of the Free',intro:['The Thunder Queen rules the sky above our whole country. She has the last part of the compass.','Remember the maps, our history, how our government works and science. Our country\'s story will help us win!']})}
 const BOOKS={1:{title:"Pip's Lost Map",start:0,unit:'map piece',won:'Piece found!'},2:{title:'The Starlight Compass',start:4,unit:'compass part',won:'Compass part found!'},3:{title:'The Rainbow Bridge',start:8,unit:'bridge color',won:'Color restored!'}};
 /* a grade's pack may not have every island: chapters only ask for the islands this pack has */
 for(const ch of CHAPTERS)ch.islands=ch.islands.filter(id=>ISLANDS.some(i=>i.id===id&&i.gen&&!i.retired));

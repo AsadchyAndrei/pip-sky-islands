@@ -1,7 +1,7 @@
 {
   "name": "Pip's Sky Islands",
   "short_name": "Pip's Islands",
-  "description": "A free learning game for 4th graders: math, reading, grammar, science and California history.",
+  "description": "A free learning game for grades 3 to 5: math, reading, grammar, science and social studies.",
   "id": "/",
   "start_url": "/?source=app",
   "scope": "/",

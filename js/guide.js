@@ -38,7 +38,7 @@ const HOWTO=[
   {q:'New school year',a:`Class settings → <b>New school year</b> moves the whole class to the next grade; last year's stars stay saved in each student's progress.`}]},
 {id:'faq',title:'Questions',items:[
   {q:'Is it free?',a:'Yes. No ads, no in-app purchases. Coins and outfits are earned only by learning.'},
-  {q:'Which grades and states?',a:'Grades 3 to 5 for California today, following the state standards for math, English language arts, science and social studies. More states and grades are planned.'},
+  {q:'Which grades and states?',a:'Grades 3 to 5 in every state. California follows its own standards; every other state plays the Common Core islands: Common Core math and English, NGSS science, and social studies from the national C3 Framework (regions of the U.S., government, Native nations and U.S. history).'},
   {q:'What data is saved?',a:`Your email, each child's first name or nickname, and game progress. No ads, no tracking, never sold or shared. You can download or delete everything at any time. See the <a href="privacy.html" target="_blank" rel="noopener">privacy notice</a>.`},
   {q:'Forgot the Parents PIN?',a:'Sign out (tap the player name, then sign out) and sign in again: Parents opens without the PIN for 10 minutes so you can set a new one.'},
   {q:'Questions or ideas?',a:'Write to <b>hello@pipskyislands.com</b>. We read every message.'}]}];

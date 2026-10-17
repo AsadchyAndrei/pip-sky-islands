@@ -1,0 +1,38 @@
+"""Every state can play: a state without its own pack plays the Common Core pack of its grade (us-3/4/5), keeps its own
+state name, and its social studies islands never ask about California."""
+from serve import *
+c = Check('every state')
+with sync_playwright() as p:
+    b = launch(p)
+    ctx, pg, errs = open_page(b, 1280, 900, pack='ca-4')
+    c.ok(pg.evaluate("packKey('NY',4)") == 'us-4' and pg.evaluate("packKey('CA',4)") == 'ca-4' and pg.evaluate("packKey('TX',3)") == 'us-3', 'packKey: California keeps its pack, other states get Common Core')
+    pg.evaluate("openNewPlayer?openNewPlayer():0") if pg.evaluate("typeof openNewPlayer==='function'") else None
+    n = pg.evaluate("US_STATES.filter(([c])=>GRADES.some(([g])=>packReady(CONTENT.packs[packKey(c,g)]))).length")
+    c.ok(n == pg.evaluate("US_STATES.length"), f'all {n} states can be picked')
+    # switch to New York, grade 4 through Parents
+    pg.evaluate("CL.unlockUntil=Date.now()+600000;G.settings.state='CA'")
+    with pg.expect_navigation(): pg.evaluate("setPack('NY',4)")
+    pg.wait_for_function("typeof G!=='undefined'&&G&&PACK.id==='us-4'", timeout=30000); pg.wait_for_timeout(800)
+    if pg.is_visible('#kids'): pg.evaluate("selectKid('a')"); pg.wait_for_timeout(500)
+    c.ok(pg.evaluate("PACK.id") == 'us-4' and pg.evaluate("G.settings.state") == 'NY', f'New York plays us-4 and stays New York: {pg.evaluate("G.settings.state")}')
+    c.ok(pg.evaluate("byId('history').name") == 'Liberty Landing', 'the history island is about the whole country')
+    bad = pg.evaluate("""()=>{const out=[];for(const id of ['geo','history']){const I=byId(id);for(let t=0;t<I.types;t++)for(const s of [1,2]){const q=makeQ(I,t,s*7919+t,2);const txt=[q.prompt,q.answer,q.explain].join(' ');if(/California|Sacramento|Golden Gate|Ohlone|Chumash/.test(txt))out.push(id+' '+t+': '+String(q.prompt).slice(0,60))}}return out}""")
+    c.ok(not bad, f'grade 4 social studies has no California questions: {bad[:3]}')
+    pg.evaluate("CL.unlockUntil=Date.now()+600000;openParent()"); pg.wait_for_timeout(400); pg.evaluate("typeof pTabGo==='function'&&pTabGo('set')()"); pg.wait_for_timeout(300)
+    c.ok('New York · Common Core' in pg.text_content('#packNote'), f'Parents see their own state: {pg.text_content("#packNote")[:80]}')
+    with pg.expect_navigation(): pg.evaluate("setPack('TX',3)")
+    pg.wait_for_function("typeof G!=='undefined'&&G&&PACK.id==='us-3'", timeout=30000); pg.wait_for_timeout(800)
+    if pg.is_visible('#kids'): pg.evaluate("selectKid('a')"); pg.wait_for_timeout(500)
+    bad = pg.evaluate("""()=>{const out=[];for(const id of ['geo','history']){const I=byId(id);for(let t=0;t<I.types;t++){const q=makeQ(I,t,7919+t,2);const txt=[q.prompt,q.answer,q.explain].join(' ');if(/California|Sacramento|Golden Gate|Ohlone|Chumash|Central Valley/.test(txt))out.push(id+' '+t+': '+String(q.prompt).slice(0,60))}}return out}""")
+    c.ok(not bad, f'grade 3 social studies has no California questions: {bad[:3]}')
+    c.ok(pg.evaluate("skillsOf('history').some(s=>s.name==='Native peoples of North America')"), 'grade 3: Native peoples of North America')
+    pg.evaluate("CL.unlockUntil=Date.now()+600000;openParent()"); pg.wait_for_timeout(400); pg.evaluate("typeof pTabGo==='function'&&pTabGo('set')()"); pg.wait_for_timeout(300)
+    c.ok('own math and English standards' in pg.text_content('#packNote'), 'Texas parents are told their standards differ a little')
+    c.ok(pg.evaluate("CHAPTERS.some(x=>x.name==='Land of the Free')"), 'story chapter is about the country')
+    with pg.expect_navigation(): pg.evaluate("setPack('CA',3)")
+    pg.wait_for_function("typeof G!=='undefined'&&G&&PACK.id==='ca-3'", timeout=30000); pg.wait_for_timeout(500)
+    if pg.is_visible('#kids'): pg.evaluate("selectKid('a')"); pg.wait_for_timeout(500)
+    c.ok(pg.evaluate("skillsOf('history').find(s=>s.name==='American symbols and landmarks').ts.length") >= 20, 'California grade 3 still has its California symbols')
+    c.ok(not errs, f'page errors {errs[:3]}')
+    b.close()
+c.done()

@@ -173,7 +173,7 @@ const SKILL_SEL={
   mod:(isl,a)=>{const L=SKILL_BANKS[a.base].length;return rng(0,isl.types-L-1).filter(x=>x%a.m===a.j).map(x=>L+x)},
   'gram.cat':(isl,name)=>GRAMF.map((x,i)=>x.cat===name?i:-1).filter(i=>i>=0),
   /* grade 3 and later: question banks with skill tags, and grade 3 reading */
-  tag:(isl,a)=>{const L=BANK3[a.bank].length;return BANK3[a.bank].map((x,i)=>x[0]===a.tag?i:-1).filter(i=>i>=0).concat((BANKX[a.bank]||[]).map((x,i)=>x.tag===a.tag?L+i:-1).filter(i=>i>=0))},
+  tag:(isl,a)=>{const L=BANK3[a.bank].length,T=[].concat(a.tag);return BANK3[a.bank].map((x,i)=>T.includes(x[0])?i:-1).filter(i=>i>=0).concat((BANKX[a.bank]||[]).map((x,i)=>T.includes(x.tag)?L+i:-1).filter(i=>i>=0))},
   'r3.short':isl=>rng(0,PASS3Q.length-1),
   'r3.long':(isl,k)=>LONG3Q.map((x,i)=>LONG3[x[0]].q[x[1]][0]===k?PASS3Q.length+i:-1).filter(i=>i>=0),
   'r3.feat':isl=>rng(PASS3Q.length+LONG3Q.length,PASS3Q.length+LONG3Q.length+BANK3.feat3.length-1),
@@ -247,14 +247,18 @@ function nowParentHTML(){const cd=classDoc();if(cd&&(cd.now||[]).length)return `
 /* School program: the state and grade decide which islands and skills the child gets (a content pack per state and grade) */
 const US_STATES=[['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],['DC','District of Columbia'],['FL','Florida'],['GA','Georgia'],['HI','Hawaii'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming']];
 const GRADES=[[0,'Kindergarten'],[1,'Grade 1'],[2,'Grade 2'],[3,'Grade 3'],[4,'Grade 4'],[5,'Grade 5']];
-const packKey=(st,gr)=>`${String(st).toLowerCase()}-${gr}`;
+/* a state with its own pack plays it; every other state plays the Common Core pack of that grade (us-3, us-4, us-5) */
+const packKey=(st,gr)=>{const k=`${String(st).toLowerCase()}-${gr}`;return CONTENT.packs[k]?k:`us-${gr}`};
+/* states whose math and English standards are their own rather than Common Core-based: the islands still fit most skills */
+const OWN_STD=['AK','FL','IN','NE','OK','SC','TX','VA'];
+const stateName=c=>(US_STATES.find(x=>x[0]===c)||['',c])[1];
 /* Progress tied to islands is kept per grade: changing grade (a new school year) starts that grade's islands fresh
    and keeps the old grade's stars safe in G.grades. Coins, purchases, Pip, the home island and the story are shared. */
 const GRADE_FIELDS=['best','diff','hardMaster','stats','roll','star3','tierBest','review','wrongLog','deck','lessonOffer','skMig','placed'];
 function packSwitch(to,P=G){if(!P.pack)P.pack=PACK_DEFAULT;if(P.pack===to)return;P.grades=Object.assign({},P.grades);
   const keep={};for(const f of GRADE_FIELDS)if(P[f]!==undefined)keep[f]=clone(P[f]);P.grades[P.pack]=keep;
   const back=P.grades[to]||{};for(const f of GRADE_FIELDS){if(back[f]!==undefined)P[f]=clone(back[f]);else if(DEF[f]!==undefined)P[f]=clone(DEF[f]);else delete P[f]}
-  const N=CONTENT.packs[to];if(N){P.settings=Object.assign({},P.settings,{state:N.state,grade:N.grade})}
+  const N=CONTENT.packs[to];if(N){const keep=N.state==='US'&&P.settings&&P.settings.state&&CONTENT.packs[packKey(P.settings.state,N.grade)]===N;P.settings=Object.assign({},P.settings,{state:keep?P.settings.state:N.state,grade:N.grade})}
   P.pack=to;P.packSince=Date.now()}
 const packReady=P=>P&&(P.status!=='draft'||(()=>{try{return localStorage.getItem('pip-dev-packs')==='1'}catch(e){return false}})());
 /* the page runs one pack at a time: if this player's pack is another one, reload with it */
@@ -267,7 +271,7 @@ function packParentHTML(){
   return `<div class="pcard wide"><h4>School program</h4><p class="note">Choose the state and grade of ${esc(G.name||'your child')}'s school. The islands and skills follow that state's standards for that grade.</p>
     <div class="setrow"><label for="setState">State</label><select id="setState">${US_STATES.map(([c,n])=>opt(c,n+(Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P))?'':' (planned)'),c===st)).join('')}</select></div>
     <div class="setrow"><label for="setGrade">Grade</label><select id="setGrade">${GRADES.map(([g,n])=>opt(g,n+(packReady(CONTENT.packs[packKey(st,g)])?'':' (planned)'),g===gr)).join('')}</select></div>
-    <p class="note${ready?' ok':''}" id="packNote">${ready?`Playing: <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>.`:`${esc((US_STATES.find(x=>x[0]===st)||['',st])[1])}, ${esc(GRADES.find(x=>x[0]===gr)[1].toLowerCase())} is planned but not ready yet. Until then the islands follow <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>; most math and English skills are the same from state to state.`}</p></div>`}
+    <p class="note${ready?' ok':''}" id="packNote">${ready?`Playing: <b>${PACK.state==='US'?esc(stateName(st))+' · Common Core':esc(PACK.stateName)}, grade ${PACK.grade}</b>.${PACK.state==='US'?' Math and English follow the Common Core, science follows NGSS, and social studies follows the national C3 Framework.':''}${PACK.state==='US'&&OWN_STD.includes(st)?` ${esc(stateName(st))} has its own math and English standards; they cover most of the same skills.`:''}`:`${esc((US_STATES.find(x=>x[0]===st)||['',st])[1])}, ${esc(GRADES.find(x=>x[0]===gr)[1].toLowerCase())} is planned but not ready yet. Until then the islands follow <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>; most math and English skills are the same from state to state.`}</p></div>`}
 function setPack(st,gr){if(G.cls)return renderParent();delete G.visit;G.settings.state=st;G.settings.grade=gr;const id=packKey(st,gr);
   if(packReady(CONTENT.packs[id])&&id!==PACK.id){packSwitch(id);save();try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return}save();renderParent()}
 const SUBJ_NAMES={math:'Math',ela:'English',science:'Science',social:'Social studies'};

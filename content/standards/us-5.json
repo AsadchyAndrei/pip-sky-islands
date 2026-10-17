@@ -1,0 +1,629 @@
+{
+ "id": "us-5",
+ "state": "US",
+ "grade": 5,
+ "note": "Short plain-English summaries of each standard, written for parents. The official wording is at the source links. 'app: false' marks standards a game cannot check on its own; neither 'app: false' nor 'review: true' standards count toward coverage. Social studies follows the national C3 Framework (NCSS), which most states build on; its grade 3–5 indicators are shared across the three grades.",
+ "sets": [
+  {
+   "subject": "math",
+   "name": "Common Core State Standards: Mathematics",
+   "url": "https://www.cde.ca.gov/be/st/ss/documents/ccssmathstandardaug2013.pdf"
+  },
+  {
+   "subject": "ela",
+   "name": "Common Core State Standards: English Language Arts & Literacy",
+   "url": "https://www.cde.ca.gov/be/st/ss/documents/finalelaccssstandards.pdf"
+  },
+  {
+   "subject": "science",
+   "name": "Next Generation Science Standards (NGSS)",
+   "url": "https://www.cde.ca.gov/pd/ca/sc/ngssstandards.asp"
+  },
+  {
+   "subject": "social",
+   "name": "C3 Framework for Social Studies State Standards (NCSS), grades 3–5",
+   "source": "https://www.socialstudies.org/standards/c3"
+  }
+ ],
+ "standards": [
+  {
+   "code": "5.OA.1",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Use parentheses, brackets or braces in expressions and evaluate them."
+  },
+  {
+   "code": "5.OA.2",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Write simple expressions and interpret them without evaluating (3 × (18,932 + 921) is three times as large as 18,932 + 921)."
+  },
+  {
+   "code": "5.OA.3",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Generate two number patterns from two rules, form ordered pairs and graph them."
+  },
+  {
+   "code": "5.NBT.1",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "A digit is worth 10 times as much as the same digit one place to its right, and 1/10 of the place to its left."
+  },
+  {
+   "code": "5.NBT.2",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Explain patterns when multiplying or dividing by powers of 10; use exponents for powers of 10."
+  },
+  {
+   "code": "5.NBT.3",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Read, write and compare decimals to thousandths, including expanded form."
+  },
+  {
+   "code": "5.NBT.4",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Round decimals to any place."
+  },
+  {
+   "code": "5.NBT.5",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Multiply multi-digit whole numbers fluently with the standard method."
+  },
+  {
+   "code": "5.NBT.6",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Divide up to 4-digit numbers by 2-digit numbers."
+  },
+  {
+   "code": "5.NBT.7",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Add, subtract, multiply and divide decimals to hundredths."
+  },
+  {
+   "code": "5.NF.1",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Add and subtract fractions and mixed numbers with unlike denominators."
+  },
+  {
+   "code": "5.NF.2",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Solve fraction word problems; use benchmark fractions to check if answers are reasonable."
+  },
+  {
+   "code": "5.NF.3",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Understand a fraction as division (3/4 = 3 ÷ 4) and solve sharing problems."
+  },
+  {
+   "code": "5.NF.4",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Multiply a fraction or whole number by a fraction; find areas of rectangles with fraction side lengths."
+  },
+  {
+   "code": "5.NF.5",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Understand multiplication as scaling: multiplying by a fraction greater or less than 1."
+  },
+  {
+   "code": "5.NF.6",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Solve real-world problems by multiplying fractions and mixed numbers."
+  },
+  {
+   "code": "5.NF.7",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Divide unit fractions by whole numbers and whole numbers by unit fractions."
+  },
+  {
+   "code": "5.MD.1",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Convert units within one measurement system and use conversions in multi-step problems."
+  },
+  {
+   "code": "5.MD.2",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Make line plots with fractions of a unit and solve problems using them."
+  },
+  {
+   "code": "5.MD.3",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Understand volume: unit cubes fill solid figures."
+  },
+  {
+   "code": "5.MD.4",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Measure volume by counting unit cubes."
+  },
+  {
+   "code": "5.MD.5",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Find volume with V = l × w × h and V = B × h; add volumes of two boxes."
+  },
+  {
+   "code": "5.G.1",
+   "subject": "math",
+   "domain": "Geometry",
+   "summary": "Use a coordinate system: the x-axis, the y-axis and ordered pairs."
+  },
+  {
+   "code": "5.G.2",
+   "subject": "math",
+   "domain": "Geometry",
+   "summary": "Graph points in the first quadrant to solve real-world problems."
+  },
+  {
+   "code": "5.G.3",
+   "subject": "math",
+   "domain": "Geometry",
+   "summary": "Attributes of a category of shapes belong to all subcategories (all rectangles have four right angles, so squares do too)."
+  },
+  {
+   "code": "5.G.4",
+   "subject": "math",
+   "domain": "Geometry",
+   "summary": "Classify two-dimensional figures in a hierarchy based on properties."
+  },
+  {
+   "code": "MP.1",
+   "subject": "math",
+   "domain": "Mathematical Practices",
+   "summary": "Make sense of problems and keep at them."
+  },
+  {
+   "code": "MP.3",
+   "subject": "math",
+   "domain": "Mathematical Practices",
+   "summary": "Explain your reasoning and find mistakes in other people's reasoning."
+  },
+  {
+   "code": "RL.5.1",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Quote accurately from a text when explaining what it says and when drawing inferences."
+  },
+  {
+   "code": "RL.5.2",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Find a theme, including how characters respond to challenges or how a speaker reflects; summarize."
+  },
+  {
+   "code": "RL.5.3",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Compare and contrast two characters, settings or events, using specific details."
+  },
+  {
+   "code": "RL.5.4",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Find the meaning of words and phrases, including figurative language like metaphors and similes."
+  },
+  {
+   "code": "RL.5.5",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Explain how chapters, scenes or stanzas fit together to give a story, play or poem its structure."
+  },
+  {
+   "code": "RL.5.6",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Describe how a narrator's or speaker's point of view influences how events are described."
+  },
+  {
+   "code": "RL.5.7",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Analyze how visual and multimedia elements add to a text's meaning, tone or beauty."
+  },
+  {
+   "code": "RL.5.9",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Compare stories in the same genre on their approaches to similar themes and topics."
+  },
+  {
+   "code": "RL.5.10",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Read and understand grade 4–5 literature by the end of the year (reading range over the whole year).",
+   "app": false
+  },
+  {
+   "code": "RI.5.1",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Quote accurately from a text when explaining it and drawing inferences."
+  },
+  {
+   "code": "RI.5.2",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Find two or more main ideas and explain how details support them; summarize."
+  },
+  {
+   "code": "RI.5.3",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Explain relationships between two or more people, events or ideas in a text."
+  },
+  {
+   "code": "RI.5.4",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Find the meaning of academic and subject words in a grade 5 text."
+  },
+  {
+   "code": "RI.5.5",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Compare the structure (time order, comparison, cause and effect, problem and solution) of two or more texts."
+  },
+  {
+   "code": "RI.5.6",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Analyze multiple accounts of the same event, noting similarities and differences in point of view."
+  },
+  {
+   "code": "RI.5.7",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Draw on several print or digital sources to find an answer or solve a problem quickly."
+  },
+  {
+   "code": "RI.5.8",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Explain how an author uses reasons and evidence to support points."
+  },
+  {
+   "code": "RI.5.9",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Combine information from several texts on the same topic."
+  },
+  {
+   "code": "RI.5.10",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Read and understand grade 4–5 informational texts by the end of the year (reading range over the whole year).",
+   "app": false
+  },
+  {
+   "code": "RF.5.3",
+   "subject": "ela",
+   "domain": "Reading: Foundational Skills",
+   "summary": "Use letter-sound knowledge, syllables and word parts (roots and affixes) to read unfamiliar words."
+  },
+  {
+   "code": "RF.5.4",
+   "subject": "ela",
+   "domain": "Reading: Foundational Skills",
+   "summary": "Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in Parents).",
+   "app": false
+  },
+  {
+   "code": "W.5.1",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Write opinion pieces with a clear claim, logically ordered reasons, facts and details, and a conclusion."
+  },
+  {
+   "code": "W.5.2",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Write informative texts with a clear focus, grouped information, precise words, transitions and a conclusion."
+  },
+  {
+   "code": "W.5.3",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Write narratives with dialogue, description, pacing, transitions and a resolution."
+  },
+  {
+   "code": "W.5.4",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Produce clear, organized writing that fits the task and audience (longer pieces, checked by a teacher).",
+   "app": false
+  },
+  {
+   "code": "W.5.5",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Plan, revise, edit and rewrite."
+  },
+  {
+   "code": "W.5.6",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Use technology to produce, publish and collaborate; type at least two pages in one sitting.",
+   "app": false
+  },
+  {
+   "code": "W.5.7",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Do short research projects using several sources.",
+   "app": false
+  },
+  {
+   "code": "W.5.8",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Gather information from sources, summarize or paraphrase it, and list sources."
+  },
+  {
+   "code": "W.5.9",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Use evidence from texts to support analysis and research."
+  },
+  {
+   "code": "W.5.10",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Write routinely over short and long time frames.",
+   "app": false
+  },
+  {
+   "code": "SL.5.1",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Take part in group discussions, building on others' ideas.",
+   "app": false
+  },
+  {
+   "code": "SL.5.2",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Summarize a text read aloud or information presented in media."
+  },
+  {
+   "code": "SL.5.3",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Summarize a speaker's points and explain how reasons and evidence support each claim."
+  },
+  {
+   "code": "SL.5.4",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Report on a topic or present an opinion, speaking clearly at a good pace.",
+   "app": false
+  },
+  {
+   "code": "SL.5.5",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Include multimedia and visual displays in presentations.",
+   "app": false
+  },
+  {
+   "code": "SL.5.6",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Adapt speech to different situations, using formal English when appropriate.",
+   "app": false
+  },
+  {
+   "code": "L.5.1",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Grammar: conjunctions, prepositions and interjections; perfect verb tenses; using tense to show time; fixing tense shifts; correlative conjunctions."
+  },
+  {
+   "code": "L.5.2",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Commas in a series, after introductory words and in direct address; titles of works; spelling."
+  },
+  {
+   "code": "L.5.3",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Expand, combine and reduce sentences; compare varieties of English used in stories."
+  },
+  {
+   "code": "L.5.4",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Figure out unknown words from context, Greek and Latin roots and affixes, and reference materials."
+  },
+  {
+   "code": "L.5.5",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Figurative language (similes, metaphors), idioms, adages, proverbs, synonyms, antonyms and homographs."
+  },
+  {
+   "code": "L.5.6",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Learn and use grade-level academic and subject words."
+  },
+  {
+   "code": "5-PS1-1",
+   "subject": "science",
+   "domain": "Matter and Its Interactions",
+   "summary": "Matter is made of particles too small to be seen."
+  },
+  {
+   "code": "5-PS1-2",
+   "subject": "science",
+   "domain": "Matter and Its Interactions",
+   "summary": "The total weight of matter stays the same when it changes, is heated, cooled or mixed."
+  },
+  {
+   "code": "5-PS1-3",
+   "subject": "science",
+   "domain": "Matter and Its Interactions",
+   "summary": "Identify materials by their properties."
+  },
+  {
+   "code": "5-PS1-4",
+   "subject": "science",
+   "domain": "Matter and Its Interactions",
+   "summary": "Mixing two or more substances can make a new substance."
+  },
+  {
+   "code": "5-PS2-1",
+   "subject": "science",
+   "domain": "Space Systems",
+   "summary": "Earth's gravity pulls objects down, toward Earth's center."
+  },
+  {
+   "code": "5-PS3-1",
+   "subject": "science",
+   "domain": "Energy",
+   "summary": "The energy in animals' food was once energy from the sun."
+  },
+  {
+   "code": "5-LS1-1",
+   "subject": "science",
+   "domain": "From Molecules to Organisms",
+   "summary": "Plants get the materials they need to grow mainly from air and water."
+  },
+  {
+   "code": "5-LS2-1",
+   "subject": "science",
+   "domain": "Ecosystems",
+   "summary": "Matter moves among plants, animals, decomposers and the environment."
+  },
+  {
+   "code": "5-ESS1-1",
+   "subject": "science",
+   "domain": "Space Systems",
+   "summary": "The sun looks brighter than other stars because it is closer to Earth."
+  },
+  {
+   "code": "5-ESS1-2",
+   "subject": "science",
+   "domain": "Space Systems",
+   "summary": "Patterns: daily changes in shadows, day and night, and seasonal stars."
+  },
+  {
+   "code": "5-ESS2-1",
+   "subject": "science",
+   "domain": "Earth's Systems",
+   "summary": "Earth's land, water, air and living things interact."
+  },
+  {
+   "code": "5-ESS2-2",
+   "subject": "science",
+   "domain": "Earth's Systems",
+   "summary": "Describe how much of Earth's water is salt water and fresh water, and where it is."
+  },
+  {
+   "code": "5-ESS3-1",
+   "subject": "science",
+   "domain": "Earth and Human Activity",
+   "summary": "Communities use science ideas to protect Earth's resources and environment."
+  },
+  {
+   "code": "3-5-ETS1-1",
+   "subject": "science",
+   "domain": "Engineering Design",
+   "summary": "Define a simple design problem with criteria and limits."
+  },
+  {
+   "code": "3-5-ETS1-2",
+   "subject": "science",
+   "domain": "Engineering Design",
+   "summary": "Compare several possible solutions to a problem."
+  },
+  {
+   "code": "3-5-ETS1-3",
+   "subject": "science",
+   "domain": "Engineering Design",
+   "summary": "Plan fair tests and use the results to improve a design."
+  },
+  {
+   "code": "D2.Geo.3.3-5",
+   "subject": "social",
+   "domain": "Geography",
+   "summary": "Use maps of different scales to find cultural and environmental features."
+  },
+  {
+   "code": "D2.Geo.4.3-5",
+   "subject": "social",
+   "domain": "Geography",
+   "summary": "Explain how culture shapes the way people adapt to and change their environment."
+  },
+  {
+   "code": "D2.Geo.7.3-5",
+   "subject": "social",
+   "domain": "Geography",
+   "summary": "Explain how places affect the movement of people, goods and ideas."
+  },
+  {
+   "code": "D2.Geo.8.3-5",
+   "subject": "social",
+   "domain": "Geography",
+   "summary": "Explain how settlements relate to natural resources."
+  },
+  {
+   "code": "D2.His.1.3-5",
+   "subject": "social",
+   "domain": "History",
+   "summary": "Put related events in time order and compare what happened at the same time."
+  },
+  {
+   "code": "D2.His.2.3-5",
+   "subject": "social",
+   "domain": "History",
+   "summary": "Compare life in the past with life today."
+  },
+  {
+   "code": "D2.His.3.3-5",
+   "subject": "social",
+   "domain": "History",
+   "summary": "Ask questions about people and groups who shaped important changes."
+  },
+  {
+   "code": "D2.His.4.3-5",
+   "subject": "social",
+   "domain": "History",
+   "summary": "Explain why people in the same time period saw events differently."
+  },
+  {
+   "code": "D2.His.14.3-5",
+   "subject": "social",
+   "domain": "History",
+   "summary": "Explain likely causes and effects of events."
+  },
+  {
+   "code": "D2.Civ.3.3-5",
+   "subject": "social",
+   "domain": "Civics",
+   "summary": "Explain where rules, laws and key parts of the U.S. Constitution came from and what they are for."
+  },
+  {
+   "code": "D2.Civ.5.3-5",
+   "subject": "social",
+   "domain": "Civics",
+   "summary": "Explain how governments set up by the U.S. and state constitutions are organized and what they do."
+  }
+ ]
+}

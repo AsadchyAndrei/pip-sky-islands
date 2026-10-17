@@ -1,0 +1,389 @@
+{
+ "id": "us-3",
+ "state": "US",
+ "stateName": "Common Core",
+ "grade": 3,
+ "standards": "us-3",
+ "test": "sbac",
+ "note": "Islands in map order. Common Core math and English and NGSS science, the same as California; social studies follows the C3 Framework (js/us.js). Offered to every state without its own pack.",
+ "islands": [
+  {
+   "id": "daily",
+   "name": "Daily Challenge",
+   "topic": "8 mixed puzzles, new every day",
+   "color": "#ff9f43",
+   "lm": "daily",
+   "group": "ch",
+   "special": "daily"
+  },
+  {
+   "id": "review",
+   "name": "Fix-It Falls",
+   "topic": "Fix your old mistakes",
+   "color": "#5ec3d6",
+   "lm": "review",
+   "group": "ch",
+   "special": "review"
+  },
+  {
+   "id": "ptest",
+   "name": "Test Practice",
+   "topic": "12 questions like the spring test",
+   "color": "#7b6cf0",
+   "lm": "test",
+   "group": "ch",
+   "special": "ptest"
+  },
+  {
+   "id": "flash",
+   "name": "Thunder Tower",
+   "topic": "60-second fact storm",
+   "color": "#7c8fb8",
+   "lm": "storm",
+   "group": "ch",
+   "flash": true
+  },
+  {
+   "id": "boss",
+   "name": "Boss Island",
+   "topic": "Defeat the Grumble Cloud",
+   "color": "#6b6f9e",
+   "lm": "boss",
+   "group": "ch",
+   "special": "boss"
+  },
+  {
+   "id": "place",
+   "name": "Digit Cliffs",
+   "topic": "Place value & rounding",
+   "color": "#38b98a",
+   "lm": "tower",
+   "group": "math",
+   "skills": [
+    "math.place3.value-of-a-digit",
+    "math.place3.rounding-to-the-nearest-ten",
+    "math.place3.rounding-to-the-nearest-hundred",
+    "math.place3.expanded-form",
+    "math.place3.estimating-sums",
+    "math.place3.comparing-numbers",
+    "math.place3.number-names"
+   ],
+   "gen": "place3"
+  },
+  {
+   "id": "addsub",
+   "name": "Carry Canyon",
+   "topic": "Adding & subtracting to 1,000",
+   "color": "#4fb87a",
+   "lm": "canyon",
+   "group": "math",
+   "skills": [
+    "math.addsub3.adding-within-1000",
+    "math.addsub3.subtracting-within-1000",
+    "math.addsub3.add-and-subtract-word-problems",
+    "math.addsub3.missing-numbers",
+    "math.addsub3.two-step-problems"
+   ],
+   "gen": "addsub3"
+  },
+  {
+   "id": "mult",
+   "name": "Times Meadow",
+   "topic": "Multiplying to 100",
+   "color": "#7cc95a",
+   "lm": "meadow",
+   "group": "math",
+   "skills": [
+    "math.mult3.equal-groups",
+    "math.mult3.arrays",
+    "math.mult3.multiplication-facts",
+    "math.mult3.multiplying-by-tens",
+    "math.mult3.missing-factors",
+    "math.mult3.properties-of-multiplication",
+    "math.mult3.multiplication-word-problems",
+    "math.mult3.what-multiplication-means"
+   ],
+   "gen": "mult3"
+  },
+  {
+   "id": "div",
+   "name": "Sharing Shore",
+   "topic": "Sharing & dividing",
+   "color": "#3fb8b5",
+   "lm": "shore",
+   "group": "math",
+   "skills": [
+    "math.div3.sharing-equally",
+    "math.div3.division-facts",
+    "math.div3.fact-families",
+    "math.div3.missing-numbers-in-division",
+    "math.div3.division-word-problems",
+    "math.div3.what-division-means"
+   ],
+   "gen": "div3"
+  },
+  {
+   "id": "frac",
+   "name": "Pie Peak",
+   "topic": "Fractions",
+   "color": "#5cc48c",
+   "lm": "pie",
+   "group": "math",
+   "skills": [
+    "math.frac3.naming-fractions",
+    "math.frac3.fractions-on-a-number-line",
+    "math.frac3.equivalent-fractions",
+    "math.frac3.whole-numbers-as-fractions",
+    "math.frac3.comparing-fractions",
+    "math.frac3.shading-fractions",
+    "math.frac3.equal-parts-of-shapes"
+   ],
+   "gen": "frac3"
+  },
+  {
+   "id": "area",
+   "name": "Fence Farm",
+   "topic": "Area & perimeter",
+   "color": "#8fcf4f",
+   "lm": "farm",
+   "group": "math",
+   "skills": [
+    "math.area3.counting-square-units",
+    "math.area3.area-by-multiplying",
+    "math.area3.shapes-made-of-rectangles",
+    "math.area3.splitting-a-rectangle",
+    "math.area3.perimeter",
+    "math.area3.same-area-different-perimeter"
+   ],
+   "gen": "area3"
+  },
+  {
+   "id": "measure",
+   "name": "Measure Mine",
+   "topic": "Liters, grams & inches",
+   "color": "#a8b45c",
+   "lm": "ruler",
+   "group": "math",
+   "skills": [
+    "math.measure3.liquid-volume",
+    "math.measure3.grams-kilograms-and-liters",
+    "math.measure3.mass-word-problems",
+    "math.measure3.measuring-to-a-quarter-inch"
+   ],
+   "gen": "measure3"
+  },
+  {
+   "id": "pattern",
+   "name": "Pattern Pass",
+   "topic": "Number patterns, odd & even",
+   "color": "#56c47a",
+   "lm": "pattern",
+   "group": "math",
+   "skills": [
+    "math.pattern3.odd-and-even",
+    "math.pattern3.number-patterns",
+    "math.pattern3.input-and-output-rules"
+   ],
+   "gen": "pattern3"
+  },
+  {
+   "id": "graph",
+   "name": "Graph Garden",
+   "topic": "Picture graphs, bar graphs & line plots",
+   "color": "#7ccf6b",
+   "lm": "graph",
+   "group": "math",
+   "skills": [
+    "math.graph3.scaled-picture-graphs",
+    "math.graph3.scaled-bar-graphs",
+    "math.graph3.line-plots"
+   ],
+   "gen": "graph3"
+  },
+  {
+   "id": "time",
+   "name": "Clock Cove",
+   "topic": "Time to the minute",
+   "color": "#5ec3d6",
+   "lm": "clock",
+   "group": "math",
+   "skills": [
+    "math.time3.telling-time-to-the-minute",
+    "math.time3.elapsed-time"
+   ],
+   "gen": "time3"
+  },
+  {
+   "id": "shape",
+   "name": "Shape Shipyard",
+   "topic": "Quadrilaterals",
+   "color": "#4bb3c9",
+   "lm": "ship",
+   "group": "math",
+   "skills": [
+    "math.shape3.naming-quadrilaterals",
+    "math.shape3.what-is-a-quadrilateral",
+    "math.shape3.shape-categories"
+   ],
+   "gen": "shape3"
+  },
+  {
+   "id": "riddle",
+   "name": "Riddle Reef",
+   "topic": "Two-step problems & reasoning",
+   "color": "#5ab8c4",
+   "lm": "riddle",
+   "group": "world",
+   "skills": [
+    "math.riddle3.two-step-word-problems",
+    "math.riddle3.letters-for-unknown-numbers",
+    "math.riddle3.checking-answers-by-estimating",
+    "math.riddle3.find-the-mistake"
+   ],
+   "gen": "riddle3"
+  },
+  {
+   "id": "words",
+   "name": "Word Waterfall",
+   "topic": "Prefixes, suffixes & word meanings",
+   "color": "#53bf91",
+   "lm": "words",
+   "group": "world",
+   "skills": [
+    "ela.words3.prefixes",
+    "ela.words3.suffixes",
+    "ela.words3.words-in-context",
+    "ela.words3.root-words",
+    "ela.words3.literal-and-nonliteral-meaning",
+    "ela.words3.shades-of-meaning",
+    "ela.words3.abc-order-and-glossaries",
+    "ela.words3.spelling-patterns"
+   ],
+   "gen": "words3"
+  },
+  {
+   "id": "reading",
+   "name": "Bookworm Bay",
+   "topic": "Reading & understanding",
+   "color": "#e0b45a",
+   "lm": "book",
+   "group": "world",
+   "skills": [
+    "ela.reading3.short-passages",
+    "ela.reading3.main-idea-message-and-word-meaning",
+    "ela.reading3.evidence-part-a-part-b",
+    "ela.reading3.choose-two-answers",
+    "ela.reading3.find-the-sentence-in-the-text",
+    "ela.reading3.headings-captions-and-glossaries",
+    "ela.reading3.story-vs-picture-or-performance"
+   ],
+   "gen": "reading3"
+  },
+  {
+   "id": "listen",
+   "name": "Listening Lagoon",
+   "topic": "Listen and answer",
+   "color": "#5bb6e8",
+   "lm": "ear",
+   "group": "world",
+   "skills": [
+    "ela.listen3.listening-for-details"
+   ],
+   "gen": "listen3"
+  },
+  {
+   "id": "geo",
+   "name": "Map Mountain",
+   "topic": "Maps, land & our local economy",
+   "color": "#8bbf6a",
+   "lm": "mountain",
+   "group": "world",
+   "skills": [
+    "social.us3.maps-and-directions",
+    "social.us3.land-and-water",
+    "social.us3.our-local-economy"
+   ],
+   "gen": "geo3us"
+  },
+  {
+   "id": "history",
+   "name": "Liberty Landing",
+   "topic": "Native peoples, our community & government",
+   "color": "#d9a441",
+   "lm": "mission",
+   "group": "world",
+   "skills": [
+    "social.us3.native-peoples-of-north-america",
+    "social.us3.how-communities-change",
+    "social.us3.rules-laws-and-government",
+    "social.us3.american-symbols-and-landmarks",
+    "social.us3.american-heroes"
+   ],
+   "gen": "history3us"
+  },
+  {
+   "id": "write",
+   "name": "Story Studio",
+   "topic": "Writing & research",
+   "color": "#e58fb0",
+   "lm": "pencil",
+   "group": "world",
+   "skills": [
+    "ela.write3.opinion-writing",
+    "ela.write3.informative-writing",
+    "ela.write3.story-writing",
+    "ela.write3.revising-and-editing",
+    "ela.write3.research-and-notes"
+   ],
+   "gen": "write3"
+  },
+  {
+   "id": "grammar",
+   "name": "Grammar Grove",
+   "topic": "Grammar & punctuation",
+   "color": "#38b98a",
+   "lm": "grammar",
+   "group": "world",
+   "skills": [
+    "ela.grammar3.parts-of-speech",
+    "ela.grammar3.plural-nouns",
+    "ela.grammar3.abstract-nouns",
+    "ela.grammar3.past-tense-verbs",
+    "ela.grammar3.past-present-and-future",
+    "ela.grammar3.agreement",
+    "ela.grammar3.comparing-with-er-and-est",
+    "ela.grammar3.joining-words",
+    "ela.grammar3.simple-compound-and-complex-sentences",
+    "ela.grammar3.capitals-in-titles",
+    "ela.grammar3.commas-in-addresses-and-letters",
+    "ela.grammar3.punctuating-dialogue",
+    "ela.grammar3.possessives",
+    "ela.grammar3.words-for-effect",
+    "ela.grammar3.spoken-and-written-english"
+   ],
+   "gen": "grammar3"
+  },
+  {
+   "id": "science",
+   "name": "Science Springs",
+   "topic": "3rd grade science",
+   "color": "#47c2a8",
+   "lm": "science",
+   "group": "world",
+   "skills": [
+    "science.science3.forces-and-motion",
+    "science.science3.magnets-and-static-electricity",
+    "science.science3.life-cycles",
+    "science.science3.living-in-groups",
+    "science.science3.inherited-traits",
+    "science.science3.adaptations-and-habitats",
+    "science.science3.fossils",
+    "science.science3.weather-and-climate",
+    "science.science3.weather-hazards",
+    "science.science3.engineering-design"
+   ],
+   "gen": "science3"
+  }
+ ],
+ "testName": "state"
+}

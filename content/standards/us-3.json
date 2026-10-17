@@ -1,0 +1,673 @@
+{
+ "id": "us-3",
+ "state": "US",
+ "grade": 3,
+ "note": "Short plain-English summaries of each standard, written for parents. The official wording is at the source links. 'app: false' marks standards a game cannot check on its own; 'review: true' marks standards from another grade practiced for review. Neither counts toward coverage. Social studies follows the national C3 Framework (NCSS), which most states build on; its grade 3–5 indicators are shared across the three grades.",
+ "sets": [
+  {
+   "subject": "math",
+   "name": "Common Core State Standards: Mathematics",
+   "url": "https://www.cde.ca.gov/be/st/ss/documents/ccssmathstandardaug2013.pdf"
+  },
+  {
+   "subject": "ela",
+   "name": "Common Core State Standards: English Language Arts & Literacy",
+   "url": "https://www.cde.ca.gov/be/st/ss/documents/finalelaccssstandards.pdf"
+  },
+  {
+   "subject": "science",
+   "name": "Next Generation Science Standards (NGSS)",
+   "url": "https://www.cde.ca.gov/pd/ca/sc/ngssstandards.asp"
+  },
+  {
+   "subject": "social",
+   "name": "C3 Framework for Social Studies State Standards (NCSS), grades 3–5",
+   "source": "https://www.socialstudies.org/standards/c3"
+  }
+ ],
+ "standards": [
+  {
+   "code": "3.OA.1",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Understand multiplication as equal groups: 5 × 7 is 5 groups of 7."
+  },
+  {
+   "code": "3.OA.2",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Understand division as sharing equally or making equal groups: 56 ÷ 8."
+  },
+  {
+   "code": "3.OA.3",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Solve multiplication and division word problems within 100 (equal groups, arrays, measurements)."
+  },
+  {
+   "code": "3.OA.4",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Find the unknown number in a multiplication or division equation: 8 × ? = 48."
+  },
+  {
+   "code": "3.OA.5",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Use properties of multiplication: switch the order, regroup factors, split a factor (8 × 7 = 8 × 5 + 8 × 2)."
+  },
+  {
+   "code": "3.OA.6",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Understand division as an unknown-factor problem: 32 ÷ 8 is the number that makes 32 when multiplied by 8."
+  },
+  {
+   "code": "3.OA.7",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Multiply and divide within 100 fluently; know all products of two one-digit numbers from memory by the end of grade 3."
+  },
+  {
+   "code": "3.OA.8",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Solve two-step word problems with all four operations, use a letter for the unknown, and check answers with estimation."
+  },
+  {
+   "code": "3.OA.9",
+   "subject": "math",
+   "domain": "Operations & Algebraic Thinking",
+   "summary": "Find patterns in numbers (odd and even, addition and multiplication tables) and explain them."
+  },
+  {
+   "code": "3.NBT.1",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Round whole numbers to the nearest 10 or 100."
+  },
+  {
+   "code": "3.NBT.2",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Add and subtract within 1000 fluently."
+  },
+  {
+   "code": "3.NBT.3",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "summary": "Multiply one-digit numbers by multiples of 10 (9 × 80, 5 × 60)."
+  },
+  {
+   "code": "3.NF.1",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Understand a fraction 1/b as one part when a whole is cut into b equal parts, and a/b as a parts of size 1/b."
+  },
+  {
+   "code": "3.NF.2",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Show fractions on a number line."
+  },
+  {
+   "code": "3.NF.3",
+   "subject": "math",
+   "domain": "Number & Operations: Fractions",
+   "summary": "Explain equivalent fractions, write whole numbers as fractions, and compare fractions with the same numerator or the same denominator."
+  },
+  {
+   "code": "3.MD.1",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Tell and write time to the nearest minute and solve elapsed-time problems in minutes."
+  },
+  {
+   "code": "3.MD.2",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Measure and estimate liquid volumes and masses in grams, kilograms and liters; solve one-step word problems with them."
+  },
+  {
+   "code": "3.MD.3",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Draw and read scaled picture graphs and bar graphs; solve 'how many more' and 'how many less' problems."
+  },
+  {
+   "code": "3.MD.4",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Measure lengths to the nearest half and quarter inch and show the data on a line plot."
+  },
+  {
+   "code": "3.MD.5",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Understand area: a unit square covers 1 square unit."
+  },
+  {
+   "code": "3.MD.6",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Measure area by counting unit squares."
+  },
+  {
+   "code": "3.MD.7",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Relate area to multiplication and addition: tiling, length × width, splitting rectangles, shapes made of rectangles."
+  },
+  {
+   "code": "3.MD.8",
+   "subject": "math",
+   "domain": "Measurement & Data",
+   "summary": "Solve perimeter problems, including finding an unknown side, and rectangles with the same area but different perimeters."
+  },
+  {
+   "code": "3.G.1",
+   "subject": "math",
+   "domain": "Geometry",
+   "summary": "Understand that shapes share attributes: rhombuses, rectangles and squares are all quadrilaterals."
+  },
+  {
+   "code": "3.G.2",
+   "subject": "math",
+   "domain": "Geometry",
+   "summary": "Split shapes into parts with equal areas and name each part as a unit fraction of the whole."
+  },
+  {
+   "code": "MP.1",
+   "subject": "math",
+   "domain": "Mathematical Practices",
+   "summary": "Make sense of problems and keep at them."
+  },
+  {
+   "code": "MP.3",
+   "subject": "math",
+   "domain": "Mathematical Practices",
+   "summary": "Explain your reasoning and find mistakes in other people's reasoning."
+  },
+  {
+   "code": "2.NBT.1",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "grade": 2,
+   "review": true,
+   "summary": "Understand the digits of a three-digit number as hundreds, tens and ones."
+  },
+  {
+   "code": "2.NBT.3",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "grade": 2,
+   "review": true,
+   "summary": "Read and write numbers to 1000 in numerals, words and expanded form."
+  },
+  {
+   "code": "2.NBT.4",
+   "subject": "math",
+   "domain": "Number & Operations in Base Ten",
+   "grade": 2,
+   "review": true,
+   "summary": "Compare two three-digit numbers using >, = and <."
+  },
+  {
+   "code": "RL.3.1",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Ask and answer questions about a story, pointing to the text for answers."
+  },
+  {
+   "code": "RL.3.2",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Retell stories, including fables and folktales, and find the central message or lesson."
+  },
+  {
+   "code": "RL.3.3",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Describe characters (traits, motivations, feelings) and how their actions move the story along."
+  },
+  {
+   "code": "RL.3.4",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Tell the meaning of words and phrases in a text, literal and nonliteral."
+  },
+  {
+   "code": "RL.3.5",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Use words like chapter, scene and stanza, and tell how each part builds on the earlier ones."
+  },
+  {
+   "code": "RL.3.6",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Tell your own point of view apart from the narrator's or a character's."
+  },
+  {
+   "code": "RL.3.7",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Explain how a story's illustrations add to what the words say."
+  },
+  {
+   "code": "RL.3.9",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Compare stories by the same author about the same or similar characters."
+  },
+  {
+   "code": "RL.3.10",
+   "subject": "ela",
+   "domain": "Reading: Literature",
+   "summary": "Read and understand grade 2–3 literature by the end of the year (reading range over the whole year).",
+   "app": false
+  },
+  {
+   "code": "RI.3.1",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Ask and answer questions about an informational text, pointing to the text for answers."
+  },
+  {
+   "code": "RI.3.2",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Find the main idea and tell how key details support it."
+  },
+  {
+   "code": "RI.3.3",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Describe how events, ideas or steps connect: time, sequence, cause and effect."
+  },
+  {
+   "code": "RI.3.4",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Find the meaning of subject words and phrases in a grade 3 text."
+  },
+  {
+   "code": "RI.3.5",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Use text features and search tools (headings, captions, glossary, keywords) to find information."
+  },
+  {
+   "code": "RI.3.6",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Tell your own point of view apart from the author's."
+  },
+  {
+   "code": "RI.3.7",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Use pictures and maps along with the words to understand a text."
+  },
+  {
+   "code": "RI.3.8",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Explain how sentences and paragraphs connect: comparison, cause and effect, first/second/third."
+  },
+  {
+   "code": "RI.3.9",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Compare the most important points of two texts on the same topic."
+  },
+  {
+   "code": "RI.3.10",
+   "subject": "ela",
+   "domain": "Reading: Informational Text",
+   "summary": "Read and understand grade 2–3 informational texts by the end of the year (reading range over the whole year).",
+   "app": false
+  },
+  {
+   "code": "RF.3.3",
+   "subject": "ela",
+   "domain": "Reading: Foundational Skills",
+   "summary": "Read words using prefixes, suffixes and syllables, and spell common irregular words."
+  },
+  {
+   "code": "RF.3.4",
+   "subject": "ela",
+   "domain": "Reading: Foundational Skills",
+   "summary": "Read aloud accurately and smoothly, with expression (checked by a grown-up: see Reading fluency in Parents).",
+   "app": false
+  },
+  {
+   "code": "W.3.1",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Write opinion pieces: state an opinion, give reasons, use linking words, and end with a conclusion."
+  },
+  {
+   "code": "W.3.2",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Write informative texts: introduce a topic, give facts and details, use linking words, conclude."
+  },
+  {
+   "code": "W.3.3",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Write stories with characters, dialogue, feelings, time-order words and an ending."
+  },
+  {
+   "code": "W.3.4",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Produce writing that fits the task and purpose (longer pieces, checked by a teacher).",
+   "app": false
+  },
+  {
+   "code": "W.3.5",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Plan, revise and edit writing with help."
+  },
+  {
+   "code": "W.3.6",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Use technology to produce and publish writing.",
+   "app": false
+  },
+  {
+   "code": "W.3.7",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Do short research projects.",
+   "app": false
+  },
+  {
+   "code": "W.3.8",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Gather information from experience and sources, take brief notes and sort them into categories."
+  },
+  {
+   "code": "W.3.10",
+   "subject": "ela",
+   "domain": "Writing",
+   "summary": "Write routinely over short and long time frames.",
+   "app": false
+  },
+  {
+   "code": "SL.3.1",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Take part in group discussions, following rules and building on others' ideas.",
+   "app": false
+  },
+  {
+   "code": "SL.3.2",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Find the main ideas and details of a text read aloud or information presented in media."
+  },
+  {
+   "code": "SL.3.3",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Ask and answer questions about what a speaker says."
+  },
+  {
+   "code": "SL.3.4",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Report on a topic or tell a story aloud with facts and details, speaking clearly.",
+   "app": false
+  },
+  {
+   "code": "SL.3.5",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Make audio recordings of stories or poems and add visuals.",
+   "app": false
+  },
+  {
+   "code": "SL.3.6",
+   "subject": "ela",
+   "domain": "Speaking & Listening",
+   "summary": "Speak in complete sentences when the situation calls for it.",
+   "app": false
+  },
+  {
+   "code": "L.3.1",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Grammar: parts of speech, plurals, abstract nouns, verb tenses, agreement, comparing, conjunctions, simple, compound and complex sentences."
+  },
+  {
+   "code": "L.3.2",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Capital letters in titles, commas in addresses and dialogue, quotation marks, possessives, spelling patterns."
+  },
+  {
+   "code": "L.3.3",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Choose words for effect; know the difference between spoken and written English."
+  },
+  {
+   "code": "L.3.4",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Figure out unknown words from context, prefixes, suffixes, root words, dictionaries and glossaries."
+  },
+  {
+   "code": "L.3.5",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Literal and nonliteral meanings, real-life word connections, shades of meaning."
+  },
+  {
+   "code": "L.3.6",
+   "subject": "ela",
+   "domain": "Language",
+   "summary": "Learn and use grade-level conversational, academic and subject words."
+  },
+  {
+   "code": "3-PS2-1",
+   "subject": "science",
+   "domain": "Forces and Interactions",
+   "summary": "Balanced and unbalanced forces change (or do not change) how an object moves."
+  },
+  {
+   "code": "3-PS2-2",
+   "subject": "science",
+   "domain": "Forces and Interactions",
+   "summary": "Observe patterns of motion to predict future motion."
+  },
+  {
+   "code": "3-PS2-3",
+   "subject": "science",
+   "domain": "Forces and Interactions",
+   "summary": "Electric and magnetic forces can act between objects that do not touch."
+  },
+  {
+   "code": "3-PS2-4",
+   "subject": "science",
+   "domain": "Forces and Interactions",
+   "summary": "Solve a simple design problem using magnets."
+  },
+  {
+   "code": "3-LS1-1",
+   "subject": "science",
+   "domain": "Life Cycles",
+   "summary": "Living things have different life cycles, but all are born, grow, reproduce and die."
+  },
+  {
+   "code": "3-LS2-1",
+   "subject": "science",
+   "domain": "Social Interactions",
+   "summary": "Being part of a group helps some animals survive."
+  },
+  {
+   "code": "3-LS3-1",
+   "subject": "science",
+   "domain": "Inheritance and Variation",
+   "summary": "Plants and animals inherit traits from their parents, and there is variation among them."
+  },
+  {
+   "code": "3-LS3-2",
+   "subject": "science",
+   "domain": "Inheritance and Variation",
+   "summary": "The environment can influence traits."
+  },
+  {
+   "code": "3-LS4-1",
+   "subject": "science",
+   "domain": "Environments and Survival",
+   "summary": "Fossils tell us about organisms and environments of long ago."
+  },
+  {
+   "code": "3-LS4-2",
+   "subject": "science",
+   "domain": "Environments and Survival",
+   "summary": "Differences between members of the same species can help them survive, find mates and reproduce."
+  },
+  {
+   "code": "3-LS4-3",
+   "subject": "science",
+   "domain": "Environments and Survival",
+   "summary": "In a habitat, some organisms survive well, some less well, and some not at all."
+  },
+  {
+   "code": "3-LS4-4",
+   "subject": "science",
+   "domain": "Environments and Survival",
+   "summary": "Judge solutions to problems caused when an environment changes."
+  },
+  {
+   "code": "3-ESS2-1",
+   "subject": "science",
+   "domain": "Weather and Climate",
+   "summary": "Use data tables and graphs to describe typical weather in a season."
+  },
+  {
+   "code": "3-ESS2-2",
+   "subject": "science",
+   "domain": "Weather and Climate",
+   "summary": "Describe climates in different regions of the world."
+  },
+  {
+   "code": "3-ESS3-1",
+   "subject": "science",
+   "domain": "Weather and Climate",
+   "summary": "Judge designs that reduce the damage of weather hazards."
+  },
+  {
+   "code": "3-5-ETS1-1",
+   "subject": "science",
+   "domain": "Engineering Design",
+   "summary": "Define a simple design problem with criteria and limits."
+  },
+  {
+   "code": "3-5-ETS1-2",
+   "subject": "science",
+   "domain": "Engineering Design",
+   "summary": "Compare several possible solutions to a problem."
+  },
+  {
+   "code": "3-5-ETS1-3",
+   "subject": "science",
+   "domain": "Engineering Design",
+   "summary": "Plan fair tests and use the results to improve a design."
+  },
+  {
+   "code": "L.2.2",
+   "subject": "ela",
+   "domain": "Language",
+   "grade": 2,
+   "review": true,
+   "summary": "Capitalize holidays, products and names; use commas in letter greetings and closings."
+  },
+  {
+   "code": "D2.Geo.1.3-5",
+   "subject": "social",
+   "domain": "Geography",
+   "summary": "Make and read maps of familiar and unfamiliar places."
+  },
+  {
+   "code": "D2.Geo.2.3-5",
+   "subject": "social",
+   "domain": "Geography",
+   "summary": "Use maps and pictures to explain how places relate to their land, water and climate."
+  },
+  {
+   "code": "D2.Geo.3.3-5",
+   "subject": "social",
+   "domain": "Geography",
+   "summary": "Use maps of different scales to find cultural and environmental features."
+  },
+  {
+   "code": "D2.Geo.4.3-5",
+   "subject": "social",
+   "domain": "Geography",
+   "summary": "Explain how culture shapes the way people adapt to and change their environment."
+  },
+  {
+   "code": "D2.Eco.1.3-5",
+   "subject": "social",
+   "domain": "Economics",
+   "summary": "Compare the benefits and costs of choices."
+  },
+  {
+   "code": "D2.Eco.3.3-5",
+   "subject": "social",
+   "domain": "Economics",
+   "summary": "Give examples of human, capital and natural resources used to make goods and services."
+  },
+  {
+   "code": "D2.Eco.4.3-5",
+   "subject": "social",
+   "domain": "Economics",
+   "summary": "Explain why people and businesses specialize and trade."
+  },
+  {
+   "code": "D2.Civ.1.3-5",
+   "subject": "social",
+   "domain": "Civics",
+   "summary": "Tell what officials at different levels and branches of government can do."
+  },
+  {
+   "code": "D2.Civ.3.3-5",
+   "subject": "social",
+   "domain": "Civics",
+   "summary": "Explain where rules, laws and key parts of the U.S. Constitution came from and what they are for."
+  },
+  {
+   "code": "D2.Civ.8.3-5",
+   "subject": "social",
+   "domain": "Civics",
+   "summary": "Name the civic virtues and democratic principles that guide government and communities."
+  },
+  {
+   "code": "D2.His.2.3-5",
+   "subject": "social",
+   "domain": "History",
+   "summary": "Compare life in the past with life today."
+  },
+  {
+   "code": "D2.His.3.3-5",
+   "subject": "social",
+   "domain": "History",
+   "summary": "Ask questions about people and groups who shaped important changes."
+  },
+  {
+   "code": "D2.His.9.3-5",
+   "subject": "social",
+   "domain": "History",
+   "summary": "Summarize how different kinds of sources help explain the past."
+  }
+ ]
+}
