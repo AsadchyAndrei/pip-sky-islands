@@ -26,8 +26,14 @@ function pvText(txt){let t=' '+String(txt||'')+' ';const B='(?=[\\s!?.,:;"”)]|
 function pvSrc(t){const f=PV.pack&&PV.pack[t];if(f)return {url:'voice/'+f,packed:true};
   if(navigator.onLine===false||Date.now()<PV.down||t.length>900)return null;return {url:PV.url+'?t='+encodeURIComponent(t),packed:false}}
 /* returns false when Pip's voice cannot read this, so the device voice reads it instead */
-function pvSpeak(txt,o={}){if(!pvOn())return false;pvLoadPack();const t=pvText(txt);if(!t||!/[a-z0-9]/i.test(t))return false;const src=pvSrc(t);if(!src)return false;
-  if(!o.queue)pvStop();PV.q.push({t,src,o});if(!PV.cur)pvNext();return true}
+/* long texts (a whole reading passage) go in pieces of a few sentences: each piece is made and kept once, and the next
+   piece is fetched while the current one plays */
+function pvChunks(t,max=500){if(t.length<=max)return [t];const out=[];let cur='';
+  for(const s of t.split(/(?<=[.!?]["”']?)\s+/)){if(cur&&(cur+' '+s).length>max){out.push(cur);cur=s}else cur=cur?cur+' '+s:s}
+  if(cur)out.push(cur);return out.flatMap(c=>c.length>900?c.match(/.{1,880}(\s|$)/g).map(x=>x.trim()):[c])}
+function pvSpeak(txt,o={}){if(!pvOn())return false;pvLoadPack();const t=pvText(txt);if(!t||!/[a-z0-9]/i.test(t))return false;
+  const parts=pvChunks(t),srcs=parts.map(pvSrc);if(srcs.some(x=>!x))return false;
+  if(!o.queue)pvStop();parts.forEach((p,i)=>PV.q.push({t:p,src:srcs[i],o:i?Object.assign({},o,{queue:true,pip:false}):o}));if(!PV.cur)pvNext();return true}
 function pvFetch(src){if(PV.buf.has(src.url))return Promise.resolve(PV.buf.get(src.url));
   const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),src.packed?8000:7000);
   return fetch(src.url,{signal:ac.signal}).then(r=>{if(!r.ok)throw new Error('voice '+r.status);return r.arrayBuffer()}).then(b=>new Promise((ok,no)=>{const p=ctx().decodeAudioData(b,ok,no);if(p&&p.then)p.then(ok,no)}))
@@ -36,7 +42,7 @@ function pvTalking(on){const b=document.getElementById('speakBtn');if(b)b.classL
 function pvNext(){const it=PV.q.shift();if(!it){PV.cur=null;pvTalking(false);return}
   const g=PV.gen;PV.cur=it;pvTalking(true);if(it.o.pip&&!it.o.queue)tone([1046,1568],.045,'sine');
   pvFetch(it.src).then(a=>{if(g!==PV.gen)return;const s=actx.createBufferSource();s.buffer=a;s.connect(actx.destination);it.node=s;
-      s.onended=()=>{if(g===PV.gen&&PV.cur===it)pvNext()};s.start()})
+      s.onended=()=>{if(g===PV.gen&&PV.cur===it)pvNext()};s.start();const nx=PV.q[0];if(nx&&!PV.buf.has(nx.src.url))pvFetch(nx.src).catch(()=>{})})
     .catch(()=>{if(g!==PV.gen)return;
       /* the server could not answer: the device voice reads this and what is waiting, and we try the server again in a minute */
       if(!it.src.packed)PV.down=Date.now()+60000;const rest=[it,...PV.q];PV.q=[];PV.cur=null;pvTalking(false);

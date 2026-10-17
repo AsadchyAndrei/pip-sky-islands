@@ -33,6 +33,12 @@ with sync_playwright() as p:
     pg.evaluate("__said=[];speak('Alisa, a school bus holds <b>49</b> students. How many ride in 9 buses?',{user:true})"); pg.wait_for_timeout(900)
     c.ok(asked[-1:] == ['a school bus holds 49 students. How many ride in 9 buses?'] and not pg.evaluate("__said.length"), f'a question is read by the server voice, no name: {asked[-1:]}')
     c.ok(pg.evaluate("pvBusy()||PV.buf.size>0"), 'the audio is played')
+    # a long passage goes in pieces of a few sentences
+    n = len(asked); long = ' '.join(f'Sentence number {i} is part of a long reading passage about sea otters.' for i in range(30))
+    pg.evaluate(f"stopSpeak();speak({json.dumps(long)},{{user:true}})"); pg.wait_for_timeout(2500)
+    parts = asked[n:]
+    c.ok(len(parts) >= 2 and all(len(x) <= 500 for x in parts) and parts[0].startswith('Sentence number 0'), f'a long text is read in pieces: {len(parts)} pieces')
+    pg.evaluate("stopSpeak()")
     # a line from the pack does not ask the server
     if PACK:
         line = next(iter(PACK)); n = len(asked)
