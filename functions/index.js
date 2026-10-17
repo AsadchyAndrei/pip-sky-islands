@@ -5,6 +5,7 @@
    - joinCoTeacher:   a teacher joins a colleague's class with an invite code
    - sendTestEmail:   "Send me this week's email now" in Parents → Account
    - unsub:           one-click "turn off these emails" link
+   - stat:            anonymous usage counts per day and grade (no ids, nothing about who played)
    - tts:             Pip's voice (Google Chirp 3 HD "Puck") for lines and questions; each sentence is made once and kept in Cloud Storage
    Data the apps never write: mailstate/{uid} (what was sent and when, and the unsubscribe token). */
 const { onSchedule } = require('firebase-functions/v2/scheduler');
@@ -308,4 +309,37 @@ exports.tts = onRequest({ maxInstances: 5, concurrency: 40, timeoutSeconds: 30 }
   try { await ttsHandle(req, res); } catch (e) { logger.error('tts failed', { err: String(e).slice(0, 300) }); if (!res.headersSent) res.status(503).send('voice unavailable'); }
 });
 
-exports._test = { runHour, runUser, onClassChange, joinCo, send, updateQuest, ttsHandle, voiceIO, ttsKey, TTS };
+/* ---------- anonymous usage counts ----------
+   POST /stat {d:'YYYY-MM-DD', g:'ca-4', c:{rounds:3, qs:18, ...}}: adds to stats/{day}.{grade}.{key}.
+   Only these counters, only small numbers, no ids, names, devices or anything about who played. */
+const STAT_KEYS = ['players', 'returning', 'rounds', 'finished', 'qs', 'first', 'missions', 'golds', 'wonders', 'mastered', 'minutes', 'voice'];
+const statHits = new Map();
+async function statHandle(req, res) {
+  res.set('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') { res.set('Access-Control-Allow-Methods', 'POST'); res.set('Access-Control-Allow-Headers', 'Content-Type'); res.status(204).send(''); return; }
+  if (req.method !== 'POST') { res.status(405).send('POST only'); return; }
+  let b = req.body;
+  if (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = null; } }
+  if (!b || typeof b !== 'object') { res.status(400).send('bad'); return; }
+  const day = String(b.d || ''), g = String(b.g || 'x');
+  const today = new Date(), dd = new Date(day + 'T12:00:00Z');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || isNaN(dd) || Math.abs(today - dd) > 3 * 86400000 || !/^[a-z]{2}-\d$|^x$/.test(g)) { res.status(400).send('bad'); return; }
+  const ip = String(req.ip || req.headers['x-forwarded-for'] || '?'), m = Math.floor(Date.now() / 60000), h = statHits.get(ip);
+  if (!h || h.m !== m) { if (statHits.size > 5000) statHits.clear(); statHits.set(ip, { m, n: 1 }); } else if (++h.n > 30) { res.status(429).send('slow down'); return; }
+  const up = {};
+  for (const [k, v] of Object.entries(b.c || {})) {
+    if (!STAT_KEYS.includes(k)) continue;
+    const n = Math.floor(+v);
+    if (!(n > 0 && n <= (k === 'minutes' ? 600 : 500))) continue;
+    up[`${g.replace('-', '_')}.${k}`] = admin.firestore.FieldValue.increment(n);
+  }
+  if (!Object.keys(up).length) { res.status(204).send(''); return; }
+  await db.collection('stats').doc(day).set({}, { merge: true });
+  await db.collection('stats').doc(day).update(up);
+  res.status(204).send('');
+}
+exports.stat = onRequest({ maxInstances: 3, concurrency: 40, timeoutSeconds: 15 }, async (req, res) => {
+  try { await statHandle(req, res); } catch (e) { logger.error('stat failed', { err: String(e).slice(0, 200) }); if (!res.headersSent) res.status(503).send(''); }
+});
+
+exports._test = { runHour, runUser, onClassChange, joinCo, send, updateQuest, ttsHandle, voiceIO, ttsKey, TTS, statHandle };

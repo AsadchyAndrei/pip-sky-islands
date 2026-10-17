@@ -154,6 +154,18 @@ const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(fal
   ok((await call({ t: 'One more brand new line.' }, 'GET', '5.5.5.5')).code === 429, 'tts: past the daily cap nothing new is made');
   await check(assertFails(as('P1').doc('ops/tts-x').get()), 'the voice counters are not readable by players');
 
+
+  /* ---------- anonymous usage counts ---------- */
+  const callS = async (body, method = 'POST', ip = '7.7.7.7') => { const r = { code: 200, h: {}, set(k, v) { this.h[k] = v; return this; }, status(c) { this.code = c; return this; }, send() { this.headersSent = true; return this; } };
+    await T.statHandle({ method, body, ip, headers: {} }, r); return r; };
+  const sday = new Date().toISOString().slice(0, 10);
+  ok((await callS({ d: sday, g: 'ca-4', c: { rounds: 3, qs: 18, first: 14, hacker: 5, missions: 99999 } })).code === 204, 'stat: counts accepted');
+  await callS({ d: sday, g: 'ca-4', c: { rounds: 2 } });
+  const sdoc = (await db.doc('stats/' + sday).get()).data() || {};
+  ok(sdoc.ca_4 && sdoc.ca_4.rounds === 5 && sdoc.ca_4.qs === 18 && sdoc.ca_4.hacker === undefined && sdoc.ca_4.missions === undefined, 'stat: counters add up; unknown keys and huge numbers are dropped: ' + JSON.stringify(sdoc));
+  ok((await callS({ d: '2020-01-01', g: 'ca-4', c: { rounds: 1 } })).code === 400 && (await callS({ d: sday, g: '<b>', c: { rounds: 1 } })).code === 400 && (await callS({}, 'GET')).code === 405, 'stat: old days, odd grades and GET are refused');
+  await check(assertFails(as('P1').doc('stats/' + sday).get()), 'the usage counts are not readable by players');
+
   await env.cleanup();
   console.log((gh ? (bad ? '::error::' : '::notice::') : '') + (bad ? `FAIL server (${n} checks): ${bad} problem(s)` : `OK   server rules and functions (${n} checks)`));
   process.exit(bad ? 1 : 0);

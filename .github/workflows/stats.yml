@@ -1,0 +1,18 @@
+name: stats
+# Anonymous usage counts for the last weeks (run by hand): totals per day and grade, nothing about who played.
+on: workflow_dispatch
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/911404168229/locations/global/workloadIdentityPools/github/providers/github
+          service_account: pip-deployer@pip-sky-islands.iam.gserviceaccount.com
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: tools/stats.sh

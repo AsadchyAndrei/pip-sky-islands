@@ -128,7 +128,7 @@ function start(isl,opts={}){
   beginRound(isl,'island',qs);
 }
 function freshState(isl,mode){return {isl,mode,qs:[],i:0,score:0,tries:0,streak:0,bestStreak:0,coins:0,xp:0,locked:false,badges:[],lvNow:levelOf(G.xp),lv0:levelOf(G.xp)}}
-function beginRound(isl,mode,qs){
+function beginRound(isl,mode,qs){if(typeof stat==='function'){statDay();stat('rounds')}
   stopTimers();S=freshState(isl,mode);S.qs=qs;S.d=diffFor(isl);
   {const nm=$('#iname');nm.textContent=isl.name;if(mode==='island'){const d=document.createElement('span');d.className='idiff';d.textContent=` · ${DIFF_NAME[S.d]}`;nm.appendChild(d)}}$('#timer').hidden=true;$('#bossbar').hidden=true;$('#dots').hidden=false;$('#combo').hidden=true;
   $('#dots').innerHTML=qs.map(()=>'<span class="dot"></span>').join('');setAlt(0);
@@ -488,7 +488,7 @@ function judge(ok,btn){
     S.bestStreak=Math.max(S.bestStreak,S.streak);if(S.bestStreak>G.bestCombo)G.bestCombo=S.bestStreak;
     let c=first?REW.ans:REW.ans2;if(first&&S.streak>=3)c+=Math.min(S.streak,8)-1;if(S.mode==='island'){const pk=pickToday();if(pk&&pk.id===S.isl.id)c*=2}c=taper(c);if(S.mode==='island'&&S.d===3)c=Math.round(c*1.5);
     if(S.mode==='review'||q.rv)reviewResult(q,first);
-    sYes();burstAt(btn||$('#card'));foxMove(S.streak>=5&&S.streak%5===0?'spin':'hop');setAlt(S.score);aliveRight(btn||$('#entry')||$('#check')||$('#card'),first);if(typeof missionAnswer==='function')missionAnswer(first?'gold':'ok');aliveEventAnswer(true,first,btn||$('#prompt'));
+    sYes();burstAt(btn||$('#card'));foxMove(S.streak>=5&&S.streak%5===0?'spin':'hop');setAlt(S.score);aliveRight(btn||$('#entry')||$('#check')||$('#card'),first);if(typeof missionAnswer==='function')missionAnswer(first?'gold':'ok');if(first&&typeof stat==='function'){stat('qs');stat('first')}aliveEventAnswer(true,first,btn||$('#prompt'));
     gain(c,first?2:1,btn||$('#prompt'));
     if(S.mode==='boss')bossHit();
     say($('#say'),COMBO_MSG[S.streak]||(first?pick(YES):pick(SECOND)));
@@ -507,7 +507,7 @@ function judge(ok,btn){
       const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ();return}
     if(S.mode==='test'&&S.tries===1){track(q,true,false,given);S.tries=2}
     if(S.tries===1&&S.mode==='island'&&q.meta&&q.meta.t!=null&&!q.rv&&byId(q.meta.i)&&byId(q.meta.i).gen){const k=q.meta.i+'|'+q.meta.t;S.missRun=S.missRun||{};S.helped=S.helped||{};S.missRun[k]=(S.missRun[k]||0)+1;if(S.missRun[k]>=2&&!S.helped[k]){S.helped[k]=1;S.helpQ=q}}
-    if(typeof missionAnswer==='function')missionAnswer(S.tries===1?'wobble':'miss');
+    if(typeof missionAnswer==='function')missionAnswer(S.tries===1?'wobble':'miss');if(S.tries===1&&typeof stat==='function')stat('qs');
     if(S.tries===1){track(q,true,false,given);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge();autoSay(`Hint: ${q.hint}`)}
     else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review'||q.rv)reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
       $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;autoSay(fb.innerHTML);finishQ()}
@@ -651,6 +651,7 @@ function done(st,line,o={}){
   if(S.mode==='island'&&S.chapter==null&&S.score<=3&&lessonsFor(isl.id).length){nb.hidden=false;nb.textContent='Learn the trick (3 min)';nb.onclick=()=>start(lessonIsland(lessonFor(isl.id)))}
   else if(isl.id==='write'&&S.mode==='island'&&S.chapter==null){nb.hidden=false;nb.textContent='Write my own story';nb.onclick=()=>openDesk()}
   $('#again').hidden=S.mode==='place'||S.mode==='review'&&!reviewDue().length;
+  if(typeof stat==='function'){stat('finished');statFlush()}
   show('done');dropBadgeToasts();refreshFoxes();if(typeof guestNudge==='function')setTimeout(guestNudge,1600);
   if(st>0){sWin();setTimeout(()=>burst(innerWidth/2,innerHeight/3,120),300)}
   setTimeout(()=>{foxMove(st>=2?'spin':st>0?'hop':'wobble');if(st===0)foxClass('sad',1500)},400);

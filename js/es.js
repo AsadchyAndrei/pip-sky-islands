@@ -5,7 +5,7 @@
    - ES: exact texts; ES_RX: texts with names and numbers. A text that is not here simply stays in English. */
 const ES={
 'Parents\' Corner':'Rincón de padres','Back to the game':'Volver al juego','Progress':'Progreso','Settings':'Ajustes','Account':'Cuenta','& data':'y datos',
-'Getting started':'Primeros pasos','The week at a glance':'La semana de un vistazo','Played:':'Jugó:','Going well:':'Va bien:','Practice next:':'Practicar ahora:',
+'Getting started':'Primeros pasos','The week at a glance':'La semana de un vistazo','Played:':'Jugó:','Going well:':'Va bien:','Practice next:':'Practicar ahora:','Missions:':'Misiones:',
 'Meanwhile: set a':'Mientras tanto: pon una','family goal':'meta familiar','with a reward below, or turn on the':'con una recompensa más abajo, o activa el','weekly email':'correo semanal','in Account.':'en Cuenta.','with a reward below.':'con una recompensa más abajo.',
 'keep playing, strong topics will show up here':'sigue jugando, aquí aparecerán los temas fuertes','nothing urgent: every topic is at 80% or more right on the first try.':'nada urgente: todos los temas están en 80% o más de respuestas correctas al primer intento.',
 'Pip\'s notes':'Notas de Pip','This week':'Esta semana','minutes played':'minutos jugados','puzzles answered':'retos contestados','right on the first try':'correctas al primer intento','Right on the first try':'Correctas al primer intento','right on first try':'correctas al primer intento',
@@ -76,6 +76,7 @@ const ES_MON={Jan:'ene',Feb:'feb',Mar:'mar',Apr:'abr',May:'may',Jun:'jun',Jul:'j
 const esDate=s=>String(s).replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun),? (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+)\b/g,(m,d,mo,n)=>`${ES_DOW[d]} ${n} ${ES_MON[mo]}`).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+)\b/g,(m,mo,n)=>`${n} ${ES_MON[mo]}`);
 const esOrd=g=>({K:'kínder','1':'1.er grado','2':'2.º grado','3':'3.er grado','4':'4.º grado','5':'5.º grado'}[g]||g+'.º grado');
 const ES_RX=[
+[/^(\d+) this week · (\d+)% golden \(first try\)(?: · favorites: (.+?))?(?: · building: (.+))?$/,(m,a,b,f,w)=>`${a} esta semana · ${b}% doradas (al primer intento)${f?` · favoritas: ${f}`:''}${w?` · construyendo: ${w.replace(/\(step (\d+) of (\d+)\)/g,'(paso $1 de $2)')}`:''}`],
 [/^Device voice: (.+)$/,(m,n)=>`Voz del dispositivo: ${n}`],
 [/^(.+) · Level (\d+) · ([\d,]+) stars? · ([\d,]+) coins?$/,(m,n,l,s,c)=>`${n} · Nivel ${l} · ${s} estrellas · ${c} monedas`],
 [/^Pip is getting to know (.+)\.$/,(m,n)=>`Pip está conociendo a ${n}.`],

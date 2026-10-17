@@ -28,4 +28,5 @@ python3 check_skillsplit.py
 python3 check_mathcheck.py
 python3 check_mission.py
 python3 check_wonders.py
+python3 check_stats.py
 echo "All checks passed."

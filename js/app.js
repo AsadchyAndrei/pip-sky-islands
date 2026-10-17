@@ -485,6 +485,9 @@ function parentTabs(rows,allA){const grid=document.querySelector('#parentBody .p
   else focus=`<ul class="pglance">
     <li><b>Played:</b> ${wk[0]} min this week · ${wk[1]} puzzles${wk[1]?` · ${Math.round(wk[2]/wk[1]*100)}% right on the first try`:''}</li>
     <li><b>Going well:</b> ${good.length?good.map(r=>`${esc(r.i.name)} (${r.p}%)`).join(', '):'keep playing, strong topics will show up here'}</li>
+    ${(()=>{const L=(G.msLog||[]).filter(m=>m.d>=addDays(-6));if(!L.length)return '';const g=L.reduce((a,m)=>a+m.g,0),n=L.reduce((a,m)=>a+m.n,0),fav={};L.forEach(m=>fav[m.i]=(fav[m.i]||0)+1);
+      const top=Object.entries(fav).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([i])=>byId(i)&&byId(i).name).filter(Boolean),W=PROJECTS.filter(P=>P.res&&projStage(P.id)>0).map(P=>`${P.name} (step ${projStage(P.id)} of ${P.stages.length})`);
+      return `<li><b>Missions:</b> ${L.length} this week · ${Math.round(g/Math.max(1,n)*100)}% golden (first try)${top.length?` · favorites: ${top.map(esc).join(', ')}`:''}${W.length?` · building: ${W.map(esc).join(', ')}`:''}</li>`})()}
     <li><b>Practice next:</b> ${w?`${esc(w.i.name)}, ${esc(w.i.topic.toLowerCase())} (${w.p}% right on the first try).${lessonsFor(w.i.id).length?' Its 3-minute lesson explains the trick.':''}`:'nothing urgent: every topic is at 80% or more right on the first try.'}</li></ul>
     ${w?`<p class="pfbtn"><button type="button" class="go small" data-play="${w.i.id}">Play ${esc(w.i.name)} together</button></p>`:''}`;
   /* the top card already names the topic to practice: Pip's note about the same topic would only repeat it */
@@ -842,10 +845,12 @@ function renderHome(){
   const projCard=P=>{const n=projStage(P.id),nx=projNext(P),goal=saveGoalProject()===P,cost=typeof projCost==='function'?projCost(nx):null,can=nx&&(cost?canAffordRes(cost):G.coins>=nx.price);
     return `<div class="pcard2${nx?'':' done'}${P.res?' wonder':''}"><div class="prev">${projThumb(P,nx?nx.n+1:n)}</div><div class="pinfo"><b>${P.name}</b><div class="psteps">${P.stages.map((st,i)=>`<span class="pst${i<n?' on':''}" title="${esc(st[0])}"></span>`).join('')}</div>${nx?`<small>Step ${nx.n+1} of ${P.stages.length}: <b>${esc(nx.name)}</b></small><div class="prow"><button type="button" class="${can?'buy':''}" data-proj="${P.id}" ${can?'':'disabled'}>${cost?Object.entries(cost).map(([k,v])=>`<span class="rescost${resHave(k)>=v?'':' short'}">${RES_ICON[k]}${resHave(k)>=v?v:`${resHave(k)}/${v}`}</span>`).join(''):COIN_ICON+fmt(nx.price)}</button>${P.res?'':`<button type="button" class="pgoal${goal?' on':''}" data-pgoal="${P.id}" aria-pressed="${goal}">${goal?ICON.wishOn+'My goal':ICON.wishOff+'Make it my goal'}</button>`}</div>`:`<small><b>Finished!</b> All ${P.stages.length} steps built.</small>`}</div></div>`};
   const W=PROJECTS.filter(P=>P.res);
-  $('#homeProj').innerHTML=(W.length?`<h4 class="wtitle">Wonders <small>built with what you learn</small></h4>${resBarHTML()}${W.map(projCard).join('')}<h4 class="wtitle">Coin projects</h4>`:'')+PROJECTS.filter(P=>!P.res).map(projCard).join('');
+  /* Wonders show once the first resources arrive (after the first mission); before that, one line says how to start */
+  const wOpen=!!G.res||W.some(P=>projStage(P.id));
+  $('#homeProj').innerHTML=(W.length?`<h4 class="wtitle">Wonders <small>built with what you learn</small></h4>${wOpen?resBarHTML()+W.map(projCard).join(''):`<p class="wsoon">Finish a mission on any island to earn your first resources. Then you can build a Floating Library, a Weather Tower and a History Museum here!</p>`}<h4 class="wtitle">Coin projects</h4>`:'')+PROJECTS.filter(P=>!P.res).map(projCard).join('');
   fitPreviews($('#homeShop'));
   document.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{const P=PROJECTS.find(x=>x.id===b.dataset.proj),nx=projNext(P),cost=projCost(nx);if(!nx)return;
-    if(cost){if(!canAffordRes(cost))return;resPay(cost)}else{if(G.coins<nx.price)return;G.coins-=nx.price}G.home.proj=Object.assign({},G.home.proj||{},{[P.id]:nx.n+1});
+    if(cost){if(!canAffordRes(cost))return;resPay(cost);if(typeof stat==='function')stat('wonders')}else{if(G.coins<nx.price)return;G.coins-=nx.price}G.home.proj=Object.assign({},G.home.proj||{},{[P.id]:nx.n+1});
     if(projDone(P))award('grand');built0(projDone(P)?`We finished the <b>${P.name}</b>! It's the best thing in the whole sky!`:`Step ${nx.n+1} done: <b>${nx.name}</b>! Only ${P.stages.length-nx.n-1} more to go!`)});
   document.querySelectorAll('[data-pgoal]').forEach(b=>b.onclick=()=>{G.saveGoal=b.dataset.pgoal;save();renderHome();tone([523,659],.06)});
   document.querySelectorAll('[data-house]').forEach(b=>b.onclick=()=>{const H=G.home,nx=HOUSES[H.house];if(!nx||G.coins<nx.price)return;G.coins-=nx.price;H.house++;built0(`Our <b>${nx.name}</b> is ready! It's perfect!`)});

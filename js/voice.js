@@ -33,7 +33,7 @@ function pvChunks(t,max=500){if(t.length<=max)return [t];const out=[];let cur=''
   if(cur)out.push(cur);return out.flatMap(c=>c.length>900?c.match(/.{1,880}(\s|$)/g).map(x=>x.trim()):[c])}
 function pvSpeak(txt,o={}){if(!pvOn())return false;pvLoadPack();const t=pvText(txt);if(!t||!/[a-z0-9]/i.test(t))return false;
   const parts=pvChunks(t),srcs=parts.map(pvSrc);if(srcs.some(x=>!x))return false;
-  if(!o.queue)pvStop();parts.forEach((p,i)=>PV.q.push({t:p,src:srcs[i],o:i?Object.assign({},o,{queue:true,pip:false}):o}));if(!PV.cur)pvNext();return true}
+  if(typeof stat==='function'&&!o.queue)stat('voice');if(!o.queue)pvStop();parts.forEach((p,i)=>PV.q.push({t:p,src:srcs[i],o:i?Object.assign({},o,{queue:true,pip:false}):o}));if(!PV.cur)pvNext();return true}
 function pvFetch(src){if(PV.buf.has(src.url))return Promise.resolve(PV.buf.get(src.url));
   const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),src.packed?8000:7000);
   return fetch(src.url,{signal:ac.signal}).then(r=>{if(!r.ok)throw new Error('voice '+r.status);return r.arrayBuffer()}).then(b=>new Promise((ok,no)=>{const p=ctx().decodeAudioData(b,ok,no);if(p&&p.then)p.then(ok,no)}))

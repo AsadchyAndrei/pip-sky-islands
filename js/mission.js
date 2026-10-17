@@ -175,7 +175,8 @@ function missionAnswer(kind){if(!msOn())return;const i=S.i;if(i<0||i>=MS.n)retur
     if(el&&!reduce){el.classList.remove('wob');void el.getBoundingClientRect();el.classList.add('wob')}return}
   MS.got[i]=kind;missionDraw();if(MS.got.every(Boolean))setTimeout(missionFinish,700)}
 function missionFinish(){if(!msOn())return;const box=document.getElementById('mission');if(!box||box.classList.contains('msdone'))return;box.classList.add('msdone');missionDraw();
-  const M=missionFor(),gold=MS.got.filter(k=>k==='gold').length;
+  const M=missionFor(),gold=MS.got.filter(k=>k==='gold').length;if(typeof stat==='function'){stat('missions');stat('golds',gold)}
+  G.msLog=[...(G.msLog||[]).slice(-79),{d:dayKey(),i:S.isl.id,g:gold,n:MS.n}];
   /* the mission's reward: resources of the island's subject (js/wonders.js) */
   const R=typeof resForMission==='function'?resForMission(S.isl.id,gold,MS.n):null,c=document.getElementById('msCount');
   if(R&&c){c.classList.add('msgot');c.innerHTML=`+${R.a} ${RES_ICON[R.k]}`;c.title=`+${R.a} ${RES[R.k].name}`}
