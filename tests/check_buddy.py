@@ -1,0 +1,40 @@
+"""Sky buddy (js/buddy.js): the first finished mission gives an egg; it hatches after play on 5 different days (not
+5 rounds in one day); the child names the baby; it grows with mastered skills; it flies next to Pip in missions, lives
+on the island and has a card on the map."""
+from serve import *
+c = Check('sky buddy')
+with sync_playwright() as p:
+    b = launch(p)
+    for w in (390, 1280):
+        ctx, pg, errs = open_page(b, w, 900, pack='ca-4')
+        c.ok(pg.evaluate("!G.egg&&!G.buddy&&document.getElementById('buddyCard').hidden"), f'{w}: no egg and no card before the first mission')
+        pg.evaluate("G.rounds=5;window.__tourTest=0;start(byId('place'))"); pg.wait_for_timeout(600)
+        if pg.evaluate("typeof TR!=='undefined'&&TR.on"): pg.keyboard.press('Escape')
+        pg.evaluate("for(let i=0;i<S.qs.length;i++){S.i=i;missionAnswer('gold')}"); pg.wait_for_timeout(800)
+        c.ok(pg.evaluate("!!G.egg&&G.egg.days.length===1"), f'{w}: the first mission gives an egg')
+        pg.evaluate("ovOpen&&closeOverlay();show('map');renderMap()"); pg.wait_for_timeout(400)
+        c.ok(pg.is_visible('#buddyCard') and '1 of 5' in pg.text_content('#buddyCard'), f'{w}: the egg card on the map: {pg.text_content("#buddyCard")[:60]}')
+        pg.evaluate("for(let i=0;i<6;i++)buddyDay()")
+        c.ok(pg.evaluate("G.egg.days.length") == 1, f'{w}: many rounds on one day count as one day')
+        pg.evaluate("G.egg.days=['2026-01-01','2026-01-02','2026-01-03','2026-01-04'];buddyDay();renderBuddyCard()")
+        c.ok(pg.evaluate("buddyReady()") and pg.is_visible('#bHatch'), f'{w}: on the 5th day the egg is ready')
+        pg.click('#bHatch'); pg.wait_for_timeout(500)
+        c.ok(pg.is_visible('#bnIn'), f'{w}: hatching asks for a name')
+        pg.fill('#bnIn', 'Fluffy<b>'); pg.click('#bnOk'); pg.wait_for_timeout(400)
+        c.ok(pg.evaluate("G.buddy&&G.buddy.name") == 'Fluffyb' and pg.evaluate("!G.egg"), f'{w}: the name is kept, safely: {pg.evaluate("G.buddy&&G.buddy.name")}')
+        c.ok('Fluffyb' in pg.text_content('#buddyCard') and 'Master' in pg.text_content('#buddyCard'), f'{w}: the buddy card says what helps it grow')
+        c.ok(pg.evaluate("buddyStage()") == 1, f'{w}: a baby first')
+        pg.evaluate("for(let i=0;i<4;i++)buddyMastered()"); c.ok(pg.evaluate("buddyStage()") == 2, f'{w}: 4 mastered skills: it grows wings')
+        pg.evaluate("for(let i=0;i<8;i++)buddyMastered();renderBuddyCard()"); c.ok(pg.evaluate("buddyStage()") == 3 and 'Fully grown' in pg.text_content('#buddyCard'), f'{w}: 12: fully grown')
+        pg.evaluate("ovOpen&&closeOverlay();start(byId('reading'))"); pg.wait_for_timeout(700)
+        c.ok(pg.locator('#mission .msbuddy').count() == 1, f'{w}: the buddy flies with Pip in a mission')
+        pg.evaluate("ovOpen&&closeOverlay();show('map');renderMap();openHome()"); pg.wait_for_timeout(500)
+        c.ok(pg.locator('#homeView [data-mv="buddy"]').count() == 1, f'{w}: the buddy lives on the island')
+        for k in ('pup', 'kit', 'dragon', 'owl'):
+            c.ok('<g transform' in pg.evaluate(f"buddySVG('{k}',3)"), f'{w}: art for {k}')
+        pg.evaluate("G.egg={days:['x']};delete G.egg;buddyGiveEgg()")
+        c.ok(pg.evaluate("!G.egg"), f'{w}: no second egg once there is a buddy')
+        c.ok(not errs, f'{w}: page errors {errs[:3]}')
+        ctx.close()
+    b.close()
+c.done()

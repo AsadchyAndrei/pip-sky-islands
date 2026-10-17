@@ -24,7 +24,7 @@ function card(isl,i){
 }
 function weekCard(){const tw=thisWeek(),lw=G.weeks[lastWeekKey()];
   const target=lw&&lw.c>0?lw.c:0;
-  renderPickCard();renderGoalCard();if(typeof renderFGoal==="function")renderFGoal();
+  renderPickCard();renderGoalCard();if(typeof renderBuddyCard==='function')renderBuddyCard();if(typeof renderFGoal==="function")renderFGoal();
   $('#weekCard').innerHTML=target?`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers. Last week: <b>${target}</b>. ${tw.c>target?'You beat it! Amazing!':`Beat it for <b>+${REW.week} coins</b>!`}</span><div class="bar warm"><i style="width:${Math.min(100,tw.c/(target+1)*100)}%"></i></div>`
     :`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers on the first try. Next week, try to beat this number for <b>+${REW.week} coins</b>!</span>`;
 }
@@ -128,7 +128,7 @@ function start(isl,opts={}){
   beginRound(isl,'island',qs);
 }
 function freshState(isl,mode){return {isl,mode,qs:[],i:0,score:0,tries:0,streak:0,bestStreak:0,coins:0,xp:0,locked:false,badges:[],lvNow:levelOf(G.xp),lv0:levelOf(G.xp)}}
-function beginRound(isl,mode,qs){if(typeof stat==='function'){statDay();stat('rounds')}
+function beginRound(isl,mode,qs){if(typeof stat==='function'){statDay();stat('rounds')}if(typeof buddyDay==='function')buddyDay();
   stopTimers();S=freshState(isl,mode);S.qs=qs;S.d=diffFor(isl);
   {const nm=$('#iname');nm.textContent=isl.name;if(mode==='island'){const d=document.createElement('span');d.className='idiff';d.textContent=` · ${DIFF_NAME[S.d]}`;nm.appendChild(d)}}$('#timer').hidden=true;$('#bossbar').hidden=true;$('#dots').hidden=false;$('#combo').hidden=true;
   $('#dots').innerHTML=qs.map(()=>'<span class="dot"></span>').join('');setAlt(0);

@@ -168,7 +168,11 @@ MSCENE.map={
 function missionDraw(){const box=document.getElementById('mission');if(!box||!MS.on)return;const svg=box.querySelector('svg');if(!svg)return;
   const placed=MS.got.filter(Boolean).length,c=document.getElementById('msCount');if(c)c.textContent=`${placed} / ${MS.n}`;
   const done=placed===MS.n&&box.classList.contains('msdone'),[x,y]=MSCENE[MS.kind].draw(svg,done);
-  svg.querySelector('.mspip').style.transform=`translate(${(+x).toFixed(1)}px,${(+y).toFixed(1)}px)`}
+  svg.querySelector('.mspip').style.transform=`translate(${(+x).toFixed(1)}px,${(+y).toFixed(1)}px)`;
+  /* the sky buddy flies next to Pip */
+  if(typeof G!=='undefined'&&G.buddy&&typeof buddyArt==='function'){let b=svg.querySelector('.msbuddy');
+    if(!b){svg.querySelector('.mspip').insertAdjacentHTML('afterend',`<g class="msbuddy"><g class="msbuddyin"><g transform="translate(-22 -12) scale(.34)">${buddyArt(G.buddy.kind,buddyStage())}</g></g></g>`);b=svg.querySelector('.msbuddy')}
+    b.style.transform=`translate(${(+x).toFixed(1)}px,${(+y).toFixed(1)}px)`}}
 /* an answer: 'gold' (first try), 'ok' (second try), 'miss' (shown the answer); 'wobble' for a first wrong try */
 function missionAnswer(kind){if(!msOn())return;const i=S.i;if(i<0||i>=MS.n)return;
   if(kind==='wobble'){const box=document.getElementById('mission'),el=box&&box.querySelector(MSCENE[MS.kind].slot(i));
@@ -176,7 +180,7 @@ function missionAnswer(kind){if(!msOn())return;const i=S.i;if(i<0||i>=MS.n)retur
   MS.got[i]=kind;missionDraw();if(MS.got.every(Boolean))setTimeout(missionFinish,700)}
 function missionFinish(){if(!msOn())return;const box=document.getElementById('mission');if(!box||box.classList.contains('msdone'))return;box.classList.add('msdone');missionDraw();
   const M=missionFor(),gold=MS.got.filter(k=>k==='gold').length;if(typeof stat==='function'){stat('missions');stat('golds',gold)}
-  G.msLog=[...(G.msLog||[]).slice(-79),{d:dayKey(),i:S.isl.id,g:gold,n:MS.n}];
+  G.msLog=[...(G.msLog||[]).slice(-79),{d:dayKey(),i:S.isl.id,g:gold,n:MS.n}];if(typeof buddyGiveEgg==='function')buddyGiveEgg();
   /* the mission's reward: resources of the island's subject (js/wonders.js) */
   const R=typeof resForMission==='function'?resForMission(S.isl.id,gold,MS.n):null,c=document.getElementById('msCount');
   if(R&&c){c.classList.add('msgot');c.innerHTML=`+${R.a} ${RES_ICON[R.k]}`;c.title=`+${R.a} ${RES[R.k].name}`}

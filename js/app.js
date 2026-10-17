@@ -757,7 +757,8 @@ function renderGoalCard(){const el=$('#goalCard');if(!el)return;const W=wishItem
   el.innerHTML=`<div class="gprev">${projThumb(P,nx.n+1)}</div><div class="gtxt"><b>${can?`You can build the ${esc(P.name)}!`:`Saving for: ${esc(P.name)}`}</b><span>Step ${nx.n+1} of ${P.stages.length}: ${esc(nx.name)}</span><div class="bar warm"><i style="width:${pct}%"></i></div><small>${fmt(Math.min(have,nx.price))} / ${fmt(nx.price)} coins</small></div><button type="button" class="go small${can?' leaf':' alt'}" id="goalGo">${can?'Build it':'See projects'}</button>`;
   $('#goalGo').onclick=()=>{openHome();setTimeout(()=>{const t=$('#homeProj');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},150)}}
 const HOUSE_POS=[320,206],HERO_POS=[547,283];
-function defPos(id){if(id==='house')return HOUSE_POS;if(id==='hero')return HERO_POS;if(id.startsWith('p_')){const P=PROJECTS.find(x=>'p_'+x.id===id);return P?P.pos:[320,240]}const it=HOME.find(x=>x.id===id);return it?it.pos:[320,240]}
+const BUDDY_POS=[HERO_POS[0]-64,HERO_POS[1]+6];
+function defPos(id){if(id==='house')return HOUSE_POS;if(id==='hero')return HERO_POS;if(id==='buddy')return BUDDY_POS;if(id.startsWith('p_')){const P=PROJECTS.find(x=>'p_'+x.id===id);return P?P.pos:[320,240]}const it=HOME.find(x=>x.id===id);return it?it.pos:[320,240]}
 let homeEdit=false,homeSel='';
 function homePos(id){const P=(G.home.pos||{})[id];if(P)return P;return defPos(id)}
 /* keep a thing's foot on the grassy part of the island */
@@ -770,6 +771,7 @@ function homeSVG(){
   PROJECTS.forEach(P=>{const n=projStage(P.id);if(n&&!hid['p_'+P.id])things.push({id:'p_'+P.id,name:P.name,def:P.pos,draw:()=>projScene(P,n)})});
   if(H.house&&!hid.house)things.push({id:'house',name:HOUSES[H.house-1].name,def:HOUSE_POS,draw:()=>HOUSES[H.house-1].draw(...HOUSE_POS)});
   things.push({id:'hero',name:heroName(),def:HERO_POS,draw:()=>foxSVG().replace('<svg class="fox" viewBox="0 0 120 165" aria-hidden="true">',`<svg x="${HERO_POS[0]-39}" y="${HERO_POS[1]-107}" width="78" height="107" viewBox="0 0 120 165">`)});
+  if(G.buddy&&typeof buddyArt==='function')things.push({id:'buddy',name:buddyName(),def:BUDDY_POS,draw:()=>`<g class="hbob"><g transform="translate(${BUDDY_POS[0]} ${BUDDY_POS[1]-26}) scale(.85)">${buddyArt(G.buddy.kind,buddyStage())}</g></g>`});
   things.forEach(t=>{t.p=homePos(t.id)});
   things.sort((p,q)=>p.p[1]-q.p[1]||(p.id==='hero')-(q.id==='hero'));
   const body=things.map(t=>{const dx=t.p[0]-t.def[0],dy=t.p[1]-t.def[1];
