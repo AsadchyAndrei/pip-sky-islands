@@ -205,7 +205,7 @@ function startSkill(isl,s){if(limitGate(()=>startSkill(isl,s)))return;beginRound
   const nm2=$('#iname');const sp=document.createElement('span');sp.className='idiff';sp.textContent=` · ${s.name}`;nm2.appendChild(sp);say($('#say'),`Let's practice <b>${esc(s.name)}</b>${nm()}! Six puzzles, all on this one skill.`)}
 const SK_DOT=st=>`<i class="skd s${st}"></i>`;
 /* "?" explanations for grown-ups */
-const QHELP={mastered:['Mastered','A skill is mastered when 8 of the last 10 puzzles on it were right on the first try (at least 5 tries). It means your child can do it reliably.'],
+const QHELP={quest:['Class quest','A shared goal for 7 days. Every student\'s right answers (or minutes) add up to one class total, counted on our server. Students only see the class total and their own share: no names and no ranking, so nobody is singled out. You choose the reward.'],mastered:['Mastered','A skill is mastered when 8 of the last 10 puzzles on it were right on the first try (at least 5 tries). It means your child can do it reliably.'],
   almost:['Almost there','Not mastered yet, but at least 3 tries and 70% or more right. A little more practice usually finishes it.'],
   first:['Right on the first try','The share of puzzles answered correctly before any hint or second try. 80% or more is strong; under 60% means the topic is still hard.'],
   struggling:['Struggling','Under 60% right on the first try after at least 5 puzzles. A short lesson or practicing together helps most.'],

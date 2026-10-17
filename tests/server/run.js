@@ -46,6 +46,14 @@ const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(fal
   await check(assertFails(as('T2').doc('tinv/INV235').set({ cid: 'C3', owner: 'T2', exp: Date.now() + 864e5 })), "no invites to someone else's class");
   await check(assertFails(as('T2').doc('tinv/INV234').get()), 'invites are not readable by others');
   await check(assertFails(as('P1').doc('mailstate/P1').get()), 'server data is not readable from the app');
+  const goal = { kind: 'right', need: 500, reward: 'Pajama day', start: '2026-10-12', end: '2026-10-18', ts: 1 };
+  await seed('classes/C6', { ...cls, co: ['T2'] });
+  await check(assertSucceeds(as('T1').doc('classes/C6').update({ goal })), 'the teacher starts a class quest');
+  await check(assertSucceeds(as('T2').doc('classes/C6').update({ goal: { ...goal, need: 600 }, goalHave: 12 })), 'a co-teacher can change the quest');
+  await check(assertFails(as('T1').doc('classes/C6').update({ goal: { ...goal, kind: 'coins' } })), 'a quest has a known kind');
+  await check(assertFails(as('T1').doc('classes/C6').update({ goal: { ...goal, need: 5000000 } })), 'a quest has a sensible size');
+  await check(assertFails(as('T1').doc('classes/C6').update({ goal: { ...goal, reward: 'x'.repeat(80) } })), 'the reward is short');
+  await check(assertFails(as('P1').doc('classes/C6').update({ goalHave: 9999 })), 'a family cannot change the class total');
 
   /* ---------- co-teacher join (server function) ---------- */
   await db.doc('users/T2').set({ role: 'teacher', teacherName: 'Mr. Kim' });
@@ -73,6 +81,15 @@ const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(fal
   pushes.length = 0;
   await T.onClassChange('C4', cls, { ...cls, tasks: [{ id: 'note', kind: 'note', text: 'Field trip Friday', ts: 5 }, { id: 'lesson', kind: 'lesson', isl: ['frac'] }] });
   ok(pushes.length === 2 && pushes.every((x) => x[1] === 'Message from Ms. Lee' && x[2] === 'Field trip Friday'), 'a note goes to every family once; a lesson does not: ' + JSON.stringify(pushes));
+
+  /* ---------- class quest total (server function) ---------- */
+  const today = new Date().toISOString().slice(0, 10), y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  await db.doc('classes/C7').set({ ...cls, goal: { kind: 'right', need: 50, start: y, end: today, ts: 1 } });
+  await db.doc('classes/C7/members/P1_k1').set({ owner: 'P1', name: 'Maya', sum: JSON.stringify({ dd: { [today]: [10, 12, 9], '2020-01-01': [5, 5, 5] } }) });
+  await db.doc('classes/C7/members/T1_r1').set({ owner: 'T1', name: 'Sam', sum: JSON.stringify({ dd: { [y]: [4, 6, 6] } }) });
+  await db.doc('classes/C7/members/P3_k1').set({ owner: 'P3', name: 'Ava', removed: true, sum: JSON.stringify({ dd: { [today]: [9, 9, 9] } }) });
+  const qt = await T.updateQuest('C7');
+  ok(qt === 15 && (await db.doc('classes/C7').get()).get('goalHave') === 15, 'the class quest counts every child in the quest days: ' + qt);
 
   /* ---------- weekly email and reminders ---------- */
   await admin.auth().createUser({ uid: 'P5', email: 'parent5@example.com', emailVerified: true });

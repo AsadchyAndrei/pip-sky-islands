@@ -178,4 +178,11 @@ function utcSlot(tz, hour = 17, now = new Date()) {
   return { h: 0, dow: 1 };
 }
 
-module.exports = { SITE, localParts, addDay, daysBetween, weekTotals, memberWeek, parse, esc, parentWeekly, teacherWeekly, weeklyEmail, remindersFor, reminderEmail, utcSlot, textOf };
+/* the class quest: what the whole class did between the start and the end day (right answers on the first try, or minutes) */
+function questTotal(goal, sums) {
+  if (!goal || !goal.start || !goal.end) return 0;
+  let t = 0;
+  for (const s of sums) for (const [day, v] of Object.entries((s && s.dd) || {})) if (day >= goal.start && day <= goal.end && Array.isArray(v)) t += Math.max(0, Math.round(+(goal.kind === 'min' ? v[0] : v[2]) || 0));
+  return Math.min(t, 9999999);
+}
+module.exports = { questTotal, SITE, localParts, addDay, daysBetween, weekTotals, memberWeek, parse, esc, parentWeekly, teacherWeekly, weeklyEmail, remindersFor, reminderEmail, utcSlot, textOf };

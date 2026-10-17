@@ -2,6 +2,8 @@
 const L = require('../../functions/lib');
 let bad = 0; const ok = (c, m) => { if (!c) { bad++; console.log('  - ' + m); } };
 const today = '2026-10-18'; // a Sunday
+ok(L.questTotal({ kind: 'right', start: '2026-10-12', end: '2026-10-18' }, [{ dd: { '2026-10-11': [5, 9, 9], '2026-10-12': [10, 8, 6], '2026-10-18': [20, 15, 12] } }, { dd: { '2026-10-14': [7, 5, 4] } }, null]) === 22, 'quest: right answers in the quest days');
+ok(L.questTotal({ kind: 'min', start: '2026-10-12', end: '2026-10-18' }, [{ dd: { '2026-10-12': [10, 8, 6], '2026-10-19': [99, 1, 1] } }]) === 10, 'quest: minutes');
 const dd = {}; for (let i = 0; i < 14; i++) dd[L.addDay(today, -i)] = [10 + i, 20, i < 7 ? 15 : 10];
 ok(JSON.stringify(L.weekTotals(dd, today)) === JSON.stringify([91, 140, 105]), 'week totals ' + L.weekTotals(dd, today));
 ok(L.localParts(new Date('2026-10-19T00:30:00Z'), 'America/Los_Angeles').day === '2026-10-18', 'local day in LA');

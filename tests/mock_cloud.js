@@ -42,7 +42,7 @@
     async classroomToken() { return 'mock-token'; },
     async createClass(d) { const cid = 'c' + Date.now().toString(36) + (n++); const c = code(); const cls = { ...d, owner: me(), code: c, ts: Date.now() };
       if (get(`codes/${c}`)) throw deny(); put(`classes/${cid}`, cls); put(`codes/${c}`, { cid, owner: me() }); return { cid, ...cls }; },
-    async updateClass(cid, patch) { const c = get(`classes/${cid}`); if (!c) throw deny(); if (c.owner !== me() && !((c.co || []).includes(me()) && Object.keys(patch).every((k) => ['now', 'tasks', 'ts', 'v'].includes(k)))) throw deny(); put(`classes/${cid}`, { ...c, ...patch }); },
+    async updateClass(cid, patch) { const c = get(`classes/${cid}`); if (!c) throw deny(); if (c.owner !== me() && !((c.co || []).includes(me()) && Object.keys(patch).every((k) => ['now', 'tasks', 'ts', 'v', 'goal', 'goalHave'].includes(k)))) throw deny(); put(`classes/${cid}`, { ...c, ...patch }); },
     async newClassCode(cid, old) { const c = get(`classes/${cid}`); if (!c || c.owner !== me()) throw deny(); const k = code(); put(`classes/${cid}`, { ...c, code: k }); put(`codes/${k}`, { cid, owner: me() }); if (old) put(`codes/${old}`); return k; },
     async deleteClass(cid, c) { const cl = get(`classes/${cid}`); if (!cl || cl.owner !== me()) throw deny(); for (const [k] of under(`classes/${cid}/members/`)) put(k); if (c) put(`codes/${c}`); put(`classes/${cid}`); },
     async getClass(cid) { me(); const c = get(`classes/${cid}`); return c ? { cid, ...c } : null; },

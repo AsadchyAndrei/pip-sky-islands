@@ -22,12 +22,19 @@ service cloud.firestore {
     function str(v, n) { return v is string && v.size() <= n; }
     function okClassShape() {
       let d = request.resource.data;
-      return d.keys().hasOnly(['owner', 'name', 'teacher', 'pack', 'code', 'ts', 'now', 'tasks', 'v', 'co', 'coNames'])
+      return d.keys().hasOnly(['owner', 'name', 'teacher', 'pack', 'code', 'ts', 'now', 'tasks', 'v', 'co', 'coNames', 'goal', 'goalHave'])
+        && (!('goal' in d) || okGoal(d.goal)) && (!('goalHave' in d) || (d.goalHave is int && d.goalHave >= 0 && d.goalHave < 10000000))
         && str(d.name, 40) && str(d.teacher, 40) && str(d.pack, 12)
         && str(d.code, 8) && (!('now' in d) || (d.now is list && d.now.size() <= 8))
         && (!('tasks' in d) || (d.tasks is list && d.tasks.size() <= 40))
         && (!('co' in d) || (d.co is list && d.co.size() <= 6))
         && (!('coNames' in d) || (d.coNames is map && d.coNames.size() <= 6));
+    }
+    // the class quest: one shared goal for a few days (right answers or minutes) and a reward the teacher names
+    function okGoal(g) {
+      return g == null || (g is map && g.keys().hasOnly(['kind', 'need', 'reward', 'start', 'end', 'ts'])
+        && g.kind in ['right', 'min'] && g.need is int && g.need > 0 && g.need <= 100000
+        && str(g.get('reward', ''), 60) && str(g.start, 10) && str(g.end, 10));
     }
     function okClass() { return okClassShape() && request.resource.data.owner == request.auth.uid; }
     function coList(d) { return d.get('co', []); }
@@ -64,7 +71,7 @@ service cloud.firestore {
         && coList(request.resource.data).toSet().difference(coList(resource.data).toSet()).size() == 0;
       // a co-teacher manages topics, tasks, lessons and the note to families
       allow update: if signedIn() && request.auth.uid in coList(resource.data) && okClassShape()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['now', 'tasks', 'ts', 'v']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['now', 'tasks', 'ts', 'v', 'goal', 'goalHave']);
       // a co-teacher may leave the class
       allow update: if signedIn() && request.auth.uid in coList(resource.data) && okClassShape()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['co', 'coNames'])

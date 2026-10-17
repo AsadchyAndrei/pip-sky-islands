@@ -1,12 +1,13 @@
 /* Pip's Sky Islands: server functions (Firebase Cloud Functions, 2nd gen).
    - hourly:          at 5 pm local time: the weekly email on Sundays, reminders (push or email) on any day
    - classChanged:    a teacher sent a new task or a note → a push notification to the families in the class
+   - memberChanged:   a child's class summary changed → the class quest total (classes/{cid}.goalHave) is counted again
    - joinCoTeacher:   a teacher joins a colleague's class with an invite code
    - sendTestEmail:   "Send me this week's email now" in Parents → Account
    - unsub:           one-click "turn off these emails" link
    Data the apps never write: mailstate/{uid} (what was sent and when, and the unsubscribe token). */
 const { onSchedule } = require('firebase-functions/v2/scheduler');
-const { onDocumentUpdated } = require('firebase-functions/v2/firestore');
+const { onDocumentUpdated, onDocumentWritten } = require('firebase-functions/v2/firestore');
 const { onCall, onRequest, HttpsError } = require('firebase-functions/v2/https');
 const { setGlobalOptions, logger } = require('firebase-functions/v2');
 const { defineSecret } = require('firebase-functions/params');
@@ -176,6 +177,21 @@ exports.classChanged = onDocumentUpdated('classes/{cid}', async (e) => {
   catch (err) { logger.error('class push failed', { cid: e.params.cid, err: String(err) }); }
 });
 
+/* ---------- class quest: the shared total, counted on the server (children cannot read each other's summaries) ---------- */
+async function updateQuest(cid) {
+  const ref = db.collection('classes').doc(cid), c = (await ref.get()).data();
+  if (!c || !c.goal || !c.goal.start) return null;
+  const today = new Date().toISOString().slice(0, 10);
+  if (L.addDay(c.goal.end, 2) < today) return null; // an old quest stays as it ended
+  const mem = await ref.collection('members').get();
+  const total = L.questTotal(c.goal, mem.docs.filter((d) => !d.get('removed')).map((d) => L.parse(d.get('sum'))));
+  if (total !== c.goalHave) await ref.update({ goalHave: total });
+  return total;
+}
+exports.memberChanged = onDocumentWritten('classes/{cid}/members/{mid}', async (e) => {
+  try { await updateQuest(e.params.cid); } catch (err) { logger.error('quest count failed', { cid: e.params.cid, err: String(err) }); }
+});
+
 /* ---------- co-teachers ---------- */
 async function joinCo(uid, code) {
   code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -227,4 +243,4 @@ exports.unsub = onRequest({ maxInstances: 2 }, async (req, res) => {
   res.send(unsubPage('Turn off emails from Pip?', `<p>Weekly emails and reminders will stop.</p><form method="post"><button style="font-size:16px;padding:10px 18px;border-radius:999px;border:0;background:#2f9fe0;color:#fff">Turn off emails</button></form>`));
 });
 
-exports._test = { runHour, runUser, onClassChange, joinCo, send };
+exports._test = { runHour, runUser, onClassChange, joinCo, send, updateQuest };

@@ -96,13 +96,30 @@ function classRoundDone(S){if(!G.cls||!S||!S.isl)return;const id=S.isl.id,c=clas
     const left=t.isl.filter(x=>x!==id&&!((G.taskRounds||{})[t.id]||[]).includes(x));G.taskRounds=Object.assign({},G.taskRounds,{[t.id]:[...new Set([...((G.taskRounds||{})[t.id]||[]),id])]});
     if(!left.length){G.taskDone=Object.assign({},G.taskDone,{[t.id]:Date.now()});hit=true}}
   if(hit)toast('Task done!',`${esc(G.cls.teacher||'Your teacher')} will see it.`,'#38b98a');classPush(hit)}
+/* ---------- class quest: one goal the whole class works on for 7 days (no ranking, no names) ---------- */
+const QUEST_KIND={right:['right answers','puzzles right on the first try'],min:['minutes','minutes of practice']};
+const questOf=c=>{const g=c&&c.goal;return g&&g.need>0&&g.start&&g.end?g:null};
+const questLive=g=>!!g&&dayKey()<=g.end;
+/* the same count as the server: every child's days inside the quest */
+function questTotalOf(g,sums){let t=0;for(const s of sums)for(const [k,v] of Object.entries((s&&s.dd)||{}))if(k>=g.start&&k<=g.end&&Array.isArray(v))t+=Math.max(0,Math.round(+(g.kind==='min'?v[0]:v[2])||0));return t}
+function questMine(g){let t=0;for(const [k,d] of Object.entries(G.days||{}))if(k>=g.start&&k<=g.end)t+=g.kind==='min'?Math.round((d.sec||0)/60):(d.c||0);return t}
+function questBar(have,need){const p=Math.min(100,Math.round(have/need*100));return `<div class="qbar" role="progressbar" aria-valuemin="0" aria-valuemax="${need}" aria-valuenow="${Math.min(have,need)}"><i style="width:${p}%"></i></div>`}
+function questCardHTML(c){const g=questOf(c);if(!g||dayKey()>addDaysFrom(g.end,3))return '';const mine=questMine(g),have=Math.max(c.goalHave||0,mine),done=have>=g.need,left=daysLeft(g.end);
+  return `<div class="ccquest${done?' won':''}"><div class="cqhead"><b>${done?'Class quest complete!':'Class quest'}</b><span>${fmt(Math.min(have,g.need))} of ${fmt(g.need)} ${QUEST_KIND[g.kind][0]}</span></div>${questBar(have,g.need)}
+    <small>${g.reward?`Reward: <b>${esc(g.reward)}</b> · `:''}${done?'Your whole class did it!':left>0?`${left} day${left>1?'s':''} left`:'Last day!'}${mine?` · You added <b>${fmt(mine)}</b>`:''}</small></div>`}
+const addDaysFrom=(day,n)=>{const d=new Date(day+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const daysLeft=end=>Math.max(0,Math.round((new Date(end+'T12:00:00')-new Date(dayKey()+'T12:00:00'))/864e5));
+/* a one-time celebration on the map when the class gets there */
+function questCheer(c){const g=questOf(c);if(!g)return;const have=Math.max(c.goalHave||0,questMine(g)),key=(c.cid||(G.cls&&G.cls.cid))+'|'+g.start;
+  if(have<g.need||(G.questWon||{})[key])return;G.questWon=Object.assign({},G.questWon,{[key]:1});save(true);
+  setTimeout(()=>{if(curScreen!=='map'||ovOpen)return;overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Class quest complete!</div><h2>Your class did it!</h2><p>Everyone together reached <b>${fmt(g.need)} ${QUEST_KIND[g.kind][0]}</b>.${g.reward?` The reward: <b>${esc(g.reward)}</b>. Ask ${esc(c.teacher||'your teacher')}!`:''}</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Hooray!</button>`,()=>{burst(innerWidth/2,innerHeight/3,160);sWin()})},1800)}
 function renderClassCard(){const el=$('#classCard');if(!el)return;const c=classDoc();if(!c){el.hidden=true;return}
   const L=openTasks().sort((a,b)=>a.done-b.done||String(a.due||'9').localeCompare(String(b.due||'9')));const open=L.filter(t=>!t.done);
-  const LS=lessonOf(c);if(!L.length&&!(c.now||[]).length&&!LS){el.hidden=true;return}
+  const LS=lessonOf(c),QC=questCardHTML(c);if(!L.length&&!(c.now||[]).length&&!LS&&!QC){el.hidden=true;return}
   el.hidden=false;const due=d=>d?`due ${new Date(d+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}`:'';
   el.innerHTML=`<div class="cchead"><span class="ccico">${BOARD_ICO}</span><div><div class="eyebrow">From ${esc(c.teacher||'your teacher')} · ${esc(c.name)}</div><b>${open.length?`${open.length} task${open.length>1?'s':''} to do`:L.length?'All tasks done!':'In class right now'}</b></div></div>
     ${L.length?`<div class="cctasks">${L.slice(0,4).map(t=>`<div class="cctask${t.done?' done':''}">${(t.isl||[]).map(id=>byId(id)).filter(Boolean).map(i=>`<button type="button" class="ccisl" data-cc="${i.id}"${t.sk?` data-sk="${esc(t.sk)}"`:''} style="--c:${i.color}">${esc(i.name)}${t.sk&&CONTENT.skills[t.sk]?': '+esc(CONTENT.skills[t.sk].name):''}${((G.taskRounds||{})[t.id]||[]).includes(i.id)?' ✓':''}</button>`).join('')}<small>${t.done?'Done':esc(due(t.due))}${t.note?` · ${esc(t.note)}`:''}</small></div>`).join('')}</div>`:''}
-    ${(c.now||[]).length&&!LS?`<p class="ccnow">In class now: ${c.now.map(byId).filter(Boolean).map(i=>esc(i.topic)).join(', ')}</p>`:''}`;
+    ${(c.now||[]).length&&!LS?`<p class="ccnow">In class now: ${c.now.map(byId).filter(Boolean).map(i=>esc(i.topic)).join(', ')}</p>`:''}${QC}`;questCheer(c);
   if(LS)el.insertAdjacentHTML('afterbegin',`<div class="cclesson"><b>Class lesson now!</b><span>Until ${new Date(LS.until).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span><div>${LS.isl.map(byId).filter(Boolean).map(i=>`<button type="button" class="ccisl" data-cc="${i.id}" style="--c:${i.color}">${esc(i.name)}</button>`).join('')}</div></div>`);
   el.querySelectorAll('[data-cc]').forEach(b=>b.onclick=()=>{tone([523,784]);const i=byId(b.dataset.cc),t=b.dataset.sk&&skillsOf(i.id).find(x=>x.k===b.dataset.sk);if(t)return startSkill(i,t);i.gen&&!i.special?openIsland(i):start(i)})}
 setInterval(()=>{if(G.cls&&CL.mode==='cloud'&&curScreen==='map'&&document.visibilityState==='visible')classCheck()},30000);
@@ -396,7 +413,7 @@ function csvDownload(c,kind){const rows=classRows(c),S=packSkills(c.pack);let he
 /* --- tasks and topics in class now --- */
 function tasksTabHTML(c){const rows=classRows(c),isl=packIslands(c.pack),T=realTasks(c),now=c.now||[];
   const who=t=>!t.to||!t.to.length?rows:rows.filter(r=>t.to.includes(r.mid));
-  return `<div class="pcard wide"><h4>In class right now</h4><p class="note">Pick up to 4 topics you are teaching. Pip's Pick practices them first, and families see them.</p><div class="nowchips">${isl.map(i=>`<button type="button" class="nowchip${now.includes(i.id)?' on':''}" data-tnow="${i.id}" aria-pressed="${now.includes(i.id)}">${esc(i.topic)}</button>`).join('')}</div></div>
+  return `${questTeachHTML(c,rows)}<div class="pcard wide"><h4>In class right now</h4><p class="note">Pick up to 4 topics you are teaching. Pip's Pick practices them first, and families see them.</p><div class="nowchips">${isl.map(i=>`<button type="button" class="nowchip${now.includes(i.id)?' on':''}" data-tnow="${i.id}" aria-pressed="${now.includes(i.id)}">${esc(i.topic)}</button>`).join('')}</div></div>
     ${lessonHTML(c,rows,isl)}
     <div class="pcard wide"><h4>Message to families</h4><p class="note">A short note families see in Parents, for example "This week we are learning fractions."</p>
       <div class="setrow col"><textarea id="fnote" rows="2" maxlength="200" placeholder="Write a note (up to 200 letters)">${esc((noteOf(c)||{}).text||'')}</textarea></div><div class="btnrow"><button type="button" class="go small" id="fnSave">Save note</button>${noteOf(c)?'<button type="button" class="go small alt" id="fnDel">Remove</button>':''}</div><p class="note" id="fnNote" role="status"></p></div>
@@ -409,6 +426,26 @@ function tasksTabHTML(c){const rows=classRows(c),isl=packIslands(c.pack),T=realT
       <div class="btnrow"><button type="button" class="go small" id="tAdd">Send the task</button></div><p class="note" id="tNote2" role="status"></p></div>`}
 async function saveClass(c,patch,note){Object.assign(c,patch);lsSet('pip-classes-'+CL.uid,JSON.stringify(TC.classes));
   try{await CL.api.updateClass(c.cid,patch);return true}catch(e){if(note){note.className='note bad';note.textContent='Could not save. Check the internet and try again.'}return false}}
+/* the teacher's side of the class quest */
+function questTeachHTML(c,rows){const g=questOf(c),n=Math.max(1,rows.length),round=x=>x<100?Math.round(x/10)*10:Math.round(x/50)*50;
+  if(g&&dayKey()<=addDaysFrom(g.end,7)){const have=Math.max(questTotalOf(g,rows.map(r=>r.sum)),c.goalHave||0),done=have>=g.need,live=questLive(g),helped=rows.filter(r=>questTotalOf(g,[r.sum])>0).length;
+    return `<div class="pcard wide tquest"><h4>Class quest ${qhelp('quest')}</h4><p><b>${fmt(Math.min(have,g.need))} of ${fmt(g.need)}</b> ${QUEST_KIND[g.kind][1]}${g.reward?` · Reward: <b>${esc(g.reward)}</b>`:''}</p>${questBar(have,g.need)}
+      <p class="note">${done?'Reached! Students see a celebration on their map.':live?`${daysLeft(g.end)} day${daysLeft(g.end)===1?'':'s'} left (until ${new Date(g.end+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}).`:`Ended at ${fmt(have)}.`} ${helped} of ${rows.length} students added to it.</p>
+      <div class="btnrow" style="justify-content:flex-start">${live&&!done?'<button type="button" class="go small alt" id="qStop">Stop the quest</button>':'<button type="button" class="go small" id="qNew">Start a new quest</button>'}</div><p class="note" id="qNote" role="status"></p></div>`}
+  const opt=(k,v)=>`<option value="${v}">${fmt(v)} ${QUEST_KIND[k][0]}</option>`;
+  return `<div class="pcard wide tquest"><h4>Class quest ${qhelp('quest')}</h4><p class="note">One goal the whole class works on together for 7 days. Every student's practice adds to it, and everyone sees the progress bar on their map. No ranking, no names.</p>
+    <div class="setrow"><label for="qKind">Count</label><select id="qKind"><option value="right">Right answers (first try)</option><option value="min">Minutes of practice</option></select></div>
+    <div class="setrow"><label for="qNeed">Goal</label><select id="qNeed" data-n="${n}">${[40,70,100].map(x=>opt('right',round(x*n))).join('')}</select></div>
+    <div class="setrow"><label for="qReward">Reward<small>Optional, up to 60 letters. For example "Pajama day" or "Extra recess".</small></label><input id="qReward" maxlength="60" autocomplete="off"></div>
+    <div class="btnrow" style="justify-content:flex-start"><button type="button" class="go small leaf" id="qGo">Start the quest</button></div><p class="note" id="qNote" role="status"></p></div>`}
+function bindQuest(c){const rows=classRows(c),g=questOf(c),note=$('#qNote');
+  if(g){const have=questTotalOf(g,rows.map(r=>r.sum));if(have>(c.goalHave||0)&&questLive(g))saveClass(c,{goalHave:have}); // keep the shared total fresh from the teacher's view too
+    const st=$('#qStop');if(st)st.onclick=async()=>{if(await saveClass(c,{goal:Object.assign({},g,{end:addDaysFrom(dayKey(),-1)})},note))renderTeach()};
+    const nw=$('#qNew');if(nw)nw.onclick=async()=>{if(await saveClass(c,{goal:null,goalHave:0},note))renderTeach()};return}
+  const k=$('#qKind'),need=$('#qNeed');if(!k)return;const n=+need.dataset.n,round=x=>x<100?Math.round(x/10)*10:Math.round(x/50)*50;
+  k.onchange=()=>{const per=k.value==='min'?[60,90,150]:[40,70,100];need.innerHTML=per.map(x=>`<option value="${round(x*n)}">${fmt(round(x*n))} ${QUEST_KIND[k.value][0]}</option>`).join('')};
+  $('#qGo').onclick=async()=>{const goal={kind:k.value,need:+need.value,reward:$('#qReward').value.trim().slice(0,60),start:dayKey(),end:addDaysFrom(dayKey(),6),ts:Date.now()};
+    if(await saveClass(c,{goal,goalHave:0},note)){toast('Class quest started!','Students see it on their map.','#38b98a');renderTeach()}}}
 function lessonHTML(c,rows,isl){const L=lessonOf(c);
   if(!L)return `<div class="pcard wide"><h4>Lesson mode ${qhelp('lesson')}</h4><p class="note">For 10 to 30 minutes, every student's map points to the topic you are teaching, and you see who is playing, live.</p>
     <div class="nowchips">${isl.map(i=>`<button type="button" class="nowchip" data-lisl="${i.id}" aria-pressed="false">${esc(i.name)}</button>`).join('')}</div>
@@ -419,7 +456,7 @@ function lessonHTML(c,rows,isl){const L=lessonOf(c);
   return `<div class="pcard wide lessonlive"><h4>Lesson running: ${L.isl.map(id=>esc((isl.find(i=>i.id===id)||{}).name||id)).join(', ')}</h4><p class="note">${left} min left · updates every 20 seconds · students' devices pick it up within a minute.</p>
     <ul class="live">${live.map(x=>`<li class="${x.on?'on':''}"><b>${esc(x.r.name)}</b><span>${x.q?`${x.q} puzzle${x.q>1?'s':''} · ${pct(x.ok,x.q)}% right`:'not started yet'}</span></li>`).join('')}</ul>
     <div class="btnrow"><button type="button" class="go small alt" id="lStop">End the lesson</button></div></div>`}
-function bindTasksTab(c){const tog=b=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.classList.toggle('on',on);return on};
+function bindTasksTab(c){bindQuest(c);const tog=b=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.classList.toggle('on',on);return on};
   document.querySelectorAll('[data-tnow]').forEach(b=>b.onclick=()=>{const L=(c.now||[]).slice(),id=b.dataset.tnow,k=L.indexOf(id);if(k>=0)L.splice(k,1);else{if(L.length>=4)L.shift();L.push(id)}saveClass(c,{now:L});renderTeach()});
   document.querySelectorAll('[data-tisl]').forEach(b=>b.onclick=()=>tog(b));
   const all=$('[data-tall]');document.querySelectorAll('[data-twho]').forEach(b=>b.onclick=()=>{tog(b);const any=!!document.querySelector('[data-twho][aria-pressed="true"]');all.setAttribute('aria-pressed',!any);all.classList.toggle('on',!any)});
