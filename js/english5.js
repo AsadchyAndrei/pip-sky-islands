@@ -357,7 +357,7 @@ BANK3.feat5=[
  ['features5','How does the timeline help a reader?','It shows the order of events quickly.',['It explains how to pan for gold.','It lists people\'s names.','It gives opinions.'],'Timelines show events in order.','It shows <b>the order of events</b> at a glance.'],
  ['features5','Which two parts of the page give the year gold was found?','the first paragraph and the timeline',['the sidebar and the sources','the title and the sidebar','only the sources'],'Look for 1848.','Both <b>the first paragraph and the timeline</b> say 1848.']
 ];
-function genFeat5(t){const q=bankQ(BANK3.feat5[t%BANK3.feat5.length]);q.visual=TF5PAGE;q.wide=true;return q}
+function genFeat5(t){const it=BANK3.feat5[t%BANK3.feat5.length],q=bankQ(it);q.visual=it[6]||TF5PAGE;q.wide=true;return q}
 function passage5HTML(P){const two=P.p.some(x=>/^<b>(Account|Report|Fable|Text) /.test(x));return `<div class="passage${P.lines?' lines':''}"><h4>${P.t}</h4>${P.lines?`<div class="plines">${P.p.map(l=>l?`<span class="ln">${l}</span>`:'<span class="ln gap"></span>').join('')}</div>`:two?P.p.map(x=>`<p>${x}</p>`).join(''):`<p>${P.p.join(' ')}</p>`}</div>`}
 function genReading5(t){const S=PASS5Q.length,L=LONG5Q.length,F=BANK3.feat5.length;
   if(t<S){const [pi,qi]=PASS5Q[t],P=PASS5[pi],Q=P.q[qi];return {prompt:Q[0],visual:passage5HTML(P),...strChoices(Q[1],shuffle(Q[2].slice())),hint:Q[3],explain:Q[4],wide:true,long:[Q[1],...Q[2]].some(c=>c.length>30),render:c=>esc(c),speak:`${P.t}. ${P.p.join(' ')}`.replace(/<[^>]+>/g,'')+' Question: '+Q[0].replace(/<[^>]+>/g,'')}}
