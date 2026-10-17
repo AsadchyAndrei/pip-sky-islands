@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pip for homeschool · Pip's Sky Islands</title>
+<meta name="description" content="Pip's Sky Islands for homeschool families: grades 3 to 5, standards-aligned practice in math, English, science and social studies, a 36-week year plan and a printable learning record.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1f3557;--ink-soft:#506686;--line:#d3e3f2;--card:#fff;--sun:#ffc23d;--coral:#ff6b57;--ocean:#2f9fe0;--leaf:#38b98a;--pale-sky:#eaf6ff;
+  --display:'Lilita One','Arial Rounded MT Bold','Trebuchet MS',sans-serif;--body:'Baloo 2','Trebuchet MS','Segoe UI',sans-serif}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:17px/1.5 var(--body);background:linear-gradient(180deg,#86d8f8 0,#d4f1ff 320px,#fff0c4 100%) fixed}
+main{max-width:860px;margin:0 auto;padding:28px 16px 60px;display:flex;flex-direction:column;gap:22px}
+.hero{display:flex;align-items:center;gap:16px}
+.hero img{width:84px;height:84px;flex:none;border-radius:22px;box-shadow:0 4px 0 rgba(31,53,87,.15)}
+h1{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(30px,6vw,42px);line-height:1.05;text-wrap:balance}h1 span{color:var(--leaf)}
+h2{margin:0 0 4px;font-family:var(--display);font-weight:400;font-size:28px;line-height:1.1;text-wrap:balance}
+.sub{margin:4px 0 0;font-weight:700;color:var(--ink-soft)}
+.card{background:var(--card);border-radius:24px;padding:20px 22px;box-shadow:0 6px 0 var(--line)}
+.lead{margin:0 0 12px;font-weight:700;color:var(--ink-soft)}
+nav.jump{display:flex;gap:8px;flex-wrap:wrap}
+nav.jump a{background:var(--card);border-radius:999px;padding:7px 16px 6px;text-decoration:none;color:var(--ink);font-weight:800;box-shadow:0 3px 0 var(--line)}
+.fits{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:0;padding:0;list-style:none}
+.fits li{background:var(--pale-sky);border-radius:16px;padding:12px 14px}.fits b{display:block;font-size:17px}.fits span{color:var(--ink-soft);font-weight:600;font-size:15.5px}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start}
+ol.steps li::before{content:counter(s);width:44px;height:44px;border-radius:50%;background:var(--sun);display:flex;align-items:center;justify-content:center;font:400 22px var(--display);box-shadow:0 3px 0 #e0a21f}
+ol.steps li>div>b{display:block;font-size:18px}ol.steps li>div>span{color:var(--ink-soft);font-weight:600}ol.steps span b{color:var(--ink)}
+.gpick{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.gpick button,.btn{border:0;border-radius:999px;padding:8px 18px 7px;background:var(--pale-sky);font:800 16px var(--body);color:var(--ink);cursor:pointer}
+.gpick button[aria-pressed=true]{background:var(--leaf);color:#fff}
+.btn.main{background:var(--coral);color:#fff;box-shadow:0 4px 0 #c94c3c}
+.tscroll{overflow-x:auto;border-radius:16px;border:2px solid var(--line)}
+table.plan{width:100%;border-collapse:collapse;font-size:15px;min-width:620px}
+table.plan th{background:var(--pale-sky);text-align:left;padding:8px 10px;font-size:14px;position:sticky;top:0}
+table.plan td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+table.plan td:first-child{font-weight:800;white-space:nowrap;width:70px}
+table.plan td b{display:block;font-size:14px;color:var(--ink-soft)}
+table.plan tr.rev td{background:#fff8e1}
+table.plan em.tag{display:inline-block;font-style:normal;font-size:12px;font-weight:800;background:#e3f8ee;color:#1f6b4c;border-radius:6px;padding:0 6px;margin-bottom:2px}
+table.plan ul{margin:2px 0 0;padding-left:18px}table.plan li{margin:1px 0}
+.facts{margin:0;padding-left:22px}.facts li{margin:6px 0;font-weight:600}
+a{color:#1a73b0;font-weight:800}
+.cta{display:block;text-align:center;background:var(--coral);color:#fff;text-decoration:none;font:400 24px var(--display);padding:14px;border-radius:20px;box-shadow:0 5px 0 #c94c3c}
+.foot{text-align:center;color:var(--ink-soft);font-weight:700;font-size:15px;margin:0}
+.note{color:var(--ink-soft);font-weight:600;font-size:15px}
+@media print{body{background:#fff}main{padding:0}.hero,nav.jump,#why,#start,#record,#faq,.cta,.foot,.gpick,.acts{display:none!important}.card{box-shadow:none;padding:0}.tscroll{border:0;overflow:visible}table.plan{min-width:0;font-size:11pt}table.plan th{position:static}}
+</style>
+</head>
+<body>
+<main>
+  <div class="hero"><img src="icon-192.png" alt=""><div><h1>Pip for <span>homeschool</span></h1><p class="sub">Grades 3 to 5. Standards-aligned practice in math, English, science and social studies, a year plan and records. Free, no ads.</p></div></div>
+  <nav class="jump" aria-label="On this page"><a href="#why">Why it fits</a><a href="#start">Start in 3 steps</a><a href="#plan">Year plan by weeks</a><a href="#record">Learning record</a><a href="#faq">Good to know</a></nav>
+
+  <section class="card" id="why">
+    <h2>Why it fits a homeschool</h2>
+    <ul class="fits">
+      <li><b>Every child at their own grade</b><span>Several kids on one account, each with a grade, their own islands, stars and skills.</span></li>
+      <li><b>Review or get ahead</b><span>One tap to practice last year's islands or peek at next year's. Each grade's progress stays safe.</span></li>
+      <li><b>Mastery, not minutes</b><span>A skill counts as mastered at 8 of the last 10 right on the first try. Pip's Pick chooses what each child practices next.</span></li>
+      <li><b>Standards you can name</b><span>Every skill is tied to a standard code (Common Core math and English, NGSS science, state social studies).</span></li>
+      <li><b>Records without paperwork</b><span>Print a learning record for any period: days, hours, and skills mastered with their standards.</span></li>
+      <li><b>Works anywhere</b><span>Any browser, tablet or phone, also offline. Pip reads questions aloud for younger readers.</span></li>
+    </ul>
+  </section>
+
+  <section class="card" id="start">
+    <h2>Start in 3 steps</h2>
+    <ol class="steps">
+      <li><div><b>Open pipskyislands.com and sign in as a parent</b><span>Tap the cloud button at the top. Sign in with Google or an email. Kids never type an email.</span></div></li>
+      <li><div><b>Add each child</b><span>A first name or nickname, your state and the grade you teach. Each child takes a 2-minute check, so the puzzles fit.</span></div></li>
+      <li><div><b>Play 15–20 minutes a day</b><span>Follow Pip's Pick, or follow the <a href="#plan">year plan</a> below. Check <b>Parents' Corner → Progress</b> each week.</span></div></li>
+    </ol>
+  </section>
+
+  <section class="card" id="plan">
+    <h2>Year plan by weeks <span id="planGrade"></span></h2>
+    <p class="lead">36 weeks for one grade: what to practice each week, with the island to play. Weeks 9, 18 and 27 are review weeks; week 36 is for test practice and celebrating.</p>
+    <div class="gpick" role="group" aria-label="Grade"></div>
+    <div class="tscroll"><table class="plan" id="planTable"></table></div>
+    <div class="acts" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button type="button" class="btn main" id="printPlan">Print the plan</button></div>
+    <p class="note">The plan follows the island order in the game. Pip adapts within each skill, so a week can take longer or shorter; move on when the skills on the list are mastered or nearly mastered.</p>
+  </section>
+
+  <section class="card" id="record">
+    <h2>Learning record</h2>
+    <p class="lead">In <b>Parents' Corner → Progress</b>, choose a period (this month, the last 3 months, the school year or any dates) and print. The record shows:</p>
+    <ul class="facts">
+      <li>days of learning and hours of practice, by month;</li>
+      <li>puzzles solved and how many were right on the first try;</li>
+      <li>every skill mastered in the period, with its standard code and the date;</li>
+      <li>where your child stands now in each subject, and a line for your signature.</li>
+    </ul>
+    <p class="note">Homeschool rules differ from state to state. Check what your state asks you to keep; the record is meant to help, not to replace those rules.</p>
+  </section>
+
+  <section class="card" id="faq">
+    <h2>Good to know</h2>
+    <ul class="facts">
+      <li><b>Is it a full curriculum?</b> It is practice and review that covers the grade's standards in four subjects. Pair it with reading real books, writing by hand and hands-on science.</li>
+      <li><b>Which states?</b> The islands follow California's standards today; math and English are Common Core, which most states use or closely follow. More states are on the way.</li>
+      <li><b>Is it free?</b> Yes. No ads, no in-app purchases, nothing sold or shared.</li>
+      <li><b>What is saved?</b> Your child's first name and learning progress, in your account. See the <a href="privacy.html">privacy notice</a>.</li>
+      <li>More answers in <a href="guide.html">How Pip works</a>.</li>
+    </ul>
+  </section>
+
+  <a class="cta" href="./">Open Pip's Sky Islands</a>
+  <p class="foot">Questions or ideas: hello@pipskyislands.com</p>
+</main>
+<script src="js/content.js"></script>
+<script>
+(function(){
+  const $=s=>document.querySelector(s),esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const packs=Object.values(CONTENT.packs).filter(P=>P.status!=='draft').sort((a,b)=>a.grade-b.grade);
+  const want=new URLSearchParams(location.search).get('pack');let cur=(packs.find(P=>P.id===want)||packs.find(P=>P.grade===4)||packs[0]).id;
+  const ord=n=>['','1st','2nd','3rd','4th','5th','6th'][n]||n+'th';
+  const REVIEW={9:'Review week: Fix-It Falls (old mistakes), then the Daily Challenge each day.',18:'Review week: Fix-It Falls, a Boss Island battle, and Test Practice once.',27:'Review week: Fix-It Falls, then replay any island under 2 stars.',36:'Test Practice twice, Fix-It Falls, and a celebration: build a Wonder on the island!'};
+  function plan(P){const by={math:[],ela:[],science:[],social:[]};
+    P.islands.forEach(I=>(I.skills||[]).forEach(k=>{const S=CONTENT.skills[k];if(S&&!S.retired&&by[S.subject])by[S.subject].push({name:S.name,isl:I.name})}));
+    const weeks=[];for(let w=1;w<=36;w++)if(!REVIEW[w])weeks.push(w);
+    const spread=(L,slots)=>{const out=slots.map(()=>[]);L.forEach((s,i)=>out[Math.floor(i*slots.length/L.length)].push(s));return out};
+    const M=spread(by.math,weeks),E=spread(by.ela,weeks),odd=weeks.filter((_,i)=>i%2===0),even=weeks.filter((_,i)=>i%2===1);
+    const Sc=spread(by.science,odd),So=spread(by.social,even),W={};weeks.forEach((w,i)=>{W[w]={m:M[i],e:E[i]}});odd.forEach((w,i)=>{W[w].x=Sc[i];W[w].xs='Science'});even.forEach((w,i)=>{W[w].x=So[i];W[w].xs='Social studies'});
+    const cell=L=>{if(!L||!L.length)return '<span class="note">keep practicing</span>';const g={};L.forEach(s=>(g[s.isl]=g[s.isl]||[]).push(s.name));return Object.entries(g).map(([i,n])=>`<b>${esc(i)}</b><ul>${n.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`).join('')};
+    let h=`<thead><tr><th>Week</th><th>Math</th><th>English</th><th>Science / social studies</th></tr></thead><tbody>`;
+    for(let w=1;w<=36;w++){if(REVIEW[w]){h+=`<tr class="rev"><td>Week ${w}</td><td colspan="3">${REVIEW[w]}</td></tr>`;continue}const D=W[w];h+=`<tr><td>Week ${w}</td><td>${cell(D.m)}</td><td>${cell(D.e)}</td><td>${D.x&&D.x.length?`<em class="tag">${D.xs}</em>`+cell(D.x):'<span class="note">read a book on the topic</span>'}</td></tr>`}
+    return h+'</tbody>'}
+  function draw(){const P=CONTENT.packs[cur];$('#planTable').innerHTML=plan(P);document.querySelectorAll('.gpick button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===cur));document.title=`${ord(P.grade)} grade year plan · Pip's Sky Islands`;$('#planGrade').textContent=`· ${ord(P.grade)} grade`}
+  $('.gpick').innerHTML=packs.map(P=>`<button type="button" data-p="${P.id}" aria-pressed="false">${ord(P.grade)} grade</button>`).join('');
+  document.querySelectorAll('.gpick button').forEach(b=>b.onclick=()=>{cur=b.dataset.p;draw()});
+  $('#printPlan').onclick=()=>window.print();
+  draw();
+})();
+</script>
+</body>
+</html>

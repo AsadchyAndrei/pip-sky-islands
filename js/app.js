@@ -534,6 +534,7 @@ function renderParent(){
         <p class="note">A skill is mastered at 8 of 10 right on the first try. Settings, the school program and class topics are in the <b>Settings</b> tab.</p></div>`})()}
     ${notifyAskHTML()}
     ${fromTeacherHTML()}
+    ${typeof recordParentHTML==='function'?recordParentHTML():''}
     ${fgoalParentHTML()}
     <div class="pcard"><h4>Needs practice</h4>${weak.length?`<ul class="mist">${weak.map(r=>`<li>${r.i.name}<small>${r.i.topic} · ${r.p}% first-try (${r.s.a} puzzles)</small>${homeTip(r.i.id)?`<p class="htip"><b>Try at home:</b> ${esc(homeTip(r.i.id))}</p>`:''}</li>`).join('')}</ul>`:`<p>${allA<10?'Not enough data yet. After a few islands, weak topics will show up here.':'No weak topics right now. Great job!'}</p>`}
       <p>Waiting at Fix-It Falls: <b>${G.review.length}</b> puzzle${G.review.length===1?'':'s'} (${reviewDue().length} due today).</p></div>
@@ -630,7 +631,7 @@ function renderParent(){
   if($('#aDel'))$('#aDel').onclick=deleteAccountFlow;
   if($('#bkNow'))$('#bkNow').onclick=async()=>{const n=$('#bkNote');save();n.textContent='Saving...';const p=G,t=new Date();
     try{await CL.api.writeBackup(ROOT.current,`${dayKey()}-m${String(t.getHours()).padStart(2,'0')}${String(t.getMinutes()).padStart(2,'0')}`,bkDoc(p));n.className='note ok';n.textContent='Backup saved.';loadBackups()}catch(e){n.className='note bad';n.textContent='Backups need the internet.'}};
-  bindClassParent();bindTeacherAcct();bindFGoal();bindNotify();bindNotifyAsk();if($("#wkPrint"))$("#wkPrint").onclick=printWeek;
+  bindClassParent();bindTeacherAcct();bindFGoal();bindNotify();bindNotifyAsk();if($("#wkPrint"))$("#wkPrint").onclick=printWeek;if(typeof bindRecord==="function")bindRecord();
   parentTabs(rows,allA);if(typeof bindLangSwitch==='function'){bindLangSwitch();esWatch()}if(typeof tourHook==='function')tourHook('parent');
   $('#chPin').onclick=()=>{pinBuf='';pinStage='create';overlay(pinHTML(),bindPin)};
   $('#copyCode').onclick=()=>{const ta=$('#codeOut');const ok=()=>$('#copyNote').textContent='Copied!';

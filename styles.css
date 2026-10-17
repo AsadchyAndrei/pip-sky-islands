@@ -2034,3 +2034,5 @@ body.has-mission .dotpip,body.has-mission .dotflag{display:none}
 .visitbar.up{background:#e9e4ff;border-color:#7b6cf0;box-shadow:0 5px 0 #cfc7ff}
 .visitbar .vbtxt{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}.visitbar .vbtxt b{font-size:17px}.visitbar .vbtxt small{color:var(--ink-soft);font-weight:700;font-size:14px}
 .vdoors{display:inline-block;margin-top:4px}.vdoors .linkbtn{font-weight:800}
+.recdates{display:flex;gap:8px;flex-wrap:wrap}.recdates input{font:inherit;border:2px solid var(--line);border-radius:12px;padding:6px 10px}
+@media print{#printArea .rmon th{text-align:left;font-size:12px;padding:3px 6px;border-bottom:1.5px solid #c9d6e6}#printArea .rmon td:first-child{width:auto}#printArea .rsk{margin:8px 0 2px;font-size:13px}#printArea .rpt li small{color:#506686}#printArea .rsign{margin-top:22px;font-size:13px}}
