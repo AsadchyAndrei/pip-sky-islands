@@ -1469,6 +1469,10 @@ html body.big .pzcard small,html body.big .pztag{font-size:16px}html body.big .p
 #parent .setrow label{display:block;line-height:1.3}
 #parent .setrow small{margin-top:2px;line-height:1.35}
 #parent .setrow select,#parent .setrow input[type=text]{min-width:210px;min-height:44px;border-radius:14px}
+/* a long option (a device voice name) must never squeeze the label: the control stays at most 320px and truncates */
+#parent .setrow:has(select){display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between}
+#parent .setrow:has(select)>label{flex:1 1 230px;min-width:0}
+#parent .setrow select{flex:0 1 auto;min-width:0;max-width:340px;text-overflow:ellipsis}
 #parent .setrow>.go,#parent .setrow>.switch{justify-self:end}
 #parent .tscroll{border-radius:16px}
 @media (max-width:760px){
@@ -1481,7 +1485,7 @@ html body.big .pzcard small,html body.big .pztag{font-size:16px}html body.big .p
   #parent .pfocus .go{width:100%}
   #parent .mist.pzlist{grid-template-columns:1fr}
   #parent .setrow:has(select),#parent .setrow:has(input[type=text]){grid-template-columns:1fr}
-  #parent .setrow select,#parent .setrow input[type=text]{width:100%;min-width:0}
+  #parent .setrow select,#parent .setrow input[type=text]{width:100%;min-width:0;max-width:none}
 }
 /* ===== calmer home ===== */
 .nextup{background:var(--card);border-radius:24px;box-shadow:0 6px 0 var(--line);overflow:hidden;order:2}
