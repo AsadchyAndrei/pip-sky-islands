@@ -458,7 +458,7 @@ BANK3.feat3=[
  ['features','How does the picture help you understand the text?','It shows how a frog uses its long tongue to catch insects.',['It shows where frogs lay eggs.','It shows a pond map.','It shows a tadpole.'],'What is happening in the picture?','The picture <b>shows the long, sticky tongue catching a fly</b>.'],
  ['features','Why do authors use <b>headings</b>?','to help readers find information quickly',['to make the book heavier','to tell a joke','to show the price'],'Headings split a text into parts.','Headings help readers <b>find information quickly</b>.']
 ];
-function genFeat3(t){const q=bankQ(BANK3.feat3[t%BANK3.feat3.length]);q.visual=TFPAGE;q.wide=true;return q}
+function genFeat3(t){const it=BANK3.feat3[t%BANK3.feat3.length],q=bankQ(it);q.visual=it[6]||TFPAGE;q.wide=true;return q}
 
 /* reading: short passages, long passages, text features, then story vs picture or performance (shared with grade 4) */
 function passage3HTML(P){const two=P.p.some(x=>/^<b>(Story|Text) \d/.test(x));return `<div class="passage${P.lines?' lines':''}"><h4>${P.t}</h4>${P.lines?`<div class="plines">${P.p.map(l=>`<span class="ln">${l}</span>`).join('')}</div>`:two?P.p.map(x=>`<p>${x}</p>`).join(''):`<p>${P.p.join(' ')}</p>`}</div>`}
