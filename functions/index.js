@@ -252,7 +252,7 @@ exports.unsub = onRequest({ maxInstances: 2 }, async (req, res) => {
    (it takes names out first). A sentence that was spoken before comes from the bucket; a new one is made
    with Google Text-to-Speech, stored, then sent. Limits keep the cost small: short texts only, a few new
    sentences a minute per address and a daily cap on new characters; past a limit the app uses the device voice. */
-const TTS = { voice: 'en-US-Chirp3-HD-Puck', rate: 1.0, bucket: 'pip-sky-islands-voice', maxLen: 900, perMin: 40, perDay: 400000 };
+const TTS = { voice: 'en-US-Chirp3-HD-Puck', rate: 1.0, bucket: 'pip-sky-islands-voice', maxLen: 900, perMin: 40, perDay: 40000 };
 const ttsKey = (t) => crypto.createHash('sha256').update(`${TTS.voice}|${TTS.rate}|${t}`).digest('hex').slice(0, 40);
 const ttsText = (t) => String(t || '').replace(/\s+/g, ' ').trim();
 const voiceIO = {
