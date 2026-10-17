@@ -2021,7 +2021,7 @@ body.has-mission .dotpip,body.has-mission .dotflag{display:none}
 .buddycard .gprev{background:linear-gradient(180deg,#fff1d6,#fffaf0)}
 .msbuddy{transition:transform .7s cubic-bezier(.4,1.4,.5,1)}.msbuddyin{animation:msbob 2.6s ease-in-out .4s infinite}
 .eggwob{animation:eggwob 1.6s ease-in-out infinite;transform-origin:0 18px}@keyframes eggwob{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-8deg)}80%{transform:rotate(7deg)}90%{transform:rotate(-4deg)}}
-.bwing{animation:bwing 1.2s ease-in-out infinite;transform-origin:0 -4px}@keyframes bwing{50%{transform:scaleY(.8)}}
+
 .bhatch{display:flex;justify-content:center}.bhatch svg{animation:bpop .7s cubic-bezier(.3,1.6,.5,1)}@keyframes bpop{from{transform:scale(.2)}}
 .bname{display:flex;flex-direction:column;gap:6px;font-weight:800;align-self:stretch}.bname input{font:inherit;font-size:20px;padding:10px 14px;border-radius:14px;border:3px solid var(--line);background:var(--card);color:var(--ink)}
-@media (prefers-reduced-motion:reduce){.msbuddy{transition:none}.msbuddyin,.eggwob,.bwing,.bhatch svg{animation:none}}
+@media (prefers-reduced-motion:reduce){.msbuddy{transition:none}.msbuddyin,.eggwob,.bhatch svg{animation:none}}

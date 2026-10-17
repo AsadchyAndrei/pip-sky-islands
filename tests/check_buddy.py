@@ -30,7 +30,7 @@ with sync_playwright() as p:
         c.ok(pg.locator('#mission .msbuddy').count() == 1, f'{w}: the buddy flies with Pip in a mission')
         pg.evaluate("ovOpen&&closeOverlay();show('map');renderMap();openHome()"); pg.wait_for_timeout(500)
         c.ok(pg.locator('#homeView [data-mv="buddy"]').count() == 1, f'{w}: the buddy lives on the island')
-        for k in ('pup', 'kit', 'dragon', 'owl'):
+        for k in ('puff', 'star', 'wisp', 'moon', 'dragon'):
             c.ok('<g transform' in pg.evaluate(f"buddySVG('{k}',3)"), f'{w}: art for {k}')
         pg.evaluate("G.egg={days:['x']};delete G.egg;buddyGiveEgg()")
         c.ok(pg.evaluate("!G.egg"), f'{w}: no second egg once there is a buddy')
