@@ -176,5 +176,8 @@ function missionAnswer(kind){if(!msOn())return;const i=S.i;if(i<0||i>=MS.n)retur
   MS.got[i]=kind;missionDraw();if(MS.got.every(Boolean))setTimeout(missionFinish,700)}
 function missionFinish(){if(!msOn())return;const box=document.getElementById('mission');if(!box||box.classList.contains('msdone'))return;box.classList.add('msdone');missionDraw();
   const M=missionFor(),gold=MS.got.filter(k=>k==='gold').length;
+  /* the mission's reward: resources of the island's subject (js/wonders.js) */
+  const R=typeof resForMission==='function'?resForMission(S.isl.id,gold,MS.n):null,c=document.getElementById('msCount');
+  if(R&&c){c.classList.add('msgot');c.innerHTML=`+${R.a} ${RES_ICON[R.k]}`;c.title=`+${R.a} ${RES[R.k].name}`}
   setTimeout(()=>{if(!msOn())return;const r=box.getBoundingClientRect();if(r.width&&!reduce)burst(r.left+r.width*(MS.kind==='bridge'?.9:.5),r.top+r.height*.4,22);
-    if(typeof jingle==='function')jingle('level');say($('#say'),`${M.done} ${gold===MS.n?'<b>All golden!</b> Perfect!':gold>=MS.n-1?'Almost all golden!':'Every round makes it stronger!'}`,true)},500)}
+    if(typeof jingle==='function')jingle('level');say($('#say'),`${M.done} ${gold===MS.n?'<b>All golden!</b> Perfect!':gold>=MS.n-1?'Almost all golden!':'Every round makes it stronger!'}${R?` <b>+${R.a} ${R.a===1?RES[R.k].one:RES[R.k].name}</b> for your Wonders!`:''}`,true)},500)}

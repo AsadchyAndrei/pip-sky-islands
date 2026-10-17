@@ -743,7 +743,7 @@ function projScene(P,n){const [x,y]=P.pos,d=P.draw(x,y,n);return P.scale?`<g tra
 const projStage=id=>((G.home&&G.home.proj)||{})[id]||0;
 const projDone=P=>projStage(P.id)>=P.stages.length;
 function projNext(P){const n=projStage(P.id);return n<P.stages.length?{n,name:P.stages[n][0],price:P.stages[n][1]}:null}
-function saveGoalProject(){const g=PROJECTS.find(P=>P.id===G.saveGoal&&!projDone(P));if(g)return g;const open=PROJECTS.filter(P=>!projDone(P));if(!open.length)return null;return open.slice().sort((a,b)=>projNext(a).price-projNext(b).price)[0]}
+function saveGoalProject(){const g=PROJECTS.find(P=>!P.res&&P.id===G.saveGoal&&!projDone(P));if(g)return g;const open=PROJECTS.filter(P=>!P.res&&!projDone(P));if(!open.length)return null;return open.slice().sort((a,b)=>projNext(a).price-projNext(b).price)[0]}
 function projThumb(P,n){const [x,y]=P.pos;const vb=P.sky?`${x-110} ${y-45} 200 115`:`${x-90} ${y-205} 180 215`;return `<svg viewBox="${vb}">${P.draw(x,y,Math.max(1,n))}</svg>`}
 function wishItem(){const w=G.wish;if(!w||!SHOP[w.k])return null;const it=SHOP[w.k].items()[w.id];if(!it||SHOP[w.k].list().includes(w.id))return null;return {...w,it}}
 function renderGoalCard(){const el=$('#goalCard');if(!el)return;const W=wishItem();
@@ -781,7 +781,7 @@ function homeSVG(){
     ${hint}${body}</svg>`;
 }
 function clampSky(x,y){return [Math.round(Math.min(540,Math.max(100,x))),Math.round(Math.min(80,Math.max(30,y)))]}
-const clampFor=id=>id==='p_airship'?clampSky:clampFoot;
+const clampFor=id=>{const P=PROJECTS.find(x=>'p_'+x.id===id);return P&&P.sky?clampSky:clampFoot};
 function setHomePos(id,p){G.home.pos=Object.assign({},G.home.pos||{});G.home.pos[id]=clampFor(id)(p[0],p[1])}
 function bindHomeDrag(){
   const svg=$('#homeView svg');if(!svg||!homeEdit)return;
@@ -838,10 +838,14 @@ function renderHome(){
     const lv=itemLv(it.id),U=HOME_UP[it.id],canUp=have&&!away&&U&&lv<2;
     if(canUp)return `<div class="item upgrade"><span class="upbadge">Upgrade</span><div class="prev"><svg viewBox="${vb}">${itemDraw(it,2)}</svg></div><b>${U.name}</b><button type="button" class="${G.coins>=U.price?'buy':''}" data-up="${it.id}" ${G.coins>=U.price?'':'disabled'}>${COIN_ICON} ${U.price}</button></div>`;
     return `<div class="item${have&&!away?' wearing':''}"><div class="prev"><svg viewBox="${vb}">${have?itemDraw(it):it.draw(x,y)}</svg></div><b>${have?itemName(it):it.name}</b>${away?`<button type="button" class="buy" data-place="${it.id}">Put back</button>`:have?`<button type="button" class="worn" disabled>Built!</button>`:`<button type="button" class="${G.coins>=it.price?'buy':''}" data-build="${it.id}" ${G.coins>=it.price?'':'disabled'}>${COIN_ICON} ${it.price}</button>`}</div>`}).join('');
-  $('#homeProj').innerHTML=PROJECTS.map(P=>{const n=projStage(P.id),nx=projNext(P),goal=saveGoalProject()===P;
-    return `<div class="pcard2${nx?'':' done'}"><div class="prev">${projThumb(P,nx?nx.n+1:n)}</div><div class="pinfo"><b>${P.name}</b><div class="psteps">${P.stages.map((st,i)=>`<span class="pst${i<n?' on':''}" title="${esc(st[0])}"></span>`).join('')}</div>${nx?`<small>Step ${nx.n+1} of ${P.stages.length}: <b>${esc(nx.name)}</b></small><div class="prow"><button type="button" class="${G.coins>=nx.price?'buy':''}" data-proj="${P.id}" ${G.coins>=nx.price?'':'disabled'}>${COIN_ICON}${fmt(nx.price)}</button><button type="button" class="pgoal${goal?' on':''}" data-pgoal="${P.id}" aria-pressed="${goal}">${goal?ICON.wishOn+'My goal':ICON.wishOff+'Make it my goal'}</button></div>`:`<small><b>Finished!</b> All ${P.stages.length} steps built.</small>`}</div></div>`}).join('');
+  /* Wonders (built with resources from what you learn) come first, then the coin projects */
+  const projCard=P=>{const n=projStage(P.id),nx=projNext(P),goal=saveGoalProject()===P,cost=typeof projCost==='function'?projCost(nx):null,can=nx&&(cost?canAffordRes(cost):G.coins>=nx.price);
+    return `<div class="pcard2${nx?'':' done'}${P.res?' wonder':''}"><div class="prev">${projThumb(P,nx?nx.n+1:n)}</div><div class="pinfo"><b>${P.name}</b><div class="psteps">${P.stages.map((st,i)=>`<span class="pst${i<n?' on':''}" title="${esc(st[0])}"></span>`).join('')}</div>${nx?`<small>Step ${nx.n+1} of ${P.stages.length}: <b>${esc(nx.name)}</b></small><div class="prow"><button type="button" class="${can?'buy':''}" data-proj="${P.id}" ${can?'':'disabled'}>${cost?Object.entries(cost).map(([k,v])=>`<span class="rescost${resHave(k)>=v?'':' short'}">${RES_ICON[k]}${resHave(k)>=v?v:`${resHave(k)}/${v}`}</span>`).join(''):COIN_ICON+fmt(nx.price)}</button>${P.res?'':`<button type="button" class="pgoal${goal?' on':''}" data-pgoal="${P.id}" aria-pressed="${goal}">${goal?ICON.wishOn+'My goal':ICON.wishOff+'Make it my goal'}</button>`}</div>`:`<small><b>Finished!</b> All ${P.stages.length} steps built.</small>`}</div></div>`};
+  const W=PROJECTS.filter(P=>P.res);
+  $('#homeProj').innerHTML=(W.length?`<h4 class="wtitle">Wonders <small>built with what you learn</small></h4>${resBarHTML()}${W.map(projCard).join('')}<h4 class="wtitle">Coin projects</h4>`:'')+PROJECTS.filter(P=>!P.res).map(projCard).join('');
   fitPreviews($('#homeShop'));
-  document.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{const P=PROJECTS.find(x=>x.id===b.dataset.proj),nx=projNext(P);if(!nx||G.coins<nx.price)return;G.coins-=nx.price;G.home.proj=Object.assign({},G.home.proj||{},{[P.id]:nx.n+1});
+  document.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{const P=PROJECTS.find(x=>x.id===b.dataset.proj),nx=projNext(P),cost=projCost(nx);if(!nx)return;
+    if(cost){if(!canAffordRes(cost))return;resPay(cost)}else{if(G.coins<nx.price)return;G.coins-=nx.price}G.home.proj=Object.assign({},G.home.proj||{},{[P.id]:nx.n+1});
     if(projDone(P))award('grand');built0(projDone(P)?`We finished the <b>${P.name}</b>! It's the best thing in the whole sky!`:`Step ${nx.n+1} done: <b>${nx.name}</b>! Only ${P.stages.length-nx.n-1} more to go!`)});
   document.querySelectorAll('[data-pgoal]').forEach(b=>b.onclick=()=>{G.saveGoal=b.dataset.pgoal;save();renderHome();tone([523,659],.06)});
   document.querySelectorAll('[data-house]').forEach(b=>b.onclick=()=>{const H=G.home,nx=HOUSES[H.house];if(!nx||G.coins<nx.price)return;G.coins-=nx.price;H.house++;built0(`Our <b>${nx.name}</b> is ready! It's perfect!`)});

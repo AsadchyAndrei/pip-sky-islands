@@ -518,7 +518,7 @@ function firstMistakeTip(){if(G.tutHint)return;G.tutHint=1;save(true);
     say($('#say'),`Stuck? Read the <b>Hint</b> below the puzzle. Still stuck? Tap <b>How?</b> and I'll show you step by step!`)},350)}
 function reviewResult(q,first){
   const r=G.review.find(x=>x.s===q.meta.s);if(!r)return;
-  if(first){r.box++;if(r.box>=3){G.review=G.review.filter(x=>x!==r);G.fixedSeeds.push(r.s);G.fixed++;toast('Mistake fixed forever!','That puzzle won\'t trick you again.','#38b98a');if(G.fixed>=10)award('fixer')}else r.due=addDays([1,3,7][r.box])}
+  if(first){r.box++;if(r.box>=3){G.review=G.review.filter(x=>x!==r);G.fixedSeeds.push(r.s);G.fixed++;if(typeof resAdd==='function')resAdd('gold',1);toast('Mistake fixed forever!','That puzzle won\'t trick you again. <b>+1 golden brick</b> for your Wonders!','#38b98a');if(G.fixed>=10)award('fixer')}else r.due=addDays([1,3,7][r.box])}
   else{r.box=0;r.due=addDays(1)}
 }
 function finishQ(){

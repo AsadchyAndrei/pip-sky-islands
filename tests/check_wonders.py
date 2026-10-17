@@ -1,0 +1,32 @@
+"""Resources and Wonders: a finished mission gives resources of the island's subject (more for golden answers, less
+for the same island again and again on one day); a mastered skill gives 5; a mistake fixed for good gives a golden
+brick; Wonders are built with resources and drawn on the island; coins and the coin projects are untouched."""
+from serve import *
+c = Check('resources and Wonders')
+with sync_playwright() as p:
+    b = launch(p)
+    for w in (390, 1280):
+        ctx, pg, errs = open_page(b, w, 900, pack='ca-4')
+        pg.evaluate("G.rounds=5;window.__tourTest=0;start(byId('place'))"); pg.wait_for_timeout(600)
+        if pg.evaluate("typeof TR!=='undefined'&&TR.on"): pg.keyboard.press('Escape')
+        coins0 = pg.evaluate("G.coins")
+        pg.evaluate("for(let i=0;i<S.qs.length;i++){S.i=i;missionAnswer(i===1?'ok':'gold')}"); pg.wait_for_timeout(1700)
+        n = pg.evaluate("S.qs.length")
+        c.ok(pg.evaluate("resHave('stone')") == 2 + (n - 1), f'{w}: a math mission gives stone: 2 + one per golden answer = {pg.evaluate("resHave(\'stone\')")}')
+        c.ok('+' in pg.text_content('#msCount'), f'{w}: the reward shows on the mission')
+        r = pg.evaluate("""()=>{const out=[];for(let k=0;k<4;k++){const before=resHave('book');resForMission('reading',6,6);out.push(resHave('book')-before)}return out}""")
+        c.ok(r[0] == 8 and r[3] < r[0], f'{w}: the same island over and over gives less on one day: {r}')
+        c.ok(pg.evaluate("resOf('science')") == 'crystal' and pg.evaluate("resOf('history')") == 'relic', f'{w}: subjects map to resources')
+        pg.evaluate("ovOpen&&closeOverlay();show('map');renderMap();G.res={stone:30,book:30,crystal:30,relic:30,gold:3};openHome()"); pg.wait_for_timeout(600)
+        c.ok(pg.locator('.pcard2.wonder').count() == 3 and pg.is_visible('.resbar'), f'{w}: three Wonders and the resource bar on the island page')
+        coinsH = pg.evaluate("G.coins")
+        pg.click('[data-proj="w_library"]'); pg.wait_for_timeout(500)
+        c.ok(pg.evaluate("projStage('w_library')") == 1 and pg.evaluate("resHave('stone')") == 18 and pg.evaluate("G.coins") == coinsH, f'{w}: building a Wonder step uses resources, not coins')
+        c.ok(pg.locator('#homeView [data-mv="p_w_library"]').count() == 1, f'{w}: the Wonder is drawn on the island')
+        pg.evaluate("G.res={stone:0,book:0,crystal:0,relic:0,gold:0};renderHome()"); pg.wait_for_timeout(300)
+        c.ok(pg.is_disabled('[data-proj="w_weather"]'), f'{w}: not enough resources: the button waits')
+        c.ok(pg.evaluate("saveGoalProject()&&!saveGoalProject().res"), f'{w}: the coin goal card only picks coin projects')
+        c.ok(not errs, f'{w}: page errors {errs[:3]}')
+        ctx.close()
+    b.close()
+c.done()
