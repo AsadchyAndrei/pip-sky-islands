@@ -369,7 +369,7 @@ function triSVG(A,B,label){const r=Math.PI/180,C=180-A-B,c=1,b=Math.sin(B*r)/Mat
   return `<svg viewBox="0 0 300 190" style="width:320px;max-width:100%" role="img" aria-label="A triangle"><polygon points="${Q.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="${pick(SHAPE_COLS)}" stroke="#1f3557" stroke-width="3" stroke-linejoin="round"/>${marks}</svg>`}
 function genShapeX(t){
   if(t===5){const k=pick(['Point','Line','Ray','Line segment']);
-    return {prompt:`What is this called?`,visual:lineFigSVG(k),choices:shuffle(['Point','Line','Ray','Line segment']),answer:k,
+    return {prompt:`What is this called?`,visual:turnBox(lineFigSVG(k)),choices:shuffle(['Point','Line','Ray','Line segment']),answer:k,
       hint:`Look at the ends. An arrow means it keeps going forever. A dot means it stops there.`,
       explain:{Point:`Just one dot, an exact spot: a <b>point</b> (point A).`,Line:`Arrows on both ends: it goes on forever both ways. That is a <b>line</b> (line AB).`,Ray:`It starts at a point (A) and goes on forever one way: a <b>ray</b> (ray AB).`,'Line segment':`It has two endpoints and stops at both: a <b>line segment</b> (segment AB).`}[k]}}
   const ty=pick(['Right','Acute','Obtuse']);let A,B;
@@ -628,7 +628,13 @@ function genAngle(t){
   if(t===3){const whole=coin()?90:180,a=whole===90?R(2,16)*5:R(3,33)*5,ans=whole-a;
     return {prompt:`Two angles together make a <b>${whole===90?'right angle (90°)':'straight line (180°)'}</b>. One angle is <b>${a}°</b>. How big is the other?`,
       visual:angleSVG(whole),unit:'°',...numChoices(ans,[a,whole+a,ans+10,ans-10]),hint:`The two parts add up to ${whole}°. Subtract: ${whole} − ${a}.`,explain:`${whole} − ${a} = <b>${ans}°</b>.`};}
-  const k=pick([[1,'a quarter turn',90],[2,'a half turn',180],[3,'three quarter turns',270],[4,'a full turn',360]]);
+  const T=[[1,'a quarter turn',90],[2,'a half turn',180],[3,'three quarter turns',270],[4,'a full turn',360]],k=pick(T),v=R(0,3);
+  if(v===1)return {prompt:`Pip's balloon turned <b>${k[2]}°</b>. How much of a full turn is that?`,...strChoices(k[1],T.map(x=>x[1])),
+    hint:`A full turn is 360°. Each quarter turn is 90°.`,explain:`${k[2]} ÷ 90 = ${k[0]} quarter turn${k[0]>1?'s':''}, so ${k[2]}° is <b>${k[1]}</b>.`};
+  if(v===2){const h=pick([[3,90],[6,180],[9,270]]);return {prompt:`The minute hand moves from the <b>12</b> to the <b>${h[0]}</b>. How many degrees does it turn?`,visual:clockSVG(0,h[0]*5),unit:'°',...numChoices(h[1],[90,180,270,360,45]),
+    hint:`From 12 to 3 is a quarter of the clock, so it is a quarter turn.`,explain:`12 to ${h[0]} is ${h[1]/90} quarter turn${h[1]>90?'s':''}: <b>${h[1]}°</b>.`}}
+  if(v===3){const n=R(2,4),a=pick([30,45,60,90]);if(n*a>360)return genAngle(4);return {prompt:`Pip turns <b>${a}°</b>, then ${n===2?'again':n-1+' more times'} by ${a}° each time. How many degrees did he turn in all?`,unit:'°',...numChoices(n*a,[a,n*a+a,n*a-a,360-n*a||180]),
+    hint:`Turns add up: ${Array(n).fill(a).join(' + ')}.`,explain:`${Array(n).fill(a).join(' + ')} = <b>${n*a}°</b>.`}}
   return {prompt:`Pip spins in his balloon. How many degrees is <b>${k[1]}</b>?`,unit:'°',...numChoices(k[2],[90,180,270,360,45]),
     hint:`A full circle is 360°. Split it into 4 quarters.`,explain:`A full turn is 360°, so each quarter is 90°. ${k[1][0].toUpperCase()+k[1].slice(1)} = <b>${k[2]}°</b>.`};
 }
@@ -668,7 +674,7 @@ function genShape(t){
   if(t===2){const k=pick(['parallel','perpendicular','intersecting']);
     const g={parallel:`<line x1="20" y1="40" x2="180" y2="20" /><line x1="20" y1="90" x2="180" y2="70"/>`,intersecting:`<line x1="20" y1="90" x2="180" y2="30"/><line x1="60" y1="10" x2="130" y2="110"/>`,
       perpendicular:`<line x1="30" y1="60" x2="170" y2="60"/><line x1="100" y1="10" x2="100" y2="110"/><path d="M100 60 h12 v-12 h-12" fill="none" stroke-width="2.5"/>`}[k];
-    return {prompt:`What kind of lines are these?`,visual:`<svg viewBox="0 0 200 120" style="width:320px" stroke="#1f3557" stroke-width="5" stroke-linecap="round">${g}</svg>`,
+    return {prompt:`What kind of lines are these?`,visual:turnBox(`<svg viewBox="0 0 200 120" style="width:320px;max-width:100%" stroke="#1f3557" stroke-width="5" stroke-linecap="round">${g}</svg>`),
       choices:shuffle(['Parallel','Perpendicular','Intersecting']),answer:k[0].toUpperCase()+k.slice(1),
       hint:`Parallel lines never meet. Perpendicular lines meet at a square corner. Intersecting lines cross at any other angle.`,
       explain:{parallel:`They go the same direction and never meet: <b>parallel</b>.`,perpendicular:`They cross and make square corners (90°): <b>perpendicular</b>.`,intersecting:`They cross, but not at a square corner: <b>intersecting</b>.`}[k]};}
@@ -1082,3 +1088,5 @@ function genTask(sc,step){
 function riddleRound(isl){
   if(coin()){const seed=R(1,2e9),sc=R(0,2),qs=[0,1,2,3].map(k=>makeQ(isl,10+sc*4+k,seed));return qs.concat([0,1].map(()=>makeQ(isl,R(0,9),R(1,2e9))))}
   return Array.from({length:6},()=>makeQ(isl,R(0,9),R(1,2e9)))}
+/* the same figure at a slant: kids learn to name lines and figures in any direction, not just flat */
+function turnBox(svg){const d=pick([0,0,-30,-20,20,30,45,-45]);return d?`<div style="display:inline-block;margin:18px 6px;transform:rotate(${d}deg)">${svg}</div>`:svg}

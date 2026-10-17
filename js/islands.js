@@ -268,6 +268,99 @@ const GRAM=[
     ['The root <b>scrib</b> or <b>script</b> means "write". Who is a <b>scribe</b>?','A person who writes things down',['A person who sings','A person who builds houses','A person who cooks'],'Scrib = write.','A <b>scribe</b> is a person who <b>writes</b> things down.']
   ]}
 ];
+/* more grammar practice: every grammar skill has 15 or more questions (new items go after the old ones, so saved questions keep their place) */
+GRAM.push(
+  {name:"Quotation marks",long:true,items:[
+    ["Which sentence uses <b>quotation marks</b> correctly?", "\"Please close the door,\" said Mr. Kim.", ["\"Please close the door, said Mr. Kim.\"", "Please close the door,\" said Mr. Kim.", "\"Please close\" the door, said Mr. Kim."], "Quotation marks go around only the words he said.", "<b>\"Please close the door,\" said Mr. Kim.</b> The comma goes inside the marks."],
+    ["Which sentence uses <b>quotation marks</b> correctly?", "Maya whispered, \"The baby is asleep.\"", ["Maya whispered, \"The baby is asleep\".", "Maya whispered, The baby is \"asleep.\"", "\"Maya whispered, The baby is asleep.\""], "The period belongs inside the marks.", "<b>Maya whispered, \"The baby is asleep.\"</b>"],
+    ["Which sentence uses <b>quotation marks</b> correctly?", "\"Is it time for lunch?\" asked Ben.", ["\"Is it time for lunch? asked Ben.\"", "\"Is it time for lunch\"? asked Ben.", "Is it time for lunch? \"asked Ben.\""], "The question mark is part of what Ben said.", "<b>\"Is it time for lunch?\" asked Ben.</b>"],
+    ["Which sentence uses <b>quotation marks</b> correctly?", "Coach yelled, \"Run faster!\"", ["Coach yelled, \"Run faster\"!", "Coach yelled \"Run faster!", "\"Coach yelled, Run faster!\""], "Every opening mark needs a closing mark.", "<b>Coach yelled, \"Run faster!\"</b>"],
+    ["Which sentence uses <b>quotation marks</b> correctly?", "\"I like your drawing,\" Ana told her brother.", ["\"I like your drawing, Ana told her brother.\"", "I like your drawing, \"Ana told her brother.\"", "\"I like\" your drawing, Ana told her brother."], "Only the spoken words go inside.", "<b>\"I like your drawing,\" Ana told her brother.</b>"],
+    ["Which sentence uses <b>quotation marks</b> correctly?", "Grandma said, \"Dinner is ready.\"", ["Grandma said \"Dinner is ready\".", "Grandma said, Dinner \"is ready.\"", "\"Grandma said, Dinner is ready.\""], "Put a comma after said, then the marks.", "<b>Grandma said, \"Dinner is ready.\"</b>"],
+    ["Which sentence uses <b>quotation marks</b> correctly?", "\"Look at the stars!\" Eli shouted.", ["\"Look at the stars! Eli shouted.\"", "\"Look at the stars\"! Eli shouted.", "Look at the stars! \"Eli shouted.\""], "The exclamation point stays inside.", "<b>\"Look at the stars!\" Eli shouted.</b>"],
+    ["Which sentence uses <b>quotation marks</b> correctly?", "The sign said, \"Keep off the grass.\"", ["The sign said, Keep off the \"grass.\"", "\"The sign said, Keep off the grass.\"", "The sign said \"Keep off the grass\"."], "Quote the exact words on the sign.", "<b>The sign said, \"Keep off the grass.\"</b>"]
+  ]},
+  {name:"Capital letters",long:true,items:[
+    ["Which sentence uses <b>capital letters</b> correctly?", "We visited Yosemite National Park in July.", ["We visited yosemite national park in july.", "we visited Yosemite National Park in July.", "We Visited Yosemite National Park In July."], "Names of places and months get capitals.", "<b>Yosemite National Park</b> and <b>July</b> are names, so they are capitalized."],
+    ["Which sentence uses <b>capital letters</b> correctly?", "My aunt lives in San Diego, California.", ["My aunt lives in san diego, california.", "my aunt lives in San Diego, California.", "My Aunt Lives In San Diego, California."], "Cities and states are names.", "<b>San Diego</b> and <b>California</b> are proper nouns."],
+    ["Which sentence uses <b>capital letters</b> correctly?", "On Monday, Dr. Patel came to our school.", ["On monday, dr. patel came to our school.", "on Monday, Dr. Patel came to our school.", "On Monday, Dr. Patel Came To Our School."], "Days and people's names and titles are capitalized.", "<b>Monday</b>, <b>Dr.</b> and <b>Patel</b> get capitals."],
+    ["Which sentence uses <b>capital letters</b> correctly?", "We read Charlotte's Web in class.", ["We read charlotte's web in class.", "we read Charlotte's Web in class.", "We Read Charlotte's Web In Class."], "Important words in a book title are capitalized.", "The title <b>Charlotte's Web</b> is capitalized."],
+    ["Which sentence uses <b>capital letters</b> correctly?", "The Pacific Ocean is west of California.", ["The pacific ocean is west of california.", "the Pacific Ocean is west of California.", "The Pacific Ocean Is West Of California."], "Oceans and states are names.", "<b>Pacific Ocean</b> and <b>California</b> are proper nouns."],
+    ["Which sentence uses <b>capital letters</b> correctly?", "Thanksgiving is in November.", ["thanksgiving is in november.", "Thanksgiving is in november.", "thanksgiving is in November."], "Holidays and months are capitalized.", "<b>Thanksgiving</b> and <b>November</b> get capitals."],
+    ["Which sentence uses <b>capital letters</b> correctly?", "My dog, Max, loves to swim in Lake Tahoe.", ["My dog, max, loves to swim in lake tahoe.", "my dog, Max, loves to swim in Lake Tahoe.", "My Dog, Max, Loves To Swim In Lake Tahoe."], "A pet's name and a lake's name are proper nouns.", "<b>Max</b> and <b>Lake Tahoe</b> are names."],
+    ["Which sentence uses <b>capital letters</b> correctly?", "She speaks English and Spanish.", ["She speaks english and spanish.", "she speaks English and Spanish.", "She Speaks English And Spanish."], "Languages are capitalized.", "<b>English</b> and <b>Spanish</b> are capitalized."]
+  ]},
+  {name:"Commas",long:true,items:[
+    ["Which sentence uses <b>commas</b> correctly?", "We bought apples, pears, and grapes.", ["We bought apples pears and grapes.", "We bought, apples pears, and grapes.", "We, bought apples, pears and, grapes."], "Use commas between items in a list.", "<b>apples, pears, and grapes</b>: commas separate the list."],
+    ["Which sentence uses <b>commas</b> correctly?", "Yes, I would like to come.", ["Yes I would, like to come.", "Yes I would like, to come.", "Yes I would like to come,"], "Put a comma after yes or no at the start.", "<b>Yes,</b> is followed by a comma."],
+    ["Which sentence uses <b>commas</b> correctly?", "Sam, please hand me the glue.", ["Sam please hand me, the glue.", "Sam please, hand me the glue.", "Sam please hand me the glue,"], "Use a comma after the name of the person you talk to.", "<b>Sam,</b> gets a comma because you are speaking to him."],
+    ["Which sentence uses <b>commas</b> correctly?", "I wanted to go outside, but it was raining.", ["I wanted to go outside but, it was raining.", "I wanted, to go outside but it was raining.", "I wanted to go, outside but it was raining."], "Put a comma before and, but or so when joining two sentences.", "A comma goes before <b>but</b> in a compound sentence."],
+    ["Which sentence uses <b>commas</b> correctly?", "On July 4, 1776, the Declaration of Independence was signed.", ["On July 4 1776 the Declaration of Independence was signed.", "On July, 4 1776 the Declaration of Independence was signed.", "On July 4 1776, the, Declaration of Independence was signed."], "Commas go between the day and the year, and after the year.", "<b>July 4, 1776,</b> has commas around the year."],
+    ["Which sentence uses <b>commas</b> correctly?", "Sacramento, California, is the state capital.", ["Sacramento California is the state capital.", "Sacramento, California is, the state capital.", "Sacramento California, is the state capital."], "Use commas between a city and a state.", "<b>Sacramento, California,</b> has commas."],
+    ["Which sentence uses <b>commas</b> correctly?", "After dinner, we played a board game.", ["After dinner we, played a board game.", "After, dinner we played a board game.", "After dinner we played, a board game."], "A comma can follow an opening phrase.", "<b>After dinner,</b> introduces the sentence, so a comma follows it."],
+    ["Which sentence uses <b>commas</b> correctly?", "Mia likes to read, and Leo likes to draw.", ["Mia likes to read and, Leo likes to draw.", "Mia likes, to read and Leo likes to draw.", "Mia, likes to read and Leo likes to draw."], "The comma goes before the joining word.", "A comma goes before <b>and</b> when it joins two sentences."]
+  ]},
+  {name:"Who, which, whose",long:false,items:[
+    ["Choose the word: \"The boy ___ dog barks a lot lives next door.\"", "whose", ["who", "which", "where"], "Whose shows that something belongs to someone.", "<b>whose</b>: the dog belongs to the boy."],
+    ["Choose the word: \"The book ___ I borrowed was funny.\"", "which", ["who", "whose", "whom"], "Use which for things.", "<b>which</b> is used for things, like a book."],
+    ["Choose the word: \"My aunt, ___ is a nurse, works at night.\"", "who", ["which", "whose", "where"], "Use who for people.", "<b>who</b> is used for people."],
+    ["Choose the word: \"The bike ___ has a flat tire is mine.\"", "that", ["who", "whose", "whom"], "Use that or which for things.", "<b>that</b> works for things like a bike."],
+    ["Choose the word: \"The girl ___ backpack is red is my friend.\"", "whose", ["who", "which", "that"], "The backpack belongs to the girl.", "<b>whose</b> shows ownership."],
+    ["Choose the word: \"Pip is the fox ___ flies a balloon.\"", "who", ["whose", "where", "whom"], "In stories, animal characters can be who.", "<b>who</b> fits a character like Pip."],
+    ["Choose the word: \"The river, ___ starts in the mountains, flows to the sea.\"", "which", ["who", "whose", "whom"], "A river is a thing.", "<b>which</b> is used for things."],
+    ["Choose the word: \"The teacher ___ class won the prize was proud.\"", "whose", ["who", "which", "that"], "The class belongs to the teacher.", "<b>whose</b> shows that it is her class."]
+  ]},
+  {name:"Verbs: -ing tenses and can/may/must",long:false,items:[
+    ["Choose the verb: \"Yesterday at noon, we ___ lunch.\"", "were eating", ["are eating", "will be eating", "eat"], "Yesterday means the past.", "<b>were eating</b> is the past progressive: it was happening at a past time."],
+    ["Choose the verb: \"Tomorrow at 9:00, I ___ to school.\"", "will be walking", ["was walking", "am walking", "walked"], "Tomorrow means the future.", "<b>will be walking</b> is the future progressive."],
+    ["Choose the verb: \"Look! The birds ___ south.\"", "are flying", ["were flying", "will be flying", "flew"], "Look! means it is happening now.", "<b>are flying</b> is the present progressive."],
+    ["Choose the word: \"You ___ wear a seat belt in the car. It is the law.\"", "must", ["may", "can", "might"], "Must means it is required.", "<b>must</b> shows something you have to do."],
+    ["Choose the word: \"___ I please use the bathroom?\"", "May", ["Must", "Will", "Shall not"], "May is a polite way to ask permission.", "<b>May</b> asks for permission politely."],
+    ["Choose the word: \"Cheetahs ___ run faster than any other land animal.\"", "can", ["must", "may", "should not"], "Can tells what someone is able to do.", "<b>can</b> shows ability."],
+    ["Choose the verb: \"When the phone rang, Dad ___ the dishes.\"", "was washing", ["is washing", "will be washing", "washes"], "The phone rang in the past.", "<b>was washing</b> is the past progressive."],
+    ["Choose the word: \"It ___ rain later, so bring an umbrella just in case.\"", "might", ["must", "can't", "did"], "Might shows something is possible, not certain.", "<b>might</b> means it is possible."]
+  ]},
+  {name:"Similes and metaphors",long:false,items:[
+    ["\"The baby was as light as a feather.\" What kind of comparison is this?", "A simile", ["A metaphor", "An idiom", "A question"], "Look for like or as.", "It uses <b>as</b>, so it is a <b>simile</b>."],
+    ["\"The classroom was a zoo.\" What kind of comparison is this?", "A metaphor", ["A simile", "A fact", "A question"], "It says one thing IS another.", "It says the classroom <b>is</b> a zoo, so it is a <b>metaphor</b>."],
+    ["\"He ran like the wind.\" What does it mean?", "He ran very fast", ["He ran in a storm", "He was cold", "He was very windy"], "The wind moves quickly.", "Running <b>like the wind</b> means running very fast."],
+    ["\"Her voice was music to my ears.\" What does it mean?", "I was happy to hear her", ["She was singing", "I could not hear", "She played a drum"], "Music is pleasant.", "It means hearing her was <b>pleasant and welcome</b>."],
+    ["Which sentence is a <b>simile</b>?", "The snow was like a soft white blanket.", ["The snow was a white blanket.", "The snow fell all night.", "Snow is cold."], "Find the one with like or as.", "<b>like a soft white blanket</b> uses <b>like</b>."],
+    ["Which sentence is a <b>metaphor</b>?", "My brother is a couch potato.", ["My brother is as lazy as a cat.", "My brother sat on the couch.", "My brother likes potatoes."], "A metaphor does not use like or as.", "It says he <b>is</b> a couch potato (a lazy person)."],
+    ["\"The stars were diamonds in the sky.\" What is being compared?", "Stars and diamonds", ["Stars and the sky", "Diamonds and the moon", "The sky and the sea"], "Which two things are said to be the same?", "The stars are compared to <b>diamonds</b>: both sparkle."],
+    ["\"Ella is as busy as a bee.\" What does it mean?", "Ella is working hard on many things", ["Ella has wings", "Ella likes honey", "Ella is sleeping"], "Bees are always working.", "<b>As busy as a bee</b> means very busy."]
+  ]},
+  {name:"Idioms and sayings",long:false,items:[
+    ["What does \"break the ice\" mean?", "Start a friendly conversation", ["Smash a frozen pond", "Drop a glass", "Make the room cold"], "It is about people who just met.", "To <b>break the ice</b> is to start talking and feel less shy."],
+    ["What does \"a piece of cake\" mean?", "Something very easy", ["A dessert", "Something broken", "A birthday party"], "Not about food!", "If a test is <b>a piece of cake</b>, it is very easy."],
+    ["What does \"hit the books\" mean?", "Study hard", ["Throw books", "Read a story about fighting", "Drop your backpack"], "Think of homework.", "To <b>hit the books</b> means to study."],
+    ["What does \"under the weather\" mean?", "Feeling sick", ["Standing in the rain", "Being outside", "Hiding from clouds"], "It describes how someone feels.", "If you are <b>under the weather</b>, you feel sick."],
+    ["What does \"let the cat out of the bag\" mean?", "Tell a secret", ["Free a pet", "Go shopping", "Lose a cat"], "Something hidden comes out.", "To <b>let the cat out of the bag</b> is to tell a secret by accident."],
+    ["What does \"cost an arm and a leg\" mean?", "Be very expensive", ["Hurt your body", "Be free", "Be very heavy"], "Think about money.", "If something <b>costs an arm and a leg</b>, it is very expensive."],
+    ["What does \"on cloud nine\" mean?", "Very happy", ["Flying in a plane", "Very confused", "Very tired"], "Clouds are high up.", "<b>On cloud nine</b> means extremely happy."],
+    ["What does the saying \"practice makes perfect\" mean?", "Doing something again and again makes you better at it", ["You only need to try once", "Perfect people never practice", "Practice is a waste of time"], "Think about learning a new skill.", "The more you <b>practice</b>, the better you get."]
+  ]},
+  {name:"Complete sentences",long:true,items:[
+    ["Which is a <b>complete sentence</b>?", "The dog barked at the mail carrier.", ["Barked at the mail carrier.", "The dog at the mail carrier.", "When the dog barked."], "A complete sentence has a subject and a verb and a whole thought.", "<b>The dog barked at the mail carrier.</b> has a subject (dog) and a verb (barked)."],
+    ["Which is a <b>complete sentence</b>?", "My sister plays soccer on Saturdays.", ["Plays soccer on Saturdays.", "My sister on Saturdays.", "Because my sister plays soccer."], "Who does what?", "<b>My sister plays soccer on Saturdays.</b> is a whole thought."],
+    ["Which is a <b>complete sentence</b>?", "The leaves fell from the tree.", ["Fell from the tree.", "The leaves from the tree.", "After the leaves fell."], "Make sure it tells who and what happened.", "<b>The leaves fell from the tree.</b>"],
+    ["Which is a <b>fragment</b> (not a complete sentence)?", "Running down the street.", ["The boy ran down the street.", "We walked to school.", "Birds sing in the morning."], "A fragment is missing a subject or a verb.", "<b>Running down the street.</b> does not say who was running."],
+    ["Which is a <b>complete sentence</b>?", "We ate pizza after the game.", ["After the game.", "Ate pizza after the game.", "Pizza after the game with friends."], "Find the one with who and what they did.", "<b>We ate pizza after the game.</b>"],
+    ["Which is a <b>fragment</b> (not a complete sentence)?", "Because it was raining.", ["It was raining.", "We stayed inside because it was raining.", "The rain stopped."], "Because starts a part that needs more.", "<b>Because it was raining.</b> leaves you asking: what happened?"],
+    ["Which is a <b>complete sentence</b>?", "Pip flew over the mountains.", ["Over the mountains.", "Flew over the mountains.", "Pip over the mountains."], "Subject + verb.", "<b>Pip flew over the mountains.</b>"],
+    ["Which is a <b>complete sentence</b>?", "The students cleaned the classroom.", ["Cleaned the classroom.", "The students the classroom.", "While the students cleaned."], "Who did what?", "<b>The students cleaned the classroom.</b>"]
+  ]},
+  {name:"Greek and Latin roots",long:false,items:[
+    ["The root <b>dict</b> means \"say\". What does a <b>dictionary</b> tell you?", "What words mean and how to say them", ["How to cook", "What time it is", "Where cities are"], "Dict = say or word.", "A <b>dictionary</b> tells you about words: their meaning and how to <b>say</b> them."],
+    ["The root <b>struct</b> means \"build\". What does a <b>construction</b> worker do?", "Builds things", ["Teaches kids", "Flies planes", "Sells food"], "Struct = build.", "<b>Construction</b> workers <b>build</b> houses and roads."],
+    ["The root <b>aqua</b> means \"water\". Where would you see fish at an <b>aquarium</b>?", "In tanks of water", ["On a farm", "In a library", "In the desert"], "Aqua = water.", "An <b>aquarium</b> has tanks of <b>water</b> for sea animals."],
+    ["The root <b>tri</b> means \"three\". How many wheels does a <b>tricycle</b> have?", "Three", ["Two", "Four", "One"], "Tri = three.", "A <b>tricycle</b> has <b>three</b> wheels."],
+    ["The root <b>spect</b> means \"look\". What does an <b>inspector</b> do?", "Looks carefully at things", ["Sings songs", "Drives buses", "Grows plants"], "Spect = look.", "An <b>inspector</b> <b>looks</b> closely to check things."],
+    ["The root <b>rupt</b> means \"break\". What happens when a volcano <b>erupts</b>?", "Lava breaks out", ["It falls asleep", "It gets colder", "It turns into a lake"], "Rupt = break.", "When a volcano <b>erupts</b>, lava <b>breaks</b> out."],
+    ["The root <b>auto</b> means \"self\". What does an <b>automatic</b> door do?", "Opens by itself", ["Needs a key", "Is very heavy", "Is made of glass"], "Auto = self.", "An <b>automatic</b> door works <b>by itself</b>."],
+    ["The root <b>meter</b> means \"measure\". What does a <b>speedometer</b> measure?", "How fast something is going", ["How hot it is", "How tall you are", "How loud it is"], "Speed + meter.", "A <b>speedometer</b> <b>measures</b> speed."]
+  ]}
+);
 const GRAMF=GRAM.flatMap(g=>g.items.map(f=>({f,long:g.long,cat:g.name})));
 /* ---------- Grammar Grove, generated: fix the sentence, run-ons, adjective order, prepositional phrases, confused words, where/when/why (L.4.1-2) ---------- */
 const GX={
@@ -737,4 +830,186 @@ function renderEventCard(){
     <div class="actrow" style="justify-content:flex-start"><button class="go small" type="button" id="evPlay">Play ${e.island}</button><button class="go small alt" type="button" id="evShop">Event shop</button></div></div>`;
   $('#evPlay').onclick=()=>{tone([523,784]);start(eventIsland())};$('#evShop').onclick=()=>{openCloset();setTimeout(()=>{const s=$('#evShopTitle');s&&s.scrollIntoView({behavior:'smooth'})},80)};
 }
-
+/* ===== more writing practice (W.4.1-4.3, W.4.8, L.4.3): every writing skill has 15 or more questions ===== */
+WR.build.push(
+ "The tired farmer fed the noisy chickens.",
+ "A gentle breeze moved the tall grass.",
+ "My best friend painted a picture of the sea.",
+ "The quick fox jumped over the muddy log.",
+ "Our teacher showed us a map of California.",
+ "The little owl hooted softly in the dark.",
+ "Dad baked warm bread for the whole family.",
+ "The students cheered when the bell rang."
+);
+WR.topic.push(
+ ["Some birds fly south in winter. Bears sleep in their dens. Squirrels store nuts to eat later.", "Animals have different ways to get through the winter.", ["Squirrels have bushy tails.", "Winter starts in December.", "I saw a bird yesterday."]],
+ ["Earthquakes shake the ground. Wildfires can spread quickly in dry weather. Floods can happen after heavy rain.", "California has several kinds of natural hazards.", ["Rain makes puddles.", "Fires are hot.", "Some houses are blue."]],
+ ["You can recycle paper and cans. You can turn off lights when you leave a room. You can walk instead of riding in a car.", "There are many ways to help the planet every day.", ["Cars have four wheels.", "Paper comes from trees.", "My room has two lights."]],
+ ["Our class planted seeds. We watered them every day. We measured how tall they grew each week.", "Our class did a plant experiment this spring.", ["Seeds are small.", "Water is wet.", "Spring comes after winter."]],
+ ["Sea otters eat sea urchins. Without otters, urchins eat too much kelp. Healthy kelp forests are homes for many fish.", "Sea otters help keep kelp forests healthy.", ["Kelp is a kind of seaweed.", "Fish can swim fast.", "I like the beach."]],
+ ["Riders changed horses every 10 to 15 miles. They rode in rain, snow and heat. A trip across the country took about ten days.", "Riding for the Pony Express was hard and fast work.", ["Horses eat hay.", "The country is very big.", "Mail comes in envelopes."]],
+ ["Grandpa taught me to fish. He showed me how to bake his famous pie. On weekends, we fix old bikes together.", "My grandpa has taught me many useful things.", ["Pie is a dessert.", "Bikes have two wheels.", "Fish live in lakes."]],
+ ["Hummingbirds can fly backward. Their wings beat about 50 times a second. They can hover in one spot like a helicopter.", "Hummingbirds are amazing fliers.", ["Helicopters are loud.", "Some birds are blue.", "Flowers have nectar."]],
+ ["The Golden Gate Bridge is painted orange. It is almost two miles long. Millions of people visit it every year.", "The Golden Gate Bridge is a famous California landmark.", ["Orange is a bright color.", "Bridges cross water.", "Two miles is far to walk."]]
+);
+WR.trans.push(
+ ["The movie was long. ___, it was very exciting.", "However", ["For example", "First", "Because"]],
+ ["Plants need sunlight to grow. ___, a sunflower turns to face the sun.", "For example", ["However", "Finally", "Instead"]],
+ ["___, I brushed my teeth. Then I put on my pajamas.", "First", ["However", "For example", "As a result"]],
+ ["It snowed all night. ___, school was closed the next day.", "As a result", ["For example", "First", "However"]],
+ ["We searched the whole house for the cat. ___, we found her asleep in the laundry basket.", "Finally", ["For example", "Next", "Because"]],
+ ["Leo forgot his lunch. ___, his friend shared a sandwich with him.", "Luckily", ["For example", "First", "In conclusion"]],
+ ["Some animals live on land. ___, others live in the ocean.", "On the other hand", ["For example", "First", "Then"]],
+ ["Mix the paint colors. ___, brush the paint onto the paper.", "After that", ["However", "For example", "Although"]],
+ ["Bats, owls and raccoons are active at night. ___, they are called nocturnal animals.", "Because of this", ["For example", "First", "However"]]
+);
+WR.combine.push(
+ ["The sun came out.", "The snow began to melt.", "The sun came out, so the snow began to melt.", ["The sun came out, but the snow began to melt.", "The sun came out or the snow began to melt.", "The snow began to melt, but the sun came out."]],
+ ["I wanted a puppy.", "My mom said we had no room.", "I wanted a puppy, but my mom said we had no room.", ["I wanted a puppy, so my mom said we had no room.", "I wanted a puppy or my mom said we had no room.", "I wanted a puppy because my mom said we had no room."]],
+ ["Ana plays the piano.", "She also plays the violin.", "Ana plays the piano and the violin.", ["Ana plays the piano, but the violin.", "Ana plays the piano so the violin.", "Ana plays the piano because the violin."]],
+ ["The road was icy.", "Dad drove very slowly.", "The road was icy, so Dad drove very slowly.", ["The road was icy, but Dad drove very slowly.", "The road was icy or Dad drove very slowly.", "Dad drove very slowly, but the road was icy."]],
+ ["The cat is black.", "The cat is fluffy.", "The cat is black and fluffy.", ["The cat is black, so it is fluffy.", "The cat is black so fluffy.", "The cat is black because fluffy."]],
+ ["We can go to the zoo.", "We can go to the museum.", "We can go to the zoo or the museum.", ["We can go to the zoo so the museum.", "We can go to the zoo because the museum.", "We can go to the zoo, so we can go to the museum."]],
+ ["The game was close.", "Our team won in the last minute.", "The game was close, but our team won in the last minute.", ["The game was close, so our team won in the last minute.", "The game was close or our team won in the last minute.", "The game was close because our team won."]],
+ ["The bakery opens early.", "Workers start baking at 4 a.m.", "The bakery opens early, so workers start baking at 4 a.m.", ["The bakery opens early, but workers start baking at 4 a.m.", "The bakery opens early or workers start baking.", "Workers start baking at 4 a.m., but the bakery opens early."]],
+ ["Mia was nervous.", "She sang her song perfectly.", "Mia was nervous, but she sang her song perfectly.", ["Mia was nervous, so she sang her song perfectly.", "Mia was nervous or she sang her song perfectly.", "Mia was nervous because she sang perfectly."]]
+);
+WR.detail.push(
+ ["Dogs are loyal friends.", "They stay close to their owners and protect them.", ["Some dogs have spots.", "Dog food comes in bags.", "My street has many houses."]],
+ ["Our school should have a music class.", "Learning music helps kids with math and memory.", ["Drums are loud.", "The gym is next to the library.", "Some songs are old."]],
+ ["Camping is a great way to learn about nature.", "You can see wild animals and learn the names of trees.", ["Tents come in many colors.", "Marshmallows are sweet.", "My cousin lives in Ohio."]],
+ ["Eating breakfast is important.", "It gives your body energy for the morning.", ["Pancakes are round.", "Some people drink coffee.", "The kitchen has a clock."]],
+ ["Volunteers made our park better.", "They picked up trash and planted new trees.", ["Parks have benches.", "Trash cans are green.", "I go to the park on Sundays."]],
+ ["Bicycle helmets keep riders safe.", "A helmet protects your head if you fall.", ["Helmets come in many colors.", "Bikes have bells.", "My bike is red."]],
+ ["The desert is full of life.", "Lizards, snakes and cactus flowers live there.", ["The desert is sandy.", "It is hot in summer.", "Sand gets in your shoes."]],
+ ["Libraries help the whole community.", "Anyone can borrow books, use computers and join classes for free.", ["Some libraries are big.", "Books have pages.", "The library is closed on holidays."]],
+ ["Trees are important for animals.", "Birds build nests in them, and squirrels eat their nuts.", ["Trees are tall.", "Leaves can be green or red.", "Wood is used for tables."]],
+ ["Learning a second language is useful.", "You can talk with more people and understand other cultures.", ["Spanish uses the same alphabet as English.", "Some words are long.", "My teacher is nice."]]
+);
+WR.concl.push(
+ ["Bees carry pollen from flower to flower. This helps plants make fruit and seeds. Many of the foods we eat need bees.", "Without bees, we would have much less food.", ["Some bees are fuzzy.", "Flowers smell nice.", "I am afraid of bees."]],
+ ["First, rinse the strawberries. Next, cut them in half. Then, mix them with yogurt.", "Now you have a healthy snack to enjoy!", ["Strawberries are red.", "Yogurt is made from milk.", "Knives are sharp."]],
+ ["The Gold Rush brought thousands of people to California. Towns grew quickly. San Francisco became a busy city.", "The Gold Rush changed California forever.", ["Gold is shiny.", "Some people found no gold.", "San Francisco has hills."]],
+ ["Exercise makes your heart strong. It helps you sleep better. It can even put you in a good mood.", "Moving your body every day is good for you in many ways.", ["Running shoes cost money.", "Some people like swimming.", "My mood is happy."]],
+ ["Recycling saves trees. It keeps trash out of the ocean. It also saves energy in factories.", "Recycling helps take care of our planet.", ["The ocean is big.", "Factories are loud.", "Trees have roots."]],
+ ["Our class read books to the kindergartners. We helped them with their letters. They gave us a thank-you card.", "Being reading buddies made everyone happy.", ["Kindergartners are five.", "Cards are made of paper.", "Letters are in the alphabet."]],
+ ["Owls can turn their heads very far. They hear tiny sounds in the dark. Their soft feathers make them silent fliers.", "Owls are built to be great night hunters.", ["Some owls are brown.", "Night is dark.", "Feathers can be soft."]],
+ ["We packed water and snacks. We hiked to the top of the hill. We could see the whole city from there.", "The long hike was worth the amazing view.", ["Snacks are tasty.", "Hills are tall.", "The city has many cars."]],
+ ["Thunderstorms bring lightning and loud thunder. Stay inside during a storm. Stay away from tall trees and water.", "Following these rules keeps you safe in a thunderstorm.", ["Thunder is loud.", "Rain is wet.", "Trees can be tall."]],
+ ["Sea turtles lay eggs on sandy beaches. The babies hatch and crawl to the ocean. Only a few grow up to be adults.", "Life is a big adventure for a baby sea turtle.", ["Sand is warm.", "The ocean has waves.", "Turtles have shells."]],
+ ["The library got new computers. It added a reading corner. Now it is open on Sundays too.", "The library is now better than ever.", ["Computers need power.", "Sunday is a weekend day.", "Corners have two walls."]]
+);
+WR.opinion.push(
+ ["Every school should have a garden.", "Students learn where food comes from by growing it.", ["Gardens have dirt.", "Tomatoes are red.", "Our school has a gym."]],
+ ["Summer is the best season.", "There is no school and you can swim outside.", ["Summer comes after spring.", "July has 31 days.", "Some people like winter."]],
+ ["Kids should read every night.", "Reading builds your vocabulary and imagination.", ["Books have covers.", "Night is dark.", "Libraries close at six."]],
+ ["Our town should build a skate park.", "Kids need a safe place to skate away from cars.", ["Skateboards have wheels.", "Our town has a bakery.", "Some kids ride bikes."]],
+ ["Dogs make better pets than goldfish.", "You can play with a dog and take it on walks.", ["Goldfish are orange.", "Dogs have four legs.", "Pet stores sell food."]],
+ ["Field trips are important.", "Students see and do things they cannot do in a classroom.", ["Buses are yellow.", "Museums have walls.", "Lunch is at noon."]],
+ ["Everyone should learn to cook.", "Cooking helps you eat healthy food when you grow up.", ["Ovens get hot.", "Spoons are in drawers.", "Pasta is long."]],
+ ["Our class should get a class pet.", "Caring for a pet teaches responsibility.", ["Hamsters are small.", "Our class has 25 desks.", "Pets need names."]],
+ ["People should turn off screens an hour before bed.", "Screens can make it harder to fall asleep.", ["Phones have screens.", "Bedtime is at night.", "Some screens are big."]],
+ ["The school day should start later.", "Students learn better when they get enough sleep.", ["School starts at eight.", "Clocks have hands.", "Some students walk to school."]],
+ ["Everyone should visit a national park.", "National parks protect amazing nature that you can see in person.", ["Parks have signs.", "Yosemite is in California.", "Some parks are small."]]
+);
+WR.steps.push(
+ ["Fill the watering can", "Carry it to the garden", "Pour water on the plants", "Put the can away"],
+ ["Get out a bowl", "Pour in the cereal", "Add the milk", "Eat with a spoon"],
+ ["Wet your toothbrush", "Squeeze on toothpaste", "Brush all your teeth", "Rinse your mouth"],
+ ["Pick up the trash", "Sort it into bins", "Take the bins outside", "Wash your hands"],
+ ["Choose a library book", "Take it to the desk", "Check it out with your card", "Bring it home to read"],
+ ["Blow up the balloon", "Tie a knot at the end", "Attach a string", "Let it float"],
+ ["Cut out the paper shapes", "Arrange them on the card", "Glue them down", "Let the glue dry"],
+ ["Wash the dog in the tub", "Rinse off the soap", "Dry the dog with a towel", "Brush its fur"],
+ ["Plan your story", "Write a first draft", "Revise and fix mistakes", "Share your final story"],
+ ["Put on your helmet", "Get on your bike", "Look both ways", "Start pedaling"]
+);
+WR_WORD.push(
+ ["The kitten was <u>small</u>.", "tiny", ["okay", "good", "normal"], "Which word tells exactly how small?"],
+ ["The children <u>said</u> \"Hooray!\" when they won.", "cheered", ["told", "talked", "wrote"], "Which verb shows a happy, loud sound?"],
+ ["The sunset was <u>pretty</u>.", "breathtaking", ["okay", "fine", "alright"], "Which word paints a stronger picture?"],
+ ["Max <u>ate</u> his pizza in two minutes.", "gobbled", ["had", "got", "took"], "Which verb shows how fast he ate?"],
+ ["The room was <u>messy</u> after the party.", "cluttered", ["nice", "ready", "happy"], "Which word tells exactly what kind of mess?"],
+ ["The water was <u>cold</u>.", "icy", ["fine", "wet", "okay"], "Which word shows exactly how cold?"],
+ ["The rabbit <u>moved</u> into the bushes.", "darted", ["went", "was", "got"], "Which verb shows quick movement?"],
+ ["The music was <u>loud</u>.", "booming", ["nice", "fine", "good"], "Which word helps you hear it?"]
+);
+RESEARCH_Q.push(
+ ["Who was the first person to walk on the moon?", "a biography of Neil Armstrong", ["a cookbook", "a map of the moon's craters", "a poem about stars"]],
+ ["How many people live in Los Angeles today?", "a recent government population website", ["a 1950 travel brochure", "a novel set in Los Angeles", "a dictionary"]],
+ ["What do the words on the California flag say?", "a website about California state symbols", ["a book about Texas", "a science magazine", "a joke book"]],
+ ["What time does the city pool open on Saturday?", "the city pool's official website", ["an encyclopedia about water", "a swimming storybook", "a dictionary"]],
+ ["Which word means the same as \"happy\"?", "a thesaurus", ["an atlas", "a cookbook", "a calendar"]],
+ ["What did people eat at the California missions?", "a history book about the missions", ["a modern restaurant menu", "a book about outer space", "a sports magazine"]]
+);
+RELIABLE.push(
+ ["You are writing about sharks. Which source is most <b>reliable</b>?", "an aquarium's science page written by marine biologists", ["a scary movie about sharks", "a comment on a video", "a joke website"]],
+ ["You want to know if a new law passed in California. Which source is most <b>reliable</b>?", "the official California government website", ["a rumor from a friend", "an ad on a game app", "a made-up story"]],
+ ["You need facts about volcanoes. Which source is most <b>reliable</b>?", "the U.S. Geological Survey website", ["a cartoon about lava monsters", "a social media post", "a store selling volcano kits"]],
+ ["You are researching healthy foods. Which source is most <b>reliable</b>?", "a children's health website from a hospital", ["a candy company advertisement", "a post by a stranger", "a fairy tale"]],
+ ["Your report is about the first Thanksgiving. Which source is most <b>reliable</b>?", "a museum website about Plymouth and the Wampanoag people", ["a holiday greeting card", "a cartoon", "a comic strip"]],
+ ["You want to know how old the redwood trees in a park are. Which source is most <b>reliable</b>?", "the National Park Service website for that park", ["a postcard", "a guess on a forum", "a video game"]]
+);
+NOTES.push(
+ {"topic": "Why sleep is important", "claim": "Sleep helps kids learn.", "good": "While you sleep, your brain saves what you learned that day.", "bad": ["Most people sleep in a bed.", "Some pajamas have stripes.", "Owls are awake at night."]},
+ {"topic": "Sea otters", "claim": "Sea otters keep warm in cold water.", "good": "Sea otters have the thickest fur of any animal, up to a million hairs per square inch.", "bad": ["Sea otters live along the California coast.", "Otters sometimes hold hands while sleeping.", "Sea otters eat sea urchins."]},
+ {"topic": "The California Gold Rush", "claim": "The Gold Rush made San Francisco grow quickly.", "good": "San Francisco grew from about 1,000 people in 1848 to about 25,000 in 1849.", "bad": ["Gold was found at Sutter's Mill.", "Miners used pans to find gold.", "Levi Strauss sold work pants."]},
+ {"topic": "Honeybees", "claim": "Honeybees are important to farmers.", "good": "Bees pollinate almond trees, and California grows most of the world's almonds.", "bad": ["Bees have six legs.", "A hive has one queen.", "Honey never spoils."]},
+ {"topic": "Exercise", "claim": "Exercise is good for your brain.", "good": "Kids who exercise often can focus better in class.", "bad": ["Soccer is a popular sport.", "Running shoes have laces.", "Gyms have mirrors."]},
+ {"topic": "Earthquake safety", "claim": "Getting ready for earthquakes saves lives.", "good": "Families with emergency kits have water, food and first aid ready if roads close.", "bad": ["California has many faults.", "The 1906 earthquake hit San Francisco.", "Earthquakes are measured with seismographs."]},
+ {"topic": "Monarch butterflies", "claim": "Monarchs travel very far.", "good": "Some monarchs fly more than 2,000 miles to spend the winter in Mexico or California.", "bad": ["Monarchs are orange and black.", "Caterpillars eat milkweed.", "Butterflies have four wings."]},
+ {"topic": "School gardens", "claim": "School gardens help kids eat healthier.", "good": "Kids who grow vegetables are more likely to try eating them.", "bad": ["Gardens need sunlight.", "Carrots grow underground.", "Our school has a fence."]}
+);
+FORMAL.push(
+ ["You are writing an email to your teacher. Which sentence is the most <b>formal</b>?", "Could you please explain the homework for tomorrow?", ["Hey, what's the homework??", "Homework. Huh?", "Yo teach, homework?"]],
+ ["You are giving a speech at an assembly. Which sentence fits <b>best</b>?", "Thank you all for coming to our science fair.", ["Thanks, guys, it's cool you came!", "Sup everybody!", "Yay, you're here, whatever."]],
+ ["Which sentence would you use in a note to a <b>friend</b> (informal)?", "See ya at the park later!", ["I look forward to meeting you at the park.", "Please arrive at the park at the scheduled time.", "Dear Sir or Madam, the park."]],
+ ["You are writing a report about volcanoes. Which sentence is the most <b>formal</b>?", "Volcanoes form where melted rock rises through Earth's crust.", ["Volcanoes are, like, super hot!", "OMG lava!!!", "Volcanoes r cool."]],
+ ["You are writing a thank-you letter to the mayor. Which sentence fits <b>best</b>?", "Thank you for visiting our classroom last week.", ["Thx 4 coming!", "You came. Cool.", "Hey mayor, thanks a bunch, dude."]],
+ ["Which is <b>informal</b> language, the way you might talk to a family member?", "Gonna grab a snack, want one?", ["Would you care for a snack?", "I am going to the kitchen to get a snack.", "May I offer you a snack?"]],
+ ["You are asking the librarian for help. Which sentence is the most <b>polite and formal</b>?", "Excuse me, could you help me find a book about sharks?", ["Where are the shark books?!", "Gimme shark books.", "Sharks. Where?"]],
+ ["Your class is writing to a museum to plan a trip. Which sentence fits <b>best</b>?", "Our class would like to visit the museum on May 5.", ["We wanna come over sometime!", "Museum trip? Yes please!!!", "Can we, like, come?"]],
+ ["In a book report, which sentence is the most <b>formal</b>?", "The main character learns to be brave by the end of the story.", ["The kid gets brave and stuff.", "This book is sooo good.", "Brave kid. The end."]],
+ ["Which sentence is <b>informal</b>?", "That movie was awesome!", ["The movie was very well made.", "I enjoyed the movie very much.", "The film received excellent reviews."]],
+ ["You are introducing a guest speaker. Which sentence fits <b>best</b>?", "Please welcome Dr. Lee, a scientist who studies oceans.", ["Here's this ocean lady, everybody.", "Dr. Lee! Whoo!", "Okay so like, she studies water."]],
+ ["You are writing a letter to a newspaper. Which sentence is the most <b>formal</b>?", "Our town needs more bike lanes to keep riders safe.", ["Bike lanes, please, ugh!", "We need bike stuff, ok?", "Bikes rule, so add lanes!!!"]]
+);
+PUNCT.push(
+ ["Which sentence shows that the speaker is <b>angry</b>?", "\"Stop taking my pencils!\"", ["\"Stop taking my pencils.\"", "\"Stop taking my pencils?\"", "\"Stop, taking, my pencils\""]],
+ ["Which sentence asks a <b>question</b>?", "\"Can I borrow your book?\"", ["\"Can I borrow your book.\"", "\"Can I borrow your book!\"", "\"Can I borrow, your book\""]],
+ ["Which sentence is a calm <b>statement</b>?", "\"The bus leaves at eight.\"", ["\"The bus leaves at eight!\"", "\"The bus leaves at eight?\"", "\"The bus leaves at eight,\""]],
+ ["Which sentence shows the most <b>excitement</b>?", "\"It's my birthday today!\"", ["\"It's my birthday today.\"", "\"It's my birthday today?\"", "\"It's my birthday, today\""]],
+ ["Which sentence shows the speaker is <b>unsure</b>?", "\"Is this the right way?\"", ["\"This is the right way!\"", "\"This is the right way.\"", "\"This, is the right way\""]],
+ ["Which sentence uses an exclamation point to show <b>danger</b>?", "\"Watch out for the car!\"", ["\"Watch out for the car.\"", "\"Watch out for the car?\"", "\"Watch out, for the car\""]],
+ ["An author wants a character to sound <b>amazed</b>. Which is best?", "\"Wow, look at that rainbow!\"", ["\"Look at that rainbow.\"", "\"Is that a rainbow?\"", "\"That rainbow, look\""]],
+ ["Which sentence shows the speaker is <b>surprised</b>?", "\"You got a puppy!\"", ["\"You got a puppy.\"", "\"You got, a puppy\"", "\"you got a puppy\""]],
+ ["Which is the best punctuation to show a <b>loud cheer</b>?", "\"Go, team, go!\"", ["\"Go team go.\"", "\"Go, team, go?\"", "\"go team go\""]],
+ ["Which sentence ends with the right mark for a <b>polite request</b>?", "\"Please pass the salt.\"", ["\"Please pass the salt?\"", "\"Please, pass, the salt\"", "\"please pass the salt\""]],
+ ["An author writes about a scary noise. Which sentence shows <b>fear</b> best?", "\"What was that sound?!\"", ["\"That was a sound.\"", "\"What was that sound.\"", "\"what was that sound\""]],
+ ["Which sentence shows the speaker is <b>bored</b>, not excited?", "\"We have to wait again.\"", ["\"We have to wait again!\"", "\"We have to wait again!!!\"", "\"Yay, we wait again!\""]]
+);
+DIALOGUE.push(
+ ["Which sentence <b>shows</b> that Maya is excited?", "Maya bounced on her toes and squealed, \"We're going to the beach!\"", ["Maya was excited.", "Maya felt excited about the beach.", "Maya liked the beach a lot."]],
+ ["Which sentence <b>shows</b> that Leo is sad?", "Leo stared at the floor and mumbled, \"Nobody came to my party.\"", ["Leo was sad.", "Leo felt very sad.", "Leo had a sad day."]],
+ ["Which line of dialogue is punctuated <b>correctly</b>?", "\"Can we go now?\" asked Sam.", ["\"Can we go now\" asked Sam?", "\"Can we go now? asked Sam.\"", "Can we go now? \"asked Sam.\""]],
+ ["Which sentence <b>shows</b> that Grandpa is proud?", "Grandpa grinned and said, \"You built that birdhouse all by yourself!\"", ["Grandpa was proud.", "Grandpa felt proud of it.", "Grandpa liked the birdhouse."]],
+ ["Which line of dialogue is punctuated <b>correctly</b>?", "Ana said, \"I found my shoe.\"", ["Ana said \"I found my shoe\".", "Ana said, I found my shoe.", "Ana said, \"I found my shoe\"."]],
+ ["Which sentence <b>shows</b> that Ben is scared?", "Ben grabbed his sister's arm and whispered, \"Did you hear that?\"", ["Ben was scared.", "Ben felt scared.", "Ben was very scared of it."]],
+ ["Which sentence <b>shows</b> that Zoe is frustrated?", "Zoe threw down her pencil. \"This puzzle is impossible!\" she groaned.", ["Zoe was frustrated.", "Zoe did not like the puzzle.", "Zoe felt bad."]],
+ ["Which line of dialogue is punctuated <b>correctly</b>?", "\"Watch out!\" yelled the coach.", ["\"Watch out\"! yelled the coach.", "\"Watch out! yelled the coach.\"", "Watch out! \"yelled the coach\"."]],
+ ["Which sentence <b>shows</b> that Mom is surprised?", "Mom gasped. \"You cleaned the whole kitchen?\"", ["Mom was surprised.", "Mom felt surprised.", "Mom saw the kitchen."]],
+ ["Which sentence uses dialogue to show that Eli is <b>curious</b>?", "Eli leaned closer to the tank. \"What does the octopus eat?\" he asked.", ["Eli was curious.", "Eli wanted to know things.", "Eli looked at the tank."]],
+ ["Which line of dialogue starts a <b>new speaker</b> correctly?", "\"I'm hungry,\" said Lily. \"Me too,\" said Max.", ["\"I'm hungry,\" said Lily, me too said Max.", "\"I'm hungry, said Lily. Me too, said Max.\"", "I'm hungry said Lily \"Me too\" said Max."]],
+ ["Which sentence <b>shows</b> that the team is happy?", "The players jumped and hugged, shouting, \"We did it!\"", ["The team was happy.", "The players felt good.", "The team won."]]
+);
+/* more generated grammar and word practice (L.4.1f run-ons, L.4.1a where/when/why, L.4.1e prepositional phrases, L.4.4b affixes) */
+[[['The road was icy','Dad drove slowly'],'so'],[['I wanted to play outside','it started to rain'],'but'],[['Ana painted a picture','Ben wrote a poem'],'and'],
+ [['The store was closed','we went home'],'so'],[['Leo studied hard','he still felt nervous'],'but'],[['The sun came out','the snow melted'],'so'],
+ [['Mom made pancakes','Dad squeezed orange juice'],'and'],[['The team practiced every day','they won the championship'],'so']].forEach(([p,c])=>{GX.conj[GX.pair.length]=c;GX.pair.push(p)});
+PREP.push(['The ball rolled','under the couch','.'],['We hiked','through the dark forest','.'],['Grandpa sat','on the front steps','.'],['The kite flew','above the crowded beach','.'],
+ ['The bus stopped','in front of the library','.'],['A frog jumped','into the muddy pond','.'],['The birds flew','toward the warm south','.'],['Our cat napped','beside the sunny window','.']);
+REL.push(['I will never forget the day ___ I learned to ride a bike.','when'],['This is the house ___ my grandma grew up.','where'],['Can you explain the reason ___ the sky is blue?','why'],
+ ['Winter is the time ___ bears hibernate.','when'],['The library is the place ___ I do my homework.','where'],['The reason ___ I smiled is a secret.','why'],
+ ['Spring is the season ___ flowers bloom.','when'],['The beach ___ we found the shells was quiet.','where']);
+PREF.push(['unsafe','un','safe'],['unlucky','un','lucky'],['dishonest','dis','honest'],['disobey','dis','obey'],['rewrite','re','write'],['refill','re','fill'],['prepay','pre','pay'],['misplace','mis','place']);
+SUFF.push(['power','ful'],['power','less'],['harm','less'],['harm','ful'],['wonder','ful'],['end','less'],['spot','less','spots']);
