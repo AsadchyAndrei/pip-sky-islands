@@ -12,6 +12,12 @@ ok(L.localParts(new Date('2026-10-19T00:30:00Z'), 'America/Los_Angeles').dow ===
 ok(L.localParts(new Date(), 'Not/AZone').day.length === 10, 'bad time zone falls back');
 const kid = { v: 1, name: 'Alisa', grade: 'California, 4th grade', dd, mast: 12, tot: 141, alm: 5, need: [['Fractions on a number line', 'Pie Peak', 2, 6]], tips: [['Pie Peak', 'Cut a sandwich into equal parts.']], goal: { t: 'Play 60 minutes', have: 40, need: 60, done: false, end: '2026-10-20', reward: 'Park <trip>' }, cls: { teacher: 'Ms. Lee', note: 'We learn fractions', tasks: [['Pie Peak', '2026-10-17', false, 't1'], ['Digit Cliffs', '2026-10-19', false, 't2'], ['Clock Cove', '', true, 't3']] }, last: '2026-10-18' };
 const m = L.parentWeekly([kid], today, 'https://x/unsub');
+const mes = L.parentWeekly([{ ...kid, tips: [['Pie Peak', 'Corten un sándwich en partes iguales.']] }], today, 'https://x/unsub', 'es');
+ok(mes && mes.subject === "La semana de Alisa en Pip's Sky Islands", 'Spanish subject ' + (mes && mes.subject));
+ok(mes.html.includes('lang="es"') && mes.html.includes('correctas al primer intento') && mes.html.includes('Prueba en casa') && mes.html.includes('Corten un sándwich') && mes.html.includes('Desactivar estos correos') && mes.html.includes('4.º grado'), 'Spanish weekly email');
+ok(!/minutes played each day|To practice next|Turn off these emails/i.test(mes.html), 'no English left in the Spanish email');
+const rs = L.remindersFor('k1', { name: 'Alisa', last: L.addDay(today, -4) }, today, {}, 'es');
+ok(rs.length === 1 && rs[0].title === '¡Alisa extraña a Pip!', 'Spanish reminder: ' + (rs[0] && rs[0].title));
 ok(m && m.subject === "Alisa's week on Pip's Sky Islands", 'parent subject ' + (m && m.subject));
 ok(m.html.includes('Park &lt;trip&gt;') && !m.html.includes('<trip>'), 'text is escaped');
 ok(m.html.includes('overdue') && m.html.includes('Fractions on a number line') && m.html.includes('Cut a sandwich'), 'tasks, needs and tips');

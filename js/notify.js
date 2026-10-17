@@ -7,7 +7,7 @@ function kidDigest(){if(G.roster||G.pack!==PACK.id)return null;
   const dd={};for(let i=0;i<14;i++){const k=addDays(-i),d=(G.days||{})[k];if(d&&(d.q||d.sec))dd[k]=[Math.round((d.sec||0)/60),d.q||0,d.c||0]}
   const SK=ISLANDS.filter(i=>i.gen&&!i.retired).flatMap(i=>skillsOf(i.id).map(s=>({...s,isl:i})));
   const need=SK.filter(s=>{const m=skStat(s.k);return m.n>=3&&m.st!==2}).sort((a,b)=>skStat(a.k).ok/skStat(a.k).n-skStat(b.k).ok/skStat(b.k).n).slice(0,4);
-  const tips=[...new Set(need.map(s=>s.isl.id))].slice(0,2).map(id=>[byId(id).name,homeTip(id)]).filter(x=>x[1]);
+  const lang=(CL.userDoc&&CL.userDoc.lang)||undefined,tips=[...new Set(need.map(s=>s.isl.id))].slice(0,2).map(id=>[byId(id).name,homeTip(id,undefined,lang)]).filter(x=>x[1]); // the ideas in the family's language
   const g=G.fgoal,p=g&&fgProg(g),c=G.cls&&typeof classDoc==='function'?classDoc():null;
   const last=Object.keys(G.days||{}).filter(k=>(G.days[k].q||0)>0).sort().pop()||'';
   return JSON.stringify({v:1,name:G.name||'Player',grade:`${PACK.stateName}, ${GRADE_WORD(PACK.grade).toLowerCase()}`,dd,

@@ -106,20 +106,20 @@ async function runUser(uid, u, now, opts = {}) {
   // the weekly email: Sunday evening, once
   if ((n.weekly && lp.dow === 0 && st.weekly !== today) || opts.force) {
     const classes = u.role === 'teacher' ? await classesOf(uid) : [];
-    const m = L.weeklyEmail(kids, classes, today, un);
+    const m = L.weeklyEmail(kids, classes, today, un, u.lang);
     if (m && email && await send.mail(email, m, un)) { done.push('weekly'); if (!opts.force) st.weekly = today; }
     else if (opts.force) return { skipped: !email ? 'no-email' : !m ? 'nothing' : 'not-sent' };
   }
   // reminders: a push to this family's devices, or an email if there is no device (at most one email a week)
   if (n.remind && !opts.force) {
     st.inact = st.inact || {}; st.due = st.due || {};
-    const items = kids.flatMap((k) => L.remindersFor(k.id, k, today, st));
+    const items = kids.flatMap((k) => L.remindersFor(k.id, k, today, st, u.lang));
     if (items.length) {
       let pushed = 0;
       for (const i of items) pushed += await send.push(uid, { title: i.title, body: i.body, tag: i.kind + ':' + i.key });
       if (pushed) done.push('push');
       else if (email && (!st.remindMail || L.daysBetween(st.remindMail, today) >= 7)) {
-        if (await send.mail(email, L.reminderEmail(items, un), un)) { done.push('remind-mail'); st.remindMail = today; }
+        if (await send.mail(email, L.reminderEmail(items, un, u.lang), un)) { done.push('remind-mail'); st.remindMail = today; }
       }
       for (const i of items) { if (i.kind === 'inact') st.inact[i.key] = today; else st.due[i.key] = today; }
       for (const k of Object.keys(st.due)) if (L.daysBetween(st.due[k], today) > 30) delete st.due[k];
@@ -156,18 +156,21 @@ async function onClassChange(cid, before, after) {
   for (const t of fresh) for (const m of list) {
     if (t.to && t.to.length && !t.to.includes(m.mid)) continue;
     if (!per.has(m.owner)) per.set(m.owner, []);
-    per.get(m.owner).push({ title: `New task from ${who}`, body: `${m.name ? m.name + ': ' : ''}${t.nm || 'Open Pip to see it.'}${t.due ? ` (due ${new Date(t.due + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })})` : ''}`, tag: 'task:' + t.id });
+    per.get(m.owner).push({ kind: 'task', name: m.name, nm: t.nm, due: t.due, tag: 'task:' + t.id });
   }
   if (note) for (const m of list) {
     if (!per.has(m.owner)) per.set(m.owner, []);
-    if (!per.get(m.owner).some((x) => x.tag === 'note')) per.get(m.owner).push({ title: `Message from ${who}`, body: note.text.slice(0, 140), tag: 'note' });
+    if (!per.get(m.owner).some((x) => x.tag === 'note')) per.get(m.owner).push({ kind: 'note', text: note.text.slice(0, 140), tag: 'note' });
   }
   let sent = 0;
   for (const [uid, msgs] of per) {
     const u = (await db.collection('users').doc(uid).get()).data() || {};
     if ((u.notify || {}).classPush === false) continue;
     const seen = new Set();
-    for (const m of msgs.slice(0, 3)) { if (seen.has(m.tag)) continue; seen.add(m.tag); sent += await send.push(uid, m); }
+    const es = u.lang === 'es', day = (d) => L.niceDay(d, u.lang); // in the language the family chose in Parents' Corner
+    const say = (m) => m.kind === 'note' ? { title: es ? `Mensaje de ${who}` : `Message from ${who}`, body: m.text, tag: m.tag }
+      : { title: es ? `Nueva tarea de ${who}` : `New task from ${who}`, body: `${m.name ? m.name + ': ' : ''}${m.nm || (es ? 'Abre Pip para verla.' : 'Open Pip to see it.')}${m.due ? ` (${es ? 'vence' : 'due'} ${day(m.due)})` : ''}`, tag: m.tag };
+    for (const m of msgs.slice(0, 3)) { if (seen.has(m.tag)) continue; seen.add(m.tag); sent += await send.push(uid, say(m)); }
   }
   return sent;
 }

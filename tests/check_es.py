@@ -13,6 +13,7 @@ with sync_playwright() as p:
         t = pg.inner_text('#parent')
         c.ok('Rincón de padres' in t and 'La semana de un vistazo' in t and 'Volver al juego' in t and 'Practicar ahora' in t, f'{w}: Parents\' Corner in Spanish')
         c.ok('Times Meadow' in t or 'Sharing Shore' in t, f'{w}: island names stay as in the game')
+        c.ok('Repartan 75 galletas' in t and 'Prueba en casa' in t, f'{w}: the Try at home idea in Spanish')
         pg.click('.ptabs [data-pt="set"]'); pg.wait_for_timeout(300)
         t = pg.inner_text('#parent')
         c.ok('Programa escolar' in t and 'Meta diaria' in t and 'Límite de tiempo diario' in t, f'{w}: Settings in Spanish')

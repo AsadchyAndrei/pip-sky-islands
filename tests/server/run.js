@@ -82,6 +82,13 @@ const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(fal
   await T.onClassChange('C4', cls, { ...cls, tasks: [{ id: 'note', kind: 'note', text: 'Field trip Friday', ts: 5 }, { id: 'lesson', kind: 'lesson', isl: ['frac'] }] });
   ok(pushes.length === 2 && pushes.every((x) => x[1] === 'Message from Ms. Lee' && x[2] === 'Field trip Friday'), 'a note goes to every family once; a lesson does not: ' + JSON.stringify(pushes));
 
+  pushes.length = 0;
+  await db.doc('users/P8').set({ role: 'parent', lang: 'es' });
+  await db.doc('classes/C8').set({ ...cls });
+  await db.doc('classes/C8/members/P8_k1').set({ owner: 'P8', name: 'Sofía' });
+  await T.onClassChange('C8', { ...cls, tasks: [] }, { ...cls, tasks: [{ id: 'z', nm: 'Pie Peak', to: [] }] });
+  ok(pushes.length === 1 && pushes[0][1] === 'Nueva tarea de Ms. Lee' && pushes[0][2].startsWith('Sofía: Pie Peak'), 'a family that chose Spanish gets the push in Spanish: ' + JSON.stringify(pushes));
+
   /* ---------- class quest total (server function) ---------- */
   const today = new Date().toISOString().slice(0, 10), y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
   await db.doc('classes/C7').set({ ...cls, goal: { kind: 'right', need: 50, start: y, end: today, ts: 1 } });
