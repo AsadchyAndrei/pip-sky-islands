@@ -79,7 +79,7 @@ async function classCheck(force){if(CL.mode!=='cloud'||!G.cls)return;const cid=G
   c._at=Date.now();lsSet('pip-class-'+cid,JSON.stringify(c));
   if(c.name!==G.cls.name||c.teacher!==G.cls.teacher)touchKid(id,p=>{p.cls=Object.assign({},p.cls,{name:c.name,teacher:c.teacher})});
   if(!m)classPush(true);
-  if(c.pack&&c.pack!==G.pack&&CONTENT.packs[c.pack]&&canAdopt()){packSwitch(c.pack);save();try{localStorage.setItem('pip-pack',c.pack)}catch(e){}
+  if(c.pack&&c.pack!==G.pack&&CONTENT.packs[c.pack]&&canAdopt()){delete G.visit;packSwitch(c.pack);save();try{localStorage.setItem('pip-pack',c.pack)}catch(e){}
     toast(`Now in ${GRADE_WORD(CONTENT.packs[c.pack].grade).toLowerCase()}!`,`${esc(c.teacher||'The teacher')} moved the class. Last year's stars are kept safe.`,'#38b98a');setTimeout(()=>location.reload(),1800);return}
   if(curScreen==='map')renderClassCard()}
 const classDoc=()=>G.cls?clsCache(G.cls.cid):null;
@@ -142,7 +142,7 @@ function bindClassParent(){const note=(t,ok)=>{const n=$('#clsNote');if(n){n.cla
         try{await CL.api.saveMember(c.cid,id,{name:(G.name||'Player').slice(0,16),pack:c.pack,code,ts:Date.now()})}
         catch(e){delete G.cls;$('#clsYes').disabled=false;const n=$('#clsN2');n.className='note bad';n.textContent='Could not join right now. Check the internet and try again.';return}
         c._at=Date.now();lsSet('pip-class-'+c.cid,JSON.stringify(c));
-        if(c.pack!==G.pack&&CONTENT.packs[c.pack]){const P=CONTENT.packs[c.pack];G.settings.state=P.state;G.settings.grade=P.grade;packSwitch(c.pack);save();closeOverlay();try{localStorage.setItem('pip-pack',c.pack)}catch(e){}location.reload();return}
+        if(c.pack!==G.pack&&CONTENT.packs[c.pack]){const P=CONTENT.packs[c.pack];G.settings.state=P.state;G.settings.grade=P.grade;delete G.visit;packSwitch(c.pack);save();closeOverlay();try{localStorage.setItem('pip-pack',c.pack)}catch(e){}location.reload();return}
         save();classPush(true);closeOverlay();toast('Joined!',`${esc(G.name||'Player')} is in ${esc(c.name)}.`,'#38b98a');renderParent()}})};
   if($('#clsLeave'))$('#clsLeave').onclick=async e=>{const b=e.currentTarget;if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='Tap again to leave';return}
     b.disabled=true;const cid=G.cls.cid;try{await CL.api.leaveClass(cid,ROOT.current)}catch(err){if(!(err&&err.code==='permission-denied')){b.disabled=false;note('Could not leave right now. Check the internet and try again.');return}}

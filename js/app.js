@@ -543,7 +543,7 @@ function renderParent(){
     <div class="pcard ptoday"><h4>Today</h4><div class="kpis">
       <div class="kpi"><b>${Math.floor(t.sec/60)}</b><small>minutes played</small></div><div class="kpi"><b>${t.q}</b><small>puzzles answered</small></div>
       <div class="kpi"><b>${t.q?Math.round(t.c/t.q*100)+'%':'–'}</b><small>right on first try</small></div><div class="kpi"><b>${gi?(gi.cur>=gi.max?'Done':gi.label):'Off'}</b><small>daily goal</small></div></div><p class="note">Today: ${t.h||0} hints shown · ${t.w||0} "How?" explanations · ${t.l||0} lessons · ${t.e||0} coins earned, ${t.s||0} spent.</p></div>
-    ${packParentHTML()}
+    ${packParentHTML()}${typeof visitParentHTML==='function'?visitParentHTML():''}
     ${classParentHTML()}
     ${nowParentHTML()}
     ${skillsParentHTML()}
@@ -602,7 +602,7 @@ function renderParent(){
   </div>`;
   setSync();$('#codeOut').value=encodeSave(ROOT.current);if(CL.mode==='cloud')loadBackups();
   document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>start(byId(b.dataset.play)));
-  const sS=$('#setState'),sG=$('#setGrade');if(sS&&sG){sS.onchange=()=>setPack(sS.value,+sG.value);sG.onchange=()=>setPack(sS.value,+sG.value)}
+  if(typeof bindVisitDoors==='function')bindVisitDoors($('#parent'));const sS=$('#setState'),sG=$('#setGrade');if(sS&&sG){sS.onchange=()=>setPack(sS.value,+sG.value);sG.onchange=()=>setPack(sS.value,+sG.value)}
   document.querySelectorAll('[data-now]').forEach(b=>b.onclick=()=>{const id=b.dataset.now,L=G.settings.now=(G.settings.now||[]).slice(),k=L.indexOf(id);if(k>=0)L.splice(k,1);else{if(L.length>=4)L.shift();L.push(id)}save();renderParent();const c=[...document.querySelectorAll('.pcard h4')].find(h=>h.textContent==='In class right now');c&&c.scrollIntoView({block:'center'})});
   if($('#pDesk'))$('#pDesk').onclick=()=>openDesk();if($('#pFlu'))$('#pFlu').onclick=()=>openFluency();
   if($('#pInstall'))$('#pInstall').onclick=async()=>{const e=installEvt;if(!e)return;e.prompt();try{await e.userChoice}catch(x){}installEvt=null;renderParent()};

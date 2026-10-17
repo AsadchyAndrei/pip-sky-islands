@@ -268,7 +268,7 @@ function packParentHTML(){
     <div class="setrow"><label for="setState">State</label><select id="setState">${US_STATES.map(([c,n])=>opt(c,n+(Object.values(CONTENT.packs).some(P=>P.state===c&&packReady(P))?'':' (planned)'),c===st)).join('')}</select></div>
     <div class="setrow"><label for="setGrade">Grade</label><select id="setGrade">${GRADES.map(([g,n])=>opt(g,n+(packReady(CONTENT.packs[packKey(st,g)])?'':' (planned)'),g===gr)).join('')}</select></div>
     <p class="note${ready?' ok':''}" id="packNote">${ready?`Playing: <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>.`:`${esc((US_STATES.find(x=>x[0]===st)||['',st])[1])}, ${esc(GRADES.find(x=>x[0]===gr)[1].toLowerCase())} is planned but not ready yet. Until then the islands follow <b>${esc(PACK.stateName)}, grade ${PACK.grade}</b>; most math and English skills are the same from state to state.`}</p></div>`}
-function setPack(st,gr){if(G.cls)return renderParent();G.settings.state=st;G.settings.grade=gr;const id=packKey(st,gr);
+function setPack(st,gr){if(G.cls)return renderParent();delete G.visit;G.settings.state=st;G.settings.grade=gr;const id=packKey(st,gr);
   if(packReady(CONTENT.packs[id])&&id!==PACK.id){packSwitch(id);save();try{localStorage.setItem('pip-pack',id)}catch(e){}location.reload();return}save();renderParent()}
 const SUBJ_NAMES={math:'Math',ela:'English',science:'Science',social:'Social studies'};
 const islandSubject=i=>{const k=(i.skills||[])[0];return k&&CONTENT.skills[k]?CONTENT.skills[k].subject:''};

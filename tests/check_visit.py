@@ -1,0 +1,33 @@
+"""Visiting another grade (js/visit.js): review last year or peek at next year from the map or Parents' Corner;
+the home grade's stars wait untouched and the bar on the map brings the child back; not offered in a teacher's class."""
+from serve import *
+c = Check('visit another grade')
+with sync_playwright() as p:
+    b = launch(p)
+    for w in (390, 1280):
+        ctx, pg, errs = open_page(b, w, 900, pack='ca-4')
+        best4 = pg.evaluate("JSON.stringify(G.best)")
+        foot = pg.text_content('#mapFoot')
+        c.ok('Review 3rd grade' in foot and 'Sneak peek: 5th grade' in foot, f'{w}: two doors on the map: {foot[-60:]}')
+        c.ok(pg.evaluate("document.getElementById('visitBar').hidden"), f'{w}: no bar at home')
+        with pg.expect_navigation(): pg.click('[data-visit="ca-3"]')
+        pg.wait_for_function("typeof G!=='undefined'&&G&&PACK.id==='ca-3'&&document.querySelector('#visitBar')", timeout=30000); pg.wait_for_timeout(800)
+        if pg.is_visible('#kids'): pg.evaluate("selectKid('a')"); pg.wait_for_timeout(500)
+        c.ok(pg.evaluate("PACK.id") == 'ca-3' and pg.evaluate("G.visit&&G.visit.home") == 'ca-4', f'{w}: now playing grade 3, home is grade 4')
+        pg.evaluate("renderMap()"); pg.wait_for_timeout(300)
+        c.ok(pg.is_visible('#visitBar') and 'Back to 4th grade' in pg.text_content('#visitBar'), f'{w}: the bar leads back')
+        c.ok('Review' not in pg.text_content('#mapFoot'), f'{w}: no doors while visiting')
+        c.ok(pg.evaluate("JSON.stringify(G.grades['ca-4'].best)") == best4, f'{w}: grade 4 stars kept safe')
+        with pg.expect_navigation(): pg.click('#visitBack')
+        pg.wait_for_function("typeof G!=='undefined'&&G&&PACK.id==='ca-4'", timeout=30000); pg.wait_for_timeout(800)
+        if pg.is_visible('#kids'): pg.evaluate("selectKid('a')"); pg.wait_for_timeout(500)
+        c.ok(pg.evaluate("!G.visit") and pg.evaluate("JSON.stringify(G.best)") == best4, f'{w}: back home with the same stars')
+        pg.evaluate("G.cls={name:'Room 5',code:'ABC234'};renderMap()"); pg.wait_for_timeout(200)
+        c.ok('Review' not in pg.text_content('#mapFoot'), f'{w}: not offered in a teacher\'s class')
+        pg.evaluate("delete G.cls;CL.unlockUntil=Date.now()+600000;openParent()"); pg.wait_for_timeout(500)
+        pg.evaluate("typeof pTabGo==='function'&&pTabGo('set')()"); pg.wait_for_timeout(300)
+        c.ok(pg.locator('#parent [data-visit="ca-5"]').count() >= 1, f'{w}: Parents\' Corner offers it too')
+        c.ok(not errs, f'{w}: page errors {errs[:3]}')
+        ctx.close()
+    b.close()
+c.done()
