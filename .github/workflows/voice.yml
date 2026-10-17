@@ -31,8 +31,8 @@ jobs:
         if: github.event.inputs.voices != '-' && github.event.inputs.voices != 'pack' && github.event.inputs.voices != 'check'
         env:
           VOICES: ${{ github.event.inputs.voices }}
-      - name: Keep only the MP3s
-        if: github.event.inputs.voices != 'check' and the voice list on the voice-samples branch (not on the site); "-" just deletes the branch
+      - name: Keep only the MP3s and the voice list on the voice-samples branch (not on the site); "-" just deletes the branch
+        if: github.event.inputs.voices != 'check'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
