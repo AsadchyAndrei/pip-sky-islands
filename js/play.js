@@ -3,7 +3,8 @@
 let S=null,tipTimer=0,tips=[],tipI=0;
 const SCREENS=['gate','kids','map','play','done','closet','albumS','story','parent','home','inside','teach'];
 let curScreen='';
-function show(id){if(id!=='play'&&typeof aliveEventEnd==='function')aliveEventEnd();curScreen=id;document.body.classList.toggle('nogame',id==='gate'||id==='kids'||id==='teach');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);document.body.dataset.screen=id;scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
+function show(id){if(id!=='play'&&typeof aliveEventEnd==='function')aliveEventEnd();curScreen=id;
+  if(typeof musicTheme==='function'&&id!=='done')musicTheme(id==='play'?(S&&S.mode==='boss'?'boss':'play'):id==='story'?'story':['home','closet','albumS','inside'].includes(id)?'home':'map');document.body.classList.toggle('nogame',id==='gate'||id==='kids'||id==='teach');document.body.classList.toggle('ongate',id==='gate');SCREENS.forEach(s=>$('#'+s).hidden=s!==id);document.body.dataset.screen=id;scrollTo({top:0});if(id!=='map')clearInterval(tipTimer);if(id!=='play')stopSpeak()}
 let EXPLORE=new Set();
 function pickExplore(){EXPLORE=new Set();for(const g of ['math','world'])ISLANDS.filter(i=>i.group===g&&i.gen&&!i.retired&&!G.visited[i.id]).slice(0,2).forEach(i=>EXPLORE.add(i.id))}
 function card(isl,i){
@@ -84,6 +85,7 @@ function renderMap(){setTimeout(homeLayout,0);setTimeout(()=>{if(typeof tourHook
   const newbie=!G.placed&&G.xp===0;document.body.classList.toggle('newbie',newbie);
   if(G.greeted!==dayKey()||newbie){G.greeted=dayKey();save(true);
     say($('#maptext'),G.xp===0?`Hi${nm()}! I'm <b>Pip</b>, a balloon-flying ${heroName()}! Solve puzzles on the islands to earn <b>stars, coins and stickers</b>. ${G.placed?'Want to start with Story Mode?':'First, a <b>quick 2-minute check</b> so I can pick puzzles that fit you just right!'}`:`Welcome back${nm()}! I missed you! ${!dailyDone()?'A brand new <b>Daily Challenge</b> is waiting!':''}`);
+    if(typeof autoSay==='function')autoSay($('#maptext').innerHTML,false);
     const b=$('#mapact');if(G.xp===0){b.hidden=false;if(G.placed){b.textContent='Start Story Mode';b.onclick=openStory}else{b.textContent='Quick check';b.onclick=startPlacement}}else b.hidden=true}
   else showTip();
   lockBubble();unlockCelebrate();setTimeout(()=>{if(typeof chIncoming!=='function')return;if(ovOpen)setTimeout(chIncoming,4500);else chIncoming()},2400);
@@ -152,7 +154,7 @@ function showQ(){
   const c=$('#card');c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
   else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i));aliveStep(S.i);aliveEvent()}
-  $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);
+  $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);if(typeof autoSay==='function')autoSay(q.speak||q.prompt);
   if(S.mode==='lesson'&&S.i>0){const pv=S.qs[S.i-1];if(q.guided&&!pv.guided)say($('#say'),`Now let's do one <b>together</b>, step by step!`);else if(!q.teach&&!q.guided&&(pv.guided||pv.teach))say($('#say'),`Your turn! Try these <b>on your own</b>. Use the trick!`)}
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;if(q.listen)wireListen();$('#card').classList.toggle('lp',!!q.longp);
   $('#hint').hidden=$('#feedback').hidden=$('#next').hidden=true;
@@ -505,9 +507,9 @@ function judge(ok,btn){
       const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ();return}
     if(S.mode==='test'&&S.tries===1){track(q,true,false,given);S.tries=2}
     if(S.tries===1&&S.mode==='island'&&q.meta&&q.meta.t!=null&&!q.rv&&byId(q.meta.i)&&byId(q.meta.i).gen){const k=q.meta.i+'|'+q.meta.t;S.missRun=S.missRun||{};S.helped=S.helped||{};S.missRun[k]=(S.missRun[k]||0)+1;if(S.missRun[k]>=2&&!S.helped[k]){S.helped[k]=1;S.helpQ=q}}
-    if(S.tries===1){track(q,true,false,given);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge()}
+    if(S.tries===1){track(q,true,false,given);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge();autoSay(`Hint: ${q.hint}`)}
     else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review'||q.rv)reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
-      $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;finishQ()}
+      $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;autoSay(fb.innerHTML);finishQ()}
   }
 }
 function firstMistakeTip(){if(G.tutHint)return;G.tutHint=1;save(true);

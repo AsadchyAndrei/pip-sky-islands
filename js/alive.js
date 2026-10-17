@@ -26,7 +26,7 @@ function aliveRight(from,first){if(!alOn())return;aliveStreak();
   const an=s.animate([{transform:'translate(-50%,-50%) scale(.5)',opacity:.4},{transform:`translate(calc(${dx*.45}px - 50%),calc(${dy*.45-lift}px - 50%)) scale(1.25)`,opacity:1,offset:.45},{transform:`translate(calc(${dx}px - 50%),calc(${dy}px - 50%)) scale(.45)`,opacity:.95}],{duration:720,easing:'cubic-bezier(.45,.05,.4,1)'});
   an.onfinish=()=>{s.remove();pip.classList.remove('catch');void pip.offsetWidth;pip.classList.add('catch');const r=pip.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)burst(r.left+r.width/2,r.top+r.height*.72,14)}}
 /* streak: glow at 3, sparkles and a brighter sun at 5 */
-function aliveStreak(){const n=S?S.streak:0;document.body.classList.toggle('al-s3',n>=3&&n<5);document.body.classList.toggle('al-s5',n>=5)}
+function aliveStreak(){const n=S?S.streak:0;if(typeof musicLayer==='function')musicLayer(n>=5?2:n>=3?1:0);document.body.classList.toggle('al-s3',n>=3&&n<5);document.body.classList.toggle('al-s5',n>=5)}
 /* a miss: a small cloud passes over the sun */
 function aliveWrong(){if(!alOn())return;aliveStreak();if(reduce)return;const sky=document.querySelector('.sky');if(!sky||sky.querySelector('.alcloud'))return;
   sky.insertAdjacentHTML('beforeend','<div class="alcloud"><i></i><i></i><i></i></div>');const c=sky.querySelector('.alcloud');setTimeout(()=>c.remove(),2800)}

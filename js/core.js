@@ -223,7 +223,7 @@ function refreshFoxes(){document.querySelectorAll('[data-fox]').forEach(el=>el.i
 function foxMove(cls){document.querySelectorAll('.fox').forEach(f=>{f.classList.remove('hop','wobble','spin');void f.offsetWidth;f.classList.add(cls)})}
 function foxClass(cls,ms){document.querySelectorAll('.fox').forEach(f=>{f.classList.remove(cls);void f.offsetWidth;f.classList.add(cls)});clearTimeout(foxClass['t'+cls]);foxClass['t'+cls]=setTimeout(()=>document.querySelectorAll('.fox').forEach(f=>f.classList.remove(cls)),ms)}
 function say(el,html,quiet){
-  if(!el)return;el.innerHTML=html;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+  if(!el)return;el.innerHTML=html;if(!quiet&&el.id==='say'&&typeof autoSay==='function'&&curScreen==='play'&&!ovOpen)autoSay(html,false);el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
   foxClass('talking',Math.min(2600,Math.max(800,el.textContent.length*45)));
 }
 const nm=()=>G.name?`, ${esc(G.name)}`:'';

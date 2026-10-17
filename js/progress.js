@@ -321,25 +321,57 @@ let actx=null,soundOn=true;
 function ctx(){actx=actx||new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();return actx}
 function tone(freqs,dur=.11,type='triangle'){if(!soundOn)return;try{ctx();const t=actx.currentTime;freqs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.value=f;
   g.gain.setValueAtTime(.0001,t+i*dur);g.gain.exponentialRampToValueAtTime(.17,t+i*dur+.02);g.gain.exponentialRampToValueAtTime(.0001,t+i*dur+dur);o.connect(g).connect(actx.destination);o.start(t+i*dur);o.stop(t+i*dur+dur+.03)})}catch(e){}}
-const sYes=()=>tone([660,880,1175]),sNo=()=>tone([220,180],.14,'sine'),sWin=()=>tone([523,659,784,1047,1319],.12),sCoin=()=>tone([1320,1760],.06,'square'),sBadge=()=>tone([784,988,1175,1568],.1),sLevel=()=>tone([523,659,784,659,784,1047],.13);
+const sYes=()=>tone([660,880,1175]),sNo=()=>tone([220,180],.14,'sine'),sWin=()=>{if(typeof jingle==='function')jingle('win');else tone([523,659,784,1047,1319],.12)},sCoin=()=>tone([1320,1760],.06,'square'),sBadge=()=>tone([784,988,1175,1568],.1),sLevel=()=>jingle('level');
 let musicOn=true;try{musicOn=localStorage.getItem('pip-music')!=='off'}catch(e){}
 let mGain=null,mTimer=0,nextT=0,step=0;
-const hz=m=>440*Math.pow(2,(m-69)/12),BEAT=60/116,E8=BEAT/2,_=null;
-const STABS=[[60,64,67],[59,62,67],[57,60,64],[57,60,65]],ROOTS=[36,43,45,41];
-const TUNE_A=[[72,_,76,79,_,76,74,_],[74,_,71,74,_,79,77,_],[76,_,72,76,_,81,79,_],[77,76,74,72,_,74,_,_]];
-const TUNE_B=[[79,_,79,76,79,_,84,_],[83,_,79,_,74,76,77,_],[76,_,81,79,76,_,72,_],[74,_,77,76,74,_,72,_]];
-const PHRASES=[TUNE_A,TUNE_B,TUNE_A,null],BASS=[0,_,12,0,_,0,12,_];let noiseBuf=null,duck=1;
+const hz=m=>440*Math.pow(2,(m-69)/12),_=null;
+/* music by place: each theme is a short loop (4 bars × 4 phrases) played by the same little synth, no audio files.
+   map: the sunny theme · play: soft and sparse, so it never gets in the way of thinking · boss: driving, minor
+   story: slow and a bit mysterious · home: cozy and plucky (island, closet, album) */
+const THEMES={
+  map:{bpm:116,roots:[36,43,45,41],stabs:[[60,64,67],[59,62,67],[57,60,64],[57,60,65]],bass:[0,_,12,0,_,0,12,_],kick:[0,4],hat:1,lead:'triangle',vol:.4,
+    tunes:[[[72,_,76,79,_,76,74,_],[74,_,71,74,_,79,77,_],[76,_,72,76,_,81,79,_],[77,76,74,72,_,74,_,_]],[[79,_,79,76,79,_,84,_],[83,_,79,_,74,76,77,_],[76,_,81,79,76,_,72,_],[74,_,77,76,74,_,72,_]],0,null]},
+  play:{bpm:92,roots:[41,36,45,43],stabs:[[65,69,72],[64,67,72],[64,69,72],[62,67,71]],bass:[0,_,_,_,7,_,_,_],kick:[],hat:0,lead:'sine',vol:.26,
+    tunes:[[[77,_,_,_,76,_,72,_],[_,_,79,_,_,_,76,_],[_,_,72,_,74,_,76,_],[74,_,_,_,_,_,_,_]],null,[[72,_,_,74,_,_,76,_],[_,_,77,_,_,_,79,_],[_,_,76,_,72,_,69,_],[71,_,_,_,_,_,_,_]],null],
+    spark:[84,88,91,96]},
+  boss:{bpm:136,roots:[33,33,29,31],stabs:[[57,60,64],[57,60,64],[53,57,60],[55,59,62]],bass:[0,0,12,0,0,12,0,12],kick:[0,2,4,6],hat:1,lead:'square',vol:.32,
+    tunes:[[[69,_,72,_,76,_,74,72],[69,_,_,67,69,_,72,_],[65,_,69,_,72,_,71,69],[67,_,71,_,74,_,_,_]],0,[[76,_,74,_,72,_,74,76],[77,_,76,_,74,_,72,_],[72,_,69,_,65,_,69,72],[71,_,67,_,71,74,_,_]],null]},
+  story:{bpm:84,roots:[38,34,41,36],stabs:[[62,65,69],[58,62,65],[60,65,69],[60,64,67]],bass:[0,_,_,7,_,_,12,_],kick:[0],hat:0,lead:'sine',vol:.3,
+    tunes:[[[74,_,_,77,_,76,_,74],[70,_,_,_,74,_,_,_],[72,_,_,76,_,77,_,79],[76,_,_,_,_,_,_,_]],null,[[81,_,_,79,_,77,_,76],[74,_,_,_,70,_,_,_],[72,_,76,_,77,_,76,_],[74,_,_,_,_,_,_,_]],null]},
+  home:{bpm:104,roots:[43,40,36,38],stabs:[[67,71,74],[64,67,71],[64,67,72],[62,66,69]],bass:[0,_,7,_,12,_,7,_],kick:[0,4],hat:0,lead:'triangle',vol:.32,
+    tunes:[[[79,_,83,_,86,_,83,_],[76,_,79,_,83,_,_,_],[76,_,79,_,84,_,83,_],[81,_,78,_,74,_,_,_]],0,[[86,_,84,_,83,_,81,_],[79,_,_,_,76,_,_,_],[79,_,81,_,83,_,84,_],[86,_,_,_,_,_,_,_]],null]}};
+let theme='map',mLayer=0,mVol=1;try{mVol=Math.max(0,Math.min(1,(+localStorage.getItem('pip-mvol')||100)/100))}catch(e){}
+const mLevel=()=>THEMES[theme].vol*duck*mVol+.0001;
+let noiseBuf=null,duck=1;
 function note(m,t,dur,vol,type,attack){const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.value=hz(m);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(mGain);o.start(t);o.stop(t+dur+.05)}
 function hat(t,vol){if(!noiseBuf){noiseBuf=actx.createBuffer(1,actx.sampleRate*.06,actx.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
   const s=actx.createBufferSource(),f=actx.createBiquadFilter(),g=actx.createGain();s.buffer=noiseBuf;f.type='highpass';f.frequency.value=7000;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+.05);s.connect(f).connect(g).connect(mGain);s.start(t);s.stop(t+.06)}
 function kick(t){const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.setValueAtTime(130,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);g.gain.setValueAtTime(.16,t);g.gain.exponentialRampToValueAtTime(.0001,t+.18);o.connect(g).connect(mGain);o.start(t);o.stop(t+.2)}
-function schedule(){while(nextT<actx.currentTime+.25){const bar=Math.floor(step/8),pos=step%8,c=bar%4,phrase=PHRASES[Math.floor(bar/4)%4];
-  if(BASS[pos]!==null)note(ROOTS[c]+BASS[pos],nextT,E8*.9,.09,'triangle',.005);if(pos%2===1)STABS[c].forEach(m=>note(m,nextT,E8*.6,.022,'triangle',.005));
-  if(pos===0||pos===4)kick(nextT);hat(nextT,pos%2?.035:.018);if(phrase&&phrase[c][pos]!==null)note(phrase[c][pos],nextT,E8*1.4,.05,'triangle',.005);nextT+=E8;step++}}
+function schedule(){const T=THEMES[theme],E8=60/T.bpm/2;
+  while(nextT<actx.currentTime+.25){const bar=Math.floor(step/8),pos=step%8,c=bar%4,pi=Math.floor(bar/4)%4;let ph=T.tunes[pi];if(ph===0)ph=T.tunes[0];
+    if(T.bass[pos]!==null)note(T.roots[c]+T.bass[pos],nextT,E8*.9,.09,'triangle',.005);
+    if(pos%2===1)T.stabs[c].forEach(m=>note(m,nextT,E8*.6,.02,'triangle',.005));
+    if(T.kick.includes(pos))kick(nextT);if(T.hat)hat(nextT,pos%2?.035:.018);
+    if(ph&&ph[c][pos]!==null)note(ph[c][pos],nextT,E8*1.6,.05,T.lead,.006);
+    /* a streak adds a twinkle on top (the round theme gets brighter as the child gets things right) */
+    if(mLayer&&T.spark&&pos%2===0&&(mLayer>1||pos%4===0))note(T.spark[(bar+pos/2)%T.spark.length],nextT,E8*.8,.018*mLayer,'sine',.004);
+    nextT+=E8;step++}}
 function musicStart(){if(!musicOn||mTimer||document.hidden)return;try{ctx();if(!mGain){const f=actx.createBiquadFilter();f.type='lowpass';f.frequency.value=9000;mGain=actx.createGain();mGain.connect(f).connect(actx.destination)}
-  const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(.0001,t);mGain.gain.linearRampToValueAtTime(.4*duck,t+1.2);nextT=t+.1;step=0;mTimer=setInterval(schedule,100)}catch(e){}}
+  const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(.0001,t);mGain.gain.linearRampToValueAtTime(mLevel(),t+1.2);nextT=t+.1;step=0;mTimer=setInterval(schedule,100)}catch(e){}}
 function musicStop(){if(!mTimer)return;clearInterval(mTimer);mTimer=0;try{const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(mGain.gain.value,t);mGain.gain.linearRampToValueAtTime(.0001,t+.5)}catch(e){}}
-function setDuck(v){duck=v;if(mGain&&mTimer&&actx){const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(mGain.gain.value,t);mGain.gain.linearRampToValueAtTime(.4*v+.0001,t+.3)}}
+/* switch themes with a short fade: the new loop starts from its first bar */
+function musicTheme(name){if(!THEMES[name]||name===theme)return;theme=name;mLayer=0;if(!mTimer||!actx)return;
+  try{const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(mGain.gain.value,t);mGain.gain.linearRampToValueAtTime(.0001,t+.35);
+    nextT=t+.45;step=0;mGain.gain.setValueAtTime(.0001,t+.45);mGain.gain.linearRampToValueAtTime(mLevel(),t+1.4)}catch(e){}}
+function musicLayer(n){mLayer=Math.max(0,Math.min(2,n|0))}
+function setMusicVolume(v){mVol=Math.max(0,Math.min(1,v));try{localStorage.setItem('pip-mvol',String(Math.round(mVol*100)))}catch(e){}setDuck(duck)}
+/* short tunes for big moments; the music steps back while they play */
+const JINGLES={win:[[72,0],[76,.12],[79,.24],[84,.36],[88,.52]],level:[[67,0],[72,.1],[76,.2],[79,.3],[84,.45],[79,.6],[84,.72]],unlock:[[79,0],[83,.09],[86,.18],[91,.3]],
+  quest:[[72,0],[72,.12],[72,.24],[77,.4],[81,.62],[84,.84],[89,1.05]]};
+function jingle(name){const J=JINGLES[name];if(!J||!soundOn)return;try{ctx();const t0=actx.currentTime+.02;
+  J.forEach(([m,dt],i)=>{const o=actx.createOscillator(),g=actx.createGain(),t=t0+dt,d=i===J.length-1?.5:.16;o.type='triangle';o.frequency.value=hz(m);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.16,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+d+.05)});
+  const end=J[J.length-1][1]+.6;setDuck(.3);clearTimeout(jingle.t);jingle.t=setTimeout(()=>setDuck(1),end*1000)}catch(e){}}
+function setDuck(v){duck=v;if(mGain&&mTimer&&actx){const t=actx.currentTime;mGain.gain.cancelScheduledValues(t);mGain.gain.setValueAtTime(mGain.gain.value,t);mGain.gain.linearRampToValueAtTime(mLevel(),t+.3)}}
 const canSpeak='speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';
 let voice=null;
 function voiceList(){if(!canSpeak)return [];try{return speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang))}catch(e){return []}}
@@ -369,6 +401,12 @@ function speak(html,o={}){
     u.onstart=()=>{setDuck(.3);$('#speakBtn')&&$('#speakBtn').classList.add('on')};u.onend=u.onerror=()=>{setDuck(1);$('#speakBtn')&&$('#speakBtn').classList.remove('on')};
     speechSynthesis.speak(u)}catch(e){}
 }
+/* "Read everything aloud" (a parents' setting, per player): Pip reads his lines, each question, hints, explanations,
+   pop-ups and tour bubbles by himself. Off by default; the speaker button always works. */
+const readOn=()=>!!(typeof G!=='undefined'&&G&&G.settings&&G.settings.read&&canSpeak&&curScreen!=='parent'&&curScreen!=='teach');
+function autoSay(html,queue=true){if(readOn())speak(html,{user:true,queue})}
+function readAloud(box){if(!readOn()||!box||box.querySelector('#pinbox'))return;const h=box.querySelector('h2,h3'),p=[...box.querySelectorAll('p')].filter(x=>!x.classList.contains('note')).slice(0,2);
+  const t=[h&&h.innerHTML,...p.map(x=>x.innerHTML)].filter(Boolean).join('. ');if(t)speak(t,{user:true})}
 function stopSpeak(){if(canSpeak)try{speechSynthesis.cancel()}catch(e){}setDuck(1)}
 let lastAct=Date.now();
 addEventListener('pointerdown',()=>{lastAct=Date.now();musicStart()});addEventListener('keydown',()=>{lastAct=Date.now();musicStart()});
@@ -393,8 +431,10 @@ function dropBadgeToasts(){toastQ=toastQ.filter(x=>x[4]!=='badge');document.quer
 let ovQueue=[],ovOpen=false;
 function overlay(html,onOpen){ovQueue.push([html,onOpen]);if(!ovOpen)nextOverlay()}
 let ovReturn=null;
-function nextOverlay(){const it=ovQueue.shift();if(!it){$('#overlay').hidden=true;ovOpen=false;if(ovReturn&&document.contains(ovReturn))try{ovReturn.focus({preventScroll:true})}catch(e){}ovReturn=null;pumpToasts();return}
+function nextOverlay(){const it=ovQueue.shift();if(!it){$('#overlay').hidden=true;ovOpen=false;if(duck<1&&!(canSpeak&&speechSynthesis.speaking))setDuck(1);if(ovReturn&&document.contains(ovReturn))try{ovReturn.focus({preventScroll:true})}catch(e){}ovReturn=null;pumpToasts();return}
   if(!ovOpen)ovReturn=document.activeElement;ovOpen=true;$('#ocard').innerHTML=it[0];$('#overlay').hidden=false;refreshFoxes();it[1]&&it[1]();
+  if(curScreen==='play')setDuck(.4); // explanations and pop-ups during a round: the music steps back
+  readAloud($('#ocard'));
   const h=$('#ocard').querySelector('h2,h3');$('#ocard').setAttribute('aria-label',h?h.textContent:'Pip');setTimeout(()=>{const f=$('#ocard').querySelector('input,button.go,button');if(f&&!$('#overlay').hidden)try{f.focus({preventScroll:true})}catch(e){}},60)}
 /* keyboard: Tab stays inside the window; Esc closes windows that only have one button */
 document.addEventListener('keydown',e=>{if(!ovOpen)return;const box=$('#ocard'),f=[...box.querySelectorAll('button:not([disabled]),input,select,textarea,a[href]')].filter(x=>x.offsetParent);

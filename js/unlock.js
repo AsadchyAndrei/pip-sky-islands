@@ -51,6 +51,6 @@ function unlockCelebrate(delay=1600){clearTimeout(unlockCelebrate.t);if(!unlockQ
     const id=unlockQueue.shift(),u=unlockOf(id);
     if(id!=='albumBtn'&&(G.visited||{})[id])return unlockCelebrate(400); // already found it on their own
     unlockFresh.add(id);
-    overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New on the map!</div><h2>${u.t}</h2><p>${u.x}</p><div class="btnrow"><button class="go" type="button" id="unGo">${u.go}</button><button class="go alt small" type="button" id="unLater">Later</button></div>`,()=>{burst(innerWidth/2,innerHeight/3,90);sWin()});
+    overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">New on the map!</div><h2>${u.t}</h2><p>${u.x}</p><div class="btnrow"><button class="go" type="button" id="unGo">${u.go}</button><button class="go alt small" type="button" id="unLater">Later</button></div>`,()=>{burst(innerWidth/2,innerHeight/3,90);jingle('unlock')});
     $('#unGo').onclick=()=>{closeOverlay();unlockQueue=[];if(id==='albumBtn')return openAlbum();start(byId(id))};
     $('#unLater').onclick=()=>{closeOverlay();renderMap()}},delay)}

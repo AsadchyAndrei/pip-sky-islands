@@ -564,6 +564,8 @@ function renderParent(){
       ${canSpeak?`<div class="setrow"><label for="setVoice">Pip's voice<small>Voices come from this device. Ones marked "Natural" or "Enhanced" sound best.</small></label><select id="setVoice" style="max-width:100%"></select></div>
       <div class="setrow"><label for="setVstyle">Voice style</label>${sel('setVstyle',[['fox','Cheerful fox (higher, bouncy)'],['calm','Gentle fox (softer, slower)'],['plain','Normal voice']],G.settings.vstyle)}</div>
       <div class="setrow"><label>Try it</label><button type="button" class="go small" id="testVoice">Hear Pip</button></div>`:'<div class="setrow"><small>This browser has no voices available for reading aloud.</small></div>'}
+      ${canSpeak?`<div class="setrow"><label>Read everything aloud<small>Pip reads each question, hints, explanations and his own lines by himself. Great for younger readers. The speaker button always works.</small></label>${sw('setRead',!!G.settings.read)}</div>`:''}
+      <div class="setrow"><label for="setMvol">Music volume<small>On this device. Music can also be turned off in the menu.</small></label><input type="range" id="setMvol" min="0" max="100" step="5" value="${Math.round(mVol*100)}" aria-label="Music volume"></div>
       <div class="setrow"><label>Bigger text</label>${sw('setBig',G.settings.big)}</div>
       <div class="setrow"><label>Easy-to-read font<small>Wider letters and spacing, helpful for dyslexia</small></label>${sw('setDys',G.settings.dys)}</div>
       <div class="setrow"><label for="setName">Player name</label><input type="text" id="setName" maxlength="16" value="${esc(G.name)}"></div>
@@ -608,7 +610,7 @@ function renderParent(){
   fillVoiceSelect();
   if($('#setVoice')){$('#setVoice').onchange=e=>{G.settings.voice=e.target.value;save();pickVoice();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
     $('#setVstyle').onchange=e=>{G.settings.vstyle=e.target.value;save();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
-    $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);bindSw('setAll','showAll');bindSw('setDys','dys',applySettings);
+    $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);if($('#setRead'))bindSw('setRead','read');if($('#setMvol'))$('#setMvol').oninput=e=>{setMusicVolume(+e.target.value/100);if(!mTimer&&musicOn)musicStart()};bindSw('setAll','showAll');bindSw('setDys','dys',applySettings);
   $('#setName').onchange=e=>{G.name=e.target.value.trim().slice(0,16);save();updateStats()};
   document.querySelectorAll('[data-sw],[data-pk]').forEach(b=>b.onclick=()=>parentSwitch(b.dataset.sw||b.dataset.pk));
   $('#addP').onclick=()=>newPlayer(id=>{save();ROOT.current=id;G=ROOT.profiles[id];persistLocal();if(ensurePack())return;applySettings();renderParent()});

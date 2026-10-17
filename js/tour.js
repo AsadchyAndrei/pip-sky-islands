@@ -139,7 +139,7 @@ function tourShow(){const s=TR.steps[TR.i],L=$('#tourL');if(!L)return;
   const real=TR.steps.filter(x=>!x.intro&&!x.end&&!x._gone),k=real.indexOf(s),n=real.length; // steps not on this screen are not counted
   L.classList.toggle('center',!!(s.intro||s.end));L.classList.toggle('act',!!s.act);
   $('#tbS').textContent=s.intro?`Quick tour · ${n} stops`:s.end?'Done':`${s.ch?s.ch+' · ':''}${k+1} of ${n}`;
-  $('#tbT').textContent=s.t;$('#tbX').textContent=s.x;
+  $('#tbT').textContent=s.t;$('#tbX').textContent=s.x;if(typeof autoSay==='function')autoSay(s.t+'. '+s.x,false);
   $('#tbD').innerHTML=s.intro||s.end?'':n>12?`<span class="tbar"><i style="width:${Math.round((k+1)/n*100)}%"></i></span>`:real.map((_,j)=>`<i class="${j<k?'was':j===k?'now':''}"></i>`).join('');
   if(TR.chs.length>1&&!s.intro&&!s.end)$('#tbD').insertAdjacentHTML('beforeend',`<span class="tchs">${TR.chs.map(c=>`<b class="${c===s.ch?'on':''}">${c}</b>`).join('')}</span>`);
   $('#tbBack').hidden=!!(s.intro||s.end||k===0);$('#tbSkip').hidden=!!s.end;$('#tbSkip').textContent=s.intro?'Not now':'Skip tour';
