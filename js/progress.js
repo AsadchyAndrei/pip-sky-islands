@@ -188,9 +188,11 @@ function skillsOf(id){const c=skillsOf.c||(skillsOf.c={});if(c[id])return c[id];
   if(!L.length)return c[id]=[{k:id+':0',id,i:0,name:'All puzzles',std:'',codes:[],ts:rng(0,isl.types-1)}];
   return c[id]=L.map((S,i)=>({k:S.id,id,i,name:S.name,std:S.std.join(' / '),codes:S.std,ts:S.src.types?S.src.types.slice():SKILL_SEL[S.src.sel](isl,S.src.arg)}))}
 const skillOf=(id,t)=>skillsOf(id).find(s=>s.ts.includes(t));
-function skAdd(id,t,ok){const s=skillOf(id,t);if(!s)return;G.sk=Object.assign({},G.sk||{});const before=skStat(s.k).st;G.sk[s.k]=(((G.sk[s.k]||'')+(ok?'1':'0')).slice(-10));
+function skAdd(id,t,ok){const s=skillOf(id,t);if(!s)return;G.sk=Object.assign({},G.sk||{});const before=skStat(s.k).st;G.sk[s.k]=((skRec(s.k)+(ok?'1':'0')).slice(-10));
   if(before<2&&skStat(s.k).st===2&&S&&S.mode!=='boss')toast(`Skill mastered: ${s.name}!`,`${byId(id).name}: ${skillsDone(id)} of ${skillsOf(id).length} skills mastered.`,'#38b98a')}
-function skStat(k){const r=(G.sk||{})[k]||'',n=r.length,ok=r.split('').filter(x=>x==='1').length;return {n,ok,acc:n?ok/n:0,st:n>=5&&ok/n>=.8?2:n?1:0}}
+/* a skill split from an older, bigger one ("was") starts with the older one's record, so mastery and stars carry over */
+function skRec(k){const m=G.sk||{};if(m[k]!=null)return m[k];const w=CONTENT.skills[k]&&CONTENT.skills[k].was;return (w&&m[w])||''}
+function skStat(k){const r=skRec(k),n=r.length,ok=r.split('').filter(x=>x==='1').length;return {n,ok,acc:n?ok/n:0,st:n>=5&&ok/n>=.8?2:n?1:0}}
 const skillsDone=id=>skillsOf(id).filter(s=>skStat(s.k).st===2).length;
 const allSkills=id=>{const L=skillsOf(id);return !L.length||L.every(s=>skStat(s.k).st===2)};
 /* islands that already had 3 stars before skills existed keep them */

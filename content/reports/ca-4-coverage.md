@@ -9,8 +9,8 @@ A standard counts as covered when at least one skill on this pack's islands prac
 | Math | 30 | 30 | 100% |
 | English language arts | 32 | 32 | 100% |
 | Science | 17 | 17 | 100% |
-| History–social science | 5 | 5 | 100% |
-| **All** | **84** | **84** | **100%** |
+| History–social science | 32 | 32 | 100% |
+| **All** | **111** | **111** | **100%** |
 
 ## Math
 
@@ -64,7 +64,7 @@ A standard counts as covered when at least one skill on this pack's islands prac
 | RL.4.10 | Read and understand grade 4–5 literature by the end of the year (reading range over the whole year). | not checked in the game | — |
 | RI.4.1 | Use details and examples from an informational text to explain what it says and what you can infer. | covered | reading: Short passages; reading: Evidence: Part A + Part B; reading: Choose two answers; reading: Find the sentence in the text |
 | RI.4.2 | Find the main idea, explain how details support it, and summarize. | covered | reading: Short passages; reading: Main idea, theme and word meaning |
-| RI.4.3 | Explain events, steps or ideas in a historical, scientific or technical text: what happened and why. | covered | reading: Evidence: Part A + Part B; reading: Text structure; history: California history |
+| RI.4.3 | Explain events, steps or ideas in a historical, scientific or technical text: what happened and why. | covered | reading: Evidence: Part A + Part B; reading: Text structure; history: Railroads, mail and immigrants |
 | RI.4.4 | Figure out the meaning of subject words in a grade 4 informational text. | covered | reading: Main idea, theme and word meaning |
 | RI.4.5 | Describe how a text is organized: time order, comparison, cause and effect, problem and solution. | covered | reading: Text structure |
 | RI.4.6 | Compare a firsthand and a secondhand account of the same event. | covered | reading: Short passages |
@@ -125,9 +125,36 @@ A standard counts as covered when at least one skill on this pack's islands prac
 
 | Standard | What it means | Status | Skills (island: skill) |
 | --- | --- | --- | --- |
-| HSS.4.1 | California's physical and human geography: maps, latitude and longitude, regions, landforms and climate. | covered | geo: Compass directions; geo: Map grids; geo: California facts; geo: U.S. and world; geo: Latitude and longitude; geo: California regions |
-| HSS.4.2 | California's first peoples, European exploration, and the Spanish missions, presidios and pueblos. | covered | history: California history |
-| HSS.4.3 | The Mexican period, ranchos, the Gold Rush and statehood in 1850. | covered | history: California history |
-| HSS.4.4 | How California grew: railroads, immigration, farming, water, industry and important people. | covered | history: California history |
-| HSS.4.5 | The U.S. and California constitutions and how federal, state and local governments work. | covered | geo: Government |
+| HSS.4.1.1 | Use latitude and longitude to find places in California and on Earth. | covered | geo: Map grids; geo: Latitude and longitude |
+| HSS.4.1.2 | Know the North and South Poles, the equator, the prime meridian, the tropics and the hemispheres. | covered | geo: U.S. and world |
+| HSS.4.1.3 | Name the state capital and describe California's regions and how land, water and climate shape how people live. | covered | geo: California facts; geo: California regions |
+| HSS.4.1.4 | Locate the Pacific Ocean, rivers, valleys and mountain passes, and explain how they helped towns grow. | covered | geo: California facts; geo: California regions |
+| HSS.4.1.5 | Use maps, charts and pictures to compare California communities (land use, climate, population, transportation). | covered | geo: Compass directions; geo: California regions |
+| HSS.4.2.1 | The major nations of California Indians: where they lived, how they made a living, their beliefs, and how they used and changed the land and sea. | covered | history: California Indians |
+| HSS.4.2.2 | Early land and sea routes to California and the exploration of the North Pacific (Cabrillo, Bering, Cook), and how mountains, winds and currents mattered. | covered | history: Explorers and missions |
+| HSS.4.2.3 | Spanish exploration and settlement of California and the relationships among soldiers, missionaries and Native people (Serra, Portolá, Crespí). | covered | history: Explorers and missions |
+| HSS.4.2.4 | Where and why the Spanish missions were built, and how the mission system spread Spain's influence. | covered | history: Explorers and missions |
+| HSS.4.2.5 | Daily life of Native and non-Native people at the presidios, missions, ranchos and pueblos. | covered | history: Explorers and missions |
+| HSS.4.2.6 | How the Franciscans changed California from hunting and gathering to farming. | covered | history: Explorers and missions |
+| HSS.4.2.7 | How Mexico's war for independence affected Alta California and the borders of North America. | covered | history: Mexican California and the trails west |
+| HSS.4.2.8 | California under Mexico: land grants, closing the missions, and the rancho economy. | covered | history: Mexican California and the trails west |
+| HSS.4.3.1 | Where Mexican settlements and others, like Fort Ross and Sutter's Fort, were located. | covered | history: Mexican California and the trails west |
+| HSS.4.3.2 | How and why people traveled to California and their routes (Beckwourth, Bidwell, Frémont, Pico). | covered | history: Mexican California and the trails west |
+| HSS.4.3.3 | How the Gold Rush changed settlements, daily life, politics and the environment (Sutter, Vallejo, Clappe). | covered | history: Gold Rush and statehood |
+| HSS.4.3.4 | Women who helped build early California, such as Biddy Mason. | covered | history: Gold Rush and statehood |
+| HSS.4.3.5 | How California became a state and how its government differed from Spanish and Mexican rule. | covered | history: Gold Rush and statehood |
+| HSS.4.4.1 | The Pony Express, Overland Mail, telegraph and transcontinental railroad, including the work of Chinese laborers. | covered | history: Railroads, mail and immigrants |
+| HSS.4.4.2 | How the Gold Rush changed California's economy, towns like Sacramento and San Francisco, and conflicts among groups. | covered | history: Gold Rush and statehood |
+| HSS.4.4.3 | Immigration to California from 1850 to 1900, where people came from, and conflicts and agreements among groups (e.g., the Chinese Exclusion Act). | covered | history: Railroads, mail and immigrants |
+| HSS.4.4.4 | Fast growth of towns and cities like Los Angeles from immigration and migration. | covered | history: Modern California |
+| HSS.4.4.5 | How the Great Depression, the Dust Bowl and World War II affected California. | covered | history: Modern California |
+| HSS.4.4.6 | New industries since the 1800s: farming and irrigation, oil, cars, aerospace, electronics, and trade across the Pacific. | covered | history: Modern California |
+| HSS.4.4.7 | How California's water system of dams, aqueducts and reservoirs grew. | covered | history: Modern California |
+| HSS.4.4.8 | The history of California's public schools, universities and community colleges. | covered | history: Modern California |
+| HSS.4.4.9 | Twentieth-century Californians in art and culture, including movies (Disney, Steinbeck, Ansel Adams, Dorothea Lange). | covered | history: Modern California |
+| HSS.4.5.1 | What the U.S. Constitution is and why it matters: it sets up the government and shares power among federal, state and local governments. | covered | geo: Government |
+| HSS.4.5.2 | The purpose of the California Constitution and how it relates to the U.S. Constitution. | covered | geo: Government |
+| HSS.4.5.3 | How federal, state and local governments are alike (written laws, rule of law, consent of the governed, three branches) and different. | covered | geo: Government |
+| HSS.4.5.4 | How state government works and what its elected officials do. | covered | geo: Government |
+| HSS.4.5.5 | California's local governments: cities and towns, counties, school districts, and tribal rancherias and reservations. | covered | geo: Government |
 

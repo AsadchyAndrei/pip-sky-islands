@@ -3,12 +3,7 @@
   "state": "CA",
   "grade": 4,
   "note": "Short plain-English summaries of each standard, written for parents. The official wording is at the source links. 'app: false' marks standards a game cannot check on its own (speaking in a group, presentations, longer writing projects); they are listed so the coverage report is honest, and are left out of the coverage percentage. 'review: true' marks standards from another grade that the game practices for review; they are not counted either.",
-  "sets": [
-    {"subject": "math", "name": "California Common Core State Standards: Mathematics", "url": "https://www.cde.ca.gov/be/st/ss/documents/ccssmathstandardaug2013.pdf"},
-    {"subject": "ela", "name": "California Common Core State Standards: English Language Arts & Literacy", "url": "https://www.cde.ca.gov/be/st/ss/documents/finalelaccssstandards.pdf"},
-    {"subject": "science", "name": "California Next Generation Science Standards (CA NGSS)", "url": "https://www.cde.ca.gov/pd/ca/sc/ngssstandards.asp"},
-    {"subject": "social", "name": "California History-Social Science Content Standards", "url": "https://www.cde.ca.gov/be/st/ss/documents/histsocscistnd.pdf"}
-  ],
+  "sets": [{"subject": "math", "name": "California Common Core State Standards: Mathematics", "url": "https://www.cde.ca.gov/be/st/ss/documents/ccssmathstandardaug2013.pdf"}, {"subject": "ela", "name": "California Common Core State Standards: English Language Arts & Literacy", "url": "https://www.cde.ca.gov/be/st/ss/documents/finalelaccssstandards.pdf"}, {"subject": "science", "name": "California Next Generation Science Standards (CA NGSS)", "url": "https://www.cde.ca.gov/pd/ca/sc/ngssstandards.asp"}, {"subject": "social", "name": "California History-Social Science Content Standards", "url": "https://www.cde.ca.gov/be/st/ss/documents/histsocscistnd.pdf"}],
   "standards": [
     {"code": "4.OA.1", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Understand a multiplication equation as a comparison: 35 is 5 times as many as 7."},
     {"code": "4.OA.2", "subject": "math", "domain": "Operations & Algebraic Thinking", "summary": "Solve word problems with multiplicative comparison ('times as many'), telling it apart from additive comparison ('more than')."},
@@ -42,7 +37,6 @@
     {"code": "MP.3", "subject": "math", "domain": "Mathematical Practices", "summary": "Explain your reasoning and find mistakes in other people's reasoning."},
     {"code": "3.MD.1", "subject": "math", "domain": "Measurement & Data", "grade": 3, "review": true, "summary": "Tell and write time to the nearest minute; solve elapsed-time problems in minutes."},
     {"code": "3.MD.3", "subject": "math", "domain": "Measurement & Data", "grade": 3, "review": true, "summary": "Draw and read scaled picture graphs and bar graphs."},
-
     {"code": "RL.4.1", "subject": "ela", "domain": "Reading: Literature", "summary": "Use details and examples from a story to explain what it says and what you can infer."},
     {"code": "RL.4.2", "subject": "ela", "domain": "Reading: Literature", "summary": "Find the theme of a story, play or poem and summarize it."},
     {"code": "RL.4.3", "subject": "ela", "domain": "Reading: Literature", "summary": "Describe a character, setting or event in depth using details from the text."},
@@ -87,7 +81,6 @@
     {"code": "L.4.5", "subject": "ela", "domain": "Language", "summary": "Similes, metaphors, idioms, proverbs, synonyms and antonyms."},
     {"code": "L.4.6", "subject": "ela", "domain": "Language", "summary": "Learn and use grade-level academic and subject words, including words for actions, emotions and states of being."},
     {"code": "L.3.1a", "subject": "ela", "domain": "Language", "grade": 3, "review": true, "summary": "Explain what nouns, pronouns, verbs, adjectives and adverbs do in a sentence."},
-
     {"code": "4-PS3-1", "subject": "science", "domain": "Energy", "summary": "The faster an object moves, the more energy it has."},
     {"code": "4-PS3-2", "subject": "science", "domain": "Energy", "summary": "Energy moves from place to place by sound, light, heat and electric currents."},
     {"code": "4-PS3-3", "subject": "science", "domain": "Energy", "summary": "When objects collide, energy changes (motion into sound and heat)."},
@@ -106,11 +99,37 @@
     {"code": "3-5-ETS1-2", "subject": "science", "domain": "Engineering Design", "summary": "Compare several possible solutions to a problem."},
     {"code": "3-5-ETS1-3", "subject": "science", "domain": "Engineering Design", "summary": "Plan fair tests and use the results to improve a design."},
     {"code": "5-ESS2-1", "subject": "science", "domain": "Earth's Systems", "grade": 5, "review": true, "summary": "Earth's land, water, air and living things interact (includes the water cycle)."},
-
-    {"code": "HSS.4.1", "subject": "social", "domain": "Geography of California", "summary": "California's physical and human geography: maps, latitude and longitude, regions, landforms and climate."},
-    {"code": "HSS.4.2", "subject": "social", "domain": "Early California", "summary": "California's first peoples, European exploration, and the Spanish missions, presidios and pueblos."},
-    {"code": "HSS.4.3", "subject": "social", "domain": "Mexican rule to statehood", "summary": "The Mexican period, ranchos, the Gold Rush and statehood in 1850."},
-    {"code": "HSS.4.4", "subject": "social", "domain": "Modern California", "summary": "How California grew: railroads, immigration, farming, water, industry and important people."},
-    {"code": "HSS.4.5", "subject": "social", "domain": "Government", "summary": "The U.S. and California constitutions and how federal, state and local governments work."}
+    {"code": "HSS.4.1.1", "subject": "social", "domain": "Geography of California", "summary": "Use latitude and longitude to find places in California and on Earth."},
+    {"code": "HSS.4.1.2", "subject": "social", "domain": "Geography of California", "summary": "Know the North and South Poles, the equator, the prime meridian, the tropics and the hemispheres."},
+    {"code": "HSS.4.1.3", "subject": "social", "domain": "Geography of California", "summary": "Name the state capital and describe California's regions and how land, water and climate shape how people live."},
+    {"code": "HSS.4.1.4", "subject": "social", "domain": "Geography of California", "summary": "Locate the Pacific Ocean, rivers, valleys and mountain passes, and explain how they helped towns grow."},
+    {"code": "HSS.4.1.5", "subject": "social", "domain": "Geography of California", "summary": "Use maps, charts and pictures to compare California communities (land use, climate, population, transportation)."},
+    {"code": "HSS.4.2.1", "subject": "social", "domain": "Early California", "summary": "The major nations of California Indians: where they lived, how they made a living, their beliefs, and how they used and changed the land and sea."},
+    {"code": "HSS.4.2.2", "subject": "social", "domain": "Early California", "summary": "Early land and sea routes to California and the exploration of the North Pacific (Cabrillo, Bering, Cook), and how mountains, winds and currents mattered."},
+    {"code": "HSS.4.2.3", "subject": "social", "domain": "Early California", "summary": "Spanish exploration and settlement of California and the relationships among soldiers, missionaries and Native people (Serra, Portolá, Crespí)."},
+    {"code": "HSS.4.2.4", "subject": "social", "domain": "Early California", "summary": "Where and why the Spanish missions were built, and how the mission system spread Spain's influence."},
+    {"code": "HSS.4.2.5", "subject": "social", "domain": "Early California", "summary": "Daily life of Native and non-Native people at the presidios, missions, ranchos and pueblos."},
+    {"code": "HSS.4.2.6", "subject": "social", "domain": "Early California", "summary": "How the Franciscans changed California from hunting and gathering to farming."},
+    {"code": "HSS.4.2.7", "subject": "social", "domain": "Early California", "summary": "How Mexico's war for independence affected Alta California and the borders of North America."},
+    {"code": "HSS.4.2.8", "subject": "social", "domain": "Early California", "summary": "California under Mexico: land grants, closing the missions, and the rancho economy."},
+    {"code": "HSS.4.3.1", "subject": "social", "domain": "Mexican rule to statehood", "summary": "Where Mexican settlements and others, like Fort Ross and Sutter's Fort, were located."},
+    {"code": "HSS.4.3.2", "subject": "social", "domain": "Mexican rule to statehood", "summary": "How and why people traveled to California and their routes (Beckwourth, Bidwell, Frémont, Pico)."},
+    {"code": "HSS.4.3.3", "subject": "social", "domain": "Mexican rule to statehood", "summary": "How the Gold Rush changed settlements, daily life, politics and the environment (Sutter, Vallejo, Clappe)."},
+    {"code": "HSS.4.3.4", "subject": "social", "domain": "Mexican rule to statehood", "summary": "Women who helped build early California, such as Biddy Mason."},
+    {"code": "HSS.4.3.5", "subject": "social", "domain": "Mexican rule to statehood", "summary": "How California became a state and how its government differed from Spanish and Mexican rule."},
+    {"code": "HSS.4.4.1", "subject": "social", "domain": "Growing California", "summary": "The Pony Express, Overland Mail, telegraph and transcontinental railroad, including the work of Chinese laborers."},
+    {"code": "HSS.4.4.2", "subject": "social", "domain": "Growing California", "summary": "How the Gold Rush changed California's economy, towns like Sacramento and San Francisco, and conflicts among groups."},
+    {"code": "HSS.4.4.3", "subject": "social", "domain": "Growing California", "summary": "Immigration to California from 1850 to 1900, where people came from, and conflicts and agreements among groups (e.g., the Chinese Exclusion Act)."},
+    {"code": "HSS.4.4.4", "subject": "social", "domain": "Growing California", "summary": "Fast growth of towns and cities like Los Angeles from immigration and migration."},
+    {"code": "HSS.4.4.5", "subject": "social", "domain": "Growing California", "summary": "How the Great Depression, the Dust Bowl and World War II affected California."},
+    {"code": "HSS.4.4.6", "subject": "social", "domain": "Growing California", "summary": "New industries since the 1800s: farming and irrigation, oil, cars, aerospace, electronics, and trade across the Pacific."},
+    {"code": "HSS.4.4.7", "subject": "social", "domain": "Growing California", "summary": "How California's water system of dams, aqueducts and reservoirs grew."},
+    {"code": "HSS.4.4.8", "subject": "social", "domain": "Growing California", "summary": "The history of California's public schools, universities and community colleges."},
+    {"code": "HSS.4.4.9", "subject": "social", "domain": "Growing California", "summary": "Twentieth-century Californians in art and culture, including movies (Disney, Steinbeck, Ansel Adams, Dorothea Lange)."},
+    {"code": "HSS.4.5.1", "subject": "social", "domain": "Government", "summary": "What the U.S. Constitution is and why it matters: it sets up the government and shares power among federal, state and local governments."},
+    {"code": "HSS.4.5.2", "subject": "social", "domain": "Government", "summary": "The purpose of the California Constitution and how it relates to the U.S. Constitution."},
+    {"code": "HSS.4.5.3", "subject": "social", "domain": "Government", "summary": "How federal, state and local governments are alike (written laws, rule of law, consent of the governed, three branches) and different."},
+    {"code": "HSS.4.5.4", "subject": "social", "domain": "Government", "summary": "How state government works and what its elected officials do."},
+    {"code": "HSS.4.5.5", "subject": "social", "domain": "Government", "summary": "California's local governments: cities and towns, counties, school districts, and tribal rancherias and reservations."}
   ]
 }
