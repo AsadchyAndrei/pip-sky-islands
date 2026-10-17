@@ -7,6 +7,8 @@ const pick=a=>a[Math.floor(rand()*a.length)];
 const coin=()=>rand()<.5;
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
 const fmt=n=>n.toLocaleString('en-US');
+/* the name of the pieces: 3 → thirds, 8 → eighths */
+const denName=d=>({2:'halves',3:'thirds',4:'fourths',5:'fifths',6:'sixths',7:'sevenths',8:'eighths',9:'ninths',10:'tenths',12:'twelfths',100:'hundredths'})[d]||`${d}ths`;
 const gcd=(a,b)=>b?gcd(b,a%b):a;
 const frac=(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

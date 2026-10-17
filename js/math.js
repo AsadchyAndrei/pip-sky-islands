@@ -89,7 +89,7 @@ const HOW={
       mine:[`Find a bottom number both fractions can use, and change both.`,`Or ask: is each fraction more or less than one half?`]}),
   frac3:(a,b,den)=>{const den2=hDiff(()=>HPICK([5,6,8]),v=>v===den),a2=1,b2=2;
     return {rule:'When the bottom numbers match, add the top numbers. The bottom stays the same.',
-      ex:`${a2}/${den2} + ${b2}/${den2}`,steps:[`The pieces are the same size (${den2}ths).`,`${a2} piece + ${b2} pieces = ${a2+b2} pieces.`,`Answer: ${frac(a2+b2,den2)}. The bottom does not change!`],anim:fracAddAnim(a2,b2,den2),
+      ex:`${a2}/${den2} + ${b2}/${den2}`,steps:[`The pieces are the same size (${denName(den2)}).`,`${a2} piece + ${b2} pieces = ${a2+b2} pieces.`,`Answer: ${frac(a2+b2,den2)}. The bottom does not change!`],anim:fracAddAnim(a2,b2,den2),
       mine:[`Add only the top numbers: ${a} + ${b} = ${BLANK}`,`Keep the bottom number: ${den}.`]}},
   area0:(l,w)=>{const w2=hDiff(()=>HR(2,4),v=>v===w),l2=hDiff(()=>HR(w2+1,6),v=>v===l);
     return {rule:'Area is how many squares cover the shape: length × width.',
@@ -309,7 +309,7 @@ function genFracX(t){
       :pick([[`Pip hiked ${frac(a,den)} mile in the morning and ${frac(b,den)} mile after lunch. How far did he hike in all?`,'miles'],[`Mia drank ${frac(a,den)} liter of water before soccer and ${frac(b,den)} liter after. How much did she drink in all?`,'liters'],[`A recipe uses ${frac(a,den)} cup of sugar and ${frac(b,den)} cup of honey. How many cups is that together?`,'cups']]);
     return {prompt:S[0],...strChoices(show,[`${n}/${den*2}`,`${sub?a+b:Math.abs(a-b)}/${den}`,`${n+1}/${den}`,n>1?`${n-1}/${den}`:`${n}/${den+1}`]),render:fracText,
       hint:`${sub?'Taking away, or how much more':'Putting together'} means ${sub?'subtract':'add'}. The bottom number stays ${den}: only the top numbers change.`,
-      explain:`${frac(a,den)} ${sub?'−':'+'} ${frac(b,den)} = ${frac(n,den)}${show!==`${n}/${den}`?` = ${fracText(show)}`:''} ${S[1]}. The pieces are the same size (${den}ths), so ${sub?'subtract':'add'} only the tops.`}}
+      explain:`${frac(a,den)} ${sub?'−':'+'} ${frac(b,den)} = ${frac(n,den)}${show!==`${n}/${den}`?` = ${fracText(show)}`:''} ${S[1]}. The pieces are the same size (${denName(den)}), so ${sub?'subtract':'add'} only the tops.`}}
   let a,n,g=0;do{a=R(2,den-1);n=R(2,Dv(4,6,8))}while((n*a)%den===0&&g++<40);const tot=n*a,lo=Math.floor(tot/den);
   const S=pick([[`Each pizza needs ${frac(a,den)} cup of cheese. Pip makes <b>${n} pizzas</b>.`,'cups of cheese','How much cheese is that? It'],[`Each lap around the pond is ${frac(a,den)} mile. Mia walks <b>${n} laps</b>.`,'miles','How far does she walk? It'],[`Pip feeds his puppy ${frac(a,den)} pound of food each day. He does this for <b>${n} days</b>.`,'pounds of food','How much food is that? It']]);
   return {prompt:`${S[0]} ${S[2]} is between which two whole numbers?`,...strChoices(`${lo} and ${lo+1}`,[`${lo+1} and ${lo+2}`,lo>0?`${lo-1} and ${lo}`:`${lo+2} and ${lo+3}`,`${n} and ${n+1}`,`${lo+2} and ${lo+3}`,`${a} and ${a+1}`]),
@@ -420,7 +420,7 @@ function genFrac(t){
     const wrong=[sub?`${Math.abs(w1-w2)} ${Math.abs(n1-n2)||1}/${den}`:`${w1+w2} ${(n1+n2)%den||1}/${den}`,mixedStr(ans+den,den),mixedStr(Math.max(1,ans-1),den),`${sub?w1-w2:w1+w2} ${sub?Math.abs(n1-n2)||1:n1+n2}/${den*2}`,mixedStr(ans+1,den)].filter(x=>x!==show&&!/^0 /.test(x));
     return {how:['frac5',sub?'-':'+',den],prompt:`${mixedHTML(w1,n1,den)} ${sub?'−':'+'} ${mixedHTML(w2,n2,den)} = ?`,...strChoices(show,wrong),render:fracText,anim:piesRow(ans,den,{size:70}),
       hint:sub?`Subtract the fractions, then the whole numbers. Not enough pieces? Trade 1 whole for ${den}/${den}.`:`Add the fractions, then the whole numbers. ${den}/${den} or more? That makes 1 more whole.`,
-      explain:`Change to ${den}ths: ${A}/${den} ${sub?'−':'+'} ${B}/${den} = ${ans}/${den}. ${ans>=den?`${ans}/${den} = <b>${fracText(show)}</b>.`:''}`}}
+      explain:`Change to ${denName(den)}: ${A}/${den} ${sub?'−':'+'} ${B}/${den} = ${ans}/${den}. ${ans>=den?`${ans}/${den} = <b>${fracText(show)}</b>.`:''}`}}
   if(t===6){const den=pick(Dv([3,4,5],[4,5,6,8],[6,8,10,12]));
     if(coin()){const n=R(2,Math.min(den-1,4)),ans=Array(n).fill(`1/${den}`).join(' + ');
       return {how:['frac6a',n,den],prompt:`Which is the same as ${frac(n,den)}?`,visual:pieVis(n,den),...strChoices(ans,[Array(n).fill(`1/${n}`).join(' + '),`1/${den} + ${n}/${den}`,`${n}/${den} + ${n}/${den}`,Array(n+1).fill(`1/${den}`).join(' + ')]),render:fracText,
@@ -842,7 +842,7 @@ function genGraph(t){
       hint:`Read both bars, then add.`,explain:`${vals[i]} + ${vals[j]} = <b>${ans}</b>.`};}
   if(t===3){const vals=cats.map(()=>R(1,6)*2),i=R(0,3);
     const vis=`<div class="picto">${cats.map((c,k)=>`<div><span>${c}</span>${FLOWER.repeat(vals[k]/2)}</div>`).join('')}<div class="key">Key: ${FLOWER} = 2 votes</div></div>`;
-    return {prompt:`This picture graph shows ${what}. How many votes did <b>${cats[i]}</b> get?`,visual:vis,...numChoices(vals[i],[vals[i]/2,vals[i]+2,vals[i]-1,vals[i]+1]),
+    return {prompt:`Pip's class voted for their favorite. This picture graph shows the votes. How many votes did <b>${cats[i]}</b> get?`,visual:vis,...numChoices(vals[i],[vals[i]/2,vals[i]+2,vals[i]-1,vals[i]+1]),
       hint:`Look at the key! Each flower is worth 2, not 1.`,explain:`${cats[i]} has ${vals[i]/2} flowers. ${vals[i]/2} × 2 = <b>${vals[i]}</b> votes.`};}
   let cnt;do{cnt=[1,2,3,4,5].map(()=>R(0,4))}while(cnt.reduce((a,b)=>a+b,0)<4||cnt.filter(c=>c===Math.max(...cnt)).length>1);
   let s='';cnt.forEach((c,i)=>{const x=40+i*55;s+=`<line x1="${x}" y1="128" x2="${x}" y2="136" stroke="#1f3557" stroke-width="2"/><text x="${x}" y="154" text-anchor="middle" font-size="15" font-weight="800" fill="#1f3557">${i+1}</text>`;
@@ -1031,7 +1031,7 @@ function genMistake(){const nm=pick(NAMES),k=R(0,5);
       hint:`Add it yourself, column by column. Do any columns make 10 or more?`,explain:`The right answer is <b>${fmt(a+b)}</b>. ${nm} wrote only the ones digit of each column and <b>forgot to carry</b> the 1.`}}
   if(k===1){const d=pick([5,6,8,10,12]),a=R(1,d-2),b=R(1,d-1-a);
     return {prompt:`${nm} says <b>${a}/${d} + ${b}/${d} = ${a+b}/${d*2}</b>. What is wrong?`,...strChoices(`The bottom number should stay ${d}. The answer is ${a+b}/${d}.`,[`The top numbers should be multiplied: ${a*b}/${d*2}.`,`Nothing is wrong.`,`The answer should be ${a+b}/${d+1}.`]),long:true,render:fracText,
-      hint:`When the pieces are the same size, does the size of the pieces change when you add them?`,explain:`${frac(a,d)} + ${frac(b,d)}: the pieces are still <b>${d}ths</b>. Only the tops add: ${frac(a+b,d)}. ${nm} wrongly added the bottoms too.`}}
+      hint:`When the pieces are the same size, does the size of the pieces change when you add them?`,explain:`${frac(a,d)} + ${frac(b,d)}: the pieces are still <b>${denName(d)}</b>. Only the tops add: ${frac(a+b,d)}. ${nm} wrongly added the bottoms too.`}}
   if(k===2){let n;do{n=R(11,98)*100+R(1,99)}while(Math.floor(n/100)%10<5);const down=Math.floor(n/1000)*1000;
     return {prompt:`${nm} rounded <b>${fmt(n)}</b> to the nearest thousand and got <b>${fmt(down)}</b>. Is that right?`,...strChoices(`No. The hundreds digit is ${Math.floor(n/100)%10}, which is 5 or more, so it rounds up to ${fmt(down+1000)}.`,[`Yes. You always round down.`,`No. It should be ${fmt(Math.round(n/100)*100)}.`,`Yes. Look at the ones digit to round.`]),long:true,
       hint:`To round to the nearest thousand, look at the hundreds digit.`,explain:`Hundreds digit: ${Math.floor(n/100)%10}. That is 5 or more, so round <b>up</b>: ${fmt(down+1000)}.`}}
@@ -1047,7 +1047,7 @@ function genMistake(){const nm=pick(NAMES),k=R(0,5);
 }
 function genExplain(){const k=R(0,3),nm=pick(NAMES);
   if(k===0){const a=R(1,3),d1=pick([3,4,5]),d2=d1*2;
-    return {prompt:`${nm} says <b>${a}/${d2} is greater than ${a}/${d1}</b> because ${d2} is greater than ${d1}. Which answer is correct?`,...strChoices(`${nm} is wrong. ${d2}ths are smaller pieces than ${d1}ths, so ${a}/${d1} is greater.`,[`${nm} is right. A bigger bottom number means a bigger fraction.`,`${nm} is right. They are equal.`,`${nm} is wrong. You must add them to compare.`]),long:true,render:fracText,
+    return {prompt:`${nm} says <b>${a}/${d2} is greater than ${a}/${d1}</b> because ${d2} is greater than ${d1}. Which answer is correct?`,...strChoices(`${nm} is wrong. ${(n=>n[0].toUpperCase()+n.slice(1))(denName(d2))} are smaller pieces than ${denName(d1)}, so ${a}/${d1} is greater.`,[`${nm} is right. A bigger bottom number means a bigger fraction.`,`${nm} is right. They are equal.`,`${nm} is wrong. You must add them to compare.`]),long:true,render:fracText,
       hint:`Picture the same pizza cut into ${d1} slices and into ${d2} slices. Which slices are bigger?`,explain:`More slices means <b>smaller</b> slices. ${a} big slices (${frac(a,d1)}) is more than ${a} small slices (${frac(a,d2)}).`}}
   if(k===1){const m=R(3,9),t=R(1,4)*10,o=R(1,9),n=t+o;
     return {prompt:`Which explains why <b>${m} × ${n} = ${m} × ${t} + ${m} × ${o}</b>?`,...strChoices(`${n} is ${t} + ${o}, so you can multiply each part by ${m} and add.`,[`You can always add instead of multiply.`,`${m} × ${t} is the same as ${m} × ${o}.`,`Multiplying makes numbers smaller.`]),long:true,
@@ -1128,7 +1128,10 @@ const MS4=[
  ()=>{const p1=R(Dv(3,5,8),Dv(6,9,15)),p2=R(Dv(2,3,5),Dv(5,7,12)),q1=R(2,5),q2=R(2,5),a=p1*q1+p2*q2;return [`At the school fair, tacos cost <b>$${p1}</b> and drinks cost <b>$${p2}</b>. A family buys <b>${q1}</b> tacos and <b>${q2}</b> drinks. How much do they spend?`,a,[p1+p2,(p1+p2)*q1,p1*q1+p2],`Find the cost of the tacos and the cost of the drinks separately, then add.`,`Tacos: ${q1} × $${p1} = $${p1*q1}. Drinks: ${q2} × $${p2} = $${p2*q2}. Total: <b>$${a}</b>.`]},
 ];
 function multiStep4(){const [p,a,w,h,e]=pick(MS4)();const alt=w.filter(x=>Number.isInteger(x)&&x>0&&x!==a);
-  return {prompt:p,...numChoices(a,alt.concat([a+10,a-10>0?a-10:a+20])),hint:h,explain:e}}
+  const q={prompt:p,...numChoices(a,alt.concat([a+10,a-10>0?a-10:a+20])),hint:h,explain:e};
+  /* money answers show and type with the dollar sign */
+  if(/How much (change|money|do they spend)/.test(p)){q.choices=q.choices.map(c=>'$'+c);q.answer='$'+q.answer;delete q.numeric;q.calc=1}
+  return q}
 /* leftovers mean different things: round up (everyone needs a seat), drop it (only full ones count), or the leftover is the answer */
 const LEFT4=[
  ['up',(n,d)=>`<b>${n}</b> students are going to the museum. Each van holds <b>${d}</b> students. How many vans are needed so every student can go?`,'vans'],

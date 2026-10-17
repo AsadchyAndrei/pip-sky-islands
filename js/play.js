@@ -360,7 +360,7 @@ function dragFrac(t){
     explain:`${fs.map(([a,b])=>frac(a,b)).join(' &lt; ')}. In decimals: ${fs.map(([a,b])=>(a/b).toFixed(2)).join(' &lt; ')}.`};
 }
 function dragDec(){let v,g=0;do{v=[R(1,9)*10,R(1,9)*10,R(11,99),R(1,9)];v[2]=v[2]%10?v[2]:v[2]+1}while(new Set(v).size<4&&g++<50);
-  const show=n=>n%10===0?(n/10).toFixed(1):dec(n),o=v.slice().sort((a,b)=>a-b);
+  const show=n=>n%10===0?(n/100).toFixed(1):dec(n),o=v.slice().sort((a,b)=>a-b);
   return {kind:'rank',items:v.map(n=>({id:show(n),html:`<b>${show(n)}</b>`,name:show(n)})),order:o.map(show),lo:'least',hi:'greatest',prompt:`Put the decimals in order from <b>least</b> to <b>greatest</b>.`,
     hint:`Give every number two places after the point: 0.4 = 0.40. Then compare.`,explain:`${o.map(n=>dec(n)).join(' &lt; ')}, so: <b>${o.map(show).join(', ')}</b>.`}}
 function dragPlace(){const L=Dv(4,5,6),base=String(R(10**(L-1),10**L-1));const set=new Set([+base]);let g=0;
