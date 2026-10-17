@@ -1,0 +1,33 @@
+"""Parents' Corner in Spanish: the switch at the top, the pages, pop-ups and the PIN screen in Spanish; the game for
+the child stays in English; the choice is remembered; switching back gives English again."""
+from serve import *
+c = Check('parents in Spanish')
+with sync_playwright() as p:
+    b = launch(p)
+    for w in (1280, 390):
+        ctx, pg, errs = open_page(b, w, 900)
+        pg.evaluate("for(let i=0;i<20;i++){G.days[addDays(-i)]={sec:900,q:18,c:14}};G.stats={mult:{a:30,c:28},div:{a:20,c:11}};save();window.__tourTest=0;CL.unlockUntil=Date.now()+600000;openParent()")
+        pg.wait_for_timeout(600)
+        c.ok(pg.locator('.plang [data-lang="es"]').count() == 1 and 'Parents' in pg.inner_text('#parent'), f'{w}: English first, with the switch')
+        pg.click('[data-lang="es"]'); pg.wait_for_timeout(600)
+        t = pg.inner_text('#parent')
+        c.ok('Rincón de padres' in t and 'La semana de un vistazo' in t and 'Volver al juego' in t and 'Practicar ahora' in t, f'{w}: Parents\' Corner in Spanish')
+        c.ok('Times Meadow' in t or 'Sharing Shore' in t, f'{w}: island names stay as in the game')
+        pg.click('.ptabs [data-pt="set"]'); pg.wait_for_timeout(300)
+        t = pg.inner_text('#parent')
+        c.ok('Programa escolar' in t and 'Meta diaria' in t and 'Límite de tiempo diario' in t, f'{w}: Settings in Spanish')
+        pg.evaluate("document.querySelector('#parent [data-qh]')&&document.querySelector('#parent [data-qh]').click()"); pg.wait_for_timeout(400)
+        c.ok(not pg.evaluate("ovOpen") or 'Entendido' in pg.text_content('#ocard') or 'habilidad' in pg.text_content('#ocard') or 'intento' in pg.text_content('#ocard'), f'{w}: the "?" pop-up in Spanish: ' + (pg.evaluate("ovOpen") and pg.text_content('#ocard')[:80] or ''))
+        pg.evaluate("ovOpen&&closeOverlay()")
+        pg.evaluate("renderMap()"); pg.wait_for_timeout(400)
+        c.ok('Daily' in pg.inner_text('#map') or 'Islands' in pg.inner_text('#map'), f'{w}: the game stays in English')
+        pg.reload(); pg.wait_for_timeout(1500)
+        pg.evaluate("ROOT.pin='1234';save();CL.unlockUntil=0;openParent()"); pg.wait_for_timeout(600)
+        c.ok(pg.evaluate("ovOpen") and 'Escribe el PIN de padres' in pg.text_content('#ocard'), f'{w}: the PIN screen remembers Spanish')
+        pg.evaluate("closeOverlay();CL.unlockUntil=Date.now()+600000;openParent()"); pg.wait_for_timeout(500)
+        pg.click('[data-lang="en"]'); pg.wait_for_timeout(500)
+        t = pg.inner_text('#parent')
+        c.ok("Parents' Corner" in t and 'Rincón' not in t, f'{w}: back to English')
+        c.ok(not errs, f'{w}: page errors {errs[:3]}')
+        ctx.close()
+c.done()

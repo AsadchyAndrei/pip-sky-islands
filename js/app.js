@@ -516,7 +516,7 @@ function renderParent(){
   if(new Date().getDay()===1&&!notes.length){const lw=weekHist(2)[0];if(lw[1])notes.push(`New week! Last week ${esc(G.name||'your child')} played <b>${lw[0]} minutes</b> and answered <b>${lw[1]} puzzles</b> (${Math.round(lw[2]/lw[1]*100)}% right on the first try).`)}
   if(G.review.length>=15)notes.push(`<b>${G.review.length} old mistakes</b> are waiting for practice (${G.fixed} fixed so far). One comes back in every round and up to five in the Daily Challenge.`);
   const kidsP=Object.keys(ROOT.profiles).filter(id=>!ROOT.profiles[id].roster);
-  $('#parentBody').innerHTML=`${kidsP.length>1?`<div class="kidbar" role="tablist" aria-label="Child">${kidsP.map(id=>`<button type="button" role="tab" data-pk="${id}" aria-selected="${id===ROOT.current}"><span class="kav sm">${kidAvatar(ROOT.profiles[id])}</span>${esc(ROOT.profiles[id].name||'Player')}<small>${kidGrade(ROOT.profiles[id])}</small></button>`).join('')}</div>`:''}<div class="pgrid">${notes.length?`<div class="pcard wide pnotes"><h4>Pip's notes</h4><ul>${notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>`:''}
+  $('#parentBody').innerHTML=`${typeof langSwitchHTML==='function'?langSwitchHTML():''}${kidsP.length>1?`<div class="kidbar" role="tablist" aria-label="Child">${kidsP.map(id=>`<button type="button" role="tab" data-pk="${id}" aria-selected="${id===ROOT.current}"><span class="kav sm">${kidAvatar(ROOT.profiles[id])}</span>${esc(ROOT.profiles[id].name||'Player')}<small>${kidGrade(ROOT.profiles[id])}</small></button>`).join('')}</div>`:''}<div class="pgrid">${notes.length?`<div class="pcard wide pnotes"><h4>Pip's notes</h4><ul>${notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>`:''}
     ${(()=>{const wk=off=>{const D=[...Array(7)].map((_,k)=>addDays(k-6-off));return D.reduce((a,k)=>{const d=G.days[k]||{};return [a[0]+(d.sec||0)/60,a[1]+(d.q||0),a[2]+(d.c||0)]},[0,0,0]).map(Math.round)};
       const w=wk(0),p=wk(7),ac=w[1]?Math.round(w[2]/w[1]*100):null,acp=p[1]?Math.round(p[2]/p[1]*100):null;
       const SK=ISLANDS.filter(i=>i.gen&&!i.retired).flatMap(i=>skillsOf(i.id)),mast=SK.filter(s=>skStat(s.k).st===2).length,tried=SK.filter(s=>skStat(s.k).n).length,alm=SK.filter(s=>skAlmost(skStat(s.k))).length;
@@ -626,7 +626,7 @@ function renderParent(){
   if($('#bkNow'))$('#bkNow').onclick=async()=>{const n=$('#bkNote');save();n.textContent='Saving...';const p=G,t=new Date();
     try{await CL.api.writeBackup(ROOT.current,`${dayKey()}-m${String(t.getHours()).padStart(2,'0')}${String(t.getMinutes()).padStart(2,'0')}`,bkDoc(p));n.className='note ok';n.textContent='Backup saved.';loadBackups()}catch(e){n.className='note bad';n.textContent='Backups need the internet.'}};
   bindClassParent();bindTeacherAcct();bindFGoal();bindNotify();bindNotifyAsk();if($("#wkPrint"))$("#wkPrint").onclick=printWeek;
-  parentTabs(rows,allA);if(typeof tourHook==='function')tourHook('parent');
+  parentTabs(rows,allA);if(typeof bindLangSwitch==='function'){bindLangSwitch();esWatch()}if(typeof tourHook==='function')tourHook('parent');
   $('#chPin').onclick=()=>{pinBuf='';pinStage='create';overlay(pinHTML(),bindPin)};
   $('#copyCode').onclick=()=>{const ta=$('#codeOut');const ok=()=>$('#copyNote').textContent='Copied!';
     try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();$('#copyNote').textContent='Selected. Press Ctrl+C / ⌘C to copy.'})}catch(e){ta.select();$('#copyNote').textContent='Selected. Press Ctrl+C / ⌘C to copy.'}};

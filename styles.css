@@ -1970,3 +1970,7 @@ body.ev-wind[data-screen=play] #pipfly .pipbob{animation:evblown 1.6s ease-in-ou
 .chsibs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}.chsibs b{width:100%;text-align:center;font-size:15px}
 .chlink{display:block;width:100%;margin-top:6px;font:600 13px var(--body,inherit);padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:#fff;color:var(--ink)}
 .chres{display:block;background:#e8f6ff;border-radius:12px;padding:8px 12px;margin:0 auto 8px;max-width:520px}.chres.won{background:#e3f8ee}.chres.tie{background:#fff7d6}
+/* parents' language switch */
+.plang{display:flex;justify-content:flex-end;gap:0;margin:0 0 10px auto;width:max-content;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:#fff}
+.plang button{border:0;background:#fff;color:var(--ink);font:800 14px var(--body,inherit);padding:6px 14px;cursor:pointer;min-height:36px}
+.plang button[aria-pressed="true"]{background:var(--ink);color:#fff}

@@ -21,4 +21,5 @@ python3 check_unlock.py
 python3 check_alive.py
 python3 check_quest.py
 python3 check_challenge.py
+python3 check_es.py
 echo "All checks passed."
