@@ -212,7 +212,7 @@ const ANS_RE=/^\$?\d[\d,]*(\.\d+)?$|^\d+( \d+)?\/\d+$|^\d+ R \d+$/;
 function keypadFor(q){if(q.kind||!S||S.mode==='flash'||q.teach)return false;const a=String(q.answer||'');
   if(!(q.numeric&&/^[\d,]+$/.test(a))&&!(q.calc&&ANS_RE.test(a)))return false;
   if(S.mode==='lesson')return !q.guided&&Math.random()<.5;
-  const p=S.mode==='island'?[0,.55,.75,.9][S.d||2]:S.mode==='boss'?.4:.6;return Math.random()<p}
+  const p=S.mode==='island'?[0,.55,.75,.9][S.d||2]:S.mode==='boss'?.4:S.mode==='test'?.9:.6;return Math.random()<p} // test practice: almost always typed, like the CAASPP math test
 function ansParse(s){s=String(s).trim().replace(/[$,]/g,'').replace(/\s+/g,' ');let m;
   if(m=s.match(/^(\d+) ?[Rr] ?(\d+)$/))return {r:[+m[1],+m[2]]};
   if(m=s.match(/^(\d+) (\d+)\/(\d+)$/))return +m[3]?{v:+m[1]+m[2]/m[3],form:'mixed',proper:+m[2]<+m[3]}:null;

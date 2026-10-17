@@ -584,10 +584,20 @@ function genFracBase(t){
   return {how:['frac3',a,b,den],prompt:`${frac(a,den)} + ${frac(b,den)} = ?`,...strChoices(`${a+b}/${den}`,[`${a+b}/${den*2}`,`${a+b+1}/${den}`,`${Math.abs(a-b)||1}/${den}`,`${a*b}/${den}`]),anim:fracAddAnim(a,b,den),
     hint:`The bottom numbers match, so only the top numbers change.`,explain:`Same size pieces: ${a} + ${b} = ${a+b} pieces of ${den}. Answer: ${frac(a+b,den)}.`};
 }
+/* rectangles in many places (4.MD.3): [thing, the area question, the "around" question, unit] */
+const AREA_CTX=[['carrot patch','Pip is planting a carrot patch. What is its <b>area</b>?','How much fence does Pip need to go all the way <b>around</b> the patch?','ft'],
+ ['rug','A rectangular rug covers part of the classroom floor. How many square units of floor does it <b>cover</b>?','How much ribbon would go all the way <b>around</b> the edge of the rug?','ft'],
+ ['playground','The school wants new soft mats for the whole playground. What is the playground\'s <b>area</b>?','How long is a path that goes all the way <b>around</b> the playground?','m'],
+ ['poster','Maya is making a poster. What is the <b>area</b> of the poster?','How much border trim does Maya need to go all the way <b>around</b> the poster?','in'],
+ ['pool cover','A cover has to fit over the whole swimming pool. What is the pool\'s <b>area</b>?','How long is the safety rope that goes all the way <b>around</b> the pool?','m'],
+ ['soccer field','The town is putting new grass on a small soccer field. What is the field\'s <b>area</b>?','How far does Leo run if he jogs once all the way <b>around</b> the field?','yd'],
+ ['garden bed','Grandpa built a garden bed. How much space does it have for planting (its <b>area</b>)?','How many feet of boards does the frame <b>around</b> the garden bed use?','ft'],
+ ['picture frame','A painting fills a rectangle. What is the <b>area</b> of the painting?','How long is the frame that goes all the way <b>around</b> the painting?','in']];
+const UNW={ft:['foot','feet'],m:['meter','meters'],in:['inch','inches'],yd:['yard','yards']};
 function genArea(t){
-  const w=R(Dv(2,3,8),Dv(6,9,15)),l=R(w+1,Dv(10,15,25)),A=l*w,P=2*(l+w);
-  if(t===0)return {how:['area0',l,w],prompt:`Pip is planting a carrot patch. What is its <b>area</b>?`,visual:rectVis(l,w,`${l} ft`,`${w} ft`),unit:'sq ft',...numChoices(A,[P,l+w,A+l,A-w]),anim:areaAnim(l,w),hint:`Area means how many 1-foot squares cover the patch: length × width.`,explain:`Count the squares, or multiply: ${l} × ${w} = <b>${A} square feet</b>.`};
-  if(t===1)return {how:['area1',l,w],prompt:`How much fence does Pip need to go all the way <b>around</b> the patch?`,visual:rectVis(l,w,`${l} ft`,`${w} ft`),unit:'ft',...numChoices(P,[A,l+w,2*l+w,P+2]),anim:periAnim(l,w),hint:`Perimeter means the distance around. Add all four sides.`,explain:`${l} + ${w} + ${l} + ${w} = <b>${P} feet</b>.`};
+  const w=R(Dv(2,3,8),Dv(6,9,15)),l=R(w+1,Dv(10,15,25)),A=l*w,P=2*(l+w),C=t<2&&coin()?pick(AREA_CTX):AREA_CTX[0],u=C[3],[u1,uN]=UNW[u];
+  if(t===0)return {how:['area0',l,w],prompt:C[1],visual:rectVis(l,w,`${l} ${u}`,`${w} ${u}`),unit:'sq '+u,...numChoices(A,[P,l+w,A+l,A-w]),anim:areaAnim(l,w),hint:`Area means how many 1-${u1} squares cover it: length × width.`,explain:`Count the squares, or multiply: ${l} × ${w} = <b>${A} square ${uN}</b>.`};
+  if(t===1)return {how:['area1',l,w],prompt:C[2],visual:rectVis(l,w,`${l} ${u}`,`${w} ${u}`),unit:u,...numChoices(P,[A,l+w,2*l+w,P+2]),anim:periAnim(l,w),hint:`Perimeter means the distance around. Add all four sides.`,explain:`${l} + ${w} + ${l} + ${w} = <b>${P} ${uN}</b>.`};
   if(t===2)return {how:['area2',A,w],prompt:`The patch has an area of <b>${A} square feet</b>. One side is ${w} feet. How long is the other side?`,visual:rectVis(l,w,`? ft`,`${w} ft`),unit:'ft',...numChoices(l,[A-w,l+1,l-1,A/w+2]),hint:`Area = length × width. What times ${w} equals ${A}?`,explain:`${A} ÷ ${w} = <b>${l} feet</b>, because ${l} × ${w} = ${A}.`};
   return {how:['area3',P,w],prompt:`The fence around the patch is <b>${P} feet</b> long. The short side is ${w} feet. How long is the long side?`,visual:rectVis(l,w,`? ft`,`${w} ft`),unit:'ft',...numChoices(l,[P-w,P/2,l+2,P-2*w]),anim:periAnim(l,w),hint:`Two short sides use ${2*w} feet. The rest is split between the two long sides.`,explain:`${P} − ${w} − ${w} = ${P-2*w}. Split in half: ${P-2*w} ÷ 2 = <b>${l} feet</b>.`};
 }
@@ -716,7 +726,8 @@ function genMoney(t){
     return {visual:sceneShop([[i1.replace(/^an? /,''),fmtM(a)],[i2.replace(/^an? /,''),fmtM(b)]]),prompt:`Pip buys ${i1} for <b>${fmtM(a)}</b> and ${i2} for <b>${fmtM(b)}</b>. How much does he spend in all?`,...strChoices(fmtM(s),[fmtM(s+100),fmtM(s-10),fmtM(s+10),fmtM(Math.abs(a-b))]),
       hint:`Add the dollars and the cents. Remember: 100¢ makes $1.`,explain:`${fmtM(a)} + ${fmtM(b)} = <b>${fmtM(s)}</b>.`};}
   const p=R(3,19)*5,n=R(2,Dv(4,6,9)),s=p*n;
-  return {prompt:`One sticker costs <b>${p}¢</b>. How much do <b>${n} stickers</b> cost?`,...strChoices(fmtM(s),[fmtM(s+p),fmtM(s-p),fmtM(p+n),fmtM(s+10)]),
+  const it=pick([['sticker','stickers'],['pencil','pencils'],['eraser','erasers'],['packet of seeds','packets of seeds'],['postcard','postcards'],['banana','bananas'],['bookmark','bookmarks'],['juice box','juice boxes'],['marble','marbles'],['button','buttons']]);
+  return {prompt:`One ${it[0]} costs <b>${p}¢</b>. How much do <b>${n} ${it[1]}</b> cost?`,...strChoices(fmtM(s),[fmtM(s+p),fmtM(s-p),fmtM(p+n),fmtM(s+10)]),
     hint:`Multiply: ${p} × ${n}. Then write the cents as dollars.`,explain:`${p}¢ × ${n} = ${s}¢ = <b>${fmtM(s)}</b>.`};
 }
 
