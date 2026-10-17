@@ -14,6 +14,7 @@ function genRiddle(t){
   if(t===2){const [a,b,c]=shuffle([...NAMES]).slice(0,3),tall=coin();
     return {prompt:`${a} is taller than ${b}. ${b} is taller than ${c}. Who is the <b>${tall?'tallest':'shortest'}</b>?`,choices:shuffle([a,b,c]),answer:tall?a:c,
       hint:`Line them up from tallest to shortest, one clue at a time.`,explain:`From tallest to shortest: ${a}, ${b}, ${c}. So the ${tall?'tallest':'shortest'} is <b>${tall?a:c}</b>.`};}
+  if(t===3&&R(0,3))return multiStep4();
   if(t===3){const b=R(3,6),p=R(6,Dv(9,12,25)),g=R(3,9),ans=b*p-g;
     return {visual:sceneBagsGive(b,p,g),prompt:`Pip has <b>${b} bags</b> with <b>${p} acorns</b> in each bag. He gives <b>${g}</b> acorns to a squirrel. How many acorns are left?`,...numChoices(ans,[b*p,b*p+g,b+p-g,ans-1]),
       hint:`Two steps! First multiply to find all the acorns, then subtract.`,explain:`${b} × ${p} = ${b*p}. ${b*p} − ${g} = <b>${ans}</b>.`};}
