@@ -7,7 +7,7 @@ on:
         description: 'Chirp 3 HD voice names, separated by spaces'
         default: 'Puck Fenrir Leda Zephyr'
 permissions:
-  contents: read
+  contents: write
   id-token: write
 jobs:
   samples:
@@ -23,7 +23,7 @@ jobs:
       - run: tools/voice/samples.sh
         env:
           VOICES: ${{ github.event.inputs.voices }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: voice-samples
-          path: out/
+      - name: Keep the samples on the voice-samples branch (not on the site)
+        run: |
+          cp -r out /tmp/out && git config user.name 'voice bot' && git config user.email 'noreply@anthropic.com'
+          git checkout --orphan voice-samples && git rm -rfq . && cp /tmp/out/* . && git add -A && git commit -qm "Voice samples" && git push -fq origin voice-samples
