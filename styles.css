@@ -1997,3 +1997,11 @@ body.ev-wind[data-screen=play] #pipfly .pipbob{animation:evblown 1.6s ease-in-ou
 @keyframes msflag{0%,100%{transform:translate(326px,22px)}50%{transform:translate(326px,16px) rotate(-6deg)}}
 body.has-mission .dotpip,body.has-mission .dotflag{display:none}
 @media (prefers-reduced-motion:reduce){.mspip,.msroom{transition:none}.mspipin,.msplank.drop,.msslot.wob,.mslamp.wob,.msdone .msflag{animation:none}}
+.msplant.msup{animation:msgrow .6s cubic-bezier(.3,1.5,.5,1);transform-box:fill-box;transform-origin:50% 100%}
+@keyframes msgrow{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
+.msgear.spin{animation:msspin 3s linear infinite}@keyframes msspin{to{transform:rotate(360deg)}}
+.msx.pulse{animation:mspulse 1s ease-in-out 3}@keyframes mspulse{50%{transform:scale(1.4)}}
+.mstile{transition:opacity .6s}.msr{transition:stroke .4s}.msbow,.mspuff,.msbugs,.msstar,.mssun{transition:opacity .8s}
+.mspot,.msring,.msbulb,.mstile{transform-box:fill-box;transform-origin:center}
+.mspot.wob,.msring.wob,.msbulb.wob,.mstile.wob{animation:mswob .5s}
+@media (prefers-reduced-motion:reduce){.msplant.msup,.msgear.spin,.msx.pulse,.mspot.wob,.msring.wob,.msbulb.wob,.mstile.wob{animation:none}.mstile,.msr{transition:none}}

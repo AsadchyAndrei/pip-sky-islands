@@ -1,6 +1,6 @@
 """Missions: on Digit Cliffs each answer adds a plank to a bridge, on Bookworm Bay each answer lights a lantern.
 First try = golden, second try = wooden/warm, a miss = rope/candle; the mission always finishes; other islands
-and other modes have no mission."""
+and other modes have no mission. Every island has its own mission story, in one of six kinds of scenes."""
 from serve import *
 c = Check('missions')
 
@@ -37,8 +37,13 @@ with sync_playwright() as p:
         pg.evaluate("judge(true,null)"); pg.wait_for_timeout(300)
         o2 = float(pg.evaluate("document.querySelector('#mission .msroom').getAttribute('opacity')"))
         c.ok(o2 > o1 and pg.evaluate("document.querySelectorAll('#mission .mslamp.lit').length") == 1, f'{w}: a lantern lights and the room brightens ({o1} → {o2})')
-        pg.evaluate("show('map');renderMap();start(byId('mult'))"); pg.wait_for_timeout(600)
-        c.ok(not pg.is_visible('#mission') and not pg.evaluate("document.body.classList.contains('has-mission')"), f'{w}: no mission on other islands (yet)')
+        # every island of the grade has a mission, and every kind of scene can finish
+        r = pg.evaluate("""()=>{const L=ISLANDS.filter(i=>i.gen&&skillsOf(i.id).length&&!i.retired);const miss=L.filter(i=>!MISSIONS[i.id]).map(i=>i.id);const done=[];
+          for(const kind of Object.keys(MSCENE)){const id=Object.keys(MISSIONS).find(k=>MISSIONS[k].kind===kind);S={mode:'island',isl:byId(id),qs:Array(6).fill({}),i:0};missionRound();
+            for(let i=0;i<6;i++){S.i=i;missionAnswer(i===2?'wobble':i===3?'miss':i%2?'ok':'gold')}S.i=2;missionAnswer('gold');document.getElementById('mission').classList.add('msdone');missionDraw();
+            done.push(kind+':'+(MS.got.every(Boolean)?'ok':'no')+':'+(document.querySelector('#mission .mspip').style.transform||'none'))}S=null;return {miss,done}}""")
+        c.ok(not r['miss'], f'{w}: every island has a mission: missing {r["miss"]}')
+        c.ok(all(':ok:translate' in x for x in r['done']) and len(r['done']) == 6, f'{w}: all six kinds of scenes finish: {r["done"]}')
         pg.evaluate("show('map');renderMap();start(byId('daily'))"); pg.wait_for_timeout(600)
         c.ok(not pg.is_visible('#mission'), f'{w}: no mission in the daily challenge')
         c.ok(not errs, f'{w}: page errors {errs[:3]}')
