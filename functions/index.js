@@ -312,7 +312,7 @@ exports.tts = onRequest({ maxInstances: 5, concurrency: 40, timeoutSeconds: 30 }
 /* ---------- anonymous usage counts ----------
    POST /stat {d:'YYYY-MM-DD', g:'ca-4', c:{rounds:3, qs:18, ...}}: adds to stats/{day}.{grade}.{key}.
    Only these counters, only small numbers, no ids, names, devices or anything about who played. */
-const STAT_KEYS = ['players', 'returning', 'rounds', 'finished', 'qs', 'first', 'missions', 'golds', 'wonders', 'mastered', 'minutes', 'voice'];
+const STAT_KEYS = ['players', 'returning', 'rounds', 'finished', 'qs', 'first', 'missions', 'golds', 'wonders', 'mastered', 'minutes', 'voice', 'es'];
 const statHits = new Map();
 async function statHandle(req, res) {
   res.set('Access-Control-Allow-Origin', '*');

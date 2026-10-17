@@ -119,7 +119,7 @@ function openHow(){
     :`<div class="hmine"><div class="htag">Here's the trick</div><p>${q.hint}</p></div>`;
   overlay(`<div class="howbox"><div class="howhead"><div class="pipbob" data-fox></div><div><div class="eyebrow">Show me how</div><h3>Let's learn the trick!</h3></div>
     <button class="speak" id="howSpeak" type="button" aria-label="Read aloud"><svg viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#2f9fe0"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#2f9fe0" stroke-width="2" stroke-linecap="round"/></svg></button></div>
-    ${body}<button class="go" type="button" id="howOk" style="align-self:center">Got it! Let me try</button></div>`,()=>{
+    ${body}${(()=>{const t=typeof esOn==='function'&&esOn()&&esFor(q)&&q.hint&&esText(q.hint);return t?`<div class="hmine" lang="es"><div class="htag">Pista en español</div><p>${t}</p></div>`:''})()}<button class="go" type="button" id="howOk" style="align-self:center">Got it! Let me try</button></div>`,()=>{
     $('#ocard').classList.add('wide');foxClass('talking',1600);
     $('#howSpeak').onclick=()=>speak(h?[h.rule,...h.mine].join(' ').replace(/<span class="hblank">\?<\/span>/g,'blank'):q.hint,{user:true,pip:true});
     $('#howOk').onclick=()=>{stopSpeak();$('#ocard').classList.remove('wide');closeOverlay();armNudge();say($('#say'),pick(['You can do it!','Now try it your way!','Use the trick. I believe in you!']))}});

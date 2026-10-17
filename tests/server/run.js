@@ -54,6 +54,9 @@ const check = async (p, m) => { try { await p; ok(true, m); } catch (e) { ok(fal
   await check(assertFails(as('T1').doc('classes/C6').update({ goal: { ...goal, need: 5000000 } })), 'a quest has a sensible size');
   await check(assertFails(as('T1').doc('classes/C6').update({ goal: { ...goal, reward: 'x'.repeat(80) } })), 'the reward is short');
   await check(assertFails(as('P1').doc('classes/C6').update({ goalHave: 9999 })), 'a family cannot change the class total');
+  await check(assertSucceeds(as('T1').doc('classes/C6').update({ es: true })), 'the teacher turns on Spanish help for the class');
+  await check(assertFails(as('T1').doc('classes/C6').update({ es: 'yes' })), 'Spanish help is on or off');
+  await check(assertFails(as('T2').doc('classes/C6').update({ es: false })), 'only the owner changes Spanish help');
 
   /* ---------- co-teacher join (server function) ---------- */
   await db.doc('users/T2').set({ role: 'teacher', teacherName: 'Mr. Kim' });

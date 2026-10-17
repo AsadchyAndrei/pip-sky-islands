@@ -2036,3 +2036,15 @@ body.has-mission .dotpip,body.has-mission .dotflag{display:none}
 .vdoors{display:inline-block;margin-top:4px}.vdoors .linkbtn{font-weight:800}
 .recdates{display:flex;gap:8px;flex-wrap:wrap}.recdates input{font:inherit;border:2px solid var(--line);border-radius:12px;padding:6px 10px}
 @media print{#printArea .rmon th{text-align:left;font-size:12px;padding:3px 6px;border-bottom:1.5px solid #c9d6e6}#printArea .rmon td:first-child{width:auto}#printArea .rsk{margin:8px 0 2px;font-size:13px}#printArea .rpt li small{color:#506686}#printArea .rsign{margin-top:22px;font-size:13px}}
+
+/* Spanish help (js/eshelp.js) */
+.esrow{display:flex;justify-content:flex-start;margin:-2px 0 6px}.esrow:has(.esbtn[hidden]){display:none}
+.esbtn{border:2px solid #2f9fe0;background:#eaf6ff;color:#14507a;border-radius:16px;padding:5px 12px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}
+.esbtn:active{transform:translateY(1px)}
+.esbox{background:#eaf6ff;border:3px dashed #2f9fe0;border-radius:18px;padding:10px 14px;font-weight:700;line-height:1.4;margin:0 0 8px}
+.esbox small{display:block;font-weight:600;margin-top:4px;color:#3d5a78}
+.eshint{display:block;margin-top:6px;padding-top:6px;border-top:2px dashed var(--sun);color:#14507a}
+.esw{text-decoration:underline dotted #2f9fe0 2px;text-underline-offset:3px;cursor:help;position:relative}
+.esw:focus-visible{outline:2px solid #2f9fe0;border-radius:4px}
+.estip{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:#14507a;color:#fff;font-size:15px;font-weight:800;padding:4px 10px;border-radius:10px;white-space:nowrap;z-index:30;pointer-events:none;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.estip::after{content:'';position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#14507a}

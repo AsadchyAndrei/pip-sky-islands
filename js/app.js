@@ -572,6 +572,7 @@ function renderParent(){
       <div class="setrow"><label for="setMvol">Music volume<small>On this device. Music can also be turned off in the menu.</small></label><input type="range" id="setMvol" min="0" max="100" step="5" value="${Math.round(mVol*100)}" aria-label="Music volume"></div>
       <div class="setrow"><label>Bigger text</label>${sw('setBig',G.settings.big)}</div>
       <div class="setrow"><label>Easy-to-read font<small>Wider letters and spacing, helpful for dyslexia</small></label>${sw('setDys',G.settings.dys)}</div>
+      <div class="setrow"><label>Spanish help <span lang="es">· Ayuda en español</span><small>For children learning English: in math and science, a Spanish hint and Spanish meanings for key words (tap a dotted word). Reading, writing and grammar stay in English.${typeof classDoc==='function'&&G.cls&&(classDoc()||{}).es?' <b>The teacher has turned it on for the class.</b>':''}</small></label>${sw('setEs',!!G.settings.es)}</div>
       <div class="setrow"><label for="setName">Player name</label><input type="text" id="setName" maxlength="16" value="${esc(G.name)}"></div>
       <div class="setrow"><label>Player PIN<small>Optional. Stops brothers and sisters from playing as ${esc(G.name||'this player')}.</small></label><span class="actrow"><button type="button" class="go small alt" id="kPin">${G.kidPin?'Change':'Set PIN'}</button>${G.kidPin?'<button type="button" class="go small alt" id="kPinOff">Remove</button>':''}</span></div>
     </div>
@@ -614,7 +615,7 @@ function renderParent(){
   fillVoiceSelect();
   if($('#setVoice')){$('#setVoice').onchange=e=>{const v=e.target.value;G.settings.pv=v==='__pip';if(v!=='__pip')G.settings.voice=v;save();pickVoice();fillVoiceSelect();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
     $('#setVstyle').onchange=e=>{G.settings.vstyle=e.target.value;save();speak(`Hi${nm()}! I'm Pip. Do you like my voice?`,{pip:true,user:true})};
-    $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);if($('#setRead'))bindSw('setRead','read');if($('#setMvol'))$('#setMvol').oninput=e=>{setMusicVolume(+e.target.value/100);if(!mTimer&&musicOn)musicStart()};bindSw('setAll','showAll');bindSw('setDys','dys',applySettings);
+    $('#testVoice').onclick=()=>speak(`Hi${nm()}! I'm Pip, your balloon-flying ${heroName()}. Let's solve some puzzles together!`,{pip:true,user:true})}bindSw('setBig','big',applySettings);if($('#setEs'))bindSw('setEs','es');if($('#setRead'))bindSw('setRead','read');if($('#setMvol'))$('#setMvol').oninput=e=>{setMusicVolume(+e.target.value/100);if(!mTimer&&musicOn)musicStart()};bindSw('setAll','showAll');bindSw('setDys','dys',applySettings);
   $('#setName').onchange=e=>{G.name=e.target.value.trim().slice(0,16);save();updateStats()};
   document.querySelectorAll('[data-sw],[data-pk]').forEach(b=>b.onclick=()=>parentSwitch(b.dataset.sw||b.dataset.pk));
   $('#addP').onclick=()=>newPlayer(id=>{save();ROOT.current=id;G=ROOT.profiles[id];persistLocal();if(ensurePack())return;applySettings();renderParent()});

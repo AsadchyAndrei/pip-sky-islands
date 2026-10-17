@@ -160,6 +160,7 @@ function showQ(){
   $('#hint').hidden=$('#feedback').hidden=$('#next').hidden=true;
   $('#speakBtn').hidden=!canTalk();
   $('#howBtn').hidden=S.mode==='boss'||S.mode==='test'||!(q.how||q.hint);
+  if(typeof esShowQ==='function')esShowQ(q);
   armNudge();
   if(S.i===0&&S.mode==='island'&&typeof tourHook==='function')tourHook('play');
   if(q.kind==='setclock')return setupClock(q);
@@ -178,6 +179,7 @@ function showQ(){
   drawChoices(q,choose);
 }
 $('#howBtn').onclick=()=>{bump('w');openHow()};
+$('#esBtn').onclick=()=>esOpen();
 document.addEventListener('keydown',e=>{if(curScreen!=='play'||ovOpen||!S||S.mode==='flash'||e.ctrlKey||e.metaKey||e.altKey)return;const tg=e.target;if(tg&&/INPUT|TEXTAREA|SELECT/.test(tg.tagName))return;
   if(/^[1-4]$/.test(e.key)&&!S.locked){const q=S.qs[S.i];if(q&&!q.kind){const b=$('#ch'+(+e.key-1));if(b&&!b.disabled){e.preventDefault();b.click()}}}
   else if(e.key==='Enter'&&!$('#next').hidden&&document.activeElement!==$('#next')){e.preventDefault();$('#next').click()}
@@ -496,7 +498,7 @@ function judge(ok,btn){
     if(first&&CUR_EV&&S.mode!=='boss')addEventPts(S.isl.id==='ev'?3:1);
     if(first&&S.streak>0&&S.streak%5===0&&['island','daily','review'].includes(S.mode))S.bonus=true;
     comboUI();
-    $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback';fb.innerHTML=explainHTML(q,true);fb.hidden=false;finishQ();
+    $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback';fb.innerHTML=explainHTML(q,true);fb.hidden=false;if(typeof esAfterExplain==='function')esAfterExplain(q);finishQ();
   }else{
     const given=btn&&!q.kind?btn.textContent.trim():q.kind==='keypad'?String(S.entry||''):'';
     S.tries++;sNo();foxMove('wobble');foxClass('sad',1400);S.streak=0;comboUI();aliveWrong();aliveEventAnswer(false,false);
@@ -508,9 +510,9 @@ function judge(ok,btn){
     if(S.mode==='test'&&S.tries===1){track(q,true,false,given);S.tries=2}
     if(S.tries===1&&S.mode==='island'&&q.meta&&q.meta.t!=null&&!q.rv&&byId(q.meta.i)&&byId(q.meta.i).gen){const k=q.meta.i+'|'+q.meta.t;S.missRun=S.missRun||{};S.helped=S.helped||{};S.missRun[k]=(S.missRun[k]||0)+1;if(S.missRun[k]>=2&&!S.helped[k]){S.helped[k]=1;S.helpQ=q}}
     if(typeof missionAnswer==='function')missionAnswer(S.tries===1?'wobble':'miss');if(S.tries===1&&typeof stat==='function')stat('qs');
-    if(S.tries===1){track(q,true,false,given);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;armNudge();autoSay(`Hint: ${q.hint}`)}
+    if(S.tries===1){track(q,true,false,given);bump('h');firstMistakeTip();say($('#say'),pick(TRY));const h=$('#hint');h.innerHTML=`<b>Hint:</b> ${q.hint}`;h.hidden=false;if(typeof esAfterHint==='function')esAfterHint(q);armNudge();autoSay(`Hint: ${q.hint}`)}
     else{S.locked=true;dot&&dot.classList.add('miss');if(S.mode==='review'||q.rv)reviewResult(q,false);reveal(q);say($('#say'),`That one was tricky! Watch how it works. It'll come back at Fix-It Falls so you can beat it later!`);
-      $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;autoSay(fb.innerHTML);finishQ()}
+      $('#hint').hidden=true;const fb=$('#feedback');fb.className='feedback miss';fb.innerHTML=explainHTML(q,false);fb.hidden=false;autoSay(fb.innerHTML);if(typeof esAfterExplain==='function')esAfterExplain(q);finishQ()}
   }
 }
 function firstMistakeTip(){if(G.tutHint)return;G.tutHint=1;save(true);
