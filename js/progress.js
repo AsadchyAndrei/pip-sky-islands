@@ -320,7 +320,7 @@ function streakInfo(){let off=playedOn(dayKey())?0:-1,n=0,rest=[];const used=new
 const curStreak=()=>streakInfo().n;
 const playedToday=()=>playedOn(dayKey());
 /* one finished round (called from done(): every kind of round ends there) */
-function markRound(){if(!S||S.counted)return;S.counted=1;const t=today();t.r=(t.r||0)+1;const n=curStreak();if(n>=3)award('daily3');if(n>=7)award('daily7')}
+function markRound(){if(!S||S.counted)return;S.counted=1;const t=today();t.r=(t.r||0)+1;if(typeof buddyDay==='function')buddyDay();const n=curStreak();if(n>=3)award('daily3');if(n>=7)award('daily7')}
 const dailyDone=()=>G.lastDaily===dayKey();
 const today=()=>{const k=dayKey();return G.days[k]||(G.days[k]={sec:0,q:0,c:0})};
 const bump=(f,n=1)=>{const t=today();t[f]=(t[f]||0)+n};

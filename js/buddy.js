@@ -39,7 +39,7 @@ const buddyStage=()=>{const b=G.buddy;if(!b)return 0;return b.m>=BUDDY_STAGE[2]?
 const buddyName=()=>G.buddy?(G.buddy.name||BUDDIES[buddyKind(G.buddy.kind)].name):'';
 function buddyGiveEgg(){if(G.egg||G.buddy)return;G.egg={days:[dayKey()]};save(true);
   setTimeout(()=>toast('You found a mysterious egg!','Play on 5 different days and it will hatch. It is on your map.','#ff9f43'),2600)}
-/* a new day of play: the egg gets closer to hatching */
+/* a new day of play (a finished round, like the day streak): the egg gets closer to hatching */
 function buddyDay(){if(!G.egg)return;const d=dayKey();if(!G.egg.days.includes(d)){G.egg.days=[...G.egg.days,d].slice(-BUDDY_HATCH);save(true)}}
 function buddyReady(){return G.egg&&G.egg.days.length>=BUDDY_HATCH}
 function buddyHatch(){if(!buddyReady())return;const kinds=Object.keys(BUDDIES),kind=kinds[Math.floor(Math.random()*kinds.length)];
@@ -58,6 +58,6 @@ function renderBuddyCard(){const el=document.getElementById('buddyCard');if(!el)
   if(G.buddy){const st=buddyStage(),need=st<3?BUDDY_STAGE[st]-G.buddy.m:0;el.hidden=false;
     el.innerHTML=`<div class="gprev">${buddySVG(G.buddy.kind,st,74)}</div><div class="gtxt"><b>${esc(buddyName())}</b><span>${st<3?`Master <b>${need}</b> more skill${need>1?'s':''} to help it grow`:'Fully grown! Keep it company on your missions.'}</span>${st<3?`<div class="bar warm"><i style="width:${Math.round(100*(G.buddy.m-BUDDY_STAGE[st-1])/(BUDDY_STAGE[st]-BUDDY_STAGE[st-1]))}%"></i></div>`:''}</div>`;return}
   if(G.egg){const n=G.egg.days.length,ready=n>=BUDDY_HATCH;el.hidden=false;
-    el.innerHTML=`<div class="gprev">${eggSVG(n/BUDDY_HATCH,70)}</div><div class="gtxt"><b>${ready?'Your egg is hatching!':'A mysterious egg'}</b><span>${ready?'Tap to see who is inside!':`Played on ${n} of ${BUDDY_HATCH} days. Come back tomorrow!`}</span>${ready?'':`<div class="bar warm"><i style="width:${n/BUDDY_HATCH*100}%"></i></div>`}</div>${ready?'<button type="button" class="go small" id="bHatch">Hatch!</button>':''}`;
+    el.innerHTML=`<div class="gprev">${eggSVG(n/BUDDY_HATCH,70)}</div><div class="gtxt"><b>${ready?'Your egg is hatching!':'A mysterious egg'}</b><span>${ready?'Tap to see who is inside!':G.egg.days.includes(dayKey())?`Played on ${n} of ${BUDDY_HATCH} days. Come back tomorrow!`:`Played on ${n} of ${BUDDY_HATCH} days. Finish a round today to make it ${n+1}!`}</span>${ready?'':`<div class="bar warm"><i style="width:${n/BUDDY_HATCH*100}%"></i></div>`}</div>${ready?'<button type="button" class="go small" id="bHatch">Hatch!</button>':''}`;
     const h=document.getElementById('bHatch');if(h)h.onclick=buddyHatch;return}
   el.hidden=true}

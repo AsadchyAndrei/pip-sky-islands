@@ -131,7 +131,7 @@ function start(isl,opts={}){
   beginRound(isl,'island',qs);
 }
 function freshState(isl,mode){return {isl,mode,qs:[],i:0,score:0,tries:0,streak:0,bestStreak:0,coins:0,xp:0,locked:false,badges:[],lvNow:levelOf(G.xp),lv0:levelOf(G.xp)}}
-function beginRound(isl,mode,qs){if(typeof stat==='function'){statDay();stat('rounds')}if(typeof buddyDay==='function')buddyDay();
+function beginRound(isl,mode,qs){if(typeof stat==='function'){statDay();stat('rounds')}
   if(mode==='island'&&islKnown(isl.id)&&G.knownNote!==dayKey()+isl.id){G.knownNote=dayKey()+isl.id;setTimeout(()=>toast('You know this island!',`Every skill on ${esc(isl.name)} is mastered, so coins are half here. Islands with new skills pay full coins.`,'#2f9fe0'),900)}
   stopTimers();S=freshState(isl,mode);S.qs=qs;S.d=diffFor(isl);
   {const nm=$('#iname');nm.textContent=isl.name;if(mode==='island'){const d=document.createElement('span');d.className='idiff';d.textContent=` · ${DIFF_NAME[S.d]}`;nm.appendChild(d)}}$('#timer').hidden=true;$('#bossbar').hidden=true;$('#dots').hidden=false;$('#combo').hidden=true;
