@@ -292,7 +292,15 @@ const addDays=(n,base=new Date())=>{const d=new Date(base);d.setDate(d.getDate()
 const yesterdayKey=()=>addDays(-1);
 const weekKey=(d=new Date())=>{const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);return dayKey(x)};
 const lastWeekKey=()=>{const d=new Date();d.setDate(d.getDate()-7);return weekKey(d)};
-const curStreak=()=>(G.lastDaily===dayKey()||G.lastDaily===yesterdayKey())?G.dstreak:0;
+/* The day streak: days in a row with at least one finished round anywhere (an island, the Daily Challenge, a lesson, a boss...).
+   Rounds are counted per day since 2026-10-21; before that, a day counts if any puzzle was answered, so streaks carry over.
+   Today counts once a round is finished; until then the streak still shows the run up to yesterday. */
+const STREAK_V2='2026-10-21';
+const playedOn=k=>{const d=(G.days||{})[k];return !!d&&((d.r||0)>0||(k<STREAK_V2&&(d.q||0)>0))};
+function curStreak(){const t=playedOn(dayKey())?0:1;let n=0;while(n<2000&&playedOn(addDays(-t-n)))n++;return n}
+const playedToday=()=>playedOn(dayKey());
+/* one finished round (called from done(): every kind of round ends there) */
+function markRound(){if(!S||S.counted)return;S.counted=1;const t=today();t.r=(t.r||0)+1;const n=curStreak();if(n>=3)award('daily3');if(n>=7)award('daily7')}
 const dailyDone=()=>G.lastDaily===dayKey();
 const today=()=>{const k=dayKey();return G.days[k]||(G.days[k]={sec:0,q:0,c:0})};
 const bump=(f,n=1)=>{const t=today();t[f]=(t[f]||0)+n};
@@ -313,8 +321,8 @@ const BADGES=[
   ['combo5','Hot Streak','Answer 5 in a row on the first try.','#ff9f43'],['combo10','Unstoppable','Answer 10 in a row on the first try.','#ff6b57'],
   ['stars20','Star Collector','Collect 20 stars.','#ffc23d'],['stars40','Star Hoarder','Collect 40 stars.','#e2558f'],['stars60','Sky Royalty','Collect every star in the sky.','#6b5bd6'],
   ['travel','World Traveler','Finish every island at least once.','#2f9fe0'],['clock','Time Keeper','Get 3 stars on Clock Cove.','#5ec3d6'],
-  ['boss','Storm Tamer','Defeat the Grumble Cloud on Boss Island.','#6b6f9e'],['daily3','3-Day Streak','Finish the Daily Challenge 3 days in a row.','#ff9f43'],
-  ['daily7','Week Warrior','Finish the Daily Challenge 7 days in a row.','#ff6b57'],['shopper','Snappy Dresser','Buy something in Pip\'s Closet.','#e2558f'],['legend','Living Legend','Buy a Legendary item in Pip\'s Closet.','#ffc23d'],
+  ['boss','Storm Tamer','Defeat the Grumble Cloud on Boss Island.','#6b6f9e'],['daily3','3-Day Streak','Play 3 days in a row.','#ff9f43'],
+  ['daily7','Week Warrior','Play 7 days in a row.','#ff6b57'],['shopper','Snappy Dresser','Buy something in Pip\'s Closet.','#e2558f'],['legend','Living Legend','Buy a Legendary item in Pip\'s Closet.','#ffc23d'],
   ['thunder','Lightning Brain','Answer 20 facts in Thunder Tower.','#7c8fb8'],['level5','Sky Scholar','Reach level 5.','#38b98a'],['rich','Treasure Keeper','Have 500 coins at once.','#e09a14'],
   ['hard','Hard Mode Hero','Get 3 stars on an island in Hard mode.','#ff6b57'],['fixer','Comeback Kid','Fix 10 old mistakes at Fix-It Falls.','#5ec3d6'],
   ['learner','Quick Learner','Finish a lesson with Pip.','#2f9fe0'],['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['story3','Bridge Builder','Bring back every color of the Rainbow Bridge.','#e2558f'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],

@@ -30,7 +30,8 @@ function weekCard(){const tw=thisWeek(),lw=G.weeks[lastWeekKey()];
 }
 function buildTips(){
   const t=[],st=starTotal(),lv=levelOf(G.xp),n=G.name?`${esc(G.name)}, `:'';
-  if(!dailyDone())t.push({text:curStreak()>0?`${n}your <b>${curStreak()}-day streak</b> is on the line! Finish today's <b>Daily Challenge</b> to keep it going!`:`Today's <b>Daily Challenge</b> is ready! Finish it for <b>+${REW.daily} bonus coins</b> and start a streak!`});
+  if(!playedToday()&&curStreak()>0)t.push({text:`${n}your <b>${curStreak()}-day streak</b> is on the line! Finish one round today to keep it going. The <b>Daily Challenge</b> gives <b>+${REW.daily} bonus coins</b>!`,label:'Play the Daily Challenge',act:()=>start(byId('daily'))});
+  else if(!dailyDone())t.push({text:`Today's <b>Daily Challenge</b> is ready! Finish it for <b>+${REW.daily} bonus coins</b>.${curStreak()?'':' Finish any round today to start a day streak!'}`});
   if(CUR_EV){const st=evState(CUR_EV),nx=EV_MILES.find(m=>st.pts<m[0]);t.push({text:`The <b>${CUR_EV.name}</b> is on until ${evEnd(CUR_EV)}!${nx?` Only <b>${nx[0]-st.pts} more points</b> to the next prize!`:' You won every prize. WOW!'}`,label:`Play ${CUR_EV.island}`,act:()=>start(eventIsland())})}
   if(!G.home||homeBuilt()<homeTotal())t.push({text:homeCount()?`Let's keep building <b>our island</b>! What should we add next?`:`Did you know we can build <b>our own island</b>? Let's start with a cozy tent!`,label:'Go to My Island',act:openHome});
   const due=reviewDue().length;if(due)t.push({text:`${n}<b>${due} old mistake${due>1?'s are':' is'}</b> waiting at Fix-It Falls. Fixing them makes your brain super strong!`,label:'Go to Fix-It Falls',act:()=>start(byId('review'))});
@@ -589,12 +590,13 @@ function nextFlash(){
 
 /* results */
 function finishRound(){
+  markRound();
   if(S.mode==='lesson')return finishLesson();
   if(S.mode==='test')return finishTest();
   if(G.cls)classRoundDone(S);
   const n=S.qs.length,s=S.score;let st=s===n?3:s>=Math.ceil(n*.66)?2:s>=1?1:0;let extra='',stick=st>=3?.6:st===2?.4:st===1?.2:0;
   if(S.mode==='daily'){
-    if(!dailyDone()){G.dstreak=G.lastDaily===yesterdayKey()?G.dstreak+1:1;G.lastDaily=dayKey();gain(REW.daily,5,$('#prompt'));extra=` Daily bonus: +${REW.daily} coins! Streak: ${G.dstreak} day${G.dstreak>1?'s':''}!`;stick=1;
+    if(!dailyDone()){G.dstreak=G.lastDaily===yesterdayKey()?G.dstreak+1:1;G.lastDaily=dayKey();gain(REW.daily,5,$('#prompt'));{const k=curStreak();extra=` Daily bonus: +${REW.daily} coins! Streak: ${k} day${k>1?'s':''}!`}stick=1;
       if(G.dstreak>=3)award('daily3');if(G.dstreak>=7)award('daily7')}
     else extra=' (You already got today\'s bonus. Come back tomorrow for a new challenge!)';
   }
@@ -626,7 +628,7 @@ function dropSticker(chance){
   for(const [set,name] of STICKER_SETS)if(!G.setsDone[set]&&STK.filter(x=>x.set===set).every(x=>G.stickers[x.id])){G.setsDone[set]=1;G.coins+=REW.set;award('album');setTimeout(()=>toast(`Set complete: ${name}!`,`+${REW.set} coins!`,'#e2558f'),1500)}
   return {s,dup};
 }
-function done(st,line,o={}){
+function done(st,line,o={}){if(typeof markRound==='function')markRound();
   stopTimers();removeEventListener('keydown',window._keyH||(()=>{}));
   const isl=S.isl,hasStars=STAR_ISLANDS.includes(isl)&&S.chapter==null,prev=G.best[isl.id]||0,newBest=hasStars&&st>prev;
   G.visited[isl.id]=1;G.rounds=(G.rounds||0)+1;award('first');
