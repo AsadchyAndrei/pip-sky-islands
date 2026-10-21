@@ -1,0 +1,35 @@
+"""Rewards shown before playing: the island card says what the next star needs, how coins come and which Wonder
+resource the mission gives (and when the island is tired today); islands on the map show their resource;
+a Wonder that is short of a resource says where it comes from, with a button to that island. Nothing is paid out."""
+from serve import *
+c = Check('rewards before playing')
+with sync_playwright() as p:
+    b = launch(p)
+    for w in (390, 1280):
+        ctx, pg, errs = open_page(b, w, 900, pack='ca-4')
+        coins = pg.evaluate("G.coins"); res0 = pg.evaluate("JSON.stringify(G.res||null)")
+        pg.evaluate("delete G.res;G.home.proj={};renderMap()"); pg.wait_for_timeout(200)
+        c.ok(pg.locator('.isle .isres').count() == 0, f'{w}: no resource icons before the first resources')
+        pg.evaluate("openIsland(byId('mult'))"); pg.wait_for_timeout(300)
+        t = pg.text_content('.isrew')
+        c.ok('star' in t and 'Coins for every right answer' in t and 'first resources' in t, f'{w}: island card before Wonders: {t[:160]}')
+        pg.evaluate("closeOverlay();G.res={stone:3,book:0,crystal:0,relic:0,gold:0};renderMap()"); pg.wait_for_timeout(200)
+        c.ok(pg.locator('.isle .isres').count() > 10, f'{w}: islands show their resource')
+        pg.evaluate("openIsland(byId('science'))"); pg.wait_for_timeout(300)
+        t = pg.text_content('.isrew')
+        c.ok('crystals' in t and '+5' in t, f'{w}: the science island gives crystals: {t[-140:]}')
+        pg.evaluate("closeOverlay();G.resDay={d:dayKey(),c:{science:3}};openIsland(byId('science'))"); pg.wait_for_timeout(300)
+        c.ok('tired today' in pg.text_content('.isrew'), f'{w}: a tired island says so')
+        pg.evaluate("closeOverlay();G.best.mult=1;G.tierBest={};G.roll={};openIsland(byId('mult'))"); pg.wait_for_timeout(300)
+        c.ok('2nd star' in pg.text_content('.isrew'), f'{w}: the next star is explained')
+        pg.evaluate("closeOverlay();openHome()"); pg.wait_for_timeout(400)
+        need = pg.locator('#homeProj .resneed').first.text_content()
+        c.ok('more' in need and 'from' in need, f'{w}: a Wonder says what is missing and where from: {need[:120]}')
+        btn = pg.locator('#homeProj [data-resgo]').first
+        target = btn.get_attribute('data-resgo'); btn.click(); pg.wait_for_timeout(500)
+        c.ok(pg.evaluate("curScreen") == 'map' and pg.locator('#ocard .isrew').count() == 1, f'{w}: the button opens island {target}')
+        c.ok(pg.evaluate("G.coins") == coins, f'{w}: nothing paid out')
+        c.ok(not errs, f'{w}: page errors {errs[:3]}')
+        ctx.close()
+    b.close()
+c.done()

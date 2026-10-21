@@ -35,5 +35,6 @@ python3 check_homeschool.py
 python3 check_states.py
 python3 check_eshelp.py
 python3 check_streak.py
+python3 check_rewards.py
 python3 check_stats.py
 echo "All checks passed."

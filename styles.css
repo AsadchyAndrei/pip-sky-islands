@@ -2048,3 +2048,10 @@ body.has-mission .dotpip,body.has-mission .dotflag{display:none}
 .esw:focus-visible{outline:2px solid #2f9fe0;border-radius:4px}
 .estip{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:#14507a;color:#fff;font-size:15px;font-weight:800;padding:4px 10px;border-radius:10px;white-space:nowrap;z-index:30;pointer-events:none;box-shadow:0 3px 8px rgba(0,0,0,.2)}
 .estip::after{content:'';position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#14507a}
+
+/* what an island gives, shown before playing (js/wonders.js islRewardsHTML, resNeedHTML) */
+.isrew{list-style:none;text-align:left;margin:10px 0 4px;padding:10px 12px;background:var(--pale-sky,#eaf6ff);border-radius:16px;display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:15px;line-height:1.35}
+.isrew li{display:flex;gap:8px;align-items:flex-start}.isrew li>svg{width:20px;height:20px;flex:none;margin-top:1px}
+.isres{display:inline-flex;margin-left:4px;vertical-align:middle}.isres .resi{width:16px;height:16px}.isres.tired{opacity:.4;filter:grayscale(1)}
+.resneed{display:flex;flex-direction:column;gap:3px;margin-top:6px;font-size:13.5px;font-weight:600;color:var(--ink-soft,#506686)}
+.resneed span{display:flex;flex-wrap:wrap;align-items:center;gap:4px}.resneed .linkbtn{font-size:13.5px}

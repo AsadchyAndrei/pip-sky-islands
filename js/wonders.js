@@ -22,6 +22,26 @@ function resAdd(k,n,why){if(!n||!RES[k])return 0;G.res=Object.assign({stone:0,bo
   if(!G.resIntro){G.resIntro=1;setTimeout(()=>toast(`New: ${RES[k].name}!`,`You earn ${RES[k].name} from ${k==='gold'?'fixing old mistakes':'missions and mastered skills'}. Build <b>Wonders</b> on your island with them!`,'#7b6cf0'),1800)}
   else if(why)toast(`+${n} ${n===1?RES[k].one:RES[k].name}`,why,RES[k].col);
   return n}
+/* ---------- before playing: what an island gives, and where a missing resource comes from ---------- */
+const RES_FROM={stone:'math islands',book:'English islands',crystal:'science islands',relic:'history and geography islands',gold:'Fix-It Falls'};
+/* missions on one island give less after 3 on the same day (see resForMission) */
+const resTired=id=>!!(G&&G.resDay&&G.resDay.d===dayKey()&&(G.resDay.c[id]||0)>=3);
+const resShown=()=>!!(G&&(G.res||PROJECTS.some(P=>P.res&&projStage(P.id))));
+function resIslandFor(k){if(k==='gold'){const r=byId('review');return r&&reviewDue().length?r:null}
+  const L=STAR_ISLANDS.filter(i=>i.gen&&!i.special&&!i.flash&&resOf(i.id)===k&&!(unlockOf(i.id)&&!isOpen(i.id)));
+  const pk=pickToday();if(pk&&L.includes(pk)&&!resTired(pk.id))return pk;
+  return L.filter(i=>!resTired(i.id)).sort((a,b)=>starFor(a.id)-starFor(b.id))[0]||L[0]||null}
+function resNeedHTML(cost){const short=Object.entries(cost||{}).filter(([k,v])=>resHave(k)<v);if(!short.length)return '';
+  return `<div class="resneed">${short.map(([k,v])=>{const i=resIslandFor(k),m=v-resHave(k);return `<span>${RES_ICON[k]} <b>${m} more ${m===1?RES[k].one:RES[k].name}</b> from ${RES_FROM[k]}${i?` <button type="button" class="linkbtn" data-resgo="${i.id}">Go to ${esc(i.name)}</button>`:k==='gold'?' (fix an old mistake for good)':''}</span>`}).join('')}</div>`}
+function bindResGo(root){(root||document).querySelectorAll('[data-resgo]').forEach(b=>b.onclick=()=>{const i=byId(b.dataset.resgo);if(!i)return;renderMap();setTimeout(()=>openIsland(i),60)})}
+/* the island card: the next star and what a round here gives */
+function islRewardsHTML(isl){if(!isl.gen||isl.special)return '';const b=starFor(isl.id),L=skillsOf(isl.id),d=skillsDone(isl.id),k=resOf(isl.id),pk=pickToday(),x2=pk&&pk.id===isl.id;
+  const star=b>=3?'All 3 stars! Keep them shining.':b===2?(starRaw(isl.id)>=3?`<b>3rd star</b>: master every skill here (${d} of ${L.length} done).`:`<b>3rd star</b>: a round with every puzzle right on the first try, and every skill here mastered (${d} of ${L.length}).`)
+    :b===1?'<b>2nd star</b>: get 2 of every 3 puzzles right on the first try in one round.':'<b>1st star</b>: finish a round here.';
+  const rows=[`<li>${starSVG(true)}<span>${star}</span></li>`,`<li>${COIN_ICON}<span>Coins for every right answer, more on the first try and in a row.${x2?' <b>×2 today</b> (Pip\'s Pick)!':''}</span></li>`];
+  if(resShown())rows.push(`<li>${RES_ICON[k]}<span>${resTired(isl.id)?`This island is <b>tired today</b>: missions here give fewer ${RES[k].name}. Try another island!`:`Finish the mission: <b>${RES[k].name}</b> for your Wonders (more for golden answers). Master a skill: <b>+5</b>.`}</span></li>`);
+  else rows.push(`<li>${RES_ICON[k]}<span>Finish the mission to earn your first resources for <b>Wonders</b>!</span></li>`);
+  return `<ul class="isrew" aria-label="What you can earn here">${rows.join('')}</ul>`}
 /* a finished mission */
 function resForMission(islId,gold,n){const k=resOf(islId),day=dayKey();G.resDay=G.resDay&&G.resDay.d===day?G.resDay:{d:day,c:{}};
   const c=(G.resDay.c[islId]||0)+1;G.resDay.c[islId]=c;let a=2+Math.min(gold,8);if(c>3)a=Math.max(1,Math.ceil(a/3));

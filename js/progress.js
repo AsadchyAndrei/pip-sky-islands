@@ -235,9 +235,9 @@ function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone
   if(L.length<2||isl.flash)return start(isl);
   const third=b>=2&&!allSkills(isl.id)&&!(G.star3||{})[isl.id];
   overlay(`<div class="ishead"><span class="isico">${islandSVG(isl.color,LANDMARKS[isl.lm])}</span><div><div class="eyebrow" style="color:${isl.color}">${esc(isl.topic)}</div><h2>${esc(isl.name)}</h2><span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}</span></div></div>
-    <div class="isbtns"><button type="button" class="go big" id="isPlay">Play</button>${lessonsFor(isl.id).length?'<button type="button" class="go alt" id="isLearn">Learn the trick</button>':''}</div>
+    <div class="isbtns"><button type="button" class="go big" id="isPlay">Play</button>${lessonsFor(isl.id).length?'<button type="button" class="go alt" id="isLearn">Learn the trick</button>':''}</div>${typeof islRewardsHTML==='function'?islRewardsHTML(isl):''}
     <div class="sklist" role="list"><div class="skhead"><b>Skills</b><span>${d} of ${L.length} mastered</span></div>${L.map(s=>{const m=skStat(s.k);return `<div class="skrow s${m.st}" role="listitem">${SK_DOT(m.st)}<div class="skname"><b>${esc(s.name)}</b><small>${m.st===2?'Mastered':m.n?`${m.ok} of ${m.n} right lately`:'Not tried yet'}</small></div><button type="button" class="go small alt" data-sk="${s.i}" aria-label="Practice ${esc(s.name)}">Practice</button></div>`}).join('')}</div>
-    ${third?`<p class="note">The <b>3rd star</b> shines when every skill here is mastered.</p>`:''}<div class="actrow"><button type="button" class="go alt" id="isClose">Back to map</button></div>`,()=>{
+<div class="actrow"><button type="button" class="go alt" id="isClose">Back to map</button></div>`,()=>{
     $('#ocard').classList.add('wide');const close=()=>{$('#ocard').classList.remove('wide');closeOverlay()};
     $('#isPlay').onclick=()=>{close();start(isl)};if($('#isLearn'))$('#isLearn').onclick=()=>{close();start(lessonIsland(lessonFor(isl.id)))};$('#isClose').onclick=close;$('#isPlay').focus({preventScroll:true});
     $('#ocard').querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{close();tone([523,784]);startSkill(isl,L[+b.dataset.sk])})})}
