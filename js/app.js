@@ -742,7 +742,15 @@ const PROJECTS=[
      if(n>=2)o+=`<path d="M${x-40} ${y+20} L${x-26} ${y+40} M${x+40} ${y+20} L${x+26} ${y+40} M${x} ${y+28} V${y+40}" stroke="#1f3557" stroke-width="2"/><rect x="${x-32}" y="${y+40}" width="64" height="20" rx="6" fill="#a0683a" ${STK2}/>`+[-18,0,18].map(d=>`<circle cx="${x+d}" cy="${y+50}" r="5" fill="#7fd0f5" ${STK2}/>`).join('');
      o+=`<ellipse cx="${x}" cy="${y}" rx="70" ry="28" fill="#ff9f43" ${STK2}/><path d="M${x-70} ${y} H${x+70} M${x-36} ${y-24} Q${x-46} ${y} ${x-36} ${y+24} M${x+36} ${y-24} Q${x+46} ${y} ${x+36} ${y+24}" stroke="#e07a18" stroke-width="3" fill="none"/><ellipse cx="${x-24}" cy="${y-12}" rx="18" ry="6" fill="#fff" opacity=".4"/>`;
      if(n>=3)o+=`<path d="M${x+70} ${y} V${y-30}" stroke="#1f3557" stroke-width="2"/><path d="M${x+70} ${y-30} l16 5 l-16 5Z" fill="#38b98a" ${STK2}/>`;
-     return `<g class="hbob">${o}</g>`}}
+     return `<g class="hbob">${o}</g>`}},
+  /* a waterfall pouring off the island's edge into the sky */
+  {id:'waterfall',name:'Sky Waterfall',pos:[602,248],stages:[['Spring pool',2500],['Waterfall',3500],['Rainbow mist',4000],['Lily stepping stones',4500]],
+   draw:(x,y,n)=>{let o='';
+     if(n>=2)o+=`<path d="M${x} ${y+4} Q${x+16} ${y+10} ${x+18} ${y+40} V${y+168} H${x+4} V${y+44} Q${x+2} ${y+22} ${x-8} ${y+12}Z" fill="#7fc4f5" ${STK2}/>`+[0,1,2,3].map(i=>`<path d="M${x+11} ${y+36+i*32} v20" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>`).join('');
+     if(n>=3)o+=['#e2558f','#ffc23d','#38b98a','#2f9fe0'].map((c,i)=>`<path d="M${x-12+i*3} ${y+166} A${23-i*3} ${18-i*3} 0 0 1 ${x+34-i*3} ${y+166}" fill="none" stroke="${c}" stroke-width="3"/>`).join('')+`<ellipse cx="${x+11}" cy="${y+168}" rx="18" ry="6" fill="#fff" ${STK2}/>`;
+     o+=`<ellipse cx="${x-6}" cy="${y}" rx="22" ry="9" fill="#2f9fe0" ${STK2}/><path d="M${x-16} ${y-2} q6 -3 12 0" stroke="#bfe3fb" stroke-width="2.5" fill="none" stroke-linecap="round"/>`+[[-28,2,6],[-20,9,5],[14,-5,5],[16,4,4]].map(([a,b,r])=>`<circle cx="${x+a}" cy="${y+b}" r="${r}" fill="#b8c3d3" ${STK2}/>`).join('');
+     if(n>=4)o+=[[22,-34],[16,-70],[24,-106]].map(([a,b],i)=>`<g class="hbob" style="animation-delay:${i*.5}s"><ellipse cx="${x+a}" cy="${y+b}" rx="11" ry="4.5" fill="#38b98a" ${STK2}/><circle cx="${x+a+3}" cy="${y+b-3}" r="3" fill="#ff9fc4" ${STK2}/></g>`).join('');
+     return o}}
 ];
 function projScene(P,n){const [x,y]=P.pos,d=P.draw(x,y,n);return P.scale?`<g transform="translate(${x} ${y}) scale(${P.scale}) translate(${-x} ${-y})">${d}</g>`:d}
 const projStage=id=>((G.home&&G.home.proj)||{})[id]||0;
@@ -854,7 +862,7 @@ function renderHome(){
   const W=PROJECTS.filter(P=>P.res);
   /* Wonders show once the first resources arrive (after the first mission); before that, one line says how to start */
   const wOpen=!!G.res||W.some(P=>projStage(P.id));
-  $('#homeProj').innerHTML=(W.length?`<h4 class="wtitle">Wonders <small>built with resources you earn by learning: missions, mastered skills, fixed mistakes</small></h4>${wOpen?resBarHTML()+W.map(projCard).join(''):`<p class="wsoon">Finish a mission on any island to earn your first resources. Then you can build a Floating Library, a Weather Tower and a History Museum here!</p>`}<h4 class="wtitle">Coin projects <small>built with coins, one step at a time. Tap "Make it my goal" to see your savings on the map.</small></h4>`:'')+PROJECTS.filter(P=>!P.res).map(projCard).join('');
+  $('#homeProj').innerHTML=(W.length?`<h4 class="wtitle">Wonders <small>built with resources you earn by learning: missions, mastered skills, fixed mistakes</small></h4>${wOpen?resBarHTML()+W.map(projCard).join(''):`<p class="wsoon">Finish a mission on any island to earn your first resources. Then you can build a Floating Library, a Crystal Cavern, a Fossil Dig and more here!</p>`}<h4 class="wtitle">Coin projects <small>built with coins, one step at a time. Tap "Make it my goal" to see your savings on the map.</small></h4>`:'')+PROJECTS.filter(P=>!P.res).map(projCard).join('');
   fitPreviews($('#homeProj'));
   fitPreviews($('#homeShop'));
   document.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{const P=PROJECTS.find(x=>x.id===b.dataset.proj),nx=projNext(P),cost=projCost(nx);if(!nx)return;

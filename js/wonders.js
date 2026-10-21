@@ -71,6 +71,21 @@ const WONDERS=[
      o+=`<rect x="${x-52}" y="${y-10}" width="104" height="10" fill="#d8dee8" ${STK2}/>`+[-36,-12,12,36].map(d=>`<rect x="${x+d-5}" y="${y-60}" width="10" height="50" fill="#eef1f6" ${STK2}/>`).join('');
      o+=`<path d="M${x-54} ${y-60} L${x} ${y-84} L${x+54} ${y-60}Z" fill="#d8dee8" ${STK2}/>`;
      if(n>=3)o+=`<rect x="${x-14}" y="${y-76}" width="28" height="12" fill="#f6e7c4" stroke="#a8844a" stroke-width="1.5"/><path d="M${x-10} ${y-68} q6 -6 10 0 t10 -2" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="2 2"/>`;
+     return o}},
+  /* two Wonders inside the island's rock, so the busy top of the island stays free */
+  {id:'w_cavern',name:'Crystal Cavern',res:true,pos:[452,348],stages:[['Cave mouth',{stone:25}],['Glowing crystals',{crystal:20,stone:10}],['Hidden lake',{crystal:15,book:8,relic:6}],['Golden geode',{gold:3,crystal:10}]],
+   draw:(x,y,n)=>{let o=`<path d="M${x-58} ${y+22} Q${x-60} ${y-34} ${x} ${y-38} Q${x+60} ${y-34} ${x+58} ${y+22}Z" fill="#4a2f1f" ${STK2}/>`+
+     [[-56,14,9],[-54,-6,8],[-44,-24,8],[-26,-34,8],[-6,-38,8],[14,-37,8],[33,-31,8],[48,-18,8],[56,2,8],[57,18,7]].map(([a,b,r])=>`<circle cx="${x+a}" cy="${y+b}" r="${r}" fill="#b8c3d3" ${STK2}/>`).join('');
+     if(n>=3)o+=`<ellipse cx="${x}" cy="${y+14}" rx="40" ry="8" fill="#2f9fe0" ${STK2}/><path d="M${x-22} ${y+12} q8 -3 16 0 M${x+6} ${y+16} q7 -3 14 0" stroke="#bfe3fb" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+     if(n>=2)o+=[[-34,6,1],[-22,-4,1.3],[26,0,1.2],[38,8,.9],[-8,-14,.8],[12,-18,.9]].map(([a,b,s])=>`<g transform="translate(${x+a} ${y+b}) scale(${s})"><path d="M-5 6 L0 -12 L5 6Z" fill="#b3a8ff" ${STK2}/><path d="M0 -12 L1.5 6" stroke="#fff" stroke-width="1.4" opacity=".8"/></g>`).join('')+`<circle class="hglow" cx="${x-20}" cy="${y-4}" r="10" fill="#b3a8ff" opacity=".35"/><circle class="hglow" cx="${x+28}" cy="${y}" r="9" fill="#b3a8ff" opacity=".35"/>`;
+     if(n>=4)o+=`<circle class="hglow" cx="${x}" cy="${y-8}" r="16" fill="#ffd56b" opacity=".5"/><path d="M${x-9} ${y-2} L${x} ${y-22} L${x+9} ${y-2} L${x} ${y+6}Z" fill="#ffc23d" ${STK2}/><path d="M${x} ${y-22} L${x+2} ${y+6}" stroke="#fff3c2" stroke-width="2"/>`;
+     return o}},
+  {id:'w_fossil',name:'Fossil Dig',res:true,pos:[200,342],stages:[['Dig site',{stone:20,relic:6}],['Dinosaur bones',{relic:18,stone:10}],['Amber gems',{relic:12,crystal:8,book:6}],['Golden fossil',{gold:3,relic:10}]],
+   draw:(x,y,n)=>{let o=`<path d="M${x-56} ${y-24} H${x+56} L${x+50} ${y+22} H${x-50}Z" fill="#c99a72" ${STK2}/><path d="M${x-48} ${y-14} H${x+48}" stroke="#a9785a" stroke-width="2" stroke-dasharray="6 5"/>`+
+     `<path d="M${x+46} ${y-40} L${x+60} ${y-22}" stroke="#8c5a2c" stroke-width="4" stroke-linecap="round"/><path d="M${x+38} ${y-38} Q${x+48} ${y-48} ${x+58} ${y-42}" stroke="#7c8fb8" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+     if(n>=2)o+=`<g stroke="#1f3557" stroke-width="1.6" stroke-linejoin="round"><path d="M${x-36} ${y} Q${x-4} ${y-12} ${x+24} ${y}" fill="none" stroke="#fffaf0" stroke-width="5" stroke-linecap="round"/>`+[-26,-16,-6,4,14].map(d=>`<path d="M${x+d} ${y-5} v14" stroke="#fffaf0" stroke-width="3.5" stroke-linecap="round"/>`).join('')+`<path d="M${x+24} ${y} q10 -10 20 -2 q2 8 -8 9 q-8 1 -12 -7Z" fill="#fffaf0"/><circle cx="${x+36}" cy="${y-3}" r="1.6" fill="#1f3557"/></g>`;
+     if(n>=3)o+=[[-44,12],[-30,16],[40,14]].map(([a,b])=>`<ellipse cx="${x+a}" cy="${y+b}" rx="5" ry="4" fill="#ff9f43" ${STK2}/><circle cx="${x+a-1.5}" cy="${y+b-1.5}" r="1.3" fill="#fff3c2"/>`).join('');
+     if(n>=4)o+=`<circle class="hglow" cx="${x-40}" cy="${y-6}" r="13" fill="#ffd56b" opacity=".45"/><path d="M${x-40} ${y-6} m-9 0 a9 9 0 1 1 9 9 a6 6 0 1 1 -6 -6 a3 3 0 1 1 3 3" fill="#ffc23d" ${STK2}/>`;
      return o}}
 ];
 PROJECTS.push(...WONDERS);

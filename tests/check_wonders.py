@@ -20,7 +20,7 @@ with sync_playwright() as p:
         pg.evaluate("ovOpen&&closeOverlay();show('map');renderMap();const keep=G.res;delete G.res;openHome();window.__keep=keep"); pg.wait_for_timeout(500)
         c.ok(pg.is_visible('.wsoon') and pg.locator('.pcard2.wonder').count() == 0, f'{w}: before any resources, one line explains how Wonders start')
         pg.evaluate("G.res={stone:30,book:30,crystal:30,relic:30,gold:3};renderHome()"); pg.wait_for_timeout(500)
-        c.ok(pg.locator('.pcard2.wonder').count() == 3 and pg.is_visible('.resbar'), f'{w}: three Wonders and the resource bar on the island page')
+        c.ok(pg.locator('.pcard2.wonder').count() == pg.evaluate('WONDERS.length') == 5 and pg.is_visible('.resbar'), f'{w}: three Wonders and the resource bar on the island page')
         coinsH = pg.evaluate("G.coins")
         pg.click('[data-proj="w_library"]'); pg.wait_for_timeout(150)
         c.ok('Tap again' in pg.text_content('[data-proj="w_library"]'), f'{w}: the first tap asks')
