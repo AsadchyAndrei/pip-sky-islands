@@ -24,15 +24,15 @@ function card(isl,i){
   return `<button class="isle${cls}" type="button" data-id="${isl.id}" style="--d:${-(i%7)*0.6}s" aria-label="${isl.name}: ${isl.topic}">${rib}
     ${islandSVG(isl.color,LANDMARKS[isl.lm])}<span class="plaque"><b>${isl.name}</b><small>${isl.topic}</small>${status}${isl.gen&&!isl.special?skillBar(isl.id):''}</span></button>`;
 }
-function weekCard(){const tw=thisWeek(),lw=G.weeks[lastWeekKey()];
-  const target=lw&&lw.c>0?lw.c:0;
+function weekCard(){const tw=thisWeek();
+  const target=weekTarget();
   renderPickCard();renderGoalCard();if(typeof renderBuddyCard==='function')renderBuddyCard();if(typeof renderFGoal==="function")renderFGoal();
-  $('#weekCard').innerHTML=target?`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers. Last week: <b>${target}</b>. ${tw.c>target?'You beat it! Amazing!':`Beat it for <b>+${REW.week} coins</b>!`}</span><div class="bar warm"><i style="width:${Math.min(100,tw.c/(target+1)*100)}%"></i></div>`
+  $('#weekCard').innerHTML=target?`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers. Your usual week: <b>${target}</b>. ${tw.c>target?'You beat it! Amazing!':`Beat it for <b>+${REW.week} coins</b>!`}</span><div class="bar warm"><i style="width:${Math.min(100,tw.c/(target+1)*100)}%"></i></div>`
     :`<b>Weekly Challenge</b><span class="wtext">This week: <b>${tw.c}</b> right answers on the first try. Next week, try to beat this number for <b>+${REW.week} coins</b>!</span>`;
 }
 function buildTips(){
   const t=[],st=starTotal(),lv=levelOf(G.xp),n=G.name?`${esc(G.name)}, `:'';
-  if(!playedToday()&&curStreak()>0)t.push({text:`${n}your <b>${curStreak()}-day streak</b> is on the line! Finish one round today to keep it going. The <b>Daily Challenge</b> gives <b>+${REW.daily} bonus coins</b>!`,label:'Play the Daily Challenge',act:()=>start(byId('daily'))});
+  if(!playedToday()&&curStreak()>0)t.push({text:`${n}your <b>${curStreak()}-day streak</b> is waiting! Finish one round today to keep it going (one rest day a week is OK, Pip keeps it safe). The <b>Daily Challenge</b> gives <b>+${REW.daily} bonus coins</b>!`,label:'Play the Daily Challenge',act:()=>start(byId('daily'))});
   else if(!dailyDone())t.push({text:`Today's <b>Daily Challenge</b> is ready! Finish it for <b>+${REW.daily} bonus coins</b>.${curStreak()?'':' Finish any round today to start a day streak!'}`});
   if(CUR_EV){const st=evState(CUR_EV),nx=EV_MILES.find(m=>st.pts<m[0]);t.push({text:`The <b>${CUR_EV.name}</b> is on until ${evEnd(CUR_EV)}!${nx?` Only <b>${nx[0]-st.pts} more points</b> to the next prize!`:' You won every prize. WOW!'}`,label:`Play ${CUR_EV.island}`,act:()=>start(eventIsland())})}
   if(!G.home||homeBuilt()<homeTotal())t.push({text:homeCount()?`Let's keep building <b>our island</b>! What should we add next?`:`Did you know we can build <b>our own island</b>? Let's start with a cozy tent!`,label:'Go to My Island',act:openHome});
@@ -132,6 +132,7 @@ function start(isl,opts={}){
 }
 function freshState(isl,mode){return {isl,mode,qs:[],i:0,score:0,tries:0,streak:0,bestStreak:0,coins:0,xp:0,locked:false,badges:[],lvNow:levelOf(G.xp),lv0:levelOf(G.xp)}}
 function beginRound(isl,mode,qs){if(typeof stat==='function'){statDay();stat('rounds')}if(typeof buddyDay==='function')buddyDay();
+  if(mode==='island'&&islKnown(isl.id)&&G.knownNote!==dayKey()+isl.id){G.knownNote=dayKey()+isl.id;setTimeout(()=>toast('You know this island!',`Every skill on ${esc(isl.name)} is mastered, so coins are half here. Islands with new skills pay full coins.`,'#2f9fe0'),900)}
   stopTimers();S=freshState(isl,mode);S.qs=qs;S.d=diffFor(isl);
   {const nm=$('#iname');nm.textContent=isl.name;if(mode==='island'){const d=document.createElement('span');d.className='idiff';d.textContent=` · ${DIFF_NAME[S.d]}`;nm.appendChild(d)}}$('#timer').hidden=true;$('#bossbar').hidden=true;$('#dots').hidden=false;$('#combo').hidden=true;
   $('#dots').innerHTML=qs.map(()=>'<span class="dot"></span>').join('');setAlt(0);
@@ -491,7 +492,7 @@ function judge(ok,btn){
     if(first){S.score++;S.streak++;dot&&dot.classList.add('gold');if(q.meta)(S.missRun||(S.missRun={}))[q.meta.i+'|'+q.meta.t]=0}else{S.streak=0;dot&&dot.classList.add('ok')}
     if(first&&S.mode==='place'){S.pr=S.pr||{};S.pr[q.meta.i]=(S.pr[q.meta.i]||0)+1}
     S.bestStreak=Math.max(S.bestStreak,S.streak);if(S.bestStreak>G.bestCombo)G.bestCombo=S.bestStreak;
-    let c=first?REW.ans:REW.ans2;if(first&&S.streak>=3)c+=Math.min(S.streak,8)-1;if(S.mode==='island'){const pk=pickToday();if(pk&&pk.id===S.isl.id)c*=2}c=taper(c);if(S.mode==='island'&&S.d===3)c=Math.round(c*1.5);
+    let c=first?REW.ans:REW.ans2;if(first&&S.streak>=3)c+=Math.min(S.streak,8)-1;if(S.mode==='island'&&islKnown(S.isl.id))c=Math.max(1,Math.round(c/2));if(S.mode==='island'){const pk=pickToday();if(pk&&pk.id===S.isl.id)c*=2}c=taper(c);if(S.mode==='island'&&S.d===3)c=Math.round(c*1.5);
     if(S.mode==='review'||q.rv)reviewResult(q,first);
     sYes();burstAt(btn||$('#card'));foxMove(S.streak>=5&&S.streak%5===0?'spin':'hop');setAlt(S.score);aliveRight(btn||$('#entry')||$('#check')||$('#card'),first);if(typeof missionAnswer==='function')missionAnswer(first?'gold':'ok');if(first&&typeof stat==='function'){stat('qs');stat('first')}aliveEventAnswer(true,first,btn||$('#prompt'));
     gain(c,first?2:1,btn||$('#prompt'));
@@ -638,7 +639,7 @@ function done(st,line,o={}){if(typeof markRound==='function')markRound();
   const isl=S.isl,hasStars=STAR_ISLANDS.includes(isl)&&S.chapter==null,prev=G.best[isl.id]||0,newBest=hasStars&&st>prev;
   G.visited[isl.id]=1;G.rounds=(G.rounds||0)+1;award('first');
   if(newBest)G.best[isl.id]=st;
-  let bonus=taper(st*REW.star+(newBest?REW.best:0));gain(bonus,st,$('#dstars'));
+  let bonus=taper(st*REW.star+(newBest?REW.best:0));if(S.mode==='island'&&islKnown(isl.id))bonus=Math.round(bonus/2);gain(bonus,st,$('#dstars'));
   const tot=starTotal();if(tot>=20)award('stars20');if(tot>=40)award('stars40');if(tot>=MAX)award('stars60');
   if(STAR_ISLANDS.every(i=>i.special||G.visited[i.id]))award('travel');if(isl.id==='time'&&st===3)award('clock');
   const drop=dropSticker(o.sticker);

@@ -29,6 +29,8 @@ function normalizeProfile(p){
   g.settings=Object.assign({...DEF_SETTINGS},g.settings||{});if((g.settings.sv||0)<2){g.settings.talk=false;g.settings.read=false;g.settings.sv=2}
   g.story=Object.assign({ch:0,seen:{}},g.story||{});if(g.placed==null&&(g.xp||0)>0)g.placed=1;g.home=Object.assign({house:0,items:{},pos:{},hidden:{}},g.home||{});
   for(const k of ['review','wrongLog','fixedSeeds','badges'])if(!Array.isArray(g[k]))g[k]=[];
+  /* the stricter mastery rule (2026-10-21): skills already mastered under the old rule stay mastered */
+  if(!g.skQv){g.skQv=1;g.skQ=Object.assign({},g.skQ);for(const [k,r] of Object.entries(g.sk||{})){const s=String(r),ok=s.split('').filter(x=>x==='1').length;if(s.length>=5&&ok/s.length>=.8)g.skQ[k]=1}}
   g.review=trimReview(g.review);
   if(g.sk)g.sk=skLegacy(g.sk);
   if(!g.pack)g.pack=PACK_DEFAULT;if(!g.grades||typeof g.grades!=='object')g.grades={};
@@ -189,12 +191,23 @@ function skillsOf(id){const c=skillsOf.c||(skillsOf.c={});if(c[id])return c[id];
   return c[id]=L.map((S,i)=>({k:S.id,id,i,name:S.name,std:S.std.join(' / '),codes:S.std,ts:S.src.types?S.src.types.slice():SKILL_SEL[S.src.sel](isl,S.src.arg)}))}
 const skillOf=(id,t)=>skillsOf(id).find(s=>s.ts.includes(t));
 function skAdd(id,t,ok){const s=skillOf(id,t);if(!s)return;G.sk=Object.assign({},G.sk||{});const before=skStat(s.k).st;G.sk[s.k]=((skRec(s.k)+(ok?'1':'0')).slice(-10));
-  if(before<2&&skStat(s.k).st===2&&S&&S.mode!=='boss'){const rk=typeof resOf==='function'?resOf(id):null;if(rk)resAdd(rk,5);if(typeof stat==='function')stat('mastered');if(typeof buddyMastered==='function')buddyMastered();G.mastLog=[...(G.mastLog||[]).slice(-499),{d:dayKey(),k:s.k}];toast(`Skill mastered: ${s.name}!`,`${byId(id).name}: ${skillsDone(id)} of ${skillsOf(id).length} skills mastered.${rk?` <b>+5 ${RES[rk].name}</b> for your Wonders!`:''}`,'#38b98a')}}
+  if(ok){const d=dayKey(),L=(G.skD||{})[s.k]||[];if(!L.includes(d))G.skD=Object.assign({},G.skD,{[s.k]:[...L,d].slice(-2)})}
+  if(before===2&&!(G.skQ||{})[s.k])G.skQ=Object.assign({},G.skQ,{[s.k]:1});
+  if(before<2&&skStat(s.k).st===2)G.skQ=Object.assign({},G.skQ,{[s.k]:1});
+  if(before<2&&skStat(s.k).st===2&&S&&S.mode!=='boss'){const rk=typeof resOf==='function'?resOf(id):null;if(rk)resAdd(rk,MAST_RES);if(typeof stat==='function')stat('mastered');if(typeof buddyMastered==='function')buddyMastered();G.mastLog=[...(G.mastLog||[]).slice(-499),{d:dayKey(),k:s.k}];toast(`Skill mastered: ${s.name}!`,`${byId(id).name}: ${skillsDone(id)} of ${skillsOf(id).length} skills mastered.${rk?` <b>+${MAST_RES} ${RES[rk].name}</b> for your Wonders!`:''}`,'#38b98a')}}
 /* a skill split from an older, bigger one ("was") starts with the older one's record, so mastery and stars carry over */
 function skRec(k){const m=G.sk||{};if(m[k]!=null)return m[k];const w=CONTENT.skills[k]&&CONTENT.skills[k].was;return (w&&m[w])||''}
-function skStat(k){const r=skRec(k),n=r.length,ok=r.split('').filter(x=>x==='1').length;return {n,ok,acc:n?ok/n:0,st:n>=5&&ok/n>=.8?2:n?1:0}}
+/* Mastery: 8 of the last 10 right on the first try, after at least 8 tries, with right answers on 2 different days, so one
+   lucky evening is not enough. Once a skill qualifies (G.skQ) it only needs to stay at 80%. Skills mastered under the older
+   rule (5 tries) keep their mastery: they were marked qualified when this rule came (normalizeProfile). */
+const MAST_TRIES=8,MAST_RES=2;
+function skQualified(k,n){const q=G.skQ||{};if(q[k])return true;const w=CONTENT.skills[k]&&CONTENT.skills[k].was;if(w&&q[w]&&(G.sk||{})[k]==null)return true;
+  return n>=MAST_TRIES&&((G.skD||{})[k]||[]).length>=2}
+function skStat(k){const r=skRec(k),n=r.length,ok=r.split('').filter(x=>x==='1').length;return {n,ok,acc:n?ok/n:0,st:n>=5&&ok/n>=.8&&skQualified(k,n)?2:n?1:0}}
 const skillsDone=id=>skillsOf(id).filter(s=>skStat(s.k).st===2).length;
 const allSkills=id=>{const L=skillsOf(id);return !L.length||L.every(s=>skStat(s.k).st===2)};
+/* an island whose every skill is mastered pays half the coins: new and weak skills are worth more (Pip's Pick is still ×2) */
+const islKnown=id=>{const i=byId(id);return !!(i&&i.gen&&!i.special&&skillsOf(id).length&&allSkills(id))};
 /* islands that already had 3 stars before skills existed keep them */
 function skMigrate(){if(G.skMig)return;G.skMig=1;G.star3={};for(const i of ISLANDS)if(i.gen&&starRaw(i.id)>=3)G.star3[i.id]=1}
 function weakSkill(id){const L=skillsOf(id).map(s=>({s,m:skStat(s.k)}));const tried=L.filter(x=>x.m.n>=3&&x.m.st<2).sort((a,b)=>a.m.acc-b.m.acc);if(tried.length)return tried[0].s;const fresh=L.filter(x=>x.m.n===0);return fresh.length?fresh[0].s:null}
@@ -207,7 +220,7 @@ function startSkill(isl,s){if(limitGate(()=>startSkill(isl,s)))return;beginRound
   const nm2=$('#iname');const sp=document.createElement('span');sp.className='idiff';sp.textContent=` · ${s.name}`;nm2.appendChild(sp);say($('#say'),`Let's practice <b>${esc(s.name)}</b>${nm()}! Six puzzles, all on this one skill.`)}
 const SK_DOT=st=>`<i class="skd s${st}"></i>`;
 /* "?" explanations for grown-ups */
-const QHELP={quest:['Class quest','A shared goal for 7 days. Every student\'s right answers (or minutes) add up to one class total, counted on our server. Students only see the class total and their own share: no names and no ranking, so nobody is singled out. You choose the reward.'],mastered:['Mastered','A skill is mastered when 8 of the last 10 puzzles on it were right on the first try (at least 5 tries). It means your child can do it reliably.'],
+const QHELP={quest:['Class quest','A shared goal for 7 days. Every student\'s right answers (or minutes) add up to one class total, counted on our server. Students only see the class total and their own share: no names and no ranking, so nobody is singled out. You choose the reward.'],mastered:['Mastered','A skill is mastered when 8 of the last 10 puzzles on it were right on the first try, after at least 8 tries on 2 different days. It means your child can do it reliably.'],
   almost:['Almost there','Not mastered yet, but at least 3 tries and 70% or more right. A little more practice usually finishes it.'],
   first:['Right on the first try','The share of puzzles answered correctly before any hint or second try. 80% or more is strong; under 60% means the topic is still hard.'],
   struggling:['Struggling','Under 60% right on the first try after at least 5 puzzles. A short lesson or practicing together helps most.'],
@@ -279,7 +292,7 @@ const islandSubject=i=>{const k=(i.skills||[])[0];return k&&CONTENT.skills[k]?CO
 function skillsParentHTML(){const groups=Object.keys(SUBJ_NAMES).map(sj=>[SUBJ_NAMES[sj],ISLANDS.filter(i=>i.gen&&!i.retired&&islandSubject(i)===sj).map(i=>i.id)]).filter(g=>g[1].length);
   let all=0,done=0;const body=groups.map(([g,ids])=>`<h5 class="skgrp">${g}</h5>${ids.filter(id=>byId(id)&&skillsOf(id).length).map(id=>{const L=skillsOf(id),d=skillsDone(id);all+=L.length;done+=d;
     return `<details class="skdet"><summary><b>${esc(byId(id).name)}</b><span>${esc(byId(id).topic)}</span><em>${d}/${L.length}</em><span class="skmeter"><i style="width:${Math.round(d/L.length*100)}%"></i></span></summary><ul>${L.map(s=>{const m=skStat(s.k);return `<li class="s${m.st}">${SK_DOT(m.st)}<span>${esc(s.name)}</span><small>${esc(s.std)}</small><em>${m.st===2?'Mastered':m.n?`${m.ok}/${m.n} lately`:'Not tried'}</em></li>`}).join('')}</ul></details>`}).join('')}`).join('');
-  return `<div class="pcard wide"><h4>Skills checklist</h4><p class="note">Every island is a topic made of skills. A skill is <b>mastered</b> at 8 of 10 right on the first try (at least 5 tries). Mastered: <b>${done} of ${all}</b> skills. Tap an island to see its skills and standards.</p><div class="sklegend">${SK_DOT(2)} mastered ${SK_DOT(1)} practicing ${SK_DOT(0)} not tried</div>${body}</div>`}
+  return `<div class="pcard wide"><h4>Skills checklist</h4><p class="note">Every island is a topic made of skills. A skill is <b>mastered</b> at 8 of the last 10 right on the first try, after at least 8 tries on 2 different days. Mastered: <b>${done} of ${all}</b> skills. Tap an island to see its skills and standards.</p><div class="sklegend">${SK_DOT(2)} mastered ${SK_DOT(1)} practicing ${SK_DOT(0)} not tried</div>${body}</div>`}
 const starRaw=id=>Math.max(G.best[id]||0,typeof tierBest==='function'?tierBest(id):0);
 /* a 3rd star, once earned, stays: new skills added to an island later never take it away */
 const starFor=id=>{const r=starRaw(id);if(r<3)return r;if(!G.skMig)skMigrate();if(G.skMig<2)skMigrate2();if((G.star3||{})[id])return 3;if(allSkills(id)){G.star3=Object.assign({},G.star3,{[id]:1});return 3}return 2};
@@ -292,12 +305,19 @@ const addDays=(n,base=new Date())=>{const d=new Date(base);d.setDate(d.getDate()
 const yesterdayKey=()=>addDays(-1);
 const weekKey=(d=new Date())=>{const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);return dayKey(x)};
 const lastWeekKey=()=>{const d=new Date();d.setDate(d.getDate()-7);return weekKey(d)};
+/* the weekly challenge: beat your usual week (the average of the last 3 weeks you played), not your best one */
+function weekTarget(){const L=[1,2,3].map(k=>{const d=new Date();d.setDate(d.getDate()-7*k);return (G.weeks[weekKey(d)]||{}).c||0}).filter(c=>c>0);return L.length?Math.round(L.reduce((a,b)=>a+b,0)/L.length):0}
 /* The day streak: days in a row with at least one finished round anywhere (an island, the Daily Challenge, a lesson, a boss...).
    Rounds are counted per day since 2026-10-21; before that, a day counts if any puzzle was answered, so streaks carry over.
    Today counts once a round is finished; until then the streak still shows the run up to yesterday. */
 const STREAK_V2='2026-10-21';
 const playedOn=k=>{const d=(G.days||{})[k];return !!d&&((d.r||0)>0||(k<STREAK_V2&&(d.q||0)>0))};
-function curStreak(){const t=playedOn(dayKey())?0:1;let n=0;while(n<2000&&playedOn(addDays(-t-n)))n++;return n}
+/* one rest day a week (Monday to Sunday) does not break the streak: Pip keeps it safe. Rest days are not counted as played. */
+function streakInfo(){let off=playedOn(dayKey())?0:-1,n=0,rest=[];const used=new Set();
+  for(let g=0;g<3000;g++){const k=addDays(off);if(playedOn(k)){n++;off--;continue}
+    const wk=weekKey(new Date(k+'T12:00'));if((n>0||off===-1)&&!used.has(wk)&&playedOn(addDays(off-1))){used.add(wk);rest.push(k);off--;continue}break}
+  return {n,rest}}
+const curStreak=()=>streakInfo().n;
 const playedToday=()=>playedOn(dayKey());
 /* one finished round (called from done(): every kind of round ends there) */
 function markRound(){if(!S||S.counted)return;S.counted=1;const t=today();t.r=(t.r||0)+1;const n=curStreak();if(n>=3)award('daily3');if(n>=7)award('daily7')}
@@ -326,7 +346,7 @@ const BADGES=[
   ['thunder','Lightning Brain','Answer 20 facts in Thunder Tower.','#7c8fb8'],['level5','Sky Scholar','Reach level 5.','#38b98a'],['rich','Treasure Keeper','Have 500 coins at once.','#e09a14'],
   ['hard','Hard Mode Hero','Get 3 stars on an island in Hard mode.','#ff6b57'],['fixer','Comeback Kid','Fix 10 old mistakes at Fix-It Falls.','#5ec3d6'],
   ['learner','Quick Learner','Finish a lesson with Pip.','#2f9fe0'],['story2','Compass Keeper','Fix the Starlight Compass in Story Mode.','#2c3266'],['story3','Bridge Builder','Bring back every color of the Rainbow Bridge.','#e2558f'],['grand','Master Builder','Finish a Grand Project on your island.','#e09a14'],['goal','Goal Getter','Reach your daily goal.','#38b98a'],['album','Set Collector','Complete a sticker set.','#e2558f'],
-  ['week','Personal Best','Beat last week\'s score.','#2f9fe0'],['builder','Home Builder','Build 5 things on your island.','#8fd16a'],['dream','Dream Island','Build everything on your island.','#ffc23d'],['popper','Balloon Popper','Pop 15 balloons in one bonus game.','#ff6b57'],['event','Event Champion','Win the top prize in a seasonal event.','#ff9f43'],['story','Map Master','Finish the whole Story Mode.','#6b5bd6'],
+  ['week','Personal Best','Beat your usual week (right answers).','#2f9fe0'],['builder','Home Builder','Build 5 things on your island.','#8fd16a'],['dream','Dream Island','Build everything on your island.','#ffc23d'],['popper','Balloon Popper','Pop 15 balloons in one bonus game.','#ff6b57'],['event','Event Champion','Win the top prize in a seasonal event.','#ff9f43'],['story','Map Master','Finish the whole Story Mode.','#6b5bd6'],
   ['homey','Home Sweet Home','Put 5 things inside your home.','#ff9f43'],['cozy','Interior Designer','Make a room 5 out of 5 cozy.','#e2558f'],['decorset','Set Collector','Complete a decor set in your home.','#8f7cf0']
 ];
 
@@ -499,8 +519,8 @@ function track(q,first,correct,given){
   }
   checkWeek();
 }
-function checkWeek(){const lw=G.weeks[lastWeekKey()],tw=thisWeek(),wk=weekKey();
-  if(lw&&lw.c>0&&tw.c>lw.c&&G.weekRewarded!==wk){G.weekRewarded=wk;G.coins+=REW.week;award('week');toast('You beat last week!',`${tw.c} correct answers vs ${lw.c} last week. +${REW.week} coins!`,'#2f9fe0');updateStats('#coinPill')}}
+function checkWeek(){const T=weekTarget(),tw=thisWeek(),wk=weekKey();
+  if(T>0&&tw.c>T&&G.weekRewarded!==wk){G.weekRewarded=wk;G.coins+=REW.week;award('week');toast('You beat your usual week!',`${tw.c} correct answers vs ${T} in a usual week. +${REW.week} coins!`,'#2f9fe0');updateStats('#coinPill')}}
 
 /* time & goal tracking */
 let tickN=0;

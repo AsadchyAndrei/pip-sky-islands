@@ -29,7 +29,7 @@ with sync_playwright() as p:
     c.ok(pg.locator('#recCard').count() == 1 and pg.locator('#recCard a[href*="homeschool.html?pack=ca-4"]').count() == 1, "Parents' Corner has the learning record and a link to the year plan")
     pg.select_option('#recKind', 'custom'); c.ok(pg.is_visible('#recFrom'), 'custom dates appear')
     before = pg.evaluate("(G.mastLog||[]).length")
-    pg.evaluate("ovOpen&&closeOverlay();start(byId('place'));const s=skillsOf('place')[0];G.sk=Object.assign({},G.sk||{});G.sk[s.k]='0000000000';for(let i=0;i<10;i++)skAdd('place',s.ts[0],true)"); pg.wait_for_timeout(300)
+    pg.evaluate("ovOpen&&closeOverlay();start(byId('place'));const s=skillsOf('place')[0];G.sk=Object.assign({},G.sk||{});G.sk[s.k]='0000000000';G.skD=Object.assign({},G.skD,{[s.k]:['2000-01-01']});for(let i=0;i<10;i++)skAdd('place',s.ts[0],true)"); pg.wait_for_timeout(300)
     c.ok(pg.evaluate("(G.mastLog||[]).length") == before + 1, 'a new mastery is written to the log with its date')
     c.ok(not errs, f'page errors {errs[:3]}')
     b.close()

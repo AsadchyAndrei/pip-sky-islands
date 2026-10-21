@@ -531,7 +531,7 @@ function renderParent(){
         <div><b>${mast} <small>of ${SK.length}</small></b><span>skills mastered ${qhelp('mastered')}</span><small class="tr">${alm} almost there ${qhelp('almost')} · ${tried} tried</small></div></div>
         ${(()=>{const yp=yearPace();if(!yp||yp.st==='early'||!tried)return '';return `<p class="pace p-${yp.st}"><b>School-year pace ${qhelp('pace')}:</b> ${yp.st==='ahead'?'ahead of pace':yp.st==='on'?'on pace':'a bit behind pace'} (${Math.round(yp.have*100)}% of this grade's skills, ${Math.round(yp.f*100)}% of the school year so far).</p>`})()}
         <div class="btnrow" style="justify-content:flex-start"><button type="button" class="go small alt" id="wkPrint">Print this week's report</button></div>
-        <p class="note">A skill is mastered at 8 of 10 right on the first try. Settings, the school program and class topics are in the <b>Settings</b> tab.</p></div>`})()}
+        <p class="note">A skill is mastered at 8 of the last 10 right on the first try, on 2 different days. Settings, the school program and class topics are in the <b>Settings</b> tab.</p></div>`})()}
     ${notifyAskHTML()}
     ${fromTeacherHTML()}
     ${typeof recordParentHTML==='function'?recordParentHTML():''}

@@ -2,7 +2,7 @@
    Own files: network first (always fresh when online), but never wait long: offline or on a weak
    connection the saved copy opens right away. Fonts and the Firebase library: saved at install and
    cache first, so the game looks the same offline. Sign-in and cloud saving go straight to the network. */
-const V='pip-v84',RT='pip-rt-v2',VC='pip-voice-v1',TTS='https://us-central1-pip-sky-islands.cloudfunctions.net/tts';
+const V='pip-v85',RT='pip-rt-v2',VC='pip-voice-v1',TTS='https://us-central1-pip-sky-islands.cloudfunctions.net/tts';
 const CORE=['./','index.html','js/demo.js','styles.css','js/content.js','js/core.js','js/scenes.js','js/math.js','js/math3.js','js/math3x.js','js/math3d.js','js/math5.js','js/math5x.js','js/math5d.js','js/english.js','js/english3.js','js/english3x.js','js/english3d.js','js/english5.js','js/english5x.js','js/english5d.js','js/us.js','js/homehelp.js','js/islands.js','js/progress.js','js/voice.js','js/stats.js','voice/pack.json','js/unlock.js','js/alive.js','js/mission.js','js/challenge.js','js/play.js','js/teacher.js','js/family.js','js/notify.js','js/guide.js','js/tour.js','guide.html','teachers.html','homeschool.html','js/es.js','js/app.js','js/wonders.js','js/buddy.js','js/visit.js','js/record.js','js/esdata.js','js/eshelp.js','es-review.html','favicon.svg','firebase-config.js','cloud.js','privacy.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png'];
 const FONT_CSS='https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Lilita+One&family=Lexend:wght@400;600;700&display=swap';
 /* save the font sheet and every font file it points to, so text never falls back to a plain font offline */

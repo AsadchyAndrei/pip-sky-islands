@@ -3,7 +3,7 @@
      stone (math), books (English), crystals (science), relics (history & geography), and rare golden bricks.
    Where they come from (quality, not quantity):
      - a finished mission: 2 + one for each first-try answer; the same island again and again on one day gives less
-     - a mastered skill: 5 of its subject
+     - a mastered skill: 2 of its subject
      - an old mistake fixed for good at Fix-It Falls: a golden brick
    Wonders need a mix of subjects, so a child who loves math also wants books for the library.
    Never bought with money, never lost for a mistake, never traded between children. */
@@ -39,8 +39,8 @@ function bindResGo(root){(root||document).querySelectorAll('[data-resgo]').forEa
 function islRewardsHTML(isl){if(!isl.gen||isl.special)return '';const b=starFor(isl.id),L=skillsOf(isl.id),d=skillsDone(isl.id),k=resOf(isl.id),pk=pickToday(),x2=pk&&pk.id===isl.id;
   const star=b>=3?'All 3 stars! Keep them shining.':b===2?(starRaw(isl.id)>=3?`<b>3rd star</b>: master every skill here (${d} of ${L.length} done).`:`<b>3rd star</b>: a round with every puzzle right on the first try, and every skill here mastered (${d} of ${L.length}).`)
     :b===1?'<b>2nd star</b>: get 2 of every 3 puzzles right on the first try in one round.':'<b>1st star</b>: finish a round here.';
-  const rows=[`<li>${starSVG(true)}<span>${star}</span></li>`,`<li>${COIN_ICON}<span>Coins for every right answer, more on the first try and in a row.${x2?' <b>×2 today</b> (Pip\'s Pick)!':''}</span></li>`];
-  if(resShown())rows.push(`<li>${RES_ICON[k]}<span>${resTired(isl.id)?`This island is <b>tired today</b>: missions here give fewer ${RES[k].name}. Try another island!`:`Finish the mission: <b>${RES[k].name}</b> for your Wonders (more for golden answers). Master a skill: <b>+5</b>.`}</span></li>`);
+  const rows=[`<li>${starSVG(true)}<span>${star}</span></li>`,`<li>${COIN_ICON}<span>${islKnown(isl.id)?'You mastered every skill here, so coins are <b>half</b> on this island. Islands with skills to learn pay full coins!':`Coins for every right answer, more on the first try and in a row.${x2?' <b>×2 today</b> (Pip\'s Pick)!':''}`}</span></li>`];
+  if(resShown())rows.push(`<li>${RES_ICON[k]}<span>${resTired(isl.id)?`This island is <b>tired today</b>: missions here give fewer ${RES[k].name}. Try another island!`:`Finish the mission: <b>${RES[k].name}</b> for your Wonders (more for golden answers). Master a skill: <b>+2</b>.`}</span></li>`);
   else rows.push(`<li>${RES_ICON[k]}<span>Finish the mission to earn your first resources for <b>Wonders</b>!</span></li>`);
   return `<ul class="isrew" aria-label="What you can earn here">${rows.join('')}</ul>`}
 /* a finished mission */
@@ -77,4 +77,4 @@ PROJECTS.push(...WONDERS);
 const projCost=nx=>nx&&typeof nx.price==='object'?nx.price:null;
 const canAffordRes=cost=>Object.entries(cost).every(([k,v])=>resHave(k)>=v);
 function resPay(cost){G.res=Object.assign({},G.res);Object.entries(cost).forEach(([k,v])=>{G.res[k]-=v})}
-function resBarHTML(){return `<div class="resbar"><b>Your resources</b>${Object.keys(RES).map(k=>resChip(k,resHave(k))).join('')}<small>Stone, books, crystals and relics: finish missions (golden answers give more) and master skills (+5). Golden bricks: fix an old mistake for good at Fix-It Falls (right 3 times, on different days).</small></div>`}
+function resBarHTML(){return `<div class="resbar"><b>Your resources</b>${Object.keys(RES).map(k=>resChip(k,resHave(k))).join('')}<small>Stone, books, crystals and relics: finish missions (golden answers give more) and master skills (+2). Golden bricks: fix an old mistake for good at Fix-It Falls (right 3 times, on different days).</small></div>`}

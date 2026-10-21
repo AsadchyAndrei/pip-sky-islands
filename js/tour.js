@@ -22,7 +22,7 @@ const TOURS={
     {el:['.lvl'],t:'Your level',x:'Every right answer gives you points. Fill the bar to reach the next level.'},
     {el:['#coinPill','.stats'],t:'Coins',x:'Coins come from right answers. Spend them in the Closet and on your island.'},
     {el:['#starPill'],t:'Stars',x:'All your island stars. Some islands open when you have enough stars.'},
-    {el:['#streakPill'],t:'Day streak',x:'Finish at least one round every day to grow your streak!'},
+    {el:['#streakPill'],t:'Day streak',x:'Finish at least one round every day to grow your streak! One rest day a week won\'t break it.'},
     {el:['#storyBtn','#bnav [data-go="storyBtn"]'],t:'Story Mode',x:'Follow Pip through a story, chapter by chapter, and beat the bosses.'},
     {el:['#albumBtn','#bnav [data-go="albumBtn"]'],t:'Sticker Album',x:'Collect stickers for great rounds. Can you fill the whole album?'},
     {el:['#closetBtn','#bnav [data-go="closetBtn"]'],t:'Closet',x:'Hats, pets, glasses, balloons: make Pip look awesome!'},

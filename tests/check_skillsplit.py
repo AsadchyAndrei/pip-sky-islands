@@ -5,7 +5,7 @@ c = Check('split skills keep progress')
 with sync_playwright() as p:
     b = launch(p)
     ctx, pg, errs = open_page(b, 1280, 900, pack='ca-4')
-    r = pg.evaluate("""()=>{G.sk={'social.history.california-history':'1111111111'};G.best.history=3;G.star3={};G.skMig=2;skillsOf.c={};
+    r = pg.evaluate("""()=>{G.sk={'social.history.california-history':'1111111111'};G.skQ={'social.history.california-history':1};G.best.history=3;G.star3={};G.skMig=2;skillsOf.c={};
       const L=skillsOf('history');return {n:L.length,st:L.map(s=>skStat(s.k).st),star:starFor('history')}}""")
     c.ok(r['n'] == 6 and all(x == 2 for x in r['st']), f'all six era skills start mastered: {r}')
     c.ok(r['star'] == 3, 'the 3rd star stays')
