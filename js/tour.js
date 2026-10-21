@@ -15,7 +15,7 @@ const TOURS={
     {intro:1,t:"Hi, I'm Pip!",x:`Want a quick tour of the sky islands? Finish it and I'll give you ${TOUR_COINS} coins!`,yes:'Show me around'},
     {el:['#pickCard'],t:"Today's flight plan",x:'Your plan for today: a few short rounds picked just for you. Start here every day!'},
     {el:['.islbox'],t:'The islands',x:'Every island is one school topic. Play an island to win up to 3 stars.'},
-    {el:[()=>firstVisible('.islbox .isle')],t:'An island',x:'The stars show how well you did. The little bar fills up as you master its skills.'},
+    {el:[()=>firstVisible('.islbox .isle')],t:'An island',x:'The stars show how well you did. The bar shows its skills: yellow = practicing, green = mastered. The little icon tells which Wonder resource its missions give.'},
     {el:['.islbox [data-tab="world"]'],act:1,t:'Your turn: tap it!',x:'Tap "Words & World" to see the reading, writing, science and history islands.',done:'Great!'},
     {el:['.islbox [data-tab="math"]'],act:1,t:'And back to Math',x:'Tap "Math" to go back. You can switch any time.'},
     {el:['#g-ch'],up:'.chbox',t:'Challenges',x:'Quick games that change every day: fix old mistakes, beat the clock, defeat the boss! Secret ones open as you play.'},

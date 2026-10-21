@@ -230,7 +230,7 @@ function weekHist(n,P=G){return [...Array(n)].map((_,w)=>{const off=(n-1-w)*7;co
 function weeksHTML(wh){if(!wh||!wh.length)return '<p class="note">No weeks yet.</p>';const mx=Math.max(10,...wh.map(w=>w[0]));
   return `<div class="weeks">${wh.map((w,i)=>`<div><em>${w[0]}</em><i style="height:${Math.max(2,w[0]/mx*100)}%"></i><span>${i===wh.length-1?'This wk':i===wh.length-2?'Last wk':`${wh.length-1-i}w ago`}</span><small class="${w[1]&&w[2]/w[1]<.6?'low':''}">${w[1]?Math.round(w[2]/w[1]*100)+'%':'–'}</small></div>`).join('')}</div><p class="note wknote">Bars: minutes per week. Under each bar: right on the first try.</p>`}
 function skillBar(id){const L=skillsOf(id);if(L.length<2)return '';const d=skillsDone(id);
-  return `<span class="skbar" title="${d} of ${L.length} skills mastered" aria-label="${d} of ${L.length} skills mastered">${(()=>{const st=L.map(s=>skStat(s.k).st),pc=v=>Math.round(st.filter(x=>x===v).length/L.length*100);return `<span class="sksegs meter"><i class="s2" style="flex:0 0 ${pc(2)}%"></i><i class="s1" style="flex:0 0 ${pc(1)}%"></i></span>`})()}<em>${d}/${L.length}</em></span>`}
+  return `<span class="skbar" title="${d} of ${L.length} skills mastered" aria-label="${d} of ${L.length} skills mastered">${(()=>{const st=L.map(s=>skStat(s.k).st),pc=v=>Math.round(st.filter(x=>x===v).length/L.length*100);return `<span class="sksegs meter"><i class="s2" style="flex:0 0 ${pc(2)}%"></i><i class="s1" style="flex:0 0 ${pc(1)}%"></i></span>`})()}<em>${d}/${L.length} skills</em></span>`}
 function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone(isl.id);
   if(L.length<2||isl.flash)return start(isl);
   const third=b>=2&&!allSkills(isl.id)&&!(G.star3||{})[isl.id];

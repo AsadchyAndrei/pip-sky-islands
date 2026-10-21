@@ -17,7 +17,7 @@ function card(isl,i){
   else if(isl.special==='boss'&&starTotal()<BOSS_NEED){cls=' locked';status=`<span class="status lock">Locked: ${starTotal()}/${BOSS_NEED} stars</span>`}
   else{status=`<span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}${G.hardMaster[isl.id]?CROWN_MINI:''}</span>`;
     if(isl.gen&&!isl.noDiff&&diffFor(isl)!==2)status+=`<span class="diff d${diffFor(isl)}">${DIFF_NAME[diffFor(isl)]}</span>`;
-    if(isl.gen&&typeof resShown==='function'&&resShown()){const k=resOf(isl.id),t=resTired(isl.id);status+=`<span class="isres${t?' tired':''}" title="${t?`Tired today: fewer ${RES[k].name}`:`Missions here give ${RES[k].name}`}">${RES_ICON[k]}</span>`}}
+    if(isl.gen&&typeof resShown==='function'&&resShown()){const k=resOf(isl.id),t=resTired(isl.id);status+=`<span class="isres${t?' tired':''}" title="${t?`Tired today: fewer ${RES[k].name}`:`Missions here give ${RES[k].name}`}">${RES_ICON[k]}<span>${t?'tired':RES[k].name}</span></span>`}}
   if(isl.gen&&!G.visited[isl.id]&&EXPLORE.has(isl.id))rib='<span class="ribbon blue">Explore!</span>';
   else if(isl.gen){const pk=pickToday();if(pk&&pk.id===isl.id)rib='<span class="ribbon">×2 coins</span>'}
   return `<button class="isle${cls}" type="button" data-id="${isl.id}" style="--d:${-(i%7)*0.6}s" aria-label="${isl.name}: ${isl.topic}">${rib}
