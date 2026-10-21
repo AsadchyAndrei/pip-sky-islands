@@ -2062,3 +2062,7 @@ body.has-mission .dotpip,body.has-mission .dotflag{display:none}
 #homeProj>.resbar{margin:0}
 .pghost{opacity:.3}
 .prow [data-proj].ask{background:var(--sun);color:var(--ink);box-shadow:0 4px 0 #e09a14;white-space:normal;text-align:left}
+
+.reschip small{font-size:12px;font-weight:700;color:#506686;margin-left:1px}
+.rescost small{font-size:12px;font-weight:700;margin-left:2px}
+.resneed .resi{width:1.15em;height:1.15em}

@@ -18,7 +18,7 @@ const RES_ICON={
 const SUBJ_RES={math:'stone',ela:'book',science:'crystal',social:'relic'};
 const resOf=id=>{const s=skillsOf(id)[0],k=s&&CONTENT.skills[s.k];return (k&&SUBJ_RES[k.subject])||'stone'};
 const resHave=k=>((G&&G.res)||{})[k]||0;
-const resChip=(k,n)=>`<span class="reschip">${RES_ICON[k]}<b>${fmt(n)}</b></span>`;
+const resChip=(k,n)=>`<span class="reschip" title="${fmt(n)} ${n===1?RES[k].one:RES[k].name}">${RES_ICON[k]}<b>${fmt(n)}</b><small>${n===1?RES[k].one:RES[k].name}</small></span>`;
 function resAdd(k,n,why){if(!n||!RES[k])return 0;G.res=Object.assign({stone:0,book:0,crystal:0,relic:0,gold:0},G.res||{});G.res[k]+=n;
   if(!G.resIntro){G.resIntro=1;setTimeout(()=>toast(`New: ${RES[k].name}!`,`You earn ${RES[k].name} from ${k==='gold'?'fixing old mistakes':'missions and mastered skills'}. Build <b>Wonders</b> on your island with them!`,'#7b6cf0'),1800)}
   else if(why)toast(`+${n} ${n===1?RES[k].one:RES[k].name}`,why,RES[k].col);
