@@ -33,7 +33,7 @@ function resIslandFor(k){if(k==='gold'){const r=byId('review');return r&&reviewD
   const pk=pickToday();if(pk&&L.includes(pk)&&!resTired(pk.id))return pk;
   return L.filter(i=>!resTired(i.id)).sort((a,b)=>starFor(a.id)-starFor(b.id))[0]||L[0]||null}
 function resNeedHTML(cost){const short=Object.entries(cost||{}).filter(([k,v])=>resHave(k)<v);if(!short.length)return '';
-  return `<div class="resneed">${short.map(([k,v])=>{const i=resIslandFor(k),m=v-resHave(k);return `<span>${RES_ICON[k]} <b>${m} more ${m===1?RES[k].one:RES[k].name}</b> from ${RES_FROM[k]}${i?` <button type="button" class="linkbtn" data-resgo="${i.id}">Go to ${esc(i.name)}</button>`:k==='gold'?' (fix an old mistake for good)':''}</span>`}).join('')}</div>`}
+  return `<div class="resneed">${short.map(([k,v])=>{const i=resIslandFor(k),m=v-resHave(k);return `<span>${RES_ICON[k]} <b>${m} more ${m===1?RES[k].one:RES[k].name}</b> from ${RES_FROM[k]}${i?` <button type="button" class="linkbtn" data-resgo="${i.id}">Go to ${esc(i.name)}</button>`:k==='gold'?' (get an old mistake right 3 times, on different days)':''}</span>`}).join('')}</div>`}
 function bindResGo(root){(root||document).querySelectorAll('[data-resgo]').forEach(b=>b.onclick=()=>{const i=byId(b.dataset.resgo);if(!i)return;renderMap();setTimeout(()=>openIsland(i),60)})}
 /* the island card: the next star and what a round here gives */
 function islRewardsHTML(isl){if(!isl.gen||isl.special)return '';const b=starFor(isl.id),L=skillsOf(isl.id),d=skillsDone(isl.id),k=resOf(isl.id),pk=pickToday(),x2=pk&&pk.id===isl.id;
@@ -77,4 +77,4 @@ PROJECTS.push(...WONDERS);
 const projCost=nx=>nx&&typeof nx.price==='object'?nx.price:null;
 const canAffordRes=cost=>Object.entries(cost).every(([k,v])=>resHave(k)>=v);
 function resPay(cost){G.res=Object.assign({},G.res);Object.entries(cost).forEach(([k,v])=>{G.res[k]-=v})}
-function resBarHTML(){return `<div class="resbar"><b>Your resources</b>${Object.keys(RES).map(k=>resChip(k,resHave(k))).join('')}<small>Earn them by finishing missions (golden answers give more), mastering skills and fixing old mistakes.</small></div>`}
+function resBarHTML(){return `<div class="resbar"><b>Your resources</b>${Object.keys(RES).map(k=>resChip(k,resHave(k))).join('')}<small>Stone, books, crystals and relics: finish missions (golden answers give more) and master skills (+5). Golden bricks: fix an old mistake for good at Fix-It Falls (right 3 times, on different days).</small></div>`}

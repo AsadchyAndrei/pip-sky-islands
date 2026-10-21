@@ -12,7 +12,8 @@ function card(isl,i){
   const b=starFor(isl.id);let status='',cls=unlockFresh.has(isl.id)?' fresh':'',rib='';
   if(isl.special==='daily'){status=dailyDone()?`<span class="status ok">Done today! Back tomorrow</span>`:`<span class="status go">+${REW.daily} coins</span>`;if(!dailyDone())rib='<span class="ribbon">NEW!</span>'}
   else if(isl.special==='review'){const due=reviewDue().length,all=G.review.length;
-    status=due?`<span class="status go">${due} puzzle${due>1?'s':''} to fix</span>`:all?`<span class="status lock">${all} coming back later</span>`:`<span class="status ok">No mistakes to fix!</span>`;if(due)rib=`<span class="ribbon blue">${due}</span>`}
+    status=due?`<span class="status go">${due} puzzle${due>1?'s':''} to fix</span>`:all?`<span class="status lock">${all} coming back later</span>`:`<span class="status ok">No mistakes to fix!</span>`;if(due)rib=`<span class="ribbon blue">${due}</span>`;
+    if(typeof resShown==='function'&&resShown()&&all)status+=`<span class="isres" title="Fix a mistake for good (right 3 times) to earn a golden brick">${RES_ICON.gold}<span>golden bricks</span></span>`}
   else if(isl.special==='ptest'){const L=G.tests||[];status=L.length?`<span class="status ok">Last: ${L[0].s} of ${L[0].n}</span>`:`<span class="status go">Math or English</span>`;if(!L.length)rib='<span class="ribbon">NEW!</span>'}
   else if(isl.special==='boss'&&starTotal()<BOSS_NEED){cls=' locked';status=`<span class="status lock">Locked: ${starTotal()}/${BOSS_NEED} stars</span>`}
   else{status=`<span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}${G.hardMaster[isl.id]?CROWN_MINI:''}</span>`;
@@ -135,7 +136,7 @@ function beginRound(isl,mode,qs){if(typeof stat==='function'){statDay();stat('ro
   {const nm=$('#iname');nm.textContent=isl.name;if(mode==='island'){const d=document.createElement('span');d.className='idiff';d.textContent=` · ${DIFF_NAME[S.d]}`;nm.appendChild(d)}}$('#timer').hidden=true;$('#bossbar').hidden=true;$('#dots').hidden=false;$('#combo').hidden=true;
   $('#dots').innerHTML=qs.map(()=>'<span class="dot"></span>').join('');setAlt(0);
   show('play');refreshFoxes();aliveRound();if(typeof missionRound==='function')missionRound();
-  say($('#say'),mode==='daily'?`Daily Challenge! 8 surprise puzzles from all over the sky. Let's go${nm()}!`:mode==='review'?`Fix-It Falls! These are puzzles that tricked you before. Let's beat them this time!`
+  say($('#say'),mode==='daily'?`Daily Challenge! 8 surprise puzzles from all over the sky. Let's go${nm()}!`:mode==='review'?`Fix-It Falls! These are puzzles that tricked you before. Get one right <b>3 times</b> (on different days) and it's fixed forever: <b>+1 golden brick</b> for your Wonders!`
     :pick([`Welcome to ${isl.name}! Let's go${nm()}!`,`Buckle up! ${isl.name}, here we come!`,`6 puzzles on ${isl.name}. You've got this!`,`Ready, set, THINK!`]));
   foxClass('waving',1500);showQ();
 }
@@ -155,7 +156,7 @@ function showQ(){
   const q=S.qs[S.i];S.tries=0;S.locked=false;
   const c=$('#card');c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
   if(S.mode==='boss')$('#qnum').textContent=`Attack ${S.i+1}${q.from?` · from ${q.from}`:''}`;
-  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i));aliveStep(S.i);aliveEvent()}
+  else{$('#qnum').textContent=`Puzzle ${S.i+1} of ${S.qs.length}${q.from?` · from ${q.from}`:''}${q.rv?' · fix an old mistake!':''}${revBoxText(q)}${q.eased?' · a bit easier':''}`;if(q.rv)say($('#say'),`This one tricked you before. Let's <b>fix it</b> for good!`);document.querySelectorAll('.dot').forEach((d,k)=>d.classList.toggle('now',k===S.i));aliveStep(S.i);aliveEvent()}
   $('#prompt').innerHTML=q.prompt;$('#card').classList.toggle('reading',!!q.wide);if(typeof autoSay==='function')autoSay(q.speak||q.prompt);{const nx=S.qs[S.i+1];if(nx&&typeof pvPrefetch==='function')setTimeout(()=>pvPrefetch(nx.speak||nx.prompt),1500)}
   if(S.mode==='lesson'&&S.i>0){const pv=S.qs[S.i-1];if(q.guided&&!pv.guided)say($('#say'),`Now let's do one <b>together</b>, step by step!`);else if(!q.teach&&!q.guided&&(pv.guided||pv.teach))say($('#say'),`Your turn! Try these <b>on your own</b>. Use the trick!`)}
   $('#visual').innerHTML=q.visual||'';$('#visual').hidden=!q.visual;if(q.listen)wireListen();$('#card').classList.toggle('lp',!!q.longp);
@@ -520,9 +521,12 @@ function judge(ok,btn){
 function firstMistakeTip(){if(G.tutHint)return;G.tutHint=1;save(true);
   setTimeout(()=>{['#hint','#howBtn'].forEach(sel=>{const el=$(sel);if(el&&!el.hidden){el.classList.remove('pulsehelp');void el.offsetWidth;el.classList.add('pulsehelp')}});
     say($('#say'),`Stuck? Read the <b>Hint</b> below the puzzle. Still stuck? Tap <b>How?</b> and I'll show you step by step!`)},350)}
+/* Fix-It Falls: how far this old mistake is from being fixed for good (3 right first tries, on different days) */
+const revBox=q=>{const r=q&&q.meta&&G.review.find(x=>x.s===q.meta.s);return r?r.box:null};
+const revBoxText=q=>{const b=(S&&(S.mode==='review'||q.rv))?revBox(q):null;return b==null?'':` · ${b} of 3 for a golden brick`};
 function reviewResult(q,first){
   const r=G.review.find(x=>x.s===q.meta.s);if(!r)return;
-  if(first){r.box++;if(r.box>=3){G.review=G.review.filter(x=>x!==r);G.fixedSeeds.push(r.s);G.fixed++;if(typeof resAdd==='function')resAdd('gold',1);toast('Mistake fixed forever!','That puzzle won\'t trick you again. <b>+1 golden brick</b> for your Wonders!','#38b98a');if(G.fixed>=10)award('fixer')}else r.due=addDays([1,3,7][r.box])}
+  if(first){r.box++;if(r.box>=3){G.review=G.review.filter(x=>x!==r);G.fixedSeeds.push(r.s);G.fixed++;if(typeof resAdd==='function')resAdd('gold',1);toast('Mistake fixed forever!','That puzzle won\'t trick you again. <b>+1 golden brick</b> for your Wonders!','#38b98a');if(G.fixed>=10)award('fixer')}else{r.due=addDays([1,3,7][r.box]);const n=$('#qnum');if(n)n.textContent=n.textContent.replace(/ · \d of 3 for a golden brick/,` · ${r.box} of 3 for a golden brick`)}}
   else{r.box=0;r.due=addDays(1)}
 }
 function finishQ(){
