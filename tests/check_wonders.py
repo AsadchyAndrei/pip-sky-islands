@@ -22,6 +22,8 @@ with sync_playwright() as p:
         pg.evaluate("G.res={stone:30,book:30,crystal:30,relic:30,gold:3};renderHome()"); pg.wait_for_timeout(500)
         c.ok(pg.locator('.pcard2.wonder').count() == 3 and pg.is_visible('.resbar'), f'{w}: three Wonders and the resource bar on the island page')
         coinsH = pg.evaluate("G.coins")
+        pg.click('[data-proj="w_library"]'); pg.wait_for_timeout(150)
+        c.ok('Tap again' in pg.text_content('[data-proj="w_library"]'), f'{w}: the first tap asks')
         pg.click('[data-proj="w_library"]'); pg.wait_for_timeout(500)
         c.ok(pg.evaluate("projStage('w_library')") == 1 and pg.evaluate("resHave('stone')") == 18 and pg.evaluate("G.coins") == coinsH, f'{w}: building a Wonder step uses resources, not coins')
         c.ok(pg.locator('#homeView [data-mv="p_w_library"]').count() == 1, f'{w}: the Wonder is drawn on the island')
