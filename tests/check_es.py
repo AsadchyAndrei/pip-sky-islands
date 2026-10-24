@@ -21,7 +21,7 @@ with sync_playwright() as p:
         c.ok(not pg.evaluate("ovOpen") or 'Entendido' in pg.text_content('#ocard') or 'habilidad' in pg.text_content('#ocard') or 'intento' in pg.text_content('#ocard'), f'{w}: the "?" pop-up in Spanish: ' + (pg.evaluate("ovOpen") and pg.text_content('#ocard')[:80] or ''))
         pg.evaluate("ovOpen&&closeOverlay()")
         pg.evaluate("renderMap()"); pg.wait_for_timeout(400)
-        c.ok('Daily' in pg.inner_text('#map') or 'Islands' in pg.inner_text('#map'), f'{w}: the game stays in English')
+        c.ok(any(x in pg.inner_text('#map') for x in ('Daily','Islands','Math','Challenges')), f'{w}: the game stays in English')
         pg.reload(); pg.wait_for_timeout(1500)
         pg.evaluate("ROOT.pin='1234';save();CL.unlockUntil=0;openParent()"); pg.wait_for_timeout(600)
         c.ok(pg.evaluate("ovOpen") and 'Escribe el PIN de padres' in pg.text_content('#ocard'), f'{w}: the PIN screen remembers Spanish')

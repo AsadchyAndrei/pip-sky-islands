@@ -41,7 +41,7 @@ const FOG_ART=`<ellipse cx="62" cy="58" rx="24" ry="17" fill="#fff"/><ellipse cx
 function teaserCard(isl,i){const u=unlockOf(isl.id);
   return `<button class="isle locked teaser" type="button" data-id="${isl.id}" data-teaser="1" style="--d:${-(i%7)*0.6}s" aria-label="A secret island: ${esc(u.left())}">
     ${islandSVG('#c9cfe3',FOG_ART)}<span class="plaque"><b>Secret island</b><small>${esc(u.left())}</small><span class="status lock">${LOCK}Coming soon</span></span></button>`}
-function teaserTap(id){const u=unlockOf(id);say($('#maptext'),`That island is still a <b>secret</b>! ${esc(u.left())}. Keep flying!`);$('#mapact').hidden=true;foxMove('hop');tone([440,523]);scrollTo({top:0,behavior:'smooth'})}
+function teaserTap(id){const u=unlockOf(id);mapNote(`That island is still a <b>secret</b>! ${esc(u.left())}. Keep flying!`);$('#mapact').hidden=true;foxMove('hop');tone([440,523]);scrollTo({top:0,behavior:'smooth'})}
 /* the album tab appears with the first sticker */
 function unlockNav(){document.body.classList.toggle('lk-album',!isOpen('albumBtn'))}
 /* one celebration at a time, on the map, never on top of a pop-up or a guided tour */

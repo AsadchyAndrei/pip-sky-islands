@@ -1,6 +1,7 @@
 """A simple home screen on phones: one header row (player with level, coins, stars), chips for the egg/event/goal/week
-(a tap opens the card), Pip's line and one big button for today's next step, challenges as a third tab, island cards
-with only picture, name and stars, no grown-up text under the islands. The computer layout keeps its full cards."""
+in a tidy grid (a tap opens the card), no Pip bubble and no big "today" button (the Daily Challenge is in the Challenges
+tab), island cards two in a row with only picture, name and stars, no grown-up text under the islands.
+The computer layout keeps its full cards."""
 from serve import *
 c = Check('simple phone home')
 with sync_playwright() as p:
@@ -13,7 +14,8 @@ with sync_playwright() as p:
     c.ok(pg.is_visible('#playerBtn .lvchip') and pg.is_visible('#coinPill') and pg.is_visible('#starPill'), 'player with level, coins and stars')
     tops = pg.evaluate("['#playerBtn','#coinPill','#starPill','#gearBtn'].map(s=>Math.round(document.querySelector(s).getBoundingClientRect().top))")
     c.ok(max(tops) - min(tops) < 12, f'the header is one row: {tops}')
-    c.ok(pg.is_visible('#tdNext') and not pg.is_visible('#pickCard .tdsteps'), 'one big button for today instead of the plan list')
+    c.ok(not pg.is_visible('#map .intro') and not pg.is_visible('#pickCard'), 'no Pip bubble and no today card on the map')
+    c.ok(pg.evaluate("[...document.querySelectorAll('#rwChips .rwchip')].every(e=>e.getBoundingClientRect().right<=innerWidth)"), 'the chips fit the screen')
     c.ok(pg.locator('#rwChips .rwchip').count() >= 2 and not pg.is_visible('#rewards'), 'rewards are chips')
     pg.click('[data-rwc="buddyCard"]'); pg.wait_for_timeout(300)
     c.ok(pg.is_visible('#buddyCard'), 'a chip opens its card')
@@ -21,16 +23,16 @@ with sync_playwright() as p:
     c.ok(not pg.is_visible('#buddyCard'), 'and closes it again')
     c.ok(not pg.is_visible('#map .chbox:not(.islbox)') and pg.is_visible('[data-tab="ch"]'), 'challenges are a tab')
     pg.click('[data-tab="ch"]'); pg.wait_for_timeout(300)
-    c.ok(pg.is_visible('.isle[data-id="review"]'), 'the challenges tab shows Fix-It Falls')
+    c.ok(pg.is_visible('.isle[data-id="review"]') and pg.is_visible('.isle[data-id="daily"]'), 'the challenges tab shows the Daily Challenge and Fix-It Falls')
     pg.click('[data-tab="math"]'); pg.wait_for_timeout(300)
     card = pg.locator('.isle[data-id="mult"]')
     c.ok(card.is_visible() and not card.locator('.plaque small').first.is_visible() and not card.locator('.skbar').is_visible() and not card.locator('.isres').is_visible(), 'island cards: picture, name, stars')
     tops = pg.evaluate("[...document.querySelectorAll('#g-math .isle')].slice(0,3).map(e=>Math.round(e.getBoundingClientRect().top))")
-    c.ok(len(set(tops)) == 1, f'three islands in a row: {tops}')
+    c.ok(tops[0] == tops[1] and tops[2] > tops[0], f'two islands in a row: {tops}')
     c.ok(not pg.is_visible('#mapFoot'), 'no grown-up text under the islands')
     c.ok(pg.evaluate("document.documentElement.scrollWidth<=innerWidth+1"), 'no sideways scroll')
-    pg.click('#tdNext'); pg.wait_for_timeout(500)
-    c.ok(pg.evaluate("curScreen") == 'play', 'the big button starts the next step')
+    pg.click('[data-tab="ch"]'); pg.wait_for_timeout(200); pg.click('.isle[data-id="daily"]'); pg.wait_for_timeout(500)
+    c.ok(pg.evaluate("curScreen") == 'play', 'the Daily Challenge starts from its tab')
     # a narrow phone with a long name: the header stays one row, the event chip is short even past its last prize
     ctx2, pg2, e2 = open_page(b, 360, 780, pack='ca-4')
     pg2.evaluate("G.name='Maximiliano';G.coins=123456;CUR_EV=activeEvent();if(CUR_EV)evState(CUR_EV).pts=999;renderMap()"); pg2.wait_for_timeout(500)

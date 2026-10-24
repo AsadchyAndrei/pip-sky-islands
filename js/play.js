@@ -77,6 +77,8 @@ const PHONE=matchMedia('(max-width:760px)');
 function placeChallenges(){const g=$('#g-ch'),tab=document.querySelector('.tabp[data-tabp="ch"]'),box=document.querySelector('#map .chbox:not(.islbox)');if(!g||!tab||!box)return;
   if(PHONE.matches){if(g.parentNode!==tab)tab.appendChild(g)}else{if(g.parentNode!==box)box.appendChild(g);if(mapTab==='ch')setTab('math')}}
 PHONE.addEventListener&&PHONE.addEventListener('change',placeChallenges);
+/* a note from Pip after a tap on the map; phones have no Pip bubble on the map, so they get a small toast */
+function mapNote(html){say($('#maptext'),html);if(PHONE.matches&&!document.body.classList.contains('newbie'))toast('Pip says',html,'#2f9fe0')}
 function renderMap(){setTimeout(homeLayout,0);setTimeout(()=>{if(typeof tourHook==='function'&&curScreen==='map')tourHook('map')},0);{const f=$('#mapFoot');if(f)f.textContent=`${PACK.stateName}, ${GRADE_WORD(PACK.grade).toLowerCase()}: `+ISLANDS.filter(i=>i.gen&&!i.retired).map(i=>i.topic.toLowerCase()).join(', ')+'.';if(typeof visitDoorsHTML==='function'){const d=visitDoorsHTML();if(d){f.insertAdjacentHTML('beforeend',' '+d);bindVisitDoors(f)}}}if(typeof renderVisitBar==='function')renderVisitBar();{const sp=$('#mapSpacer');if(sp)sp.style.height=''}
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
   adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();renderClassCard();if(G.cls)classCheck();setTimeout(maybeYearOffer,700);CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
@@ -86,7 +88,7 @@ function renderMap(){setTimeout(homeLayout,0);setTimeout(()=>{if(typeof tourHook
   $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'All 3 books done! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
   $('#albumSub').textContent=`${Object.keys(G.stickers).length} of ${STK.length} stickers`;
   document.querySelectorAll('.isle').forEach(b=>b.onclick=()=>{if(b.dataset.teaser)return teaserTap(b.dataset.id);const isl=byId(b.dataset.id);
-    if(isl.special==='boss'&&starTotal()<BOSS_NEED){say($('#maptext'),`Boss Island is locked! Collect <b>${BOSS_NEED-starTotal()} more stars</b> first. You can do it!`);$('#mapact').hidden=true;foxMove('wobble');sNo();scrollTo({top:0,behavior:'smooth'});return}
+    if(isl.special==='boss'&&starTotal()<BOSS_NEED){mapNote(`Boss Island is locked! Collect <b>${BOSS_NEED-starTotal()} more stars</b> first. You can do it!`);$('#mapact').hidden=true;foxMove('wobble');sNo();if(!PHONE.matches)scrollTo({top:0,behavior:'smooth'});return}
     tone([523,784]);isl.gen&&!isl.special?openIsland(isl):start(isl)});
   show('map');
   tips=buildTips();tipI=0;
@@ -125,7 +127,7 @@ function start(isl,opts={}){
     if(!dailyDone())shuffle(reviewDue().filter(r=>byId(r.i))).slice(0,5).forEach((r,i)=>{const isl2=byId(r.i);const q=makeQ(isl2,r.t,r.s,r.d);q.from=isl2.name;q.rv=1;qs[[1,3,4,6,7][i]]=q});
     return beginRound(isl,'daily',qs)}
   if(isl.special==='review'){const due=reviewDue();
-    if(!due.length){const all=G.review.length;say($('#maptext'),all?`Nothing to fix today! <b>${all} puzzle${all>1?'s':''}</b> will come back on another day, so your brain can practice remembering.`:`No mistakes to fix. Wow! When you miss a puzzle, it comes here so you can try it again later.`);$('#mapact').hidden=true;show('map');scrollTo({top:0,behavior:'smooth'});foxMove('hop');return}
+    if(!due.length){const all=G.review.length;mapNote(all?`Nothing to fix today! <b>${all} puzzle${all>1?'s':''}</b> will come back on another day, so your brain can practice remembering.`:`No mistakes to fix. Wow! When you miss a puzzle, it comes here so you can try it again later.`);$('#mapact').hidden=true;show('map');scrollTo({top:0,behavior:'smooth'});foxMove('hop');return}
     const qs=shuffle(due.slice()).slice(0,8).map(r=>{const isl2=byId(r.i);const q=makeQ(isl2,r.t,r.s,r.d);q.from=isl2.name;return q});
     return beginRound(isl,'review',qs)}
   if(isl.flash)return startFlash(isl);

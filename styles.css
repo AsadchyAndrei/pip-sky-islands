@@ -2144,3 +2144,24 @@ html body .itabs .chtab{display:none}
   html body.newbie #map .intro #mapact{font-size:22px;padding:12px 24px 8px;background:var(--coral-d);color:#fff;box-shadow:0 4px 0 var(--coral-dd)}
   .rwchip{padding:6px 12px 4px;font-size:13.5px}
 }
+@media (max-width:760px){
+  /* phones: the map is the header, the chips and the islands. No Pip bubble and no big "today" button here
+     (a brand-new player still gets Pip and the one big button for the quick check) */
+  html body:not(.newbie) #map .intro,html body:not(.newbie) #map #nextUp,html body:not(.newbie) #map #pickCard{display:none}
+  html body #g-ch .isle.inplan{display:flex}
+  /* chips: a tidy grid, never a sideways scroll */
+  html body .rwchips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible;margin:4px 0 12px;padding:0}
+  html body .rwchip{justify-content:center;min-width:0;padding:8px 10px 6px;font-size:14px;white-space:nowrap}
+  html body .rwchip b{overflow:hidden;text-overflow:ellipsis;min-width:0}
+  /* islands: two in a row, with room around them */
+  html body .islbox{padding:12px}
+  html body .islbox .islands.five,html body .islbox #g-ch{gap:14px 12px;padding:4px 2px 8px}
+  html body .islbox .islands.five>.isle,html body .islbox #g-ch>.isle{width:calc((100% - 12px)/2)}
+  html body .islbox .isle .plaque{padding:8px 8px 7px}
+  html body .islbox .isle .plaque b{font-size:16px}
+  html body .islbox .isle .stars svg{width:18px;height:18px}
+  html body .islbox .isle .status{font-size:12.5px}
+  html body .islbox .isle .ribbon{font-size:12px;padding:3px 8px 1px}
+  html body .islbox .itabs{margin:0 0 14px}
+  html body header.top{margin-bottom:2px}
+}
