@@ -2130,3 +2130,17 @@ html body .itabs .chtab{display:none}
   html body .islbox #g-ch{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 6px}
   html body .islbox #g-ch>.isle{width:calc((100% - 12px)/3)}
 }
+
+@media (max-width:760px){
+  /* the header never wraps: the name gives way first; the cloud shows only when something needs a grown-up's eye */
+  html body header.top{flex-wrap:nowrap}
+  html body #playerBtn{flex:0 1 auto;min-width:0;max-width:none;overflow:hidden}
+  html body #playerBtn .pname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  html body #coinPill,html body #starPill{flex:0 0 auto}
+  html body .tmwrap{flex:none;margin-left:auto}
+  html body #syncBadge:not(.bad):not([data-st="Offline"]):not([data-st="This device"]){display:none}
+  /* Pip's own suggestion is a small button: the one big button is today's next step */
+  html body #map .intro #mapact{font-size:15px;padding:6px 14px 4px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--line),0 3px 0 var(--line);margin-top:6px}
+  html body.newbie #map .intro #mapact{font-size:22px;padding:12px 24px 8px;background:var(--coral-d);color:#fff;box-shadow:0 4px 0 var(--coral-dd)}
+  .rwchip{padding:6px 12px 4px;font-size:13.5px}
+}

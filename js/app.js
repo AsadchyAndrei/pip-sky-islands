@@ -1243,10 +1243,11 @@ let mOpen='';
 function phoneChips(tabs){const rw=$('#rewards');if(!rw)return;let row=$('#rwChips');
   if(!row){row=document.createElement('div');row.id='rwChips';row.className='rwchips';rw.parentNode.insertBefore(row,rw)}
   const bc=$('#buddyCard');if(bc&&bc.previousElementSibling!==rw)rw.after(bc);
-  const val={eventCard:()=>{if(!CUR_EV)return '';const st=evState(CUR_EV);return `${st.pts}/${EV_MILES[EV_MILES.length-1][0]}`},
-    goalCard:()=>{const P=saveGoalProject(),nx=P&&projNext(P);return nx?`${fmt(Math.min(Math.max(0,G.coins),nx.price))}/${fmt(nx.price)}`:''},
+  /* short values, so the row fits a phone: points (a check when every prize is won), a percent for the goal */
+  const val={eventCard:()=>{if(!CUR_EV)return '';const st=evState(CUR_EV),max=EV_MILES[EV_MILES.length-1][0];return st.pts>=max?'✓':`${st.pts}/${max}`},
+    goalCard:()=>{const P=saveGoalProject(),nx=P&&projNext(P);return nx?`${Math.min(100,Math.floor(Math.max(0,G.coins)/nx.price*100))}%`:''},
     weekCard:()=>{const T=weekTarget(),c=thisWeek().c;return T?`${c}/${T}`:`${c}`},fgoalCard:()=>''};
-  const L=tabs.map(([id,n])=>[id,id==='goalCard'?'Goal':id==='weekCard'?'Week':n,(val[id]||(()=>''))()]);
+  const L=tabs.map(([id,n])=>[id,id==='goalCard'?'Goal':id==='weekCard'?'Week':id==='eventCard'?n.split(' ')[0]:n,(val[id]||(()=>''))()]);
   if(bc&&!bc.hidden&&bc.innerHTML.trim())L.unshift(['buddyCard',G.buddy?buddyName():'Egg',G.buddy?'':`${(G.egg&&G.egg.days.length)||0}/${BUDDY_HATCH}`]);
   if(!L.some(x=>x[0]===mOpen))mOpen='';
   row.hidden=!L.length;

@@ -143,7 +143,7 @@ function adoptRemote(){if(CL.mode!=='cloud'||!ROOT.current)return;const r=CL.rem
   if(curScreen==='map'&&!adoptRemote.inMap){adoptRemote.inMap=1;renderMap();adoptRemote.inMap=0}
   else if(curScreen==='home')renderHome()} // the island screen must show the adopted profile, not the old object
 function dropKid(id){delete ROOT.profiles[id];(ROOT.gone=ROOT.gone||{})[id]=1;if(ROOT.current===id){ROOT.current='';G=freshProfile();if(CL.mode!=='guest'&&curScreen!=='gate')openKids()}persistLocal()}
-function setSync(st){if(st)CL.state=st;const el=$('#syncBadge');const s=syncInfo();if(el){el.className='tbtn sync '+s.cls;el.innerHTML=`${CLOUD_ICON}<span>${s.short}</span>`;el.title=s.long}
+function setSync(st){if(st)CL.state=st;const el=$('#syncBadge');const s=syncInfo();if(el){el.className='tbtn sync '+s.cls;el.dataset.st=s.short;el.innerHTML=`${CLOUD_ICON}<span>${s.short}</span>`;el.title=s.long}
   const n=$('#cloudNote');if(n){n.className='note '+(s.cls==='ok'?'ok':s.cls==='bad'?'bad':'');n.textContent=s.long}}
 function syncInfo(){
   if(CL.mode==='guest')return {cls:'warn',short:'This device',long:'Saved on this device only. A grown-up can sign in to keep progress safe in the cloud.'};
