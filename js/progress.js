@@ -143,7 +143,7 @@ function adoptRemote(){if(CL.mode!=='cloud'||!ROOT.current)return;const r=CL.rem
   if(curScreen==='map'&&!adoptRemote.inMap){adoptRemote.inMap=1;renderMap();adoptRemote.inMap=0}
   else if(curScreen==='home')renderHome()} // the island screen must show the adopted profile, not the old object
 function dropKid(id){delete ROOT.profiles[id];(ROOT.gone=ROOT.gone||{})[id]=1;if(ROOT.current===id){ROOT.current='';G=freshProfile();if(CL.mode!=='guest'&&curScreen!=='gate')openKids()}persistLocal()}
-function setSync(st){if(st)CL.state=st;const el=$('#syncBadge');const s=syncInfo();if(el){el.className='tbtn sync '+s.cls;el.dataset.st=s.short;el.innerHTML=`${CLOUD_ICON}<span>${s.short}</span>`;el.title=s.long}
+function setSync(st){if(st)CL.state=st;const el=$('#syncBadge');const s=syncInfo();if(el){el.className='tbtn sync '+s.cls;el.dataset.st=s.short;const gb=$('#gearBtn');if(gb){gb.classList.toggle('syncwarn',s.cls==='bad'||s.short==='Offline'||s.short==='This device');gb.title=s.long}el.innerHTML=`${CLOUD_ICON}<span>${s.short}</span>`;el.title=s.long}
   const n=$('#cloudNote');if(n){n.className='note '+(s.cls==='ok'?'ok':s.cls==='bad'?'bad':'');n.textContent=s.long}}
 function syncInfo(){
   if(CL.mode==='guest')return {cls:'warn',short:'This device',long:'Saved on this device only. A grown-up can sign in to keep progress safe in the cloud.'};
@@ -247,12 +247,12 @@ function skillBar(id){const L=skillsOf(id);if(L.length<2)return '';const d=skill
 function openIsland(isl){const L=skillsOf(isl.id),b=starFor(isl.id),d=skillsDone(isl.id);
   if(L.length<2||isl.flash)return start(isl);
   const third=b>=2&&!allSkills(isl.id)&&!(G.star3||{})[isl.id];
-  overlay(`<div class="ishead"><span class="isico">${islandSVG(isl.color,LANDMARKS[isl.lm])}</span><div><div class="eyebrow" style="color:${isl.color}">${esc(isl.topic)}</div><h2>${esc(isl.name)}</h2><span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}</span></div></div>
+  overlay(`<button type="button" class="ovx" id="isX" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11m0-11-11 11" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg></button><div class="ishead"><span class="isico">${islandSVG(isl.color,LANDMARKS[isl.lm])}</span><div><div class="eyebrow" style="color:${isl.color}">${esc(isl.topic)}</div><h2>${esc(isl.name)}</h2><span class="stars">${[0,1,2].map(k=>starSVG(k<b)).join('')}</span></div></div>
     <div class="isbtns"><button type="button" class="go big" id="isPlay">Play</button>${lessonsFor(isl.id).length?'<button type="button" class="go alt" id="isLearn">Learn the trick</button>':''}</div>${typeof islRewardsHTML==='function'?islRewardsHTML(isl):''}
     <div class="sklist" role="list"><div class="skhead"><b>Skills</b><span>${d} of ${L.length} mastered</span></div>${L.map(s=>{const m=skStat(s.k);return `<div class="skrow s${m.st}" role="listitem">${SK_DOT(m.st)}<div class="skname"><b>${esc(s.name)}</b><small>${m.st===2?'Mastered':m.n?`${m.ok} of ${m.n} right lately`:'Not tried yet'}</small></div><button type="button" class="go small alt" data-sk="${s.i}" aria-label="Practice ${esc(s.name)}">Practice</button></div>`}).join('')}</div>
 <div class="actrow"><button type="button" class="go alt" id="isClose">Back to map</button></div>`,()=>{
     $('#ocard').classList.add('wide');const close=()=>{$('#ocard').classList.remove('wide');closeOverlay()};
-    $('#isPlay').onclick=()=>{close();start(isl)};if($('#isLearn'))$('#isLearn').onclick=()=>{close();start(lessonIsland(lessonFor(isl.id)))};$('#isClose').onclick=close;$('#isPlay').focus({preventScroll:true});
+    $('#isPlay').onclick=()=>{close();start(isl)};if($('#isLearn'))$('#isLearn').onclick=()=>{close();start(lessonIsland(lessonFor(isl.id)))};$('#isClose').onclick=close;$('#isX').onclick=close;$('#isPlay').focus({preventScroll:true});
     $('#ocard').querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>{close();tone([523,784]);startSkill(isl,L[+b.dataset.sk])})})}
 function pickPlay(P){const w=weakSkill(P.id);if(w&&skillsOf(P.id).length>1)startSkill(P,w);else start(P,{noOffer:true})}
 function nowParentHTML(){const cd=classDoc();if(cd&&(cd.now||[]).length)return `<div class="pcard wide"><h4>In class right now</h4><p class="note">Set by ${esc(cd.teacher||'the teacher')}: <b>${cd.now.map(byId).filter(Boolean).map(i=>esc(i.topic)).join(', ')}</b>. Pip's Pick practices these first.</p></div>`;const sel=G.settings.now||[],groups=[['Math',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='math')],['English and more',ISLANDS.filter(i=>i.gen&&!i.retired&&i.group==='world')]];
@@ -492,7 +492,7 @@ function updateStats(bump){
   $('#xpfill').style.width=(hi?Math.min(100,(G.xp-lo)/(hi-lo)*100):100)+'%';
   $('#xptext').textContent=hi?`${G.xp-lo} / ${hi-lo} XP to ${TITLES[lv+1]}`:`Max level! ${G.xp} XP`;
   $('#coinPill').innerHTML=`${COIN_ICON}<span>${fmt(G.coins)}</span>`;const pc=$('#pcoins');if(pc)pc.innerHTML=`${COIN_ICON}<span>${fmt(G.coins)}</span>`;
-  $('#starPill').innerHTML=`${starSVG(true)}<span>${starTotal()} / ${MAX}</span>`;
+  $('#starPill').innerHTML=`${starSVG(true)}<span>${starTotal()}<span class="stmax"> / ${MAX}</span></span>`;$('#starPill').title=`${starTotal()} of ${MAX} stars`;
   $('#streakPill').innerHTML=`${FLAME}<span>${curStreak()}</span><small>day streak</small>`;
   const gi=goalInfo(),gp=$('#goalPill');
   if(gi){gp.hidden=false;const met=gi.cur>=gi.max;gp.classList.toggle('met',met);gp.innerHTML=`<small>${met?'Goal done!':'Today'} · ${gi.label}</small><div class="bar warm"><i style="width:${Math.min(100,gi.cur/gi.max*100)}%"></i></div>`}else gp.hidden=true;

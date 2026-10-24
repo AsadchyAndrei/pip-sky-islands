@@ -2165,3 +2165,50 @@ html body .itabs .chtab{display:none}
   html body .islbox .itabs{margin:0 0 14px}
   html body header.top{margin-bottom:2px}
 }
+
+/* a big close cross in the top right corner of the island window (Back to map below still works) */
+.ocard{position:relative}
+.ovx{position:absolute;top:10px;right:10px;width:48px;height:48px;border:0;border-radius:50%;background:var(--pale-sky);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 0 var(--line);z-index:2}
+.ovx svg{width:26px;height:26px}.ovx:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.ovx~.ishead{padding-right:52px}
+@media (max-width:760px){
+  /* header: comfortable gaps and bigger numbers */
+  html body header.top{gap:10px}
+  html body header.top .pill{font-size:19px;padding:6px 12px 4px;gap:6px;min-height:46px}
+  html body header.top .pill svg{width:21px;height:21px}
+  html body #playerBtn{height:46px;font-size:18px;padding:0 14px 0 7px;gap:8px}
+  html body .lvchip{min-width:28px;height:28px;font-size:15px}
+  html body #gearBtn,html body #syncBadge{width:46px;height:46px}
+  html body .rwchips{gap:10px;margin:10px 0 8px}
+  html body .rwchip{font-size:16px;padding:10px 12px 8px;gap:8px}
+  /* a bit less room between the chips and the islands */
+  html body #map .chbox.islbox{margin-top:4px}
+  /* islands: every card the same size (two-line names get the same room as one-line ones) */
+  html body .islbox .islands.five,html body .islbox #g-ch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+  html body .islbox .islands.five>.isle,html body .islbox #g-ch>.isle{width:auto;height:100%;display:flex;flex-direction:column;justify-content:flex-start}
+  html body .islbox .isle svg.isl{height:96px;width:auto;max-width:100%;flex:none}
+  html body .islbox .isle .plaque{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:88px;width:100%;box-sizing:border-box}
+}
+@media (max-width:374px){html body header.top .pill{font-size:16px;padding:5px 9px 3px}html body #playerBtn{font-size:16px}html body header.top{gap:7px}}
+
+@media (max-width:760px){
+  /* the name always shows: the star total drops its "/ 75" on phones, the name keeps at least a few letters */
+  html body #starPill .stmax{display:none}
+  html body #playerBtn{flex:1 1 auto;min-width:92px}
+  html body .islbox .isle .plaque{min-height:74px}
+}
+@media (max-width:760px){html body #syncBadge{flex:none}}
+@media (max-width:760px){
+  html body header.top{gap:8px}
+  html body header.top .pill{font-size:18px;padding:6px 10px 4px;gap:5px}
+  html body header.top .pill svg{width:20px;height:20px}
+  html body #playerBtn{font-size:17px;padding:0 12px 0 6px;gap:7px}
+  html body #gearBtn,html body #syncBadge{width:44px;height:44px}
+}
+
+@media (max-width:760px){
+  /* phones: no cloud button in the header; when saving needs a grown-up's eye, the settings button gets a small dot */
+  html body #syncBadge{display:none!important}
+  html body #gearBtn{position:relative}
+  html body #gearBtn.syncwarn::after{content:'';position:absolute;top:6px;right:6px;width:11px;height:11px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 2px var(--card)}
+}
