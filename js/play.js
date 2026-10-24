@@ -66,17 +66,23 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>lockBubble
 function showTip(){const tp=tips[tipI%tips.length];tipI++;say($('#maptext'),tp.text,true);const b=$('#mapact');if(tp.act){b.hidden=false;b.textContent=tp.label;b.onclick=()=>{tone([523,784]);tp.act()}}else b.hidden=true}
 function checkChest(){const c=G.chest;if(!c||!c.from||c.from>=dayKey()||c.from<=(G.chestOpened||''))return;G.chestOpened=c.from;G.coins+=REW.chest;save();
   overlay(`<div class="pipbob" data-fox></div><div class="eyebrow">Welcome back${nm()}!</div><h2>Your surprise chest</h2><svg viewBox="0 0 120 90" style="width:150px;align-self:center" aria-hidden="true"><rect x="14" y="40" width="92" height="44" rx="6" fill="#b5773f" stroke="#8c5a2c" stroke-width="3"/><path d="M14 44 Q14 14 60 14 Q106 14 106 44Z" fill="#c98a4c" stroke="#8c5a2c" stroke-width="3"/><rect x="52" y="36" width="16" height="18" rx="3" fill="#ffc23d" stroke="#e09a14" stroke-width="2"/><g fill="#ffd56b"><circle cx="34" cy="10" r="4"/><circle cx="86" cy="8" r="3"/><circle cx="60" cy="4" r="3"/></g></svg><p>You reached your goal yesterday and took a break. That's how brains grow! <b>+${REW.chest} coins</b>.</p><button class="go" type="button" style="align-self:center" onclick="closeOverlay()">Yay!</button>`,()=>{updateStats('#coinPill');sWin();burst(innerWidth/2,innerHeight/3,100)})}
-let mapTab=(()=>{try{const t=localStorage.getItem('pip-tab');return t==='world'?'world':'math'}catch(e){return 'math'}})();
+let mapTab=(()=>{try{const t=localStorage.getItem('pip-tab');return t==='world'||t==='ch'?t:'math'}catch(e){return 'math'}})();
 /* switching tabs must not make the page jump: a spacer under the map holds only the room the current scroll needs, and shrinks away as you scroll up */
 function fitSpacer(y=scrollY){const sp=$('#mapSpacer');if(!sp)return;const H=document.scrollingElement.scrollHeight-sp.offsetHeight;const need=Math.max(0,Math.ceil(y+innerHeight-H));sp.style.height=need?need+'px':''}
 addEventListener('scroll',()=>{const sp=$('#mapSpacer');if(sp&&sp.offsetHeight)fitSpacer()},{passive:true});
 function setTab(t){const y=scrollY,sp=$('#mapSpacer');if(sp)sp.style.height=(y+innerHeight)+'px';mapTab=t;try{localStorage.setItem('pip-tab',t)}catch(e){}document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('.tabp').forEach(p=>{p.hidden=p.dataset.tabp!==t});fitSpacer(y)}
 document.querySelectorAll('.itabs [data-tab]').forEach(b=>b.onclick=()=>{setTab(b.dataset.tab);tone([523,659],.04)});
+/* phones show the challenges as a third tab next to Math and Words & World: the same cards move into the tab */
+const PHONE=matchMedia('(max-width:760px)');
+function placeChallenges(){const g=$('#g-ch'),tab=document.querySelector('.tabp[data-tabp="ch"]'),box=document.querySelector('#map .chbox:not(.islbox)');if(!g||!tab||!box)return;
+  if(PHONE.matches){if(g.parentNode!==tab)tab.appendChild(g)}else{if(g.parentNode!==box)box.appendChild(g);if(mapTab==='ch')setTab('math')}}
+PHONE.addEventListener&&PHONE.addEventListener('change',placeChallenges);
 function renderMap(){setTimeout(homeLayout,0);setTimeout(()=>{if(typeof tourHook==='function'&&curScreen==='map')tourHook('map')},0);{const f=$('#mapFoot');if(f)f.textContent=`${PACK.stateName}, ${GRADE_WORD(PACK.grade).toLowerCase()}: `+ISLANDS.filter(i=>i.gen&&!i.retired).map(i=>i.topic.toLowerCase()).join(', ')+'.';if(typeof visitDoorsHTML==='function'){const d=visitDoorsHTML();if(d){f.insertAdjacentHTML('beforeend',' '+d);bindVisitDoors(f)}}}if(typeof renderVisitBar==='function')renderVisitBar();{const sp=$('#mapSpacer');if(sp)sp.style.height=''}
   if(!ROOT.current||!ROOT.profiles[ROOT.current])return openKids();
   adoptRemote();stopTimers();setTab(mapTab);updateStats();refreshFoxes();weekCard();renderClassCard();if(G.cls)classCheck();setTimeout(maybeYearOffer,700);CUR_EV=activeEvent();renderEventCard();grantMastery(true);checkChest();
   unlockCheck();unlockNav();pickExplore();const groups={ch:'#g-ch',math:'#g-math',time:'#g-time',world:'#g-world'};
   for(const [g,sel] of Object.entries(groups))$(sel).innerHTML=ISLANDS.map((isl,i)=>isl.group===g&&!isl.retired?card(isl,i):'').join('');
+  placeChallenges();
   $('#storySub').textContent=G.story.ch>=CHAPTERS.length?'All 3 books done! Replay any boss':`Chapter ${G.story.ch+1}: ${CHAPTERS[G.story.ch].name}${chapterWaiting(G.story.ch)?' (soon)':''}`;
   $('#albumSub').textContent=`${Object.keys(G.stickers).length} of ${STK.length} stickers`;
   document.querySelectorAll('.isle').forEach(b=>b.onclick=()=>{if(b.dataset.teaser)return teaserTap(b.dataset.id);const isl=byId(b.dataset.id);

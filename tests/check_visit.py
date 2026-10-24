@@ -10,7 +10,11 @@ with sync_playwright() as p:
         foot = pg.text_content('#mapFoot')
         c.ok('Review 3rd grade' in foot and 'Sneak peek: 5th grade' in foot, f'{w}: two doors on the map: {foot[-60:]}')
         c.ok(pg.evaluate("document.getElementById('visitBar').hidden"), f'{w}: no bar at home')
-        with pg.expect_navigation(): pg.click('[data-visit="ca-3"]')
+        if w == 390:  # phones: the doors are in Parents' Corner, not under the map
+            c.ok(not pg.is_visible('#mapFoot'), f'{w}: no grown-up text under the islands')
+            pg.evaluate("CL.unlockUntil=Date.now()+600000;openParent()"); pg.wait_for_timeout(500)
+            c.ok(pg.locator('#parent [data-visit="ca-3"]').count() == 1, f'{w}: Parents has the review door')
+        with pg.expect_navigation(): pg.evaluate("document.querySelector('%s [data-visit=\"ca-3\"]').click()" % ('#parent' if w == 390 else '#mapFoot'))
         pg.wait_for_function("typeof G!=='undefined'&&G&&PACK.id==='ca-3'&&document.querySelector('#visitBar')", timeout=30000); pg.wait_for_timeout(800)
         if pg.is_visible('#kids'): pg.evaluate("selectKid('a')"); pg.wait_for_timeout(500)
         c.ok(pg.evaluate("PACK.id") == 'ca-3' and pg.evaluate("G.visit&&G.visit.home") == 'ca-4', f'{w}: now playing grade 3, home is grade 4')

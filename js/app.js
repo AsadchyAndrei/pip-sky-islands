@@ -1235,8 +1235,24 @@ function homeLayout(){
   rw.querySelector('.rwtabs').innerHTML=tabs.map(([id,n])=>`<button type="button" role="tab" aria-selected="${id===rwTab}" data-rw="${id}">${esc(n)}</button>`).join('');
   ['eventCard','fgoalCard','goalCard','weekCard'].forEach(id=>{const e=$('#'+id);if(e)e.classList.toggle('rwoff',id!==rwTab)});
   rw.querySelectorAll('[data-rw]').forEach(b=>b.onclick=()=>{rwTab=b.dataset.rw;tone([523,659],.04);homeLayout()});
-  const d=document.querySelector('#g-ch .isle[data-id="daily"]');if(d)d.classList.add('inplan');
+  document.querySelectorAll('#g-ch .isle[data-id="daily"]').forEach(d=>d.classList.add('inplan'));
+  phoneChips(tabs);
 }
+/* phones: the egg, the event, my goal and the week as one row of small chips; a tap opens that card right below */
+let mOpen='';
+function phoneChips(tabs){const rw=$('#rewards');if(!rw)return;let row=$('#rwChips');
+  if(!row){row=document.createElement('div');row.id='rwChips';row.className='rwchips';rw.parentNode.insertBefore(row,rw)}
+  const bc=$('#buddyCard');if(bc&&bc.previousElementSibling!==rw)rw.after(bc);
+  const val={eventCard:()=>{if(!CUR_EV)return '';const st=evState(CUR_EV);return `${st.pts}/${EV_MILES[EV_MILES.length-1][0]}`},
+    goalCard:()=>{const P=saveGoalProject(),nx=P&&projNext(P);return nx?`${fmt(Math.min(Math.max(0,G.coins),nx.price))}/${fmt(nx.price)}`:''},
+    weekCard:()=>{const T=weekTarget(),c=thisWeek().c;return T?`${c}/${T}`:`${c}`},fgoalCard:()=>''};
+  const L=tabs.map(([id,n])=>[id,id==='goalCard'?'Goal':id==='weekCard'?'Week':n,(val[id]||(()=>''))()]);
+  if(bc&&!bc.hidden&&bc.innerHTML.trim())L.unshift(['buddyCard',G.buddy?buddyName():'Egg',G.buddy?'':`${(G.egg&&G.egg.days.length)||0}/${BUDDY_HATCH}`]);
+  if(!L.some(x=>x[0]===mOpen))mOpen='';
+  row.hidden=!L.length;
+  row.innerHTML=L.map(([id,n,v])=>`<button type="button" class="rwchip${id===mOpen?' on':''}" data-rwc="${id}" aria-expanded="${id===mOpen}"><b>${esc(n)}</b>${v?`<span>${v}</span>`:''}</button>`).join('');
+  rw.classList.toggle('mopen',!!mOpen&&mOpen!=='buddyCard');if(bc)bc.classList.toggle('mopen',mOpen==='buddyCard');
+  row.querySelectorAll('[data-rwc]').forEach(b=>b.onclick=()=>{const id=b.dataset.rwc;tone([523,659],.04);mOpen=mOpen===id?'':id;if(mOpen&&mOpen!=='buddyCard')rwTab=mOpen;homeLayout()})}
 /* phone bottom bar: the four sections + the map, always one tap away */
 document.querySelectorAll('#bnav [data-go]').forEach(b=>{const id=b.dataset.go;if(id!=='map'){const sv=document.querySelector('#'+id+' svg');if(sv)b.insertAdjacentHTML('afterbegin',sv.outerHTML)}
   b.onclick=()=>{tone([523,784]);if(id==='map'){stopTimers();renderMap()}else $('#'+id).click()}});

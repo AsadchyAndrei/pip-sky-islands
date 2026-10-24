@@ -20,6 +20,7 @@ with sync_playwright() as p:
         c.ok(pg.evaluate(TEASE) == 'flash,ptest,review', f'{w}: new player sees three secret islands ({pg.evaluate(TEASE)})')
         c.ok(not pg.locator('#bnav [data-go="albumBtn"]').is_visible(), f'{w}: no Album tab before the first sticker')
         c.ok(pg.locator('.isle[data-id=boss]').count() == 1, f'{w}: Boss Island is shown (it has its own star lock)')
+        if w == 390: pg.click('[data-tab="ch"]'); pg.wait_for_timeout(200)  # phones: challenges are a tab
         pg.click('.isle.teaser[data-id=flash]'); pg.wait_for_timeout(300)
         c.ok('secret' in pg.inner_text('#maptext') and 'round' in pg.inner_text('#maptext'), f'{w}: tapping a secret island says how close it is')
         # play: rounds, a sticker, stars

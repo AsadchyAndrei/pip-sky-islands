@@ -13,6 +13,9 @@ with sync_playwright() as p:
         pg.evaluate("for(let i=0;i<S.qs.length;i++){S.i=i;missionAnswer('gold')}"); pg.wait_for_timeout(800)
         c.ok(pg.evaluate("!!G.egg&&G.egg.days.length===1"), f'{w}: the first mission gives an egg')
         pg.evaluate("ovOpen&&closeOverlay();show('map');renderMap()"); pg.wait_for_timeout(400)
+        if w == 390:  # phones: the egg is a chip under the header; a tap opens its card
+            c.ok('Egg' in pg.text_content('#rwChips') and not pg.is_visible('#buddyCard'), f'{w}: the egg is a chip')
+            pg.click('[data-rwc="buddyCard"]'); pg.wait_for_timeout(300)
         c.ok(pg.is_visible('#buddyCard') and '1 of 5' in pg.text_content('#buddyCard'), f'{w}: the egg card on the map: {pg.text_content("#buddyCard")[:60]}')
         pg.evaluate("for(let i=0;i<6;i++)buddyDay()")
         c.ok(pg.evaluate("G.egg.days.length") == 1, f'{w}: many rounds on one day count as one day')

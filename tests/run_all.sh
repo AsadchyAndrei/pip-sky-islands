@@ -37,5 +37,6 @@ python3 check_eshelp.py
 python3 check_streak.py
 python3 check_rewards.py
 python3 check_balance.py
+python3 check_simple.py
 python3 check_stats.py
 echo "All checks passed."
